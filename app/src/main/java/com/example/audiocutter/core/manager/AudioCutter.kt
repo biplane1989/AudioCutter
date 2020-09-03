@@ -21,7 +21,7 @@ enum class MixSelector {
 }
 
 data class AudioCutConfig(val startPosition: Int, val endPosition: Int, val volumePercent: Int = 100, val fileName: String, val inEffect: Effect = Effect.OFF, val outEffect: Effect = Effect.OFF, val bitRate: BitRate = BitRate._128kb, val format: AudioFormat = AudioFormat.MP3)
-data class AudioMixConfig(val selector: MixSelector = MixSelector.LONGEST)
+data class AudioMixConfig(val selector: MixSelector = MixSelector.LONGEST, val volumePercent1: Int = 100, val volumePercent2: Int = 100)
 data class OutputAudioInfo(val audioFile: AudioFile, var percent: Int)
 interface AudioProcessListener {
     fun onStart()

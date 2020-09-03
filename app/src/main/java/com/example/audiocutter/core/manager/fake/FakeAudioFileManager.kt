@@ -20,4 +20,8 @@ class FakeAudioFileManager : AudioFileManager {
     override suspend fun findAllAudioFiles(): LiveData<List<AudioFile>> {
         return audioFileLiveData
     }
+
+    override fun buildAudioFile(filePath: String): AudioFile {
+        return AudioFile(File(filePath), "file_name1", 10000, 128)
+    }
 }

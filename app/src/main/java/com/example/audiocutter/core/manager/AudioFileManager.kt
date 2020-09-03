@@ -5,4 +5,6 @@ import com.example.audiocutter.objects.AudioFile
 
 interface AudioFileManager {
     suspend fun findAllAudioFiles(): LiveData<List<AudioFile>>
+
+    fun buildAudioFile(filePath: String): AudioFile
 }

@@ -8,4 +8,8 @@ class AudioFileManagerImpl : AudioFileManager{
     override suspend fun findAllAudioFiles(): LiveData<List<AudioFile>> {
         TODO("Not yet implemented")
     }
+
+    override fun buildAudioFile(filePath: String): AudioFile {
+        TODO("Not yet implemented")
+    }
 }
