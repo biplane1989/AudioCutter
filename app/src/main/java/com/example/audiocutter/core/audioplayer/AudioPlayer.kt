@@ -1,10 +1,18 @@
 package com.example.audiocutter.core.audioplayer
 
+import android.content.Context
+import androidx.lifecycle.LiveData
 import com.example.audiocutter.core.manager.AudioPlayer
-import com.example.audiocutter.core.manager.PositionChangedListener
+import com.example.audiocutter.core.manager.PositionInfo
 import com.example.audiocutter.objects.AudioFile
 
-class AudioPlayerImpl : AudioPlayer {
+object AudioPlayerImpl : AudioPlayer {
+    private lateinit var appContext: Context
+
+    fun init(appContext: Context){
+        this.appContext = appContext
+    }
+
     override fun play(audioFile: AudioFile): Boolean {
         TODO("Not yet implemented")
     }
@@ -29,11 +37,8 @@ class AudioPlayerImpl : AudioPlayer {
         TODO("Not yet implemented")
     }
 
-    override fun addPositionChangedListener(listener: PositionChangedListener) {
-        TODO("Not yet implemented")
-    }
 
-    override fun removePositionChangedListener(listener: PositionChangedListener) {
+    override fun getPosition(): LiveData<PositionInfo> {
         TODO("Not yet implemented")
     }
 }

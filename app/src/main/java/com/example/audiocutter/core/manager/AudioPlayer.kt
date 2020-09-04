@@ -1,10 +1,9 @@
 package com.example.audiocutter.core.manager
 
+import androidx.lifecycle.LiveData
 import com.example.audiocutter.objects.AudioFile
 
-interface PositionChangedListener {
-    fun onPositionChanged(currentAudio: AudioFile, position: Int)
-}
+class PositionInfo(val currentAudio: AudioFile, val position: Int)
 
 
 interface AudioPlayer {
@@ -14,7 +13,6 @@ interface AudioPlayer {
     fun stop()
     fun seek(position: Int)
     fun setVolume(value: Int)
-    fun addPositionChangedListener(listener: PositionChangedListener)
-    fun removePositionChangedListener(listener: PositionChangedListener)
+    fun getPosition() : LiveData<PositionInfo>
 
 }
