@@ -77,7 +77,9 @@ abstract class BaseViewModel : ViewModel(), LifecycleOwner {
         }
 
     }
-
+    override fun getLifecycle(): Lifecycle {
+        return lifecycleRegistry
+    }
 
     protected suspend fun <T> runAndWaitOnBackground(executable: ExecutableForResult<T>): T {
         return withContext(backgroundScope.coroutineContext) {
@@ -110,7 +112,9 @@ abstract class BaseAndroidViewModel(application: Application) : AndroidViewModel
         }
 
     }
-
+    override fun getLifecycle(): Lifecycle {
+        return lifecycleRegistry
+    }
     override fun onCleared() {
         super.onCleared()
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
