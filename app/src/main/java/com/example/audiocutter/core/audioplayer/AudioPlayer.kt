@@ -3,7 +3,7 @@ package com.example.audiocutter.core.audioplayer
 import android.content.Context
 import androidx.lifecycle.LiveData
 import com.example.audiocutter.core.manager.AudioPlayer
-import com.example.audiocutter.core.manager.PositionInfo
+import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.objects.AudioFile
 
 object AudioPlayerImpl : AudioPlayer {
@@ -13,7 +13,11 @@ object AudioPlayerImpl : AudioPlayer {
         this.appContext = appContext
     }
 
-    override fun play(audioFile: AudioFile): Boolean {
+    override suspend fun play(audioFile: AudioFile): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun play(audioFile: AudioFile, startPosition: Int, endPosition: Int): Boolean {
         TODO("Not yet implemented")
     }
 
@@ -38,7 +42,7 @@ object AudioPlayerImpl : AudioPlayer {
     }
 
 
-    override fun getPosition(): LiveData<PositionInfo> {
+    override fun getPlayerInfo(): LiveData<PlayerInfo> {
         TODO("Not yet implemented")
     }
 }
