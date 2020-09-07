@@ -3,7 +3,10 @@ package com.example.audiocutter.core.manager
 import androidx.lifecycle.LiveData
 import com.example.audiocutter.objects.AudioFile
 
-enum class PlayerState {
+enum class PlayerState(value: Int) {
+    IDLE(1),
+    PLAYING(2),
+    PAUSE(3)
 
 }
 
@@ -12,6 +15,7 @@ class PlayerInfo(val currentAudio: AudioFile, val position: Int, val playerState
 
 interface AudioPlayer {
     suspend fun play(audioFile: AudioFile): Boolean
+    suspend fun play(audioFile: AudioFile, currentPosition: Int)
     suspend fun play(audioFile: AudioFile, startPosition: Int, endPosition: Int): Boolean
     fun pause()
     fun resume()
