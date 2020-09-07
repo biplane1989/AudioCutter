@@ -6,28 +6,26 @@ import android.media.MediaPlayer
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.audiocutter.MyApplication
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.objects.AudioFile
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.FileInputStream
 
 object AudioPlayerImpl : AudioPlayer {
     val TAG = AudioPlayerImpl::class.java.name
 
-    const val STATE_IDLE = 1
-    const val STATE_PLAYING = 2
-    const val STATE_PAUSED = 3
+
     var mPlayerState = PlayerState.IDLE
-    private var mState: Int = STATE_IDLE
     private lateinit var appContext: Context
     private lateinit var mPlayer: MediaPlayer
     lateinit var currentAudio: AudioFile
     var currentPosition = 0
 
-    private val mainScope = MainScope()
 
 
     private var _mPlayInfo = MutableLiveData<PlayerInfo>()
@@ -41,11 +39,10 @@ object AudioPlayerImpl : AudioPlayer {
     }
 
     private fun resetState() {
-        mState = STATE_IDLE
+        mPlayerState = PlayerState.IDLE
     }
 
     override suspend fun play(audioFile: AudioFile): Boolean {
-        Log.d(TAG, "checkState: start $mState")
         try {
             withContext(Dispatchers.IO) {
                 currentAudio = audioFile
@@ -53,16 +50,13 @@ object AudioPlayerImpl : AudioPlayer {
                     mPlayer.reset()
                     val ins = FileInputStream(audioFile.file)
                     Log.d(TAG, "play: ${audioFile.file.exists()}")
-//                    Log.d(TAG, "checkPath: ${audioFile.file}")
 
                     mPlayer.setDataSource(ins.fd)
                     mPlayer.prepare()
                     mPlayer.start()
-//                mPlayerState = PlayerState.PLAYING
-                    mState = STATE_PLAYING
+                    mPlayerState = PlayerState.PLAYING
                 }
             }
-            Log.d(TAG, "checkState: $mState")
             return true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -86,11 +80,9 @@ object AudioPlayerImpl : AudioPlayer {
                     mPlayer.reset()
                     val ins = FileInputStream(audioFile.file)
                     mPlayer.setDataSource(ins.fd)
-
                     mPlayer.prepare()
                     mPlayer.start()
-                    //            mPlayerState = PlayerState.PLAYING
-                    mState = STATE_PLAYING
+                    mPlayerState = PlayerState.PLAYING
                 }
 
             }
@@ -102,20 +94,18 @@ object AudioPlayerImpl : AudioPlayer {
     }
 
     override fun pause() {
-        if (mState == STATE_PLAYING) {
+        if (mPlayerState == PlayerState.PLAYING) {
             mPlayer.pause()
-//        mPlayerState = PlayerState.PAUSE
-            mState = STATE_PAUSED
+            mPlayerState = PlayerState.PAUSE
         }
     }
 
 
     override fun resume() {
-        if (mState == STATE_PAUSED) {
+        if (mPlayerState == PlayerState.PAUSE) {
             CoroutineScope(Dispatchers.IO).launch {
                 mPlayer.start()
-//        mPlayerState = PlayerState.PLAYING
-                mState = STATE_PLAYING
+                mPlayerState = PlayerState.PLAYING
             }
 
         }
@@ -123,17 +113,19 @@ object AudioPlayerImpl : AudioPlayer {
     }
 
     override fun stop() {
-        if (mState == STATE_PAUSED || mState == STATE_PLAYING) {
+        if (mPlayerState == PlayerState.PAUSE || mPlayerState == PlayerState.PLAYING) {
             mPlayer.stop()
-//        mPlayerState = PlayerState.IDLE
-            mState = STATE_IDLE
+            mPlayerState = PlayerState.IDLE
         }
     }
 
     override fun seek(position: Int) {
-
-
         mPlayer.seekTo(position)
+    }
+
+    fun getMaxVolume(): Int {
+        val audioManager = appContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        return audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
     }
 
 
@@ -142,7 +134,7 @@ object AudioPlayerImpl : AudioPlayer {
     }
 
     override fun setVolume(value: Int) {
-        val audioManager = MyApplication().getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val audioManager = appContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, value, 0)
     }
 
@@ -153,14 +145,6 @@ object AudioPlayerImpl : AudioPlayer {
 
     fun getTotalPos(): Int {
         return mPlayer.duration
-    }
-
-    suspend fun startTimerIfReady(): Int {
-        while (mainScope.isActive) {
-            currentPosition++
-            delay(200)
-        }
-        return currentPosition
     }
 
 }
