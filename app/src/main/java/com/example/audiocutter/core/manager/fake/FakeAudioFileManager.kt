@@ -1,5 +1,6 @@
 package com.example.audiocutter.core.manager.fake
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.core.manager.AudioFileManager
@@ -17,7 +18,7 @@ class FakeAudioFileManager : AudioFileManager {
         audioFileLiveData.postValue(listAudioFile)
     }
 
-    override suspend fun findAllAudioFiles(): LiveData<List<AudioFile>> {
+    override suspend fun findAllAudioFiles(context: Context): LiveData<List<AudioFile>> {
         return audioFileLiveData
     }
 
