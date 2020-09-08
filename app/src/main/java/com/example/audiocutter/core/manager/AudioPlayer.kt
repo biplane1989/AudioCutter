@@ -10,7 +10,13 @@ enum class PlayerState(value: Int) {
 
 }
 
-class PlayerInfo(val currentAudio: AudioFile, val position: Int, val playerState: PlayerState)
+class PlayerInfo(
+    val currentAudio: AudioFile,
+    val position: Int,
+    val playerState: PlayerState,
+    val duration: Int,
+    val volume: Int
+)
 
 
 interface AudioPlayer {
