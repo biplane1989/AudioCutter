@@ -150,31 +150,29 @@ class AudioFileManagerImpl : AudioFileManager {
             Log.d(TAG, "getListFileByType: $pathParent")
             val file = File(pathParent)
             val listFiles = file.listFiles()
-            if (!listFiles.isEmpty()) {
+          listFiles?.let {
 
-                for (itemFile in listFiles) {
-                    val mediaMetadataRetriever = MediaMetadataRetriever()
-                    mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
-                    val duration =
-                        mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!
-                    Log.d(
-                        TAG,
-                        "getListFileByType :duration $duration   name${itemFile.name}   size  ${itemFile.length()} "
-                    )
 
-                    listData.add(
-                        AudioFile(itemFile, itemFile.name, itemFile.length(), 128, duration.toLong()
-                        )
-                    )
-                }
-                _listAudioByType.postValue(listData)
+              for (itemFile in it) {
+                  val mediaMetadataRetriever = MediaMetadataRetriever()
+                  mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
+                  val duration =
+                      mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!
+                  Log.d(
+                      TAG,
+                      "getListFileByType :duration $duration   name${itemFile.name}   size  ${itemFile.length()} "
+                  )
+                  listData.add(
+                      AudioFile(
+                          itemFile, itemFile.name, itemFile.length(), 128, duration.toLong()
+                      )
+                  )
+              }
+              _listAudioByType.postValue(listData)
 
-                Log.d(TAG, "size: ${listData.size}")
-            }
-            else {
-                Log.d(TAG, "getListFileByType: list null")
-            }
+              Log.d(TAG, "size: ${listData.size}")
 
+          }
 
         } catch (e: IOException) {
             e.printStackTrace()
