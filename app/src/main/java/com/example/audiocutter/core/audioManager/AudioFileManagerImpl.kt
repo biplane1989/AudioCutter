@@ -23,7 +23,7 @@ import java.io.IOException
 class AudioFileManagerImpl : AudioFileManager {
     // permission READ_EXTERNAL_STORAGE
     //permisstion WRITE_EXTERNAL_STORAGE
-    lateinit var uri: Uri
+    var uri: Uri = Uri.parse("")
     private val SIZE_KB: Long = 1024L
     private val SIZE_MB = SIZE_KB * SIZE_KB
     private val SIZE_GB = SIZE_MB * SIZE_KB
@@ -48,6 +48,7 @@ class AudioFileManagerImpl : AudioFileManager {
                 MediaStore.Audio.Media.DURATION,
                 MediaStore.Audio.Media._ID
             )
+
             val cursor =
                 resolver.query(
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -90,12 +91,10 @@ class AudioFileManagerImpl : AudioFileManager {
                 cursor.moveToNext()
             }
             _listAllAudioFile.postValue(listData)
-
             cursor.close()
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
         return listAllAudioFile
     }
 
@@ -110,7 +109,7 @@ class AudioFileManagerImpl : AudioFileManager {
             values.put(MediaStore.Audio.AudioColumns.DATA, file.absolutePath)
             values.put(MediaStore.Audio.AudioColumns.TITLE, file.name)
             values.put(MediaStore.Audio.AudioColumns.SIZE, file.length())
-            values.put(MediaStore.Audio.AudioColumns.MIME_TYPE, "audio/mp3/")
+            values.put(MediaStore.Audio.AudioColumns.MIME_TYPE, "audio/mp3")
 
 
             return resolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values)
@@ -129,7 +128,6 @@ class AudioFileManagerImpl : AudioFileManager {
 
         val stat = Environment.getExternalStorageDirectory().path
 
-
         Log.d(TAG, "saveFileToExternal: $stat")
         val file = File(stat)
         val totalSize = file.totalSpace / SIZE_MB
@@ -141,8 +139,10 @@ class AudioFileManagerImpl : AudioFileManager {
             TAG,
             "infoCapacity: total $totalSize  available  \n $availableSize \n  freesize $freeSize   \n filesize $currentSize"
         )
-
-        if (availableSize + currentSize < totalSize && audioFile.file.exists()) {
+        if (!audioFile.file.isFile || !audioFile.file.isDirectory) {
+            return StateFile.STATE_FILE_NOT_FOUND
+        }
+        if (availableSize + currentSize < totalSize) {
             val SUB_PATH = "${Environment.getExternalStorageDirectory()}/AudioCutter"
             val pathParent: String
             try {
@@ -178,9 +178,9 @@ class AudioFileManagerImpl : AudioFileManager {
     }
 
     suspend fun getListFileByType(typeFile: TypeFile, context: Context): LiveData<List<AudioFile>> {
+
         val listData = ArrayList<AudioFile>()
         val SUB_PATH = "${Environment.getExternalStorageDirectory()}/AudioCutter"
-
 
         val pathParent: String
         try {
@@ -202,17 +202,19 @@ class AudioFileManagerImpl : AudioFileManager {
                     val uri = getUriByPath(itemFile, context)
 
 
-
-                    listData.add(
-                        AudioFile(
-                            itemFile,
-                            itemFile.name,
-                            itemFile.length(),
-                            128,
-                            duration.toLong(),
-                            uri = uri
+                    uri?.let {
+                        listData.add(
+                            AudioFile(
+                                itemFile,
+                                itemFile.name,
+                                itemFile.length(),
+                                128,
+                                duration.toLong(),
+                                uri = uri
+                            )
                         )
-                    )
+                    }
+
                     Log.d(
                         TAG,
                         "getListFileByType :duration $duration   name  ${itemFile.name}   size  ${itemFile.length()}   URI $uri"
@@ -229,23 +231,23 @@ class AudioFileManagerImpl : AudioFileManager {
             e.printStackTrace()
             Log.d(TAG, "exception: ${e.printStackTrace()}")
         }
+
+
         return listAudioByType
     }
 
-    fun getUriByPath(itemFile: File, context: Context): Uri {
+    private fun getUriByPath(itemFile: File, context: Context): Uri? {
 
         val folder = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DATA)
-        val cursor: Cursor? = context.getContentResolver().query(
+        val cursor: Cursor = context.getContentResolver().query(
             folder,
             projection,
             MediaStore.Audio.Media.DATA + "=?",
             arrayOf(itemFile.path),
             null
-        )
-
-
-        if (cursor != null) {
+        )!!
+        try {
             if (cursor.moveToFirst()) {
                 uri = Uri.parse(
                     folder.toString() + File.separator + cursor.getString(
@@ -255,9 +257,10 @@ class AudioFileManagerImpl : AudioFileManager {
                     )
                 )
             }
+            return uri
+        } finally {
+            cursor.close()
         }
-        return uri
     }
-
 }
 

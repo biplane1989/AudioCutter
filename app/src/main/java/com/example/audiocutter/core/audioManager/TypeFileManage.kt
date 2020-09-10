@@ -9,6 +9,7 @@ enum class TypeFile(type: String) {
 enum class StateFile(state: Int) {
     STATE_FULL_MEMORY(0),
     STATE_SAVE_SUCCESS(1),
-    STATE_SAVE_FAIL(2)
+    STATE_SAVE_FAIL(2),
+    STATE_FILE_NOT_FOUND(3)
 
 }
