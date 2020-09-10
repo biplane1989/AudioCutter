@@ -3,6 +3,7 @@ package com.example.audiocutter.core.audioManager
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Environment
@@ -22,7 +23,7 @@ import java.io.IOException
 class AudioFileManagerImpl : AudioFileManager {
     // permission READ_EXTERNAL_STORAGE
     //permisstion WRITE_EXTERNAL_STORAGE
-
+    lateinit var uri: Uri
     private val SIZE_KB: Long = 1024L
     private val SIZE_MB = SIZE_KB * SIZE_KB
     private val SIZE_GB = SIZE_MB * SIZE_KB
@@ -37,9 +38,7 @@ class AudioFileManagerImpl : AudioFileManager {
         get() = _listAudioByType
 
 
-    override suspend fun findAllAudioFiles(
-        context: Context
-    ): LiveData<List<AudioFile>> {
+    override suspend fun findAllAudioFiles(context: Context): LiveData<List<AudioFile>> {
         try {
             val resolver = context.contentResolver
             val listData = ArrayList<AudioFile>()
@@ -47,8 +46,7 @@ class AudioFileManagerImpl : AudioFileManager {
                 MediaStore.Audio.Media.DATA,
                 MediaStore.Audio.Media.DISPLAY_NAME,
                 MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media._ID,
-                MediaStore.Audio.Media.TITLE
+                MediaStore.Audio.Media._ID
             )
             val cursor =
                 resolver.query(
@@ -64,7 +62,6 @@ class AudioFileManagerImpl : AudioFileManager {
             val clName = cursor.getColumnIndex(projection[1])
             val clDuration = cursor.getColumnIndex(projection[2])
             val clID = cursor.getColumnIndex(projection[3])
-            val clTit = cursor.getColumnIndex(projection[4])
 
             cursor.moveToFirst()
             while (!cursor.isAfterLast) {
@@ -75,13 +72,11 @@ class AudioFileManagerImpl : AudioFileManager {
                 val duration = cursor.getString(clDuration)
                 val id = cursor.getString(clID)
                 val file = File(data)
-                val title = cursor.getString(clTit)
                 val uri = getUriFromFile(id, resolver, file)
-//                Log.d(
-//                    "TAG",
-//                    "findAllAudioFiles: data :$data \n name : $name  \n duration: $duration \n sie ${file.length()}   \n URI $uri"
-//                )
-                Log.d(TAG, "findAllAudioFiles: $title")
+                Log.d(
+                    "TAG",
+                    "findAllAudioFiles: data :$data \n name : $name   \n ID  $id  \n duration: $duration \n sie ${file.length()}   \n URI $uri"
+                )
                 listData.add(
                     AudioFile(
                         file = file,
@@ -147,7 +142,7 @@ class AudioFileManagerImpl : AudioFileManager {
             "infoCapacity: total $totalSize  available  \n $availableSize \n  freesize $freeSize   \n filesize $currentSize"
         )
 
-        if (availableSize + (currentSize) < totalSize && audioFile.file.exists()) {
+        if (availableSize + currentSize < totalSize && audioFile.file.exists()) {
             val SUB_PATH = "${Environment.getExternalStorageDirectory()}/AudioCutter"
             val pathParent: String
             try {
@@ -182,7 +177,7 @@ class AudioFileManagerImpl : AudioFileManager {
         }
     }
 
-    suspend fun getListFileByType(typeFile: TypeFile): LiveData<List<AudioFile>> {
+    suspend fun getListFileByType(typeFile: TypeFile, context: Context): LiveData<List<AudioFile>> {
         val listData = ArrayList<AudioFile>()
         val SUB_PATH = "${Environment.getExternalStorageDirectory()}/AudioCutter"
 
@@ -197,28 +192,38 @@ class AudioFileManagerImpl : AudioFileManager {
             Log.d(TAG, "getListFileByType: $pathParent")
             val file = File(pathParent)
             val listFiles = file.listFiles()
-          listFiles?.let {
+            listFiles?.let {
 
-              for (itemFile in it) {
-                  val mediaMetadataRetriever = MediaMetadataRetriever()
-                  mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
-                  val duration =
-                      mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!
-                  Log.d(
-                      TAG,
-                      "getListFileByType :duration $duration   name  ${itemFile.name}   size  ${itemFile.length()} "
-                  )
-                  listData.add(
-                      AudioFile(
-                          itemFile, itemFile.name, itemFile.length(), 128, duration.toLong()
-                      )
-                  )
-              }
-              _listAudioByType.postValue(listData)
+                for (itemFile in it) {
+                    val mediaMetadataRetriever = MediaMetadataRetriever()
+                    mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
+                    val duration =
+                        mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!
+                    val uri = getUriByPath(itemFile, context)
 
-              Log.d(TAG, "size: ${listData.size}")
 
-          }
+
+                    listData.add(
+                        AudioFile(
+                            itemFile,
+                            itemFile.name,
+                            itemFile.length(),
+                            128,
+                            duration.toLong(),
+                            uri = uri
+                        )
+                    )
+                    Log.d(
+                        TAG,
+                        "getListFileByType :duration $duration   name  ${itemFile.name}   size  ${itemFile.length()}   URI $uri"
+                    )
+
+                }
+                _listAudioByType.postValue(listData)
+
+                Log.d(TAG, "size: ${listData.size}")
+
+            }
 
         } catch (e: IOException) {
             e.printStackTrace()
@@ -227,5 +232,32 @@ class AudioFileManagerImpl : AudioFileManager {
         return listAudioByType
     }
 
+    fun getUriByPath(itemFile: File, context: Context): Uri {
+
+        val folder = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        val projection = arrayOf(MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DATA)
+        val cursor: Cursor? = context.getContentResolver().query(
+            folder,
+            projection,
+            MediaStore.Audio.Media.DATA + "=?",
+            arrayOf(itemFile.path),
+            null
+        )
+
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                uri = Uri.parse(
+                    folder.toString() + File.separator + cursor.getString(
+                        cursor.getColumnIndex(
+                            MediaStore.Audio.Media._ID
+                        )
+                    )
+                )
+            }
+        }
+        return uri
+    }
 
 }
+

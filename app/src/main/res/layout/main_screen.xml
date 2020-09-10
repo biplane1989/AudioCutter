@@ -9,6 +9,17 @@
         android:id="@+id/bt_getlist"
         android:layout_width="100dp"
         android:layout_height="50dp"
-        android:text="get" />
+        android:text="getlist" />
+    <Button
+        android:id="@+id/bt_save"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:text="saveAudio" />
+
+    <Button
+        android:id="@+id/bt_getlistbytype"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:text="getListByType" />
 
 </LinearLayout>
