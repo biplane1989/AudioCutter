@@ -1,8 +1,9 @@
 package com.example.audiocutter.core.manager
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import com.example.audiocutter.objects.AudioFile
-import java.text.FieldPosition
 
 enum class Effect {
     OFF, AFTER_1_S, AFTER_2_S, AFTER_3_S, AFTER_4_S, AFTER_5_S, AFTER_6_S
@@ -23,7 +24,7 @@ enum class MixSelector {
 data class AudioCutConfig(val startPosition: Int, val endPosition: Int, val volumePercent: Int = 100, val fileName: String, val inEffect: Effect = Effect.OFF, val outEffect: Effect = Effect.OFF, val bitRate: BitRate = BitRate._128kb, val format: AudioFormat = AudioFormat.MP3)
 data class AudioMixConfig(val selector: MixSelector = MixSelector.LONGEST, val volumePercent1: Int = 100, val volumePercent2: Int = 100)
 data class OutputAudioInfo(val audioFile: AudioFile, var percent: Int)
-interface AudioProcessListener {
+interface AudioProcessListener : LifecycleOwner {
     fun onStart()
     fun onProcessing(percent: Int)
     fun onFinish()

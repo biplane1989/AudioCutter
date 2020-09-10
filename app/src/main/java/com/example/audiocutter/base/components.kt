@@ -9,8 +9,7 @@ import android.view.ViewGroup
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.*
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateManager
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateManagerImpl
 import kotlinx.coroutines.*
@@ -63,13 +62,23 @@ abstract class BaseActivity : AppCompatActivity() {
 
 }
 
-abstract class BaseViewModel : ViewModel() {
+abstract class BaseViewModel : ViewModel(), LifecycleOwner {
+    private lateinit var lifecycleRegistry: LifecycleRegistry
+
+    init {
+        lifecycleRegistry = LifecycleRegistry(this)
+        lifecycleRegistry.currentState = Lifecycle.State.CREATED
+    }
+
     protected val backgroundScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     protected fun runOnBackground(executable: Executable): Job {
         return backgroundScope.launch {
             executable()
         }
 
+    }
+    override fun getLifecycle(): Lifecycle {
+        return lifecycleRegistry
     }
 
     protected suspend fun <T> runAndWaitOnBackground(executable: ExecutableForResult<T>): T {
@@ -81,11 +90,21 @@ abstract class BaseViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
+        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+
         backgroundScope.cancel()
     }
 }
 
-abstract class BaseAndroidViewModel(application: Application) : AndroidViewModel(application) {
+abstract class BaseAndroidViewModel(application: Application) : AndroidViewModel(application),
+    LifecycleOwner {
+    private lateinit var lifecycleRegistry: LifecycleRegistry
+
+    init {
+        lifecycleRegistry = LifecycleRegistry(this)
+        lifecycleRegistry.currentState = Lifecycle.State.CREATED
+    }
+
     private val backgroundScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     protected fun runOnBackgroundThread(executable: Executable): Job {
         return backgroundScope.launch {
@@ -93,9 +112,12 @@ abstract class BaseAndroidViewModel(application: Application) : AndroidViewModel
         }
 
     }
-
+    override fun getLifecycle(): Lifecycle {
+        return lifecycleRegistry
+    }
     override fun onCleared() {
         super.onCleared()
+        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         backgroundScope.cancel()
     }
 }
@@ -169,7 +191,11 @@ abstract class BaseDialog : DialogFragment() {
         mainScope.cancel()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
         val view = inflater.inflate(getLayoutResId(), container, false)
         initViews(view, savedInstanceState)

@@ -1,0 +1,117 @@
+package com.example.audiocutter.core.rington
+
+import android.content.ContentResolver
+import android.content.ContentValues
+import android.content.Context
+import android.database.Cursor
+import android.media.RingtoneManager
+import android.net.Uri
+import android.provider.ContactsContract
+import android.provider.MediaStore
+import com.example.audiocutter.objects.AudioFile
+import java.io.File
+
+object RingtonManagerImpl : RingtonManager {
+
+    val IS_ALARM = 1
+    val IS_NOTIFICATION = 2
+    val IS_RINGTONE = 3
+
+    override fun setAlarmManager(context: Context, audioFile: AudioFile): Boolean {
+        val uri = getOrNew(context, audioFile.file.absolutePath, IS_ALARM)
+        if (uri != null) {
+            RingtoneManager.setActualDefaultRingtoneUri(context, RingtoneManager.TYPE_ALARM, uri)
+            return true
+        }
+        return false
+    }
+
+    override fun setNotificationSound(context: Context, audioFile: AudioFile): Boolean {
+        val uri = getOrNew(context, audioFile.file.absolutePath, IS_NOTIFICATION)
+        if (uri != null) {
+            RingtoneManager.setActualDefaultRingtoneUri(context, RingtoneManager.TYPE_NOTIFICATION, uri)
+            return true
+        }
+        return false
+    }
+
+    override fun setRingTone(context: Context, audioFile: AudioFile): Boolean {
+        val uri = getOrNew(context, audioFile.file.absolutePath, IS_RINGTONE)
+        if (uri != null) {
+            RingtoneManager.setActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE, uri)
+            return true
+        }
+        return false
+    }
+
+    override fun setRingToneWithContactNumber(context: Context, audioFile: AudioFile, contactNumber: String): Boolean {
+        val values = ContentValues()
+        val resolver: ContentResolver = context.getContentResolver()
+        val uri = getOrNew(context, audioFile.file.absolutePath, IS_RINGTONE)
+        if (uri != null) {
+            val lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, contactNumber)
+            val projection = arrayOf(ContactsContract.Contacts._ID, ContactsContract.Contacts.LOOKUP_KEY)
+            val data: Cursor? = context.getContentResolver()
+                .query(lookupUri, projection, null, null, null)
+            if (data != null) {
+                try {
+                    if (data.moveToFirst()) {
+                        // Get the contact lookup Uri
+                        val contactId = data.getLong(0)
+                        val lookupKey = data.getString(1)
+                        val contactUri = ContactsContract.Contacts.getLookupUri(contactId, lookupKey)
+                        val uriString = uri.toString()
+                        values.put(ContactsContract.Contacts.CUSTOM_RINGTONE, uriString)
+                        resolver.update(contactUri, values, null, null).toLong()
+                    }
+                } finally {
+                    data.close()
+                }
+                return true
+            }
+        }
+        return false
+    }
+
+    fun getUriFromFile(context: Context, filePath: String): Uri? {
+        val folder = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        val projection = arrayOf(MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DATA)
+        val cursor: Cursor? = context.getContentResolver()
+            .query(folder, projection, MediaStore.Audio.Media.DATA + "=?", arrayOf(filePath), null)
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    return Uri.parse(folder.toString() + File.separator + cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)))
+                }
+            } finally {
+                cursor.close()
+            }
+        }
+        return null
+    }
+
+    fun getOrNew(context: Context, filePath: String, typeRing: Int): Uri? {
+        val resolver: ContentResolver = context.getContentResolver()
+        val file = File(filePath)
+        if (file.exists()) {
+            val oldUri = getUriFromFile(context, filePath)
+            if (oldUri != null) {
+                return oldUri
+            } else {
+                val values = ContentValues()
+                values.put(MediaStore.Audio.AudioColumns.DISPLAY_NAME, file.name)
+                values.put(MediaStore.Audio.AudioColumns.DATA, file.absolutePath)
+                values.put(MediaStore.Audio.AudioColumns.TITLE, file.name)
+                values.put(MediaStore.Audio.AudioColumns.SIZE, file.length())
+                values.put(MediaStore.Audio.AudioColumns.MIME_TYPE, "audio/mp3")
+                when (typeRing) {
+                    IS_ALARM -> values.put(MediaStore.Audio.AudioColumns.IS_ALARM, true)
+                    IS_NOTIFICATION -> values.put(MediaStore.Audio.AudioColumns.IS_NOTIFICATION, true)
+                    IS_RINGTONE -> values.put(MediaStore.Audio.AudioColumns.IS_RINGTONE, true)
+                }
+                return resolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values)
+            }
+        }
+        return null
+    }
+}
