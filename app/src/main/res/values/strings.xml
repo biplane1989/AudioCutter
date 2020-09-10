@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">AudioCutter</string>
+    <string name="main_screen_title">MP3 Cutter &amp; Ringtone Maker</string>
+    <string name="main_screen_mp3_cutter_text">MP3 Cutter</string>
+    <string name="main_screen_audio_merger_text">Audio Merger</string>
+    <string name="main_screen_audio_mixer_text">Audio Mixer</string>
+    <string name="main_screen_contacts_text">Contacts</string>
+    <string name="main_screen_my_studio_text">My Studio</string>
+    <string name="main_screen_flash_call_text">Flash Call</string>
+
 </resources>
