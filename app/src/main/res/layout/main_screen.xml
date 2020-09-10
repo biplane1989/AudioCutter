@@ -2,24 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:id="@+id/ln_main"
     android:orientation="vertical">
-
-    <Button
-        android:id="@+id/bt_getlist"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:text="getlist" />
-    <Button
-        android:id="@+id/bt_save"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:text="saveAudio" />
-
-    <Button
-        android:id="@+id/bt_getlistbytype"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:text="getListByType" />
 
 </LinearLayout>
