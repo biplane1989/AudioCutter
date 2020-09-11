@@ -122,7 +122,6 @@ object AudioFileManagerImpl : AudioFileManager {
             listAllAudioFile
         }
 
-
     fun getImageCover(path: String?): Bitmap? {
         val mmr = MediaMetadataRetriever()
         val rawArt: ByteArray?
@@ -140,7 +139,6 @@ object AudioFileManagerImpl : AudioFileManager {
         }
         return art
     }
-
 
     private fun getUriFromFile(id: String, resolver: ContentResolver, file: File): Uri? {
         var uri =
@@ -173,7 +171,12 @@ object AudioFileManagerImpl : AudioFileManager {
                 Log.d("TAG", "onChange: $uri")
                 val listAllAudio = findAllAudioFiles().value
                 val listAllAudioByType = getAllListByType().value
+
+
                 Log.d(TAG, "onChange: ${listAllAudio?.size}")
+                Log.d(TAG, "onChange: ${listAllAudioByType?.size}")
+
+
                 _listAllAudioFile.postValue(listAllAudio)
                 _listAllAudioByType.postValue(listAllAudioByType)
 
@@ -249,8 +252,9 @@ object AudioFileManagerImpl : AudioFileManager {
             }
         }
 
-    private suspend fun getListAudioFileByType(typeFile: TypeFile): LiveData<List<AudioFile>> {
-        CoroutineScope(Dispatchers.Main).launch {
+    suspend fun getListAudioFileByType(typeFile: TypeFile): LiveData<List<AudioFile>> {
+        return withContext(Dispatchers.IO) {
+
             val listData = ArrayList<AudioFile>()
             val SUB_PATH = "${Environment.getExternalStorageDirectory()}/AudioCutter"
 
@@ -290,16 +294,15 @@ object AudioFileManagerImpl : AudioFileManager {
                             "getListFileByType :duration $duration   name  ${itemFile.name}   size  ${itemFile.length()}   URI $uri"
                         )
                     }
-                    _listAudioByType.value = listData
+                    _listAudioByType.postValue(listData)
 
-                    Log.d(TAG, "size: ${listData.size}")
+                    Log.d("taih", "size: ${listData.size}")
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "exception: ${e.printStackTrace()}")
             }
+            listAudioByType
         }
-
-        return listAudioByType
     }
 
     private fun getUriByPath(itemFile: File): Uri? {
@@ -330,7 +333,9 @@ object AudioFileManagerImpl : AudioFileManager {
     }
 
 
-    suspend fun getAllListByType(): LiveData<List<AudioFile>> {
+    suspend fun getAllListByType()
+            : LiveData<List<AudioFile>> {
+        listAllByType.clear()
 
         val listTypeCutter = getListAudioFileByType(TypeFile.TYPE_CUTTER).value!!
         val listTypeMerger = getListAudioFileByType(TypeFile.TYPE_MERGER).value!!

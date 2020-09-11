@@ -43,9 +43,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListtene
     }
 
     private fun initViews() {
-        runOnUI {
-            AudioFileManagerImpl.getAllListByType()
-        }
+
         audioCutterAdapter = AudiocutterAdapter(activity as Activity)
         audioCutterAdapter.setAudioCutterListtener(this)
         rvAudioCutter = mView.findViewById(R.id.rv_audiocutter)
@@ -55,7 +53,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListtene
 
     private fun observerViewModel() {
         runOnUI {
-            audioCutterModel.getAllaudioFile().observe(this, Observer {
+            audioCutterModel.getAllFileByType().observe(this, Observer {
                 audioCutterAdapter.submitList(it)
                 Log.d(TAG, "observerViewModel: ${it.size}")
                 audioCutterAdapter.notifyDataSetChanged()
