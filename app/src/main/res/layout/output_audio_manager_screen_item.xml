@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_item"
+        android:layout_width="match_parent"
+        android:layout_height="56dp">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_avatar"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginLeft="16dp"
+            app:cardCornerRadius="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_avatar_music"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="#9C27B0" />
+        </androidx.cardview.widget.CardView>
+
+
+        <TextView
+            android:id="@+id/tv_title_music"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="9dp"
+            android:gravity="center"
+            android:text="Lorem cillum irure"
+            android:textColor="#2E3041"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/tv_info_music"
+            app:layout_constraintStart_toEndOf="@id/cv_avatar"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+
+            android:id="@+id/tv_info_music"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="13dp"
+            android:gravity="center"
+            android:text="5.3 MB | 128kb/s"
+            android:textColor="#9C9C9C"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cv_avatar"
+            app:layout_constraintTop_toBottomOf="@id/tv_title_music" />
+
+        <ImageView
+            android:id="@+id/iv_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="14dp"
+            android:src="@drawable/output_audio_manager_screen_icon_setting"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <LinearLayout
+        android:id="@+id/ll_play_music"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/iv_pause_play_music"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="0.1"
+            android:src="@drawable/output_audio_manager_screen_icon_play" />
+
+        <androidx.appcompat.widget.AppCompatSeekBar
+            android:id="@+id/sb_music"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
+            android:outlineAmbientShadowColor="#FDAA74"
+            android:outlineSpotShadowColor="#FDAA74" />
+
+        <TextView
+            android:id="@+id/tv_time_life"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:gravity="end"
+            android:text="00:00"
+            android:textColor="#9C9C9C"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tv_time_total"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:text="/08:05"
+            android:textColor="#9C9C9C"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+</LinearLayout>

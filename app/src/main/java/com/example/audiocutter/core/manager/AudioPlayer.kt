@@ -7,15 +7,14 @@ enum class PlayerState(value: Int) {
     IDLE(1),
     PLAYING(2),
     PAUSE(3)
-
 }
 
 class PlayerInfo(
-    val currentAudio: AudioFile,
-    val position: Int,
-    val playerState: PlayerState,
-    val duration: Int,
-    val volume: Int
+    var currentAudio: AudioFile?,
+    var position: Int,
+    var playerState: PlayerState,
+    var duration: Int,
+    var volume: Int
 )
 
 

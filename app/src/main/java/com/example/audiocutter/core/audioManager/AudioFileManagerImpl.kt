@@ -122,6 +122,18 @@ class AudioFileManagerImpl : AudioFileManager {
         TODO("Not yet implemented")
     }
 
+    override suspend fun getListAudioCutter(): LiveData<List<AudioFile>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getListAudioMerger(): LiveData<List<AudioFile>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getListAudioMixer(): LiveData<List<AudioFile>> {
+        TODO("Not yet implemented")
+    }
+
 
     suspend fun saveFileToExternal(audioFile: AudioFile, typeFile: TypeFile): StateFile {
 //   android 10 androidmanifest    android:requestLegacyExternalStorage="true"
