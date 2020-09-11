@@ -14,8 +14,10 @@ object ManagerFactory {
     private val mAudioFileManager: AudioFileManager = FakeAudioFileManager()
     private val mAudioCutter: AudioCutter = FakeAudioCutter()
     private val mContactManager: ContactManager = FakeContactManager()
+
     fun init(appContext: Context) {
         AudioPlayerImpl.init(appContext)
+        AudioFileManagerImpl.init(appContext)
     }
 
     fun getAudioFileManager(): AudioFileManager {

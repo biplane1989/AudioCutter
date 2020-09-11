@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.audiocutterscreen
 
 
 import android.content.Context
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,11 +13,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.objects.AudioFile
+import java.io.File
 
 class AudiocutterAdapter(val mContext: Context) :
     ListAdapter<AudioFile, AudiocutterAdapter.AudiocutterHolder>(Audiodiff()) {
-
-    open lateinit var mCallBack: AudioCutterListtener
+    lateinit var mCallBack: AudioCutterListtener
+    var currentAudioFile: AudioFile = AudioFile(File(""), "", 0, 120, 0, Uri.parse(""))
 
     fun setAudioCutterListtener(event: AudioCutterListtener) {
         mCallBack = event
@@ -30,6 +32,11 @@ class AudiocutterAdapter(val mContext: Context) :
 
     override fun onBindViewHolder(holder: AudiocutterHolder, position: Int) {
         val itemAudioFile = getItem(position)
+
+        holder.tvNameAudio.setTextColor(mContext.resources.getColor(R.color.colorGray))
+        if (itemAudioFile == currentAudioFile) {
+            holder.tvNameAudio.setTextColor(mContext.resources.getColor(R.color.colorPrimary))
+        }
         holder.tvBitrateAudio.text = "${itemAudioFile.bitRate}"
         holder.tvNameAudio.text = itemAudioFile.fileName
         holder.tvSizeAudio.text = itemAudioFile.size.toString()
@@ -52,10 +59,15 @@ class AudiocutterAdapter(val mContext: Context) :
         }
 
         override fun onClick(p0: View) {
-            val itemAudio = tvSizeAudio.tag as AudioFile
+            currentAudioFile = tvSizeAudio.tag as AudioFile
             when (p0.id) {
-                R.id.iv_controller_audio -> mCallBack.controllerMusic(itemAudio, ivController)
+                R.id.iv_controller_audio -> controllerAudio()
             }
+        }
+
+        private fun controllerAudio() {
+            notifyDataSetChanged()
+            mCallBack.controllerMusic(currentAudioFile, ivController)
         }
     }
 
@@ -67,11 +79,11 @@ class AudiocutterAdapter(val mContext: Context) :
 
 class Audiodiff : DiffUtil.ItemCallback<AudioFile>() {
     override fun areItemsTheSame(oldItem: AudioFile, newItem: AudioFile): Boolean {
-        return oldItem.uri == oldItem.uri
+        return oldItem == oldItem
     }
 
     override fun areContentsTheSame(oldItem: AudioFile, newItem: AudioFile): Boolean {
-        return oldItem.fileName == newItem.fileName
+        return oldItem.uri == newItem.uri
     }
 
 }

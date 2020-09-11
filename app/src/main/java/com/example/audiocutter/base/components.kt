@@ -2,13 +2,16 @@ package com.example.audiocutter.base
 
 import android.app.Application
 import android.os.Bundle
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.*
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.*
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateManager
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateManagerImpl
@@ -136,6 +139,10 @@ abstract class BaseFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         baseActivity = activity as BaseActivity
+    }
+
+    protected fun showToast(yourString: String) {
+        Toast.makeText(context, yourString, Toast.LENGTH_SHORT).show()
     }
 
     protected open fun onPostCreate(savedInstanceState: Bundle?) {

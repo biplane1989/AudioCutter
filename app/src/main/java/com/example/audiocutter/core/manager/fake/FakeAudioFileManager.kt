@@ -18,7 +18,7 @@ class FakeAudioFileManager : AudioFileManager {
         audioFileLiveData.postValue(listAudioFile)
     }
 
-    override suspend fun findAllAudioFiles(context: Context): LiveData<List<AudioFile>> {
+    override suspend fun findAllAudioFiles(): LiveData<List<AudioFile>> {
         return audioFileLiveData
     }
 
