@@ -1,5 +1,7 @@
 package com.example.audiocutter.functions.mystudio.audiocutter
 
+import android.media.MediaPlayer
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +19,7 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.mystudio.AudioFileView
 import com.example.audiocutter.functions.mystudio.MusicDiffCallBack
 import com.example.audiocutter.objects.AudioFile
+import java.text.SimpleDateFormat
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 
@@ -61,22 +64,48 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     }
 
     private fun updateItemView(audioFileView: AudioFileView, playerInfo: PlayerInfo) {
-        if(selectedViewHolder != null){
+        if (selectedViewHolder != null) {
             if (audioFileView.playerState != playerInfo.playerState) {
                 audioFileView.playerState = playerInfo.playerState
-                when(audioFileView.playerState){
-                    PlayerState.PLAYING->{
+                when (audioFileView.playerState) {
+                    PlayerState.PLAYING -> {
                         selectedViewHolder!!.ivPausePlay.setImageResource(R.drawable.output_audio_manager_screen_icon_pause)
                     }
-                    PlayerState.PAUSE->{
+                    PlayerState.PAUSE -> {
                         selectedViewHolder!!.ivPausePlay.setImageResource(R.drawable.output_audio_manager_screen_icon_play)
                     }
-                    PlayerState.IDLE->{
+                    PlayerState.IDLE -> {
                         selectedViewHolder!!.ivPausePlay.setImageResource(R.drawable.output_audio_manager_screen_icon_play)
                     }
                 }
             }
+            simpleDateFormat = SimpleDateFormat("mm : ss")
+            selectedViewHolder!!.tvTotal.text = simpleDateFormat.format(playerInfo.duration)
+            selectedViewHolder!!.sbMusic.max = playerInfo.duration
+            updateTimeSong(playerInfo)
         }
+    }
+
+    var simpleDateFormat = SimpleDateFormat()
+    fun updateTimeSong(playerInfo: PlayerInfo) {
+        val handler = Handler()
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+
+                selectedViewHolder!!.tvTimeLife.text =
+                    simpleDateFormat.format(playerInfo.position)
+                selectedViewHolder!!.sbMusic.progress = playerInfo.position
+                handler.postDelayed(this, 500)
+//                if (sb_music.progress == sb_music.max) {
+//                    Log.d("001", "onCompletion: sssssss")
+//                }
+//                mediaPlayer.setOnCompletionListener(MediaPlayer.OnCompletionListener {
+//                    onNextSong()
+//                })
+            }
+
+        }, 100)
+
 
     }
 
@@ -92,6 +121,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     }
 
     fun updateMedia(playerInfo: PlayerInfo) {
+
         if (playerInfo.currentAudio == null) {
             // case 1
         } else {
