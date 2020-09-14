@@ -12,6 +12,8 @@ import androidx.fragment.app.*
 import androidx.lifecycle.*
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateManager
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateManagerImpl
+import com.example.audiocutter.base.channel.FragmentChannel
+import com.example.audiocutter.base.channel.FragmentMeta
 import kotlinx.coroutines.*
 
 private const val DIALOG_STYLE_KEY = "DIALOG_STYLE_KEY"
@@ -77,6 +79,7 @@ abstract class BaseViewModel : ViewModel(), LifecycleOwner {
         }
 
     }
+
     override fun getLifecycle(): Lifecycle {
         return lifecycleRegistry
     }
@@ -112,9 +115,11 @@ abstract class BaseAndroidViewModel(application: Application) : AndroidViewModel
         }
 
     }
+
     override fun getLifecycle(): Lifecycle {
         return lifecycleRegistry
     }
+
     override fun onCleared() {
         super.onCleared()
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
@@ -127,9 +132,15 @@ abstract class BaseFragment : Fragment() {
     protected val viewStateManager: ViewStateManager = ViewStateManagerImpl
     protected lateinit var baseActivity: BaseActivity;
     private val mainScope = MainScope()
+    private val fragmentChannelObserver = Observer<FragmentMeta> {
+        if (it.clsName.equals(this::class.java.name)) {
+            onReceivedAction(it)
+        }
+    }
 
     final override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FragmentChannel.getFragmentMeta().observe(this, fragmentChannelObserver)
         onPostCreate(savedInstanceState)
     }
 
@@ -148,9 +159,23 @@ abstract class BaseFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
+    protected fun sendFragmentAction(fragmentName:String, action: String, data: Any? = null) {
+        FragmentChannel.sendAction(FragmentMeta(fragmentName, action, data))
+    }
+
+    final override fun onDestroy() {
         super.onDestroy()
+        onPostDestroy()
+        FragmentChannel.getFragmentMeta().removeObserver(fragmentChannelObserver)
         mainScope.cancel()
+    }
+
+    protected open fun onPostDestroy() {
+
+    }
+
+    protected open fun onReceivedAction(fragmentMeta: FragmentMeta) {
+
     }
 }
 

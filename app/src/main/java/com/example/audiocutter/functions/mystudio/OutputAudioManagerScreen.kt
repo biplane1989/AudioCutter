@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
+import com.example.audiocutter.functions.mystudio.audiocutter.AudioCutterFragment
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.output_audio_manager_screen.*
 
@@ -40,6 +41,20 @@ class OutputAudioManagerScreen : BaseFragment() {
                 Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
 
             }
+        })
+
+        iv_extends.setOnClickListener(View.OnClickListener {
+            cl_default.visibility = View.GONE
+            cl_delete.visibility = View.VISIBLE
+
+            sendFragmentAction(AudioCutterFragment::class.java.name, Constance.ACTION_DELETE)
+        })
+
+        iv_close.setOnClickListener(View.OnClickListener {
+            cl_default.visibility = View.VISIBLE
+            cl_delete.visibility = View.GONE
+
+            sendFragmentAction(AudioCutterFragment::class.java.name, Constance.ACTION_CANCEL_DELETE)
         })
     }
 

@@ -14,17 +14,18 @@ import java.io.File
 class FakeAudioFileManager : AudioFileManager {
     private val audioFileLiveData = MutableLiveData<List<AudioFile>>()
 
-    val file = File(Environment.getExternalStorageDirectory().toString() + "/Music/lonely.mp3")
+//    val file = File(Environment.getExternalStorageDirectory().toString() + "/Music/Lonely.mp3")
 
-    //            val file = File(Environment.getExternalStorageDirectory().toString() + "/Download/lonely.mp3")
+                val file = File(Environment.getExternalStorageDirectory().toString() + "/Download/lonely.mp3")
+                val file2 = File(Environment.getExternalStorageDirectory().toString() + "/Download/aloha.mp3")
     init {
         Log.d("001", "file : " + file.absoluteFile)
-        val file = File(Environment.getExternalStorageDirectory().toString() + "/Music/lonely.mp3")
+//        val file = File(Environment.getExternalStorageDirectory().toString() + "/Music/lonely.mp3")
         val listAudioFile = ArrayList<AudioFile>()
         listAudioFile.add(AudioFile(file, "file_name1", 10000, 128))
-        listAudioFile.add(AudioFile(file, "file_name2", 10000, 128))
-        listAudioFile.add(AudioFile(file, "file_name3", 10000, 128))
-        listAudioFile.add(AudioFile(file, "file_name3", 10000, 128))
+        listAudioFile.add(AudioFile(file2, "file_name2", 10000, 128))
+//        listAudioFile.add(AudioFile(file, "file_name3", 10000, 128))
+//        listAudioFile.add(AudioFile(file, "file_name3", 10000, 128))
         audioFileLiveData.postValue(listAudioFile)
     }
 

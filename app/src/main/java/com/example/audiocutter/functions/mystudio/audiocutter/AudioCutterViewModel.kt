@@ -33,29 +33,8 @@ class AudioCutterViewModel : BaseViewModel() {
         }
     }
 
-    fun showPlayMusic(position: Int) {
-        val audioFileView = _listMusic.get(position).copy()
-        if (audioFileView.isExpanded == false) {
-            audioFileView.isExpanded = true
-        } else {
-            audioFileView.isExpanded = false
-        }
-        _listMusic.set(position, audioFileView)
-        listMusic.postValue(_listMusic)
-    }
-
-    fun playMusic(position: Int) {
-        runOnBackground {
-//            when (AudioPlayerImpl.mPlayerState) {
-//                PlayerState.PAUSE -> {
-//                    AudioPlayerImpl.play(_listMusic.get(position).audioFile)
-//                }
-//                PlayerState.IDLE -> {
-//                }
-//                PlayerState.PLAYING -> {
-//                }
-//            }
-
-        }
-    }
+//    fun getPathSaveFile(): String {
+//
+//        return "Save Path: " + _listMusic.get(0).audioFile.file.absoluteFile.toString()
+//    }
 }

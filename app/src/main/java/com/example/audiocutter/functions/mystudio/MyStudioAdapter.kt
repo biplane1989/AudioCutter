@@ -7,7 +7,10 @@ import com.example.audiocutter.functions.mystudio.audiocutter.AudioCutterFragmen
 import com.example.audiocutter.functions.mystudio.audiomerger.AudioMergerFragment
 import com.example.audiocutter.functions.mystudio.audiomixer.AudioMixerFragment
 
-class MyStudioAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
+class MyStudioAdapter(
+
+    fm: FragmentManager
+) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
     override fun getItem(position: Int): Fragment = when (position) {
         0 -> AudioCutterFragment.newInstance()
