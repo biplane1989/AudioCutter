@@ -25,6 +25,9 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 object AudioFileManagerImpl : AudioFileManager {
@@ -347,8 +350,10 @@ object AudioFileManagerImpl : AudioFileManager {
         Log.d(TAG, "getAllListByType: ${listTypeMixer.size}")
 
         listAllByType.addAll(listTypeCutter)
+
         listAllByType.addAll(listTypeMerger)
         listAllByType.addAll(listTypeMixer)
+
 
 
         _listAllAudioByType.postValue(listAllByType)

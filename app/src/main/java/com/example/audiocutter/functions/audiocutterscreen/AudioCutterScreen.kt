@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
+import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
+import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.objects.AudioFile
 
 class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListtener {
@@ -53,7 +55,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListtene
 
     private fun observerViewModel() {
         runOnUI {
-            audioCutterModel.getAllFileByType().observe(this, Observer {
+            audioCutterModel.getAllaudioFile().observe(this, Observer {
                 audioCutterAdapter.submitList(it)
                 Log.d(TAG, "observerViewModel: ${it.size}")
                 audioCutterAdapter.notifyDataSetChanged()
@@ -67,10 +69,24 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListtene
         rvAudioCutter.layoutManager = LinearLayoutManager(requireContext())
     }
 
-    override fun controllerMusic(audioFile: AudioFile, ivController: ImageView) {
+    override fun play(audioFile: AudioFile, ivController: ImageView) {
+        runOnUI {
+            ManagerFactory.getAudioPlayer().play(audioFile)
+        }
 
     }
 
+    override fun pause() {
+        TODO("Not yet implemented")
+    }
+
+    override fun resume() {
+        TODO("Not yet implemented")
+    }
+
+    override fun stop() {
+        TODO("Not yet implemented")
+    }
 
 
 }

@@ -5,6 +5,7 @@ import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.audioplayer.AudioPlayerImpl
 import com.example.audiocutter.core.manager.AudioCutter
 import com.example.audiocutter.core.manager.AudioFileManager
+import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ContactManager
 import com.example.audiocutter.core.manager.fake.FakeAudioCutter
 import com.example.audiocutter.core.manager.fake.FakeAudioFileManager
@@ -31,6 +32,10 @@ object ManagerFactory {
     fun getContactManager(): ContactManager {
         return mContactManager
     }
+    fun getAudioPlayer() : AudioPlayer {
+        return AudioPlayerImpl
+    }
+
 
 
 

@@ -36,12 +36,12 @@ class AudiocutterAdapter(val mContext: Context) :
         holder.tvNameAudio.setTextColor(mContext.resources.getColor(R.color.colorGray))
         if (itemAudioFile == currentAudioFile) {
             holder.tvNameAudio.setTextColor(mContext.resources.getColor(R.color.colorPrimary))
+
         }
         holder.tvBitrateAudio.text = "${itemAudioFile.bitRate}"
         holder.tvNameAudio.text = itemAudioFile.fileName
         holder.tvSizeAudio.text = itemAudioFile.size.toString()
         holder.tvSizeAudio.tag = itemAudioFile
-
 
     }
 
@@ -67,13 +67,18 @@ class AudiocutterAdapter(val mContext: Context) :
 
         private fun controllerAudio() {
             notifyDataSetChanged()
-            mCallBack.controllerMusic(currentAudioFile, ivController)
+           mCallBack.play(currentAudioFile, ivController)
         }
     }
 
 
     interface AudioCutterListtener {
-        fun controllerMusic(audioFile: AudioFile, ivController: ImageView)
+
+
+        fun play(audioFile: AudioFile, ivController: ImageView)
+        fun pause()
+        fun resume()
+        fun stop()
     }
 }
 
