@@ -1,10 +1,10 @@
 package com.example.audiocutter.functions.mystudio.audiocutter
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,12 +19,16 @@ import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.DeleteState
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.fragment_audio_cutter.*
+import android.widget.PopupMenu.OnMenuItemClickListener
+import android.widget.Toast
+import com.example.audiocutter.functions.mystudio.dialog.*
 import kotlinx.android.synthetic.main.output_audio_manager_screen.*
+import kotlinx.coroutines.delay
 
 class AudioCutterFragment() : BaseFragment(),
-    AudioCutterScreenCallback {
+    AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener {
 
-    val TAG = "001"
+    val TAG = "giangtd"
     lateinit var audioCutterViewModel: AudioCutterViewModel
     lateinit var audioCutterAdapter: AudioCutterAdapter
     var visibilityDeleteStatus = false
@@ -145,4 +149,63 @@ class AudioCutterFragment() : BaseFragment(),
     override fun seekTo(position: Int) {
         ManagerFactory.getAudioPlayer().seek(position)
     }
+
+    override fun showMenu(view: View, audioFile: AudioFile) {
+        val popup = android.widget.PopupMenu(context, view)
+        popup.inflate(R.menu.output_audio_manager_screen_popup_menu)
+        popup.setOnMenuItemClickListener(android.widget.PopupMenu.OnMenuItemClickListener { item: MenuItem? ->
+
+            when (item!!.itemId) {
+                R.id.set_as -> {
+                    val dialog = SetAsDialog.newInstance(this, "giang")
+                    dialog.show(childFragmentManager, SetAsDialog.TAG)
+                }
+                R.id.cut -> {
+                    Log.d(TAG, "showMenu:cut ")
+                }
+                R.id.contacs -> {
+                    Log.d(TAG, "showMenu:cut ")
+                }
+                R.id.open_with -> {
+                    Log.d(TAG, "showMenu:cut ")
+                }
+                R.id.share -> {
+                    Log.d(TAG, "showMenu:cut ")
+                }
+                R.id.rename -> {
+                    val dialog = RenameDialog.newInstance(this, "giang")
+                    dialog.show(childFragmentManager, RenameDialog.TAG)
+                }
+                R.id.info -> {
+                    Log.d(TAG, "showMenu:cut ")
+                }
+                R.id.delete -> {
+                    Log.d(TAG, "showMenu:cut ")
+                }
+            }
+
+            true
+        })
+
+        popup.show()
+    }
+
+    override fun onRenameClick() {
+        Log.d(TAG, "onRenameClick: rename")
+    }
+
+    override fun onsetAsListenner(type: Int) {
+        when (type) {
+            Constance.RINGTONE_TYPE -> {
+                Log.d(TAG, "onsetAsListenner: ringtone")
+            }
+            Constance.ALARM_TYPE -> {
+                Log.d(TAG, "onsetAsListenner: alarm")
+            }
+            Constance.NOTIFICATION_TYPE -> {
+                Log.d(TAG, "onsetAsListenner: notification")
+            }
+        }
+    }
+
 }

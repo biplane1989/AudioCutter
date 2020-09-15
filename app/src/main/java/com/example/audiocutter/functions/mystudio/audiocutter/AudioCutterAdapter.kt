@@ -1,7 +1,5 @@
 package com.example.audiocutter.functions.mystudio.audiocutter
 
-import android.media.MediaPlayer
-import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,9 +18,9 @@ import com.example.audiocutter.functions.mystudio.AudioFileView
 import com.example.audiocutter.functions.mystudio.DeleteState
 import com.example.audiocutter.functions.mystudio.MusicDiffCallBack
 import com.example.audiocutter.objects.AudioFile
+import kotlinx.android.synthetic.main.output_audio_manager_screen_item.view.*
 import java.text.SimpleDateFormat
 import java.util.concurrent.Executors
-import kotlin.collections.ArrayList
 
 interface AudioCutterScreenCallback {
     fun play(audioFile: AudioFile)
@@ -30,6 +28,7 @@ interface AudioCutterScreenCallback {
     fun resume()
     fun stop()
     fun seekTo(position: Int)
+    fun showMenu(view: View, audioFile: AudioFile)
 }
 
 
@@ -39,7 +38,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             .setBackgroundThreadExecutor(Executors.newSingleThreadExecutor()).build()
     ) {
     private var listAudios = ArrayList<AudioFileView>()
-    private var selectedViewHolder: ViewHolder? = null
+    private var selectedViewHolder: RecyclerView.ViewHolder? = null
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
     override fun onCreateViewHolder(
@@ -54,17 +53,19 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     override fun onBindViewHolder(holder: AudioCutterAdapter.ViewHolder, position: Int) {
         holder.bind()
         val audioFileView = listAudios.get(position)
-        if (audioFileView.isExpanded) {
-            holder.llPlayMusic.visibility = View.VISIBLE
-        } else {
-            holder.llPlayMusic.visibility = View.GONE
-        }
-        if (audioFileView.playerState == PlayerState.PLAYING) {
-            holder.ivPausePlay.setImageResource(R.drawable.output_audio_manager_screen_icon_pause)
-        } else {
-            holder.ivPausePlay.setImageResource(R.drawable.output_audio_manager_screen_icon_play)
-        }
+
+//        if (audioFileView.isExpanded) {
+//            holder.llPlayMusic.visibility = View.VISIBLE
+//        } else {
+//            holder.llPlayMusic.visibility = View.GONE
+//        }
+//        if (audioFileView.playerState == PlayerState.PLAYING) {
+//            holder.ivPausePlay.setImageResource(R.drawable.output_audio_manager_screen_icon_pause)
+//        } else {
+//            holder.ivPausePlay.setImageResource(R.drawable.output_audio_manager_screen_icon_play)
+//        }
 //        holder.bind(audioCutterClicked)
+
     }
 
     private fun updateItemView(audioFileView: AudioFileView, playerInfo: PlayerInfo) {
@@ -73,28 +74,41 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 audioFileView.playerState = playerInfo.playerState
                 when (audioFileView.playerState) {
                     PlayerState.PLAYING -> {
-                        selectedViewHolder!!.ivPausePlay.setImageResource(R.drawable.output_audio_manager_screen_icon_pause)
+                        selectedViewHolder!!.itemView.iv_pause_play_music.setImageResource(R.drawable.output_audio_manager_screen_icon_pause)
                     }
                     PlayerState.PAUSE -> {
-                        selectedViewHolder!!.ivPausePlay.setImageResource(R.drawable.output_audio_manager_screen_icon_play)
+                        selectedViewHolder!!.itemView.iv_pause_play_music.setImageResource(R.drawable.output_audio_manager_screen_icon_play)
                     }
                     PlayerState.IDLE -> {
-                        selectedViewHolder!!.ivPausePlay.setImageResource(R.drawable.output_audio_manager_screen_icon_play)
+                        selectedViewHolder!!.itemView.iv_pause_play_music.setImageResource(R.drawable.output_audio_manager_screen_icon_play)
                     }
                 }
             }
-
-            updateTimeSong(playerInfo)
+            updateTimeSong(audioFileView, playerInfo)
         }
     }
 
-    fun updateTimeSong(playerInfo: PlayerInfo) {
-        selectedViewHolder!!.tvTotal.text = "/" + simpleDateFormat.format(playerInfo.duration)
-        selectedViewHolder!!.sbMusic.max = playerInfo.duration
+    fun updateTimeSong(audioFileView: AudioFileView, playerInfo: PlayerInfo) {
+        when (audioFileView.playerState) {
+            PlayerState.PLAYING -> {
 
-        selectedViewHolder!!.tvTimeLife.text =
-            simpleDateFormat.format(playerInfo.position)
-        selectedViewHolder!!.sbMusic.progress = playerInfo.position
+                Log.d("001", "updateTimeSong: position " + playerInfo.position)
+                selectedViewHolder!!.itemView.tv_time_total.text =
+                    "/" + simpleDateFormat.format(playerInfo.duration)
+                selectedViewHolder!!.itemView.sb_music.max = playerInfo.duration
+                selectedViewHolder!!.itemView.tv_time_life.text =
+                    simpleDateFormat.format(playerInfo.position)
+                selectedViewHolder!!.itemView.sb_music.progress = playerInfo.position
+            }
+            PlayerState.PAUSE -> {
+            }
+            PlayerState.IDLE -> {
+
+                selectedViewHolder!!.itemView.tv_time_total.text = "/00:00"
+                selectedViewHolder!!.itemView.tv_time_life.text = "00:00"
+                selectedViewHolder!!.itemView.sb_music.progress = 0
+            }
+        }
     }
 
     override fun submitList(list: MutableList<AudioFileView>?) {
@@ -129,7 +143,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 val audioFileView = listAudios.get(selectedPosition)
 
                 updateItemView(audioFileView, playerInfo)
-//                updateSongInfo(playerInfo)
             }
         }
     }
@@ -177,9 +190,12 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
             tvTitle.setText(audioFileView.audioFile.fileName)
             tvInfo.setText(audioFileView.audioFile.size.toString() + " MB" + " | " + audioFileView.audioFile.bitRate.toString() + "kb/s")
-            tvTotal.setText("/" + audioFileView.audioFile.time.toString())
-            Glide.with(itemView.context).load(audioFileView.audioFile.file.absoluteFile)
-                .transition(DrawableTransitionOptions.withCrossFade()).dontAnimate().into(ivAvatar)
+
+            audioFileView.audioFile.file.absoluteFile?.let {
+                Glide.with(itemView.context).load(audioFileView.audioFile.file.absoluteFile)
+                    .transition(DrawableTransitionOptions.withCrossFade()).dontAnimate()
+                    .into(ivAvatar)
+            }
 
             if (audioFileView.isExpanded) {
                 llPlayMusic.visibility = View.VISIBLE
@@ -231,6 +247,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         override fun onClick(view: View) {
             when (view.id) {
                 R.id.cl_item -> {
+                    selectedViewHolder = this@ViewHolder
                     val audioFileView = listAudios.get(adapterPosition)
                     when (audioFileView.deleteState) {
 
@@ -245,9 +262,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                             notifyDataSetChanged()
                         }
                         DeleteState.UNCHECK -> {
-//                            val newAudioFileView = audioFileView.copy()
-//                            newAudioFileView.deleteState = DeleteState.CHECKED
-//                            listAudios.set(adapterPosition, newAudioFileView)
                             listAudios.get(adapterPosition).deleteState = DeleteState.CHECKED
                             ivItemDelete.setImageResource(R.drawable.output_audio_manager_screen_icon_checked)
 
@@ -260,14 +274,11 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
                 }
                 R.id.iv_pause_play_music -> {
-                    selectedViewHolder = this@ViewHolder
+//                    selectedViewHolder = this@ViewHolder
                     val audioFileView = listAudios.get(adapterPosition)
 
                     when (audioFileView.playerState) {
                         PlayerState.IDLE -> {
-//                            selectedViewHolder!!.tvTotal.text = ""
-//                            selectedViewHolder!!.tvTimeLife.text = ""
-//                            selectedViewHolder!!.sbMusic.progress = 0
                             audioCutterScreenCallback.play(audioFileView.audioFile)
 
                         }
@@ -288,9 +299,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                         DeleteState.HIDE -> {
                         }
                         DeleteState.UNCHECK -> {
-//                            val newAudioFileView = audioFileView.copy()
-//                            newAudioFileView.deleteState = DeleteState.CHECKED
-//                            listAudios.set(adapterPosition, newAudioFileView)
                             listAudios.get(adapterPosition).deleteState = DeleteState.CHECKED
                             ivItemDelete.setImageResource(R.drawable.output_audio_manager_screen_icon_checked)
 
@@ -304,10 +312,14 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
                 R.id.iv_setting -> {
                     Log.d("001", "onClick: ")
+                    val audioFileView = listAudios.get(adapterPosition)
+                    audioCutterScreenCallback.showMenu(view, audioFileView.audioFile)
+//                    val pm = PopupMenu(, v)
+//                    pm.menuInflater.inflate(R.menu.popup_menu, pm.menu)
+//                    pm.setOnMenuItemClickListener(this)
+//                    pm.show()
                 }
             }
         }
-
-
     }
 }

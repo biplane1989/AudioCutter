@@ -63,12 +63,14 @@ internal object AudioPlayerImpl : AudioPlayer {
             playInfoData.currentAudio = currentAudio
             playInfoData.playerState = mPlayerState
             playInfoData.duration = mPlayer.duration
+            playInfoData.position = 0
             if (mPlayer.currentPosition > mPlayer.duration) {
                 mPlayer.stop()
                 mPlayerState = PlayerState.IDLE
                 Log.d(TAG, "stopped in fun play: $mPlayerState")
                 playInfoData.playerState = mPlayerState
             }
+            Log.d("001", "play")
             _mPlayInfo.postValue(playInfoData)
             return true
         } catch (e: Exception) {
@@ -98,6 +100,7 @@ internal object AudioPlayerImpl : AudioPlayer {
             mPlayerState = PlayerState.IDLE
             playInfoData.playerState = mPlayerState
             _mPlayInfo.postValue(playInfoData)
+
         }
 
     }
@@ -153,12 +156,14 @@ internal object AudioPlayerImpl : AudioPlayer {
     }
 
     override fun stop() {
-        Log.d("taih", "stop")
         if (mPlayerState == PlayerState.PAUSE || mPlayerState == PlayerState.PLAYING) {
             mPlayer.stop()
             mPlayerState = PlayerState.IDLE
+
         }
+        Log.d("001", "stop")
         playInfoData.playerState = mPlayerState
+        playInfoData.position = 0
         _mPlayInfo.postValue(playInfoData)
     }
 
@@ -202,21 +207,21 @@ internal object AudioPlayerImpl : AudioPlayer {
                 if (currentPosition >= mPlayer.duration) {
                     currentPosition = 0
                     mPlayer.stop()
-                    if(playInfoData.playerState != PlayerState.IDLE){
+                    if (playInfoData.playerState != PlayerState.IDLE) {
                         changed = true
                         playInfoData.playerState = PlayerState.IDLE
                     }
 
                 }
-                if(playInfoData.position != currentPosition){
+                if (playInfoData.position != currentPosition) {
                     changed = true
                     playInfoData.position = currentPosition
                 }
-                if(mPlayer.isPlaying && playInfoData.playerState != PlayerState.PLAYING){
+                if (mPlayer.isPlaying && playInfoData.playerState != PlayerState.PLAYING) {
                     changed = true
                     playInfoData.playerState = PlayerState.PLAYING
                 }
-                if(changed){
+                if (changed) {
                     _mPlayInfo.postValue(playInfoData)
                 }
 

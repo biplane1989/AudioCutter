@@ -2,4 +2,12 @@
     <string name="app_name">AudioCutter</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="set_as">Set As</string>
+    <string name="cut">Cut</string>
+    <string name="contacs">Contacs</string>
+    <string name="open_with">Open With</string>
+    <string name="share">Share</string>
+    <string name="rename">Rename</string>
+    <string name="info">Info</string>
+    <string name="delete">Delete</string>
 </resources>
