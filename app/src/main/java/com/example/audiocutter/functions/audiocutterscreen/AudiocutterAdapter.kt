@@ -18,7 +18,7 @@ import com.example.audiocutter.objects.AudioFile
 class AudiocutterAdapter(val mContext: Context) :
     ListAdapter<AudioCutterView, AudiocutterAdapter.AudiocutterHolder>(Audiodiff()) {
     lateinit var mCallBack: AudioCutterListener
-
+    val SIZE_MB = 1024 * 1024
     var listAudios = mutableListOf<AudioCutterView>()
     var playerInfo: PlayerInfo? = null
     var currentHolder: AudiocutterHolder? = null
@@ -46,7 +46,7 @@ class AudiocutterAdapter(val mContext: Context) :
 
     override fun onBindViewHolder(holder: AudiocutterHolder, position: Int) {
         val itemAudioFile = getItem(position)
-        holder.bind()
+
         if (itemAudioFile.state == PlayerState.IDLE) {
             holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
         }
@@ -55,6 +55,19 @@ class AudiocutterAdapter(val mContext: Context) :
         } else {
             holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
         }
+
+
+        holder.tvBitrateAudio.text = "${itemAudioFile.audioFile.bitRate}Kbs/s"
+        holder.tvNameAudio.text = itemAudioFile.audioFile.fileName
+
+        var size = (itemAudioFile.audioFile.size / SIZE_MB).toDouble()
+        if (size >= 1) {
+            holder.tvSizeAudio.text = "$size Mb"
+        } else {
+            size = (itemAudioFile.audioFile.size % 1024).toString().toDouble()
+            holder.tvSizeAudio.text = "$size Kb"
+        }
+
 
         playerInfo?.let {
             if (it.playerState != PlayerState.IDLE && it.currentAudio == itemAudioFile.audioFile) {
@@ -68,21 +81,14 @@ class AudiocutterAdapter(val mContext: Context) :
 
     inner class AudiocutterHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
         View.OnClickListener {
-        val SIZE_MB = 1024
+
         val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)
         val tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_audio)
         val tvSizeAudio = itemView.findViewById<TextView>(R.id.tv_size_audio)
         val tvBitrateAudio = itemView.findViewById<TextView>(R.id.tv_bitrate_audio)
 
-        fun bind() {
-            val itemAudioFile = getItem(adapterPosition)
-
-            tvBitrateAudio.text = "${itemAudioFile.audioFile.bitRate}Kbs/s"
-            tvNameAudio.text = itemAudioFile.audioFile.fileName
-            tvSizeAudio.text = (itemAudioFile.audioFile.size / SIZE_MB).toString() + "Mb"
-
+        init {
             ivController.setOnClickListener(this)
-
         }
 
         override fun onClick(p0: View) {
@@ -94,92 +100,44 @@ class AudiocutterAdapter(val mContext: Context) :
         }
 
         private fun controllerAudio() {
+
             currentHolder = this
             val itemAudioCutter = listAudios.get(adapterPosition)
 
-
-                when (itemAudioCutter.state) {
-                    PlayerState.IDLE -> {
-                        itemAudioCutter.isPlaying = true
-                        mCallBack.play(itemAudioCutter.audioFile)
-                    }
-                    PlayerState.PAUSE -> {
-                        mCallBack.resume()
-                    }
-                    PlayerState.PLAYING -> {
-                        mCallBack.pause()
-                    }
+            when (itemAudioCutter.state) {
+                PlayerState.IDLE -> {
+                    ivController.setImageResource(R.drawable.ic_audiocutter_pause)
+                    mCallBack.play(itemAudioCutter.audioFile)
+                }
+                PlayerState.PAUSE -> {
+                    ivController.setImageResource(R.drawable.ic_audiocutter_play)
+                    mCallBack.resume()
+                }
+                PlayerState.PLAYING -> {
+                    ivController.setImageResource(R.drawable.ic_audiocutter_pause)
+                    mCallBack.pause()
+                }
             }
-
         }
-
-
     }
-
-//    fun mediaInfoUpdate(playerInfo: PlayerInfo) {
-//        val runningPos = getRunningAudioPos(playerInfo)
-//
-//        if (runningPos != -1) {
-//            val audioFileView = listAudios.get(runningPos)
-//            audioFileView.state = playerInfo.playerState
-//            if (currentHolder != null) {
-//                if (audioFileView.state == PlayerState.PLAYING) {
-//                    currentHolder!!.ivController.setImageResource(R.drawable.ic_audiocutter_pause)
-//                } else {
-//                    currentHolder!!.ivController.setImageResource(R.drawable.ic_audiocutter_play)
-//                }
-//            }
-//        }
-//
-//    }
-
 
     fun mediaInfoUpdate(playerInfo: PlayerInfo) {
+        val runningPos = getRunningAudioPos(playerInfo)
 
-        if (playerInfo.currentAudio == null) {
-            // case 1
-        } else {
-            var selectedPosition = -1
-            var i = 0
-            while (i < listAudios.size) {
-                if (listAudios.get(i).audioFile.file.absoluteFile.equals(playerInfo.currentAudio!!.file.absoluteFile)) {
-                    selectedPosition = i
-                    break
-                }
-                i++
-            }
-            if (selectedPosition == -1) {
-                // case 1
-            } else {
-                // case 2
-                val audioFileView = listAudios.get(selectedPosition)
-
-                updateItemView(audioFileView, playerInfo)
-//                updateSongInfo(playerInfo)
-            }
-        }
-    }
-
-    private fun updateItemView(audioCutterView: AudioCutterView, playerInfo: PlayerInfo) {
-        if (currentHolder != null) {
-            if (audioCutterView.state != playerInfo.playerState) {
-                audioCutterView.state = playerInfo.playerState
-                when (audioCutterView.state) {
-                    PlayerState.PLAYING -> {
-                        currentHolder!!.ivController.setImageResource(R.drawable.ic_audiocutter_pause)
-                    }
-                    PlayerState.PAUSE -> {
-                        currentHolder!!.ivController.setImageResource(R.drawable.ic_audiocutter_play)
-                    }
-                    PlayerState.IDLE -> {
-                        currentHolder!!.ivController.setImageResource(R.drawable.ic_audiocutter_play)
-                    }
+        if (runningPos != -1) {
+            val audioFileView = listAudios.get(runningPos)
+            audioFileView.state = playerInfo.playerState
+            if (currentHolder != null) {
+                if (audioFileView.state == PlayerState.PLAYING) {
+                    currentHolder!!.ivController.setImageResource(R.drawable.ic_audiocutter_pause)
+                } else {
+                    currentHolder!!.ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }
             }
-
-//            updateTimeSong(playerInfo)
         }
+
     }
+
 
 
     private fun getRunningAudioPos(playerInfo: PlayerInfo): Int {
