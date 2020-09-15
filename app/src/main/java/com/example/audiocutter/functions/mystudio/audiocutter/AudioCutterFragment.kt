@@ -177,7 +177,8 @@ class AudioCutterFragment() : BaseFragment(),
                     dialog.show(childFragmentManager, RenameDialog.TAG)
                 }
                 R.id.info -> {
-                    Log.d(TAG, "showMenu:cut ")
+                    val dialog = InfoDialog.newInstance(audioFile)
+                    dialog.show(childFragmentManager, InfoDialog.TAG)
                 }
                 R.id.delete -> {
                     Log.d(TAG, "showMenu:cut ")

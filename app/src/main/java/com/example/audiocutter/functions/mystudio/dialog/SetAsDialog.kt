@@ -5,11 +5,12 @@ import android.view.View
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.functions.mystudio.Constance
+import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.output_audio_manager_screen_dialog_set_as.*
 
 class SetAsDialog : BaseDialog() {
 
-    var typeSet: Int = -1
+    var typeSet: Int = 0
 
     companion object {
         val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
@@ -70,6 +71,7 @@ class SetAsDialog : BaseDialog() {
     }
 
 }
+
 
 interface SetAsDialogListener {
     fun onsetAsListenner(type: Int)
