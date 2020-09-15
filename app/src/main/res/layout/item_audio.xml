@@ -22,13 +22,16 @@
 
         <TextView
             android:id="@+id/tv_name_audio"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:ellipsize="marquee"
+            android:focusable="true"
             android:text="Name of Audio"
             android:textColor="@color/colorBack"
             android:textSize="@dimen/d_16"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:singleLine="true" />
 
         <TableRow
             android:layout_width="match_parent"
@@ -41,7 +44,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginRight="@dimen/d_5"
                 android:text="2.1 MB"
-                android:textSize="@dimen/d_16" />
+                android:textSize="@dimen/d_13" />
 
             <View
                 android:layout_width="0.5dp"
@@ -55,7 +58,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/d_5"
                 android:text="128kb/s"
-                android:textSize="@dimen/d_16" />
+                android:textSize="@dimen/d_13" />
         </TableRow>
     </LinearLayout>
 

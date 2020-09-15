@@ -8,8 +8,8 @@
     </item>
     <item
         android:drawable="@drawable/ic_pause"
-        android:maxLevel="0"
-        android:minLevel="0">
+        android:maxLevel="1"
+        android:minLevel="1">
 
     </item>
 

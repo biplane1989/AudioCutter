@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,7 +17,7 @@ import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.objects.AudioFile
 
-class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListtener {
+class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener {
     val TAG = AudioCutterScreen::class.java.name
     private lateinit var mView: View
     private lateinit var rvAudioCutter: RecyclerView
@@ -26,9 +25,14 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListtene
     private lateinit var audioCutterModel: AudioCutterModel
 
 
+    private val playerInfoObserver = Observer<PlayerInfo> {
+        audioCutterAdapter.mediaInfoUpdate(it)
+    }
+
+
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-
+        ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
         audioCutterModel = ViewModelProvider(this).get(AudioCutterModel::class.java)
         observerViewModel()
     }
@@ -55,7 +59,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListtene
 
     private fun observerViewModel() {
         runOnUI {
-            audioCutterModel.getAllaudioFile().observe(this, Observer {
+            audioCutterModel.getAllAudioFile().observe(this, Observer {
                 audioCutterAdapter.submitList(it)
                 Log.d(TAG, "observerViewModel: ${it.size}")
                 audioCutterAdapter.notifyDataSetChanged()
@@ -69,23 +73,27 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListtene
         rvAudioCutter.layoutManager = LinearLayoutManager(requireContext())
     }
 
-    override fun play(audioFile: AudioFile, ivController: ImageView) {
+    override fun play(audioFile: AudioFile) {
         runOnUI {
+            Log.d("sesm", "play: ")
             ManagerFactory.getAudioPlayer().play(audioFile)
         }
 
     }
 
     override fun pause() {
-        TODO("Not yet implemented")
+        Log.d("sesm", "pause: ")
+        ManagerFactory.getAudioPlayer().pause()
     }
 
     override fun resume() {
-        TODO("Not yet implemented")
+        Log.d("sesm", "resume: ")
+        ManagerFactory.getAudioPlayer().resume()
     }
 
     override fun stop() {
-        TODO("Not yet implemented")
+        Log.d("sesm", "stop: ")
+        ManagerFactory.getAudioPlayer().stop()
     }
 
 
