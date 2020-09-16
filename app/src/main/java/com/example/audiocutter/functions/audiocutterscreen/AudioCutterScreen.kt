@@ -1,11 +1,22 @@
 package com.example.audiocutter.functions.audiocutterscreen
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,15 +26,22 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
+import com.example.audiocutter.core.rington.RingtonManagerImpl
+import com.example.audiocutter.functions.audiocutterscreen.view.SetAsDialog
+import com.example.audiocutter.functions.audiocutterscreen.view.TypeAudioSetAs
 import com.example.audiocutter.objects.AudioFile
+import kotlinx.android.synthetic.main.audio_cutter_screen.*
 
-class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener {
+class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
+    SetAsDialog.setAsListener {
+    val KEY_AUDIO = "KEY_AUDIO"
     val TAG = AudioCutterScreen::class.java.name
     private lateinit var mView: View
     private lateinit var rvAudioCutter: RecyclerView
     private lateinit var audioCutterAdapter: AudiocutterAdapter
     private lateinit var audioCutterModel: AudioCutterModel
-
+    lateinit var dialog: SetAsDialog
+    lateinit var audioCutterItem: AudioCutterView
 
     private val playerInfoObserver = Observer<PlayerInfo> {
         audioCutterAdapter.mediaInfoUpdate(it)
@@ -50,6 +68,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
     private fun initViews() {
 
+        dialog = SetAsDialog(requireContext())
         audioCutterAdapter = AudiocutterAdapter(activity as Activity)
         audioCutterAdapter.setAudioCutterListtener(this)
         rvAudioCutter = mView.findViewById(R.id.rv_audiocutter)
@@ -77,8 +96,6 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         runOnUI {
             Log.d("sesm", "play: ")
             ManagerFactory.getAudioPlayer().play(audioFile)
-            val adapter = rvAudioCutter.adapter as AudiocutterAdapter
-//            adapter.updateUI(AudioCutterView(audioFile,PlayerState.IDLE))
         }
 
     }
@@ -99,5 +116,36 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         ManagerFactory.getAudioPlayer().stop()
     }
 
+    override fun showDialogSetAs(itemAudio: AudioCutterView) {
+        audioCutterItem = itemAudio
+        dialog.setOnCallBack(this)
+        dialog.show()
+    }
+
+    override fun setAudioAs(typeAudioSetAs: TypeAudioSetAs) {
+        Log.d(TAG, "setAudioAs: ${audioCutterItem.audioFile.fileName}")
+        when (typeAudioSetAs) {
+
+            TypeAudioSetAs.RINGTONE -> RingtonManagerImpl.setRingTone(
+                requireContext(),
+                audioFile = audioCutterItem.audioFile
+            )
+            TypeAudioSetAs.ALARM -> RingtonManagerImpl.setAlarmManager(
+                requireContext(),
+                audioFile = audioCutterItem.audioFile
+            )
+            TypeAudioSetAs.NOTIFICATION -> RingtonManagerImpl.setNotificationSound(
+                requireContext(),
+                audioFile = audioCutterItem.audioFile
+            )
+        }
+        dialog.dismiss()
+    }
+
+
+
+
 
 }
+
+

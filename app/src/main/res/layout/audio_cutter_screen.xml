@@ -29,6 +29,7 @@
             android:textStyle="bold" />
 
         <ImageView
+            android:id="@+id/iv_file"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginRight="20dp"

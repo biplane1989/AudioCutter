@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_dialog"
+    android:gravity="center">
+
+    <LinearLayout
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginLeft="@dimen/d_16"
+                    android:layout_marginRight="@dimen/d_16"
+                    android:fontFamily="@font/sanfranciscodisplay_bold"
+                    android:gravity="center"
+                    android:text="Set As"
+                    android:textColor="#2E3041"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+
+            <RadioGroup
+                android:id="@+id/rg_setas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/d_16">
+
+                <RadioButton
+                    android:id="@+id/rb_ringtone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#FDAA74"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:shadowColor="#FDAA74"
+                    android:text="Ringtone"
+                    android:textSize="16sp" />
+
+                <RadioButton
+                    android:id="@+id/rb_alarm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#FDAA74"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:text="Alarm"
+                    android:textSize="16sp" />
+
+                <RadioButton
+                    android:id="@+id/rb_notification"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#FDAA74"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:text="Notification"
+                    android:textSize="16sp" />
+            </RadioGroup>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp">
+
+                <TextView
+                    android:id="@+id/tv_cancel_dialog_set_as"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:gravity="center"
+                    android:text="CANCEL"
+                    android:textColor="#BDBDBD"
+                    android:textSize="18dp"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/tv_set_dialog_set_as"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:gravity="center"
+                    android:text="SET"
+                    android:textColor="#FDAA74"
+                    android:textSize="18dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

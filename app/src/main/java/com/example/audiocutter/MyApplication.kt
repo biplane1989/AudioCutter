@@ -6,12 +6,12 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.util.PreferencesHelper
 
 class MyApplication : Application() {
+
     override fun onCreate() {
         super.onCreate()
         PreferencesHelper.start(applicationContext)
         ManagerFactory.init(applicationContext)
         PermissionManager.start(applicationContext)
-
-
     }
+
 }

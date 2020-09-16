@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_play"
+        android:title="Play" />
+    <item
+        android:id="@+id/menu_cut"
+        android:title="Cut" />
+    <item
+        android:id="@+id/menu_setas"
+        android:title="Set As" />
+    <item
+        android:id="@+id/menu_contacts"
+        android:title="Contacts" />
+</menu>

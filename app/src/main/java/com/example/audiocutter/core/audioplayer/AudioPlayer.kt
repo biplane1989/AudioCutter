@@ -210,8 +210,9 @@ object AudioPlayerImpl : AudioPlayer {
                         currentPosition = 0
                         mPlayer.stop()
                         if (playInfoData.playerState != PlayerState.IDLE) {
-                            changed = true
+
                             playInfoData.playerState = PlayerState.IDLE
+                            changed = true
                         }
                     }
                     if (mPlayer.isPlaying) {
@@ -219,7 +220,7 @@ object AudioPlayerImpl : AudioPlayer {
                             playInfoData.playerState = PlayerState.PLAYING
                             changed = true
                         }
-                    } else {
+                    } else
                         if (playInfoData.playerState == PlayerState.PLAYING) {
                             if (isStopped) {
                                 playInfoData.playerState = PlayerState.IDLE
@@ -228,7 +229,6 @@ object AudioPlayerImpl : AudioPlayer {
                             }
                             changed = true
                         }
-                    }
                     if (playInfoData.position != currentPosition && playInfoData.playerState == PlayerState.PLAYING) {
                         changed = true
                         playInfoData.position = currentPosition

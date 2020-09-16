@@ -11,7 +11,7 @@
         android:id="@+id/iv_controller_audio"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:background="@drawable/bg_play" />
+        android:background="@drawable/ic_audiocutter_play" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -27,6 +27,7 @@
             android:clickable="true"
             android:ellipsize="marquee"
             android:focusable="true"
+            android:fontFamily="@font/sanfranciscodisplay_bold"
             android:text="Name of Audio"
             android:textColor="@color/colorBack"
             android:textSize="@dimen/d_16"
@@ -43,6 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginRight="@dimen/d_5"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
                 android:text="2.1 MB"
                 android:textSize="@dimen/d_13" />
 
@@ -56,17 +58,27 @@
                 android:id="@+id/tv_bitrate_audio"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
                 android:layout_marginLeft="@dimen/d_5"
                 android:text="128kb/s"
                 android:textSize="@dimen/d_13" />
         </TableRow>
     </LinearLayout>
 
-    <ImageView
-        android:layout_width="@dimen/d_16"
-        android:layout_height="@dimen/d_16"
-        android:src="@drawable/ic_audiocutter_popupmenu"
-        app:tint="@color/colorGray" />
+    <LinearLayout
+        android:id="@+id/ln_menu"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <ImageView
+
+            android:layout_width="@dimen/d_16"
+            android:layout_height="@dimen/d_16"
+            android:src="@drawable/ic_audiocutter_popupmenu"
+            app:tint="@color/colorGray" />
+
+    </LinearLayout>
 
 
 </LinearLayout>

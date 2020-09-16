@@ -25,9 +25,6 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 object AudioFileManagerImpl : AudioFileManager {
@@ -173,15 +170,8 @@ object AudioFileManagerImpl : AudioFileManager {
 
                 Log.d("TAG", "onChange: $uri")
                 val listAllAudio = findAllAudioFiles().value
-                val listAllAudioByType = getAllListByType().value
-
-
-                Log.d(TAG, "onChange: ${listAllAudio?.size}")
-                Log.d(TAG, "onChange: ${listAllAudioByType?.size}")
-
 
                 _listAllAudioFile.postValue(listAllAudio)
-                _listAllAudioByType.postValue(listAllAudioByType)
 
             }
         }
