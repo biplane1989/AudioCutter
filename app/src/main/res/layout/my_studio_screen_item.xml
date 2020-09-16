@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/ll_audio_item_header"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="horizontal">
@@ -88,6 +89,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:scaleType="centerInside"
                 android:src="@drawable/output_audio_manager_screen_icon_setting"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

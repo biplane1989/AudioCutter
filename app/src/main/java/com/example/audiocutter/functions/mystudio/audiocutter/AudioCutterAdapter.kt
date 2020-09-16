@@ -15,6 +15,7 @@ import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.mystudio.AudioFileView
+import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.DeleteState
 import com.example.audiocutter.functions.mystudio.MusicDiffCallBack
 import com.example.audiocutter.objects.AudioFile
@@ -29,16 +30,13 @@ interface AudioCutterScreenCallback {
     fun stop()
     fun seekTo(position: Int)
     fun showMenu(view: View, audioFile: AudioFile)
-    fun isDelete(position: Int)
-    fun isUnDelete(position: Int)
-    fun deleteAll(deleteAllStatus: Boolean)
+    fun checkDeletePos(position: Int)
 }
 
 
 class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallback) :
     ListAdapter<AudioFileView, AudioCutterAdapter.ViewHolder>(
-        AsyncDifferConfig.Builder(MusicDiffCallBack())
-            .setBackgroundThreadExecutor(Executors.newSingleThreadExecutor()).build()
+        MusicDiffCallBack()
     ) {
     private var listAudios = ArrayList<AudioFileView>()
     private var selectedViewHolder: RecyclerView.ViewHolder? = null
@@ -55,6 +53,34 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
     override fun onBindViewHolder(holder: AudioCutterAdapter.ViewHolder, position: Int) {
         holder.bind()
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        super.onBindViewHolder(holder, position, payloads)
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position)
+        } else {
+            val state = payloads.firstOrNull() as DeleteState
+            when (state) {
+                DeleteState.HIDE -> {
+
+                    holder.ivItemDelete.visibility = View.GONE
+                    holder.ivSetting.visibility = View.VISIBLE
+                }
+                DeleteState.UNCHECK -> {
+                    holder.ivSetting.visibility = View.GONE
+                    holder.ivItemDelete.visibility = View.VISIBLE
+                    holder.ivItemDelete.setImageResource(R.drawable.output_audio_manager_screen_icon_uncheck)
+                }
+                DeleteState.CHECKED -> {
+                    holder.ivSetting.visibility = View.GONE
+                    holder.ivItemDelete.visibility = View.VISIBLE
+                    holder.ivItemDelete.setImageResource(R.drawable.output_audio_manager_screen_icon_checked)
+                }
+            }
+
+        }
+
     }
 
     private fun updateItemView(audioFileView: AudioFileView, playerInfo: PlayerInfo) {
@@ -100,7 +126,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         }
     }
 
-    override fun submitList(list: MutableList<AudioFileView>?) {
+    override fun submitList(list: List<AudioFileView>?) {
 
         if (list != null) {
             listAudios = ArrayList(list)
@@ -136,27 +162,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         }
     }
 
-    fun updateDeleteStatus(deleteState: DeleteState) {
-        when (deleteState) {
-            DeleteState.HIDE -> {
-                listAudios.forEach {
-                    it.deleteState = DeleteState.HIDE
-                }
-            }
-            DeleteState.UNCHECK -> {
-                listAudios.forEach {
-                    it.deleteState = DeleteState.UNCHECK
-                }
-            }
-            DeleteState.CHECKED -> {
-                listAudios.forEach {
-                    it.deleteState = DeleteState.CHECKED
-                }
-            }
-        }
-        notifyDataSetChanged()
-    }
-
 
     inner class ViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView), View.OnClickListener {
@@ -173,6 +178,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         val tvTimeLife: TextView = itemView.findViewById(R.id.tv_time_life)
         val tvTotal: TextView = itemView.findViewById(R.id.tv_time_total)
         val ivItemDelete: ImageView = itemView.findViewById(R.id.iv_item_delete)
+        val llAudioHeader: LinearLayout = itemView.findViewById(R.id.ll_audio_item_header)
 
         fun bind() {
             val audioFileView = getItem(adapterPosition)
@@ -211,13 +217,11 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
             }
 
-            clItem.setOnClickListener(this)
+            llAudioHeader.setOnClickListener(this)
 
             ivPausePlay.setOnClickListener(this)
 
             ivSetting.setOnClickListener(this)
-
-            ivItemDelete.setOnClickListener(this)
 
             sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
@@ -235,35 +239,11 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
         override fun onClick(view: View) {
             when (view.id) {
-                R.id.cl_item -> {
+                R.id.ll_audio_item_header -> {
                     selectedViewHolder = this@ViewHolder
-                    val audioFileView = listAudios.get(adapterPosition)
-                    when (audioFileView.deleteState) {
-
-                        DeleteState.HIDE -> {
-                            for (item in listAudios) {
-                                if (item != listAudios.get(adapterPosition))
-                                    item.isExpanded = false
-                            }
-                            audioFileView.isExpanded = !audioFileView.isExpanded
-                            audioCutterScreenCallback.stop()
-
-                            notifyDataSetChanged()
-                        }
-                        DeleteState.UNCHECK -> {
-                            listAudios.get(adapterPosition).deleteState = DeleteState.CHECKED
-                            ivItemDelete.setImageResource(R.drawable.output_audio_manager_screen_icon_checked)
-
-                        }
-                        DeleteState.CHECKED -> {
-                            listAudios.get(adapterPosition).deleteState = DeleteState.UNCHECK
-                            ivItemDelete.setImageResource(R.drawable.output_audio_manager_screen_icon_uncheck)
-                        }
-                    }
-
+                    audioCutterScreenCallback.checkDeletePos(adapterPosition)
                 }
                 R.id.iv_pause_play_music -> {
-//                    selectedViewHolder = this@ViewHolder
                     val audioFileView = listAudios.get(adapterPosition)
 
                     when (audioFileView.playerState) {
@@ -276,41 +256,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                         }
                         PlayerState.PLAYING -> {
                             audioCutterScreenCallback.pause()
-                        }
-                    }
-                }
-
-                R.id.iv_item_delete -> {
-                    val audioFileView = listAudios.get(adapterPosition)
-
-                    when (audioFileView.deleteState) {
-
-                        DeleteState.HIDE -> {
-                        }
-                        DeleteState.UNCHECK -> {
-                            listAudios.get(adapterPosition).deleteState = DeleteState.CHECKED
-                            ivItemDelete.setImageResource(R.drawable.output_audio_manager_screen_icon_checked)
-                            audioCutterScreenCallback.isDelete(adapterPosition)
-
-                            var isDeleteAll = true
-                            for (audio in listAudios) {
-                                if (audio.deleteState != DeleteState.CHECKED) {
-                                    isDeleteAll = false
-                                    break
-                                }
-                            }
-                            if (isDeleteAll) {
-                                audioCutterScreenCallback.deleteAll(true)
-                            }
-
-                        }
-                        DeleteState.CHECKED -> {
-                            listAudios.get(adapterPosition).deleteState = DeleteState.UNCHECK
-                            ivItemDelete.setImageResource(R.drawable.output_audio_manager_screen_icon_uncheck)
-                            audioCutterScreenCallback.isUnDelete(adapterPosition)
-
-                            audioCutterScreenCallback.deleteAll(false)
-
                         }
                     }
                 }

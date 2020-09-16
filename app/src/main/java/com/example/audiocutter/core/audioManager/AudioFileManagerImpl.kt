@@ -274,5 +274,9 @@ class AudioFileManagerImpl : AudioFileManager {
             cursor.close()
         }
     }
+
+    override suspend fun deleteFile(listAudioFile: List<AudioFile>) {
+        TODO("Not yet implemented")
+    }
 }
 

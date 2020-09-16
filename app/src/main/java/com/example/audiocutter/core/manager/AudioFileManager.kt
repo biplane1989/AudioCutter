@@ -12,4 +12,7 @@ interface AudioFileManager {
     suspend fun getListAudioCutter(): LiveData<List<AudioFile>>
     suspend fun getListAudioMerger(): LiveData<List<AudioFile>>
     suspend fun getListAudioMixer(): LiveData<List<AudioFile>>
+
+    suspend fun deleteFile(listAudioFile: List<AudioFile>)
+
 }

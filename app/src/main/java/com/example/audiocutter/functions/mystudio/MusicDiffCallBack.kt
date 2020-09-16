@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.DiffUtil
 class MusicDiffCallBack : DiffUtil.ItemCallback<AudioFileView>() {
 
     override fun areItemsTheSame(oldItemView: AudioFileView, newItemView: AudioFileView): Boolean {
-        return oldItemView == newItemView
+        return oldItemView.audioFile.file.absoluteFile == newItemView.audioFile.file.absoluteFile
     }
 
     override fun areContentsTheSame(
@@ -13,5 +13,9 @@ class MusicDiffCallBack : DiffUtil.ItemCallback<AudioFileView>() {
         newItemView: AudioFileView
     ): Boolean {
         return oldItemView == newItemView
+    }
+
+    override fun getChangePayload(oldItem: AudioFileView, newItem: AudioFileView): Any? {
+        return newItem.deleteState
     }
 }

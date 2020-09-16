@@ -15,6 +15,7 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.channel.FragmentMeta
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
+import com.example.audiocutter.functions.mystudio.AudioFileView
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.DeleteState
 import com.example.audiocutter.functions.mystudio.ShareFragment
@@ -30,28 +31,15 @@ class AudioCutterFragment() : BaseFragment(),
     lateinit var audioCutterAdapter: AudioCutterAdapter
     var checkedAllStatus = false
     var isDoubleDeleteClicked = true
-    var sizeListDeleteAll = 0
-    var listItemDelete = ArrayList<Int>()
 
-    var deleteItemStatus: MutableLiveData<DeleteState> = MutableLiveData()
-
-    private val deleteItemObserver = Observer<DeleteState> {
-        audioCutterAdapter.updateDeleteStatus(it)
-        when (it) {
-            DeleteState.HIDE -> {
-                cl_delete_all.visibility = View.GONE
-                checkedAllStatus = false
-            }
-            DeleteState.UNCHECK -> {
-                cl_delete_all.visibility = View.VISIBLE
-                iv_check.setImageResource(R.drawable.output_audio_manager_screen_icon_uncheck)
-            }
-            DeleteState.CHECKED -> {
-                iv_check.setImageResource(R.drawable.output_audio_manager_screen_icon_checked)
-                cl_delete_all.visibility = View.VISIBLE
-            }
-
+    val listAudioObserver = Observer<List<AudioFileView>> { listMusic ->
+        if (listMusic.size == 0) {
+            ll_no_finish_task.visibility = View.VISIBLE
+        } else {
+            ll_no_finish_task.visibility = View.GONE
         }
+        audioCutterAdapter.submitList(ArrayList(listMusic))
+
     }
 
     private val playerInfoObserver = Observer<PlayerInfo> {
@@ -67,26 +55,15 @@ class AudioCutterFragment() : BaseFragment(),
         rv_list_audio_cutter.layoutManager = LinearLayoutManager(context)
         rv_list_audio_cutter.setHasFixedSize(true)
         rv_list_audio_cutter.adapter = audioCutterAdapter
-
     }
 
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-
         audioCutterViewModel =
-            ViewModelProviders.of(this).get(AudioCutterViewModel()::class.java)
+            ViewModelProviders.of(this).get(AudioCutterViewModel::class.java)
         audioCutterAdapter = AudioCutterAdapter(this)
-
-        audioCutterViewModel.getListMusic()?.observe(this, Observer { listMusic ->
-            listMusic?.let {
-                sizeListDeleteAll = listMusic.size
-                audioCutterAdapter.submitList(ArrayList(listMusic))
-            }
-        })
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
-        deleteItemStatus.observe(this, deleteItemObserver)
-
     }
 
     override fun onCreateView(
@@ -101,46 +78,34 @@ class AudioCutterFragment() : BaseFragment(),
         super.onViewCreated(view, savedInstanceState)
         init()
         runOnUI {
-            // load data
             pb_audio_cutter.visibility = View.VISIBLE
-            if (!audioCutterViewModel.getData()) {
-                ll_no_finish_task.visibility = View.VISIBLE
-            } else {
-                ll_no_finish_task.visibility = View.GONE
-            }
+            val listAudioViewLiveData = audioCutterViewModel.getData()
+            listAudioViewLiveData.removeObserver(listAudioObserver)
+            listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
             pb_audio_cutter.visibility = View.GONE
 
         }
 
         iv_check.setOnClickListener(View.OnClickListener {
-            checkedAllStatus = !checkedAllStatus
-            if (checkedAllStatus) {
-                deleteItemStatus.postValue(DeleteState.CHECKED)
-                listItemDelete.clear()
-                var position: Int = 0
-                while (position < sizeListDeleteAll) {
-                    listItemDelete.add(position)
-                    position++
-                }
-                // listItemDelete get all size --> delete all
-            } else {
-                deleteItemStatus.postValue(DeleteState.UNCHECK)
-                listItemDelete.clear()
-            }
+            audioCutterAdapter.submitList(audioCutterViewModel.clickSelectAllBtn())
+            checkAllItemSelected()
         })
     }
 
     override fun onReceivedAction(fragmentMeta: FragmentMeta) {
 
         when (fragmentMeta.action) {
-            Constance.ACTION_DELETE -> {
-                deleteItemStatus.postValue(DeleteState.UNCHECK)
+            Constance.ACTION_UNCHECK -> {
+                audioCutterAdapter.submitList(audioCutterViewModel.changeAutoItemToDelete())
+                cl_delete_all.visibility = View.VISIBLE
             }
-            Constance.ACTION_CANCEL_DELETE -> {
-                deleteItemStatus.postValue(DeleteState.HIDE)
+            Constance.ACTION_HIDE -> {
+                audioCutterAdapter.submitList(audioCutterViewModel.changeAutoItemToMore())
+                cl_delete_all.visibility = View.GONE
+                iv_check.setImageResource(R.drawable.output_audio_manager_screen_icon_uncheck)
             }
             Constance.ACTION_DELETE_ALL -> {
-                Log.d(TAG, "sssssssssss")
+                audioCutterViewModel.deleteAllItemSelected()
             }
         }
     }
@@ -220,39 +185,18 @@ class AudioCutterFragment() : BaseFragment(),
 
         popup.show()
     }
-
-    //click chose button on adapter -> delete
-    override fun isDelete(position: Int) {
-        listItemDelete.add(position)
-        for (item in listItemDelete)
-            Log.d(TAG, "isCheckedDelete: possion: " + item)
-    }
-
-    //click chose button on adapter -> undelete
-    override fun isUnDelete(position: Int) {
-        listItemDelete.remove(position)
-        for (item in listItemDelete)
-            Log.d(TAG, "isCheckedDelete: possion: " + item)
-    }
-
-    // checked delete all
-    override fun deleteAll(deleteStatus: Boolean) {
-        if (deleteStatus) {
+    private fun checkAllItemSelected(){
+        if(audioCutterViewModel.isAllChecked()){
             iv_check.setImageResource(R.drawable.output_audio_manager_screen_icon_checked)
-            checkedAllStatus = true
-
-            listItemDelete.clear()
-            var position: Int = 0
-            while (position < sizeListDeleteAll) {
-                listItemDelete.add(position)
-                position++
-            }
-
-        } else {
+        }else{
             iv_check.setImageResource(R.drawable.output_audio_manager_screen_icon_uncheck)
-            checkedAllStatus = false
         }
     }
+    override fun checkDeletePos(position: Int) {
+        audioCutterAdapter.submitList(audioCutterViewModel.checkItemPosition(position))
+        checkAllItemSelected()
+    }
+
 
     // hanlder linterner on dialog rename
     override fun onRenameClick() {

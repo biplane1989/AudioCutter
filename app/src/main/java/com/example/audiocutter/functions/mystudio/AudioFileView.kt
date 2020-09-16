@@ -13,7 +13,7 @@ enum class DeleteState(value: Int) {
 
 data class AudioFileView(
     var audioFile: AudioFile,
-    var isExpanded: Boolean,
+    var isExpanded: Boolean = false,
     var playerState: PlayerState = PlayerState.IDLE,
     var deleteState: DeleteState = DeleteState.HIDE
 ) {

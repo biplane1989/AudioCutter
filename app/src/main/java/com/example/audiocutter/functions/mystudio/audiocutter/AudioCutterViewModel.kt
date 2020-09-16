@@ -1,47 +1,123 @@
 package com.example.audiocutter.functions.mystudio.audiocutter
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.functions.mystudio.AudioFileView
+import com.example.audiocutter.functions.mystudio.DeleteState
+import com.example.audiocutter.objects.AudioFile
 
 class AudioCutterViewModel : BaseViewModel() {
 
-    private var listMusic: MutableLiveData<ArrayList<AudioFileView>> = MutableLiveData()
-    private var _listMusic = ArrayList<AudioFileView>()
+    private var mListAudioFileView = ArrayList<AudioFileView>()
 
-    init {
-        listMusic.value = _listMusic
+
+    suspend fun getData(): LiveData<List<AudioFileView>> {
+        return Transformations.map(
+            ManagerFactory.getAudioFileManager().getListAudioCutter()
+        ) { listAudioFiles ->
+            val listAudioFileView = ArrayList<AudioFileView>()
+            //if (mListAudioFileView.size == 0) {
+                listAudioFiles.forEach {
+                    listAudioFileView.add(AudioFileView(it))
+                }
+            /*} else {
+
+            }*/
+            mListAudioFileView = listAudioFileView
+            mListAudioFileView
+        }
     }
 
-    fun getListMusic(): MutableLiveData<ArrayList<AudioFileView>>? {
-        return listMusic
+    fun checkItemPosition(pos: Int): List<AudioFileView> {
+        val audioFileView = mListAudioFileView.get(pos).copy()
+        if (audioFileView.deleteState == DeleteState.UNCHECK) {
+            audioFileView.deleteState = DeleteState.CHECKED
+        } else {
+            audioFileView.deleteState = DeleteState.UNCHECK
+        }
+        mListAudioFileView[pos] = audioFileView
+        return mListAudioFileView
     }
 
-    fun getListSize(): Int {
-        return listMusic.value!!.size
+    //
+    fun changeAutoItemToDelete(): List<AudioFileView> {
+        val copy = ArrayList<AudioFileView>()
+        mListAudioFileView.forEach {
+            val audioFileView = it.copy()
+            audioFileView.deleteState = DeleteState.UNCHECK
+            copy.add(audioFileView)
+        }
+
+        mListAudioFileView = copy
+        return mListAudioFileView
     }
 
-    suspend fun getData(): Boolean {
-        val listsAudio = ManagerFactory.getAudioFileManager().getListAudioCutter().value
-        _listMusic.clear()
-        if (listsAudio!!.size > 0) {
-            for (item in listsAudio) {
-                _listMusic.add(AudioFileView(item, false))
+    fun changeAutoItemToMore(): List<AudioFileView> {
+        val copy = ArrayList<AudioFileView>()
+        mListAudioFileView.forEach {
+            val audioFileView = it.copy()
+            audioFileView.deleteState = DeleteState.HIDE
+            copy.add(audioFileView)
+        }
+
+        mListAudioFileView = copy
+        return mListAudioFileView
+    }
+
+    fun isAllChecked(): Boolean {
+        mListAudioFileView.forEach {
+            if (it.deleteState == DeleteState.UNCHECK) {
+                return false
             }
-            listMusic.postValue(_listMusic)
-            return true
         }
-        return false
+        return true
     }
 
-    fun deleteData(listDelete: ArrayList<Int>): Boolean {
-        for (itemDelete in listDelete) {
+    fun clickSelectAllBtn(): List<AudioFileView> {
+        if (isAllChecked()) {
+            return unselectAllItems()
+        } else {
+            return selectAllItems()
+        }
+    }
 
-            //return audiofile
-            _listMusic.get(itemDelete).audioFile
+    private fun selectAllItems(): List<AudioFileView> {
+        val copy = ArrayList<AudioFileView>()
+        mListAudioFileView.forEach {
+            val audioFileView = it.copy()
+            audioFileView.deleteState = DeleteState.CHECKED
+            copy.add(audioFileView)
         }
 
-        return true
+        mListAudioFileView = copy
+        return mListAudioFileView
+    }
+
+    private fun unselectAllItems(): List<AudioFileView> {
+        val copy = ArrayList<AudioFileView>()
+        mListAudioFileView.forEach {
+            val audioFileView = it.copy()
+            audioFileView.deleteState = DeleteState.UNCHECK
+            copy.add(audioFileView)
+        }
+
+        mListAudioFileView = copy
+        return mListAudioFileView
+    }
+
+    fun deleteAllItemSelected() {
+        val listAudioItems = ArrayList<AudioFile>()
+        mListAudioFileView.forEach {
+            if (it.deleteState == DeleteState.CHECKED) {
+                listAudioItems.add(it.audioFile)
+            }
+        }
+        runOnBackground {
+            ManagerFactory.getAudioFileManager().deleteFile(listAudioItems)
+        }
+
     }
 }

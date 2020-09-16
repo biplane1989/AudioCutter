@@ -54,14 +54,14 @@ class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
             cl_default.visibility = View.GONE
             cl_delete.visibility = View.VISIBLE
 
-            sendFragmentAction(AudioCutterFragment::class.java.name, Constance.ACTION_DELETE)
+            sendFragmentAction(AudioCutterFragment::class.java.name, Constance.ACTION_UNCHECK)
         })
 
         iv_close.setOnClickListener(View.OnClickListener {
             cl_default.visibility = View.VISIBLE
             cl_delete.visibility = View.GONE
 
-            sendFragmentAction(AudioCutterFragment::class.java.name, Constance.ACTION_CANCEL_DELETE)
+            sendFragmentAction(AudioCutterFragment::class.java.name, Constance.ACTION_HIDE)
         })
 
 
