@@ -29,7 +29,6 @@ class AudioCutterFragment() : BaseFragment(),
     val TAG = "giangtd"
     lateinit var audioCutterViewModel: AudioCutterViewModel
     lateinit var audioCutterAdapter: AudioCutterAdapter
-    var checkedAllStatus = false
     var isDoubleDeleteClicked = true
 
     val listAudioObserver = Observer<List<AudioFileView>> { listMusic ->
@@ -185,16 +184,22 @@ class AudioCutterFragment() : BaseFragment(),
 
         popup.show()
     }
-    private fun checkAllItemSelected(){
-        if(audioCutterViewModel.isAllChecked()){
+
+    private fun checkAllItemSelected() {
+        if (audioCutterViewModel.isAllChecked()) {
             iv_check.setImageResource(R.drawable.output_audio_manager_screen_icon_checked)
-        }else{
+        } else {
             iv_check.setImageResource(R.drawable.output_audio_manager_screen_icon_uncheck)
         }
     }
+
     override fun checkDeletePos(position: Int) {
         audioCutterAdapter.submitList(audioCutterViewModel.checkItemPosition(position))
         checkAllItemSelected()
+    }
+
+    override fun isShowPlayingAudio(positition: Int) {
+        audioCutterAdapter.submitList(audioCutterViewModel.showPlayingAudio(positition))
     }
 
 

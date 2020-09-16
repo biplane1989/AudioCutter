@@ -31,6 +31,7 @@ interface AudioCutterScreenCallback {
     fun seekTo(position: Int)
     fun showMenu(view: View, audioFile: AudioFile)
     fun checkDeletePos(position: Int)
+    fun isShowPlayingAudio(positition: Int)
 }
 
 
@@ -240,8 +241,22 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         override fun onClick(view: View) {
             when (view.id) {
                 R.id.ll_audio_item_header -> {
+                    val audioFileView = listAudios.get(adapterPosition)
                     selectedViewHolder = this@ViewHolder
-                    audioCutterScreenCallback.checkDeletePos(adapterPosition)
+
+                    audioCutterScreenCallback.stop()
+
+                    when (audioFileView.deleteState) {
+                        DeleteState.CHECKED -> {
+                            audioCutterScreenCallback.checkDeletePos(adapterPosition)
+                        }
+                        DeleteState.UNCHECK -> {
+                            audioCutterScreenCallback.checkDeletePos(adapterPosition)
+                        }
+                        DeleteState.HIDE -> {
+                            audioCutterScreenCallback.isShowPlayingAudio(adapterPosition)
+                        }
+                    }
                 }
                 R.id.iv_pause_play_music -> {
                     val audioFileView = listAudios.get(adapterPosition)

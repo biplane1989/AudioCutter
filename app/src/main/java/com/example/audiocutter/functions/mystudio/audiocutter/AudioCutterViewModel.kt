@@ -20,9 +20,9 @@ class AudioCutterViewModel : BaseViewModel() {
         ) { listAudioFiles ->
             val listAudioFileView = ArrayList<AudioFileView>()
             //if (mListAudioFileView.size == 0) {
-                listAudioFiles.forEach {
-                    listAudioFileView.add(AudioFileView(it))
-                }
+            listAudioFiles.forEach {
+                listAudioFileView.add(AudioFileView(it))
+            }
             /*} else {
 
             }*/
@@ -118,6 +118,28 @@ class AudioCutterViewModel : BaseViewModel() {
         runOnBackground {
             ManagerFactory.getAudioFileManager().deleteFile(listAudioItems)
         }
-
     }
+
+    fun showPlayingAudio(position: Int): List<AudioFileView> {
+        var index = 0
+        for (item in mListAudioFileView) {
+            if (index != position) {
+                val newItem = item.copy()
+                newItem.isExpanded = false
+                mListAudioFileView[index] = newItem
+            }
+            index++
+        }
+        if (mListAudioFileView.get(position).isExpanded) {
+            val audioFileView = mListAudioFileView.get(position).copy()
+            audioFileView.isExpanded = false
+            mListAudioFileView.set(position, audioFileView)
+        } else {
+            val audioFileView = mListAudioFileView.get(position).copy()
+            audioFileView.isExpanded = true
+            mListAudioFileView.set(position, audioFileView)
+        }
+        return mListAudioFileView
+    }
+
 }

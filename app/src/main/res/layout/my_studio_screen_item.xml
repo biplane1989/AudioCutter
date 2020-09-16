@@ -9,6 +9,7 @@
         android:id="@+id/ll_audio_item_header"
         android:layout_width="match_parent"
         android:layout_height="56dp"
+        android:background="?attr/selectableItemBackground"
         android:orientation="horizontal">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,7 +23,7 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginLeft="16dp"
-                android:background="?attr/selectableItemBackground"
+
                 app:cardBackgroundColor="#C4C6D2"
                 app:cardCornerRadius="4dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -34,7 +35,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="?attr/selectableItemBackground"
                     android:scaleType="centerInside"
                     android:src="@drawable/output_audio_manager_screen_icon_music" />
             </androidx.cardview.widget.CardView>
@@ -77,34 +77,34 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-
             android:layout_weight="0.1"
             android:gravity="center">
 
             <ImageView
                 android:id="@+id/iv_setting"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
-                android:background="?attr/selectableItemBackground"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/output_audio_manager_screen_icon_setting"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/iv_item_delete"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
-                android:background="?attr/selectableItemBackground"
                 android:scaleType="centerInside"
                 android:src="@drawable/output_audio_manager_screen_icon_uncheck"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -126,7 +126,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_weight="0.1"
-            android:background="?attr/selectableItemBackground"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/output_audio_manager_screen_icon_play" />
 
         <androidx.appcompat.widget.AppCompatSeekBar
