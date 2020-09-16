@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.audiocutterscreen
 
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ class AudiocutterAdapter(val mContext: Context) :
     var listAudios = mutableListOf<AudioCutterView>()
     var playerInfo: PlayerInfo? = null
     var currentHolder: AudiocutterHolder? = null
+    var currentItemIndex = -1
 
     fun setAudioCutterListtener(event: AudioCutterListener) {
         mCallBack = event
@@ -74,6 +76,7 @@ class AudiocutterAdapter(val mContext: Context) :
                 currentHolder = holder
             }
         }
+        holder.ivController.tag = position
 
 
     }
@@ -92,20 +95,28 @@ class AudiocutterAdapter(val mContext: Context) :
         }
 
         override fun onClick(p0: View) {
+            val clickItemIndex = ivController.tag as Int
             when (p0.id) {
                 R.id.iv_controller_audio -> {
+//                    if(clickItemIndex !=currentItemIndex){
+//                    currentItemIndex = clickItemIndex
+//
+//                    }
                     controllerAudio()
                 }
             }
         }
 
         private fun controllerAudio() {
-
+            val oldHolder = currentHolder
             currentHolder = this
             val itemAudioCutter = listAudios.get(adapterPosition)
 
             when (itemAudioCutter.state) {
                 PlayerState.IDLE -> {
+                    if (oldHolder != currentHolder && oldHolder != null) {
+                        oldHolder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
+                    }
                     ivController.setImageResource(R.drawable.ic_audiocutter_pause)
                     mCallBack.play(itemAudioCutter.audioFile)
                 }
@@ -122,6 +133,11 @@ class AudiocutterAdapter(val mContext: Context) :
     }
 
     fun mediaInfoUpdate(playerInfo: PlayerInfo) {
+        Log.d(
+            "taih",
+            "${playerInfo.currentAudio?.file?.path ?: "null"} -> ${playerInfo.playerState}"
+        )
+
         val runningPos = getRunningAudioPos(playerInfo)
 
         if (runningPos != -1) {

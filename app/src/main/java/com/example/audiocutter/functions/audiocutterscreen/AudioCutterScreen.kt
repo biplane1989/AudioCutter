@@ -15,7 +15,6 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
-import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.objects.AudioFile
 
 class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener {
@@ -93,6 +92,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         Log.d("sesm", "resume: ")
         ManagerFactory.getAudioPlayer().resume()
     }
+
 
     override fun stop() {
         Log.d("sesm", "stop: ")

@@ -3,6 +3,7 @@ package com.example.audiocutter.core.audioplayer
 import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,9 +20,8 @@ object AudioPlayerImpl : AudioPlayer {
 
     private lateinit var appContext: Context
     private lateinit var mPlayer: MediaPlayer
-    lateinit var currentAudio: AudioFile
     private val mainScope = MainScope()
-
+    private var isStopped = false
 
 
     private var _mPlayInfo = MutableLiveData<PlayerInfo>()
@@ -37,70 +37,83 @@ object AudioPlayerImpl : AudioPlayer {
         this.appContext = appContext
         mPlayer = MediaPlayer()
 
-        audioManager = this.appContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-        _mPlayInfo.postValue(playInfoData)
+        audioManager = this.appContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         mPlayer.setOnCompletionListener {
-            playInfoData.playerState = PlayerState.IDLE
-            _mPlayInfo.postValue(playInfoData)
+            Log.d("taih", "setOnCompletionListener")
+
+            if (playInfoData.playerState != PlayerState.IDLE) {
+                playInfoData.playerState = PlayerState.IDLE
+                notifyPlayerDataChanged()
+            }
         }
     }
 
+    private fun notifyPlayerDataChanged() {
+        val copy = PlayerInfo(
+            playInfoData.currentAudio,
+            playInfoData.position,
+            playInfoData.playerState,
+            playInfoData.duration,
+            playInfoData.volume
+        )
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            _mPlayInfo.value = copy
+        } else {
+            mainScope.launch { _mPlayInfo.value = copy }
+        }
+    }
 
     override suspend fun play(audioFile: AudioFile): Boolean {
         try {
             withContext(Dispatchers.IO) {
-                stop()
-                var state: PlayerState
-                currentAudio = audioFile
-                if (playInfoData.playerState == PlayerState.IDLE) {
+                synchronized(mPlayer) {
+                    Log.d("taih", "sync start play")
+                    stop()
+                    if (playInfoData.playerState != PlayerState.IDLE) {
+                        playInfoData.playerState = PlayerState.IDLE
+                        notifyPlayerDataChanged()
+                    }
+                    playInfoData.currentAudio = audioFile
                     mPlayer.reset()
                     val ins = FileInputStream(audioFile.file)
                     Log.d(TAG, "checkUri: ${audioFile.uri}")
-//                    mPlayer.setDataSource(audioFile.uri.toString())
                     mPlayer.setDataSource(ins.fd)
                     mPlayer.prepare()
                     mPlayer.start()
-                    startTimerIfReady()
-                    state = PlayerState.PLAYING
-                    playInfoData.playerState= state
+                    isStopped = false;
+                    Log.d("taih", "sync end play")
 
                 }
-            }
+                startTimerIfReady()
 
-            playInfoData.currentAudio = currentAudio
-            playInfoData.duration = mPlayer.duration
-            if (mPlayer.currentPosition > mPlayer.duration) {
-                mPlayer.stop()
-                playInfoData.playerState = PlayerState.IDLE
             }
             return true
         } catch (e: Exception) {
             e.printStackTrace()
+            Log.d("taih", "Exception ${e.toString()}")
             Log.d(TAG, "PlayToPosition: ${e.printStackTrace()}")
             mPlayer.stop()
-            playInfoData.playerState = PlayerState.IDLE
-
-            _mPlayInfo.postValue(playInfoData)
             return false
         }
 
     }
 
     override suspend fun play(audioFile: AudioFile, currentPosition: Int) {
-        try {
-            Log.d(TAG, "PlayToPosition suspend : in function")
-            play(audioFile)
-            mPlayer.seekTo(currentPosition)
-            playInfoData.position = currentPosition
-            _mPlayInfo.postValue(playInfoData)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.d(TAG, "PlayToPosition exception:${e.printStackTrace()}")
-            mPlayer.stop()
-            playInfoData.playerState = PlayerState.IDLE
-            _mPlayInfo.postValue(playInfoData)
-        }
+        /* try {
+             Log.d(TAG, "PlayToPosition suspend : in function")
+             play(audioFile)
+             mPlayer.seekTo(currentPosition)
+             playInfoData.position = currentPosition
+             _mPlayInfo.postValue(playInfoData)
+         } catch (e: Exception) {
+             e.printStackTrace()
+             Log.d(TAG, "PlayToPosition exception:${e.printStackTrace()}")
+             mPlayer.stop()
+             playInfoData.playerState = PlayerState.IDLE
+             _mPlayInfo.postValue(playInfoData)
+         }*/
+        TODO()
 
     }
 
@@ -126,40 +139,34 @@ object AudioPlayerImpl : AudioPlayer {
 //            mPlayer.stop()
 //            mPlayerState = PlayerState.IDLE
 //            _mPlayState.postValue(mPlayerState)
-        return false
+        //return false
 //        }
+        TODO()
     }
 
     override fun pause() {
-        Log.d("taih", "pause")
         if ( playInfoData.playerState == PlayerState.PLAYING) {
             mPlayer.pause()
-            playInfoData.playerState = PlayerState.PAUSE
         }
-        _mPlayInfo.postValue(playInfoData)
 
     }
 
 
     override fun resume() {
-        Log.d("taih", "resume")
         if ( playInfoData.playerState == PlayerState.PAUSE) {
-            CoroutineScope(Dispatchers.IO).launch {
-                mPlayer.start()
-                playInfoData.playerState = PlayerState.PLAYING
-                _mPlayInfo.postValue(playInfoData)
-            }
+            mPlayer.start()
+
         }
 
 
     }
 
+
     override fun stop() {
-        Log.d("taih", "stop")
-        if ( playInfoData.playerState == PlayerState.PAUSE ||  playInfoData.playerState == PlayerState.PLAYING) {
+        Log.d("check", "stop")
+        if (playInfoData.playerState == PlayerState.PAUSE || playInfoData.playerState == PlayerState.PLAYING) {
             mPlayer.stop()
-            playInfoData.playerState = PlayerState.IDLE
-            _mPlayInfo.postValue(playInfoData)
+            isStopped = true;
         }
 
     }
@@ -168,9 +175,6 @@ object AudioPlayerImpl : AudioPlayer {
         try {
             Log.d(TAG, "PlayToPosition seekto: ${position} duration " + getTotalPos())
             mPlayer.seekTo(position)
-
-            playInfoData.position = position
-            _mPlayInfo.postValue(playInfoData)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -185,7 +189,7 @@ object AudioPlayerImpl : AudioPlayer {
     override fun setVolume(value: Int) {
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, value, 0)
         playInfoData.volume = value
-        _mPlayInfo.postValue(playInfoData)
+        notifyPlayerDataChanged()
     }
 
 
@@ -197,26 +201,42 @@ object AudioPlayerImpl : AudioPlayer {
         mainScope.launch {
             while (mainScope.isActive) {
                 var changed = false
-                var currentPosition = mPlayer.currentPosition
-                delay(500)
-                if (currentPosition >= mPlayer.duration) {
-                    currentPosition = 0
-                    mPlayer.stop()
-                    if (playInfoData.playerState != PlayerState.IDLE) {
+
+
+                delay(1000)
+                synchronized(mPlayer) {
+                    var currentPosition = mPlayer.currentPosition
+                    if (currentPosition >= mPlayer.duration) {
+                        currentPosition = 0
+                        mPlayer.stop()
+                        if (playInfoData.playerState != PlayerState.IDLE) {
+                            changed = true
+                            playInfoData.playerState = PlayerState.IDLE
+                        }
+                    }
+                    if (mPlayer.isPlaying) {
+                        if (playInfoData.playerState != PlayerState.PLAYING) {
+                            playInfoData.playerState = PlayerState.PLAYING
+                            changed = true
+                        }
+                    } else {
+                        if (playInfoData.playerState == PlayerState.PLAYING) {
+                            if (isStopped) {
+                                playInfoData.playerState = PlayerState.IDLE
+                            } else {
+                                playInfoData.playerState = PlayerState.PAUSE
+                            }
+                            changed = true
+                        }
+                    }
+                    if (playInfoData.position != currentPosition && playInfoData.playerState == PlayerState.PLAYING) {
                         changed = true
-                        playInfoData.playerState = PlayerState.IDLE
+                        playInfoData.position = currentPosition
                     }
                 }
-                if (playInfoData.position != currentPosition) {
-                    changed = true
-                    playInfoData.position = currentPosition
-                }
-                if (mPlayer.isPlaying && playInfoData.playerState != PlayerState.PLAYING) {
-                    changed = true
-                    playInfoData.playerState = PlayerState.PLAYING
-                }
                 if (changed) {
-                    _mPlayInfo.postValue(playInfoData)
+
+                    notifyPlayerDataChanged()
                 }
 
             }
