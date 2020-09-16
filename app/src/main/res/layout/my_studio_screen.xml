@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_marginTop="20dp"
         android:id="@+id/cl_default"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -29,8 +30,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="27dp"
-            android:fontFamily="san"
-            android:text="My Studio"
+            android:fontFamily="@font/sanfranciscodisplay_bold"
+            android:text="@string/my_studio_title"
             android:textColor="#2E3041"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -77,8 +78,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="27dp"
-            android:fontFamily="san"
-            android:text="My Studio"
+            android:fontFamily="@font/sanfranciscodisplay_bold"
+            android:text="@string/my_studio_title"
             android:textColor="#2E3041"
             android:textSize="18sp"
             android:textStyle="bold"

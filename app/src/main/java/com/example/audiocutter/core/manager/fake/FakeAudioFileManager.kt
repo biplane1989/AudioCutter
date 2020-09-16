@@ -38,7 +38,9 @@ class FakeAudioFileManager : AudioFileManager {
     }
 
     override suspend fun getListAudioCutter(): LiveData<List<AudioFile>> {
+
         return audioFileLiveData
+
     }
 
     override suspend fun getListAudioMerger(): LiveData<List<AudioFile>> {

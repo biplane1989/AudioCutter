@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
-import kotlinx.android.synthetic.main.output_audio_manager_screen_dialog_rename.*
+import kotlinx.android.synthetic.main.my_studio_dialog_rename.*
 
 class RenameDialog : BaseDialog() {
 
@@ -31,7 +31,7 @@ class RenameDialog : BaseDialog() {
     }
 
     override fun getLayoutResId(): Int {
-        return R.layout.output_audio_manager_screen_dialog_rename
+        return R.layout.my_studio_dialog_rename
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

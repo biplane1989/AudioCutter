@@ -37,8 +37,9 @@
                     android:layout_height="56dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
+                    android:fontFamily="@font/sanfranciscodisplay_bold"
                     android:gravity="center"
-                    android:text="Delete file from device?"
+                    android:text="@string/my_studio_dialog_delete_title"
                     android:textColor="#2E3041"
                     android:textSize="20dp"
                     android:textStyle="bold" />
@@ -51,8 +52,9 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginRight="12dp"
                 android:layout_marginBottom="32dp"
+                android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:gravity="center"
-                android:text="File will be deleted permanently."
+                android:text="@string/my_studio_dialog_delete_content"
                 android:textColor="#2E3041"
                 android:textSize="18dp" />
 
@@ -66,8 +68,9 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackground"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="CANCEL"
+                    android:text="@string/my_studio_dialog_btn_cancel"
                     android:textColor="#BDBDBD"
                     android:textSize="18dp"
                     android:visibility="visible" />
@@ -78,8 +81,9 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackground"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="DELETE"
+                    android:text="@string/my_studio_dialog_btn_delete"
                     android:textColor="#FDAA74"
                     android:textSize="18dp" />
             </LinearLayout>

@@ -22,7 +22,7 @@ class AudioCutterViewModel : BaseViewModel() {
         return listMusic.value!!.size
     }
 
-    suspend fun getData() {
+    suspend fun getData(): Boolean {
         val listsAudio = ManagerFactory.getAudioFileManager().getListAudioCutter().value
         _listMusic.clear()
         if (listsAudio!!.size > 0) {
@@ -30,11 +30,18 @@ class AudioCutterViewModel : BaseViewModel() {
                 _listMusic.add(AudioFileView(item, false))
             }
             listMusic.postValue(_listMusic)
+            return true
         }
+        return false
     }
 
-//    fun getPathSaveFile(): String {
-//
-//        return "Save Path: " + _listMusic.get(0).audioFile.file.absoluteFile.toString()
-//    }
+    fun deleteData(listDelete: ArrayList<Int>): Boolean {
+        for (itemDelete in listDelete) {
+
+            //return audiofile
+            _listMusic.get(itemDelete).audioFile
+        }
+
+        return true
+    }
 }

@@ -5,8 +5,7 @@ import android.view.View
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.objects.AudioFile
-import kotlinx.android.synthetic.main.output_audio_manager_screen_dialog_set_as.*
+import kotlinx.android.synthetic.main.my_studio_dialog_set_as.*
 
 class SetAsDialog : BaseDialog() {
 
@@ -29,7 +28,7 @@ class SetAsDialog : BaseDialog() {
     }
 
     override fun getLayoutResId(): Int {
-        return R.layout.output_audio_manager_screen_dialog_set_as
+        return R.layout.my_studio_dialog_set_as
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

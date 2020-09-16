@@ -1,11 +1,10 @@
 package com.example.audiocutter.functions.mystudio.dialog
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
-import kotlinx.android.synthetic.main.output_audio_manager_screen_dialog_delete.*
+import kotlinx.android.synthetic.main.my_studio_dialog_delete.*
 
 class DeleteDialog : BaseDialog() {
 
@@ -27,7 +26,7 @@ class DeleteDialog : BaseDialog() {
     }
 
     override fun getLayoutResId(): Int {
-        return R.layout.output_audio_manager_screen_dialog_delete
+        return R.layout.my_studio_dialog_delete
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +39,7 @@ class DeleteDialog : BaseDialog() {
         super.onViewCreated(view, savedInstanceState)
         tv_cancel_dialog_delete.setOnClickListener(View.OnClickListener {
             dialog?.dismiss()
+            dialogListener.onCancel()
         })
 
         tv_delete_dialog_delete.setOnClickListener(View.OnClickListener {
@@ -51,4 +51,5 @@ class DeleteDialog : BaseDialog() {
 
 interface DeleteDialogListener {
     fun onDeleteClick()
+    fun onCancel()
 }

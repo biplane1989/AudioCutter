@@ -6,7 +6,7 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_dialog_info.*
-import kotlinx.android.synthetic.main.output_audio_manager_screen_dialog_delete.*
+import kotlinx.android.synthetic.main.my_studio_dialog_delete.*
 import java.text.SimpleDateFormat
 
 class InfoDialog : BaseDialog() {

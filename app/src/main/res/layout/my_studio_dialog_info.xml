@@ -29,7 +29,10 @@
                 android:id="@+id/tv_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Info"
+                android:background="?attr/selectableItemBackground"
+                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:text="@string/my_studio_dialog_info"
+                android:textColor="#2E3041"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -39,6 +42,7 @@
                 android:id="@+id/ll_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toTopOf="@id/tv_ok"
                 app:layout_constraintTop_toBottomOf="@+id/tv_info">
@@ -52,8 +56,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
-                        android:text="File"
-                        android:textSize="16sp"
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:text="@string/my_studio_dialog_file"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -61,7 +66,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
-                        android:textSize="16sp" />
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -73,8 +79,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
-                        android:text="Location"
-                        android:textSize="16sp"
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:text="@string/my_studio_dialog_location"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -82,7 +89,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
-                        android:textSize="16sp" />
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -94,8 +102,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
-                        android:text="size"
-                        android:textSize="16sp"
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:text="@string/my_studio_dialog_size"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -103,7 +112,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
-                        android:textSize="16sp" />
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -115,8 +125,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
-                        android:text="Date"
-                        android:textSize="16sp"
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:text="@string/my_studio_dialog_date"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -124,7 +135,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
-                        android:textSize="16sp" />
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -136,8 +148,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
-                        android:text="format"
-                        android:textSize="16sp"
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:text="@string/my_studio_dialog_format"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -145,7 +158,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
-                        android:textSize="16sp" />
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -157,8 +171,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
-                        android:text="Length"
-                        android:textSize="16sp"
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:text="@string/my_studio_dialog_length"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -166,7 +181,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
-                        android:textSize="16sp" />
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -178,8 +194,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
-                        android:text="Bitrate"
-                        android:textSize="16sp"
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:text="@string/my_studio_dialog_bitrate"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -187,7 +204,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
-                        android:textSize="16sp" />
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -199,8 +217,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
-                        android:text="Channel"
-                        android:textSize="16sp"
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:text="@string/my_studio_dialog_channel"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -208,7 +227,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
-                        android:textSize="16sp" />
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -220,8 +240,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
-                        android:text="Frequency"
-                        android:textSize="16sp"
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:text="@string/my_studio_dialog_frequency"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -229,7 +250,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
-                        android:textSize="16sp" />
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -241,8 +263,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
-                        android:text="Title"
-                        android:textSize="16sp"
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:text="@string/my_studio_dialog_title"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -250,7 +273,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
-                        android:textSize="16sp" />
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -262,8 +286,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
-                        android:text="artist"
-                        android:textSize="16sp"
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:text="@string/my_studio_dialog_artist"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -271,7 +296,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
-                        android:textSize="16sp" />
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -283,8 +309,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
-                        android:text="album"
-                        android:textSize="16sp"
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:text="@string/my_studio_dialog_album"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -292,7 +319,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
-                        android:textSize="16sp" />
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -304,8 +332,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
-                        android:text="Genre"
-                        android:textSize="16sp"
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:text="@string/my_studio_dialog_genre"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -313,7 +342,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
-                        android:textSize="16sp" />
+                        android:fontFamily="@font/sanfranciscodisplay_medium"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -322,11 +352,12 @@
                 android:id="@+id/tv_ok"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="OK"
-                android:textSize="20sp"
+                android:fontFamily="@font/sanfranciscodisplay_medium"
+                android:text="@string/my_studio_dialog_ok"
+                android:textColor="#FDAA74"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/ll_info" />
 

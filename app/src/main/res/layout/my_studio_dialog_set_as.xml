@@ -37,46 +37,64 @@
                     android:layout_height="56dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
+                    android:fontFamily="@font/sanfranciscodisplay_bold"
                     android:gravity="center"
-                    android:text="Rename"
+                    android:text="@string/my_studio_dialog_set_as_title"
                     android:textColor="#2E3041"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_old_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="12dp"
-                android:text="File Name"
-                android:textColor="#2E3041"
-                android:textSize="12dp" />
 
-            <EditText
-                android:id="@+id/edt_new_name"
+            <RadioGroup
+                android:id="@+id/rg_setas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="12dp"
-                android:layout_marginBottom="16dp"
-                android:backgroundTint="#FDAA74"
-                android:hint="Name"
-                android:textColor="#2E3041" />
+                android:layout_marginRight="16dp">
+
+                <RadioButton
+
+                    android:id="@+id/rb_ringtone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#FDAA74"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:shadowColor="#FDAA74"
+                    android:text="@string/my_studio_dialog_set_as_ringtone"
+                    android:textSize="16sp" />
+
+                <RadioButton
+                    android:id="@+id/rb_alarm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#FDAA74"
+                    android:checked="true"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:text="@string/my_studio_dialog_set_as_alarm"
+                    android:textSize="16sp" />
+
+                <RadioButton
+                    android:id="@+id/rb_notification"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#FDAA74"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:text="@string/my_studio_dialog_set_as_notification"
+                    android:textSize="16sp" />
+            </RadioGroup>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="48dp">
 
                 <TextView
-                    android:id="@+id/tv_cancel_dialog_delete"
+                    android:id="@+id/tv_cancel_dialog_set_as"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackground"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
                     android:text="CANCEL"
                     android:textColor="#BDBDBD"
@@ -84,13 +102,14 @@
                     android:visibility="visible" />
 
                 <TextView
-                    android:id="@+id/tv_delete_dialog_delete"
+                    android:id="@+id/tv_set_dialog_set_as"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackground"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="RENAME"
+                    android:text="SET"
                     android:textColor="#FDAA74"
                     android:textSize="18dp" />
             </LinearLayout>

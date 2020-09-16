@@ -41,6 +41,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:layout_marginRight="15dp"
+                android:background="?attr/selectableItemBackground"
                 android:src="@drawable/output_audio_manager_screen_dialog_icon_close"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -50,10 +51,11 @@
                 android:layout_height="56dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
+                android:fontFamily="@font/sanfranciscodisplay_bold"
                 android:gravity="center"
                 android:text="Deleted Successfully"
                 android:textColor="#2E3041"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@+id/iv_delete" />
 

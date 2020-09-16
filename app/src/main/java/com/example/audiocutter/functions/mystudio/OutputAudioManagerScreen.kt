@@ -1,31 +1,30 @@
 package com.example.audiocutter.functions.mystudio
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.functions.mystudio.audiocutter.AudioCutterFragment
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialog
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialogListener
 import com.google.android.material.tabs.TabLayout
-import kotlinx.android.synthetic.main.output_audio_manager_screen.*
+import kotlinx.android.synthetic.main.my_studio_screen.*
 
 class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
 
     val TAG = "giangtd"
+    var isDeleteClicked = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.output_audio_manager_screen, container, false)
+        return inflater.inflate(R.layout.my_studio_screen, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -65,14 +64,25 @@ class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
             sendFragmentAction(AudioCutterFragment::class.java.name, Constance.ACTION_CANCEL_DELETE)
         })
 
+
         iv_delete.setOnClickListener(View.OnClickListener {
-            val dialog = DeleteDialog.newInstance(this, "giang")
-            dialog.show(childFragmentManager, DeleteDialog.TAG)
+            if (isDeleteClicked) {
+                val dialog = DeleteDialog.newInstance(this, "giang")
+                dialog.show(childFragmentManager, DeleteDialog.TAG)
+                isDeleteClicked = false
+            }
+
         })
     }
 
     override fun onDeleteClick() {
         Log.d(TAG, "onDeleteClick: ")
+        isDeleteClicked = true
+        sendFragmentAction(AudioCutterFragment::class.java.name, Constance.ACTION_DELETE_ALL)
+    }
+
+    override fun onCancel() {
+        isDeleteClicked = true
     }
 
 }
