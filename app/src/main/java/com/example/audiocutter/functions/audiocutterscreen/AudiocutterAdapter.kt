@@ -22,7 +22,6 @@ class AudiocutterAdapter(val mContext: Context) :
     var listAudios = mutableListOf<AudioCutterView>()
     var playerInfo: PlayerInfo? = null
     var currentHolder: AudiocutterHolder? = null
-    var currentItemIndex = -1
 
 
     fun setAudioCutterListtener(event: AudioCutterListener) {
@@ -46,19 +45,22 @@ class AudiocutterAdapter(val mContext: Context) :
         return AudiocutterHolder(view)
     }
 
+
     override fun onBindViewHolder(holder: AudiocutterHolder, position: Int) {
         val itemAudioFile = getItem(position)
 
         holder.tvBitrateAudio.text = "${itemAudioFile.audioFile.bitRate}Kbs/s"
         holder.tvNameAudio.text = itemAudioFile.audioFile.fileName
 
-        var size = (itemAudioFile.audioFile.size / SIZE_MB).toDouble()
+        var size = (itemAudioFile.audioFile.size.toDouble() / SIZE_MB)
 
         if (size >= 1) {
-
+            size = Math.floor(size * 10) / 10
             holder.tvSizeAudio.text = "$size Mb"
         } else {
-            size = (itemAudioFile.audioFile.size / 1024).toString().toDouble()
+            size = (itemAudioFile.audioFile.size.toDouble() / 1024)
+            size = Math.floor(size * 10) / 10
+
             holder.tvSizeAudio.text = "$size Kb"
         }
 
@@ -91,18 +93,13 @@ class AudiocutterAdapter(val mContext: Context) :
         override fun onClick(p0: View) {
             val itemAudio = ivController.tag as AudioCutterView
             when (p0.id) {
-                R.id.iv_controller_audio -> {
-                    controllerAudio()
-                }
-                R.id.ln_menu -> {
-                    showPopupMenu(itemAudio)
-                }
+                R.id.iv_controller_audio -> controllerAudio()
+                R.id.ln_menu -> showPopupMenu(itemAudio)
             }
         }
 
         private fun showPopupMenu(itemAudio: AudioCutterView) {
             val popupMenu = PopupMenu(mContext, lnMenu)
-
 
             popupMenu.menuInflater.inflate(R.menu.menu_item_audio, popupMenu.menu)
             popupMenu.setOnMenuItemClickListener {
@@ -132,7 +129,10 @@ class AudiocutterAdapter(val mContext: Context) :
 
 
         private fun controllerAudio() {
-            ivController.setImageResource(R.drawable.ic_audiocutter_pause)
+
+            Log.d("TAG", "controllerAudio: click first setImage")
+//            ivController.setImageResource(R.drawable.ic_audiocutter_pause)
+
             val oldHolder = currentHolder
             currentHolder = this
             val itemAudioCutter = listAudios.get(adapterPosition)
@@ -140,17 +140,15 @@ class AudiocutterAdapter(val mContext: Context) :
             when (itemAudioCutter.state) {
                 PlayerState.IDLE -> {
                     if (oldHolder != currentHolder && oldHolder != null) {
+
                         oldHolder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
                     }
-//                    ivController.setImageResource(R.drawable.ic_audiocutter_pause)
                     mCallBack.play(itemAudioCutter.audioFile)
                 }
                 PlayerState.PAUSE -> {
-//                    ivController.setImageResource(R.drawable.ic_audiocutter_play)
                     mCallBack.resume()
                 }
                 PlayerState.PLAYING -> {
-//                    ivController.setImageResource(R.drawable.ic_audiocutter_pause)
                     mCallBack.pause()
                 }
             }
@@ -158,11 +156,7 @@ class AudiocutterAdapter(val mContext: Context) :
     }
 
     fun mediaInfoUpdate(playerInfo: PlayerInfo) {
-        Log.d(
-            "taih",
-            "${playerInfo.currentAudio?.file?.path ?: "null"} -> ${playerInfo.playerState}"
-        )
-
+//        Log.d("taih", "${playerInfo.currentAudio?.file?.path ?: "null"} -> ${playerInfo.playerState}")
         val runningPos = getRunningAudioPos(playerInfo)
 
         if (runningPos != -1) {
@@ -170,8 +164,12 @@ class AudiocutterAdapter(val mContext: Context) :
             audioFileView.state = playerInfo.playerState
             if (currentHolder != null) {
                 if (audioFileView.state == PlayerState.PLAYING) {
+                    Log.d("TAG", "controllerAudio: mediaupdate setImage pause")
+
                     currentHolder!!.ivController.setImageResource(R.drawable.ic_audiocutter_pause)
+                    return
                 } else {
+                    Log.d("TAG", "controllerAudio: mediaupdate setImage play")
                     currentHolder!!.ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }
             }

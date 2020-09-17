@@ -24,13 +24,6 @@ class MainActivity : BaseActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun createView(savedInstanceState: Bundle?) {
         setContentView(R.layout.main_screen)
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.WRITE_SETTINGS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(arrayOf(Manifest.permission.WRITE_SETTINGS), 100)
-        }
 
         audioCutterFrg = AudioCutterScreen()
         supportFragmentManager.beginTransaction().add(R.id.ln_main, audioCutterFrg).commit()

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AudioCutter</string>
+    <string name="successfully">Set Successfully</string>
 </resources>

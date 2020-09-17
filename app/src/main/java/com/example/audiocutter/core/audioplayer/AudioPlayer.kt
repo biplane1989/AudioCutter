@@ -158,7 +158,6 @@ object AudioPlayerImpl : AudioPlayer {
 
         }
 
-
     }
 
 
@@ -202,13 +201,15 @@ object AudioPlayerImpl : AudioPlayer {
             while (mainScope.isActive) {
                 var changed = false
 
-
                 delay(1000)
                 synchronized(mPlayer) {
+                    playInfoData.duration = mPlayer.duration
                     var currentPosition = mPlayer.currentPosition
                     if (currentPosition >= mPlayer.duration) {
                         currentPosition = 0
+                        playInfoData.position = currentPosition
                         mPlayer.stop()
+
                         if (playInfoData.playerState != PlayerState.IDLE) {
 
                             playInfoData.playerState = PlayerState.IDLE
@@ -224,6 +225,8 @@ object AudioPlayerImpl : AudioPlayer {
                         if (playInfoData.playerState == PlayerState.PLAYING) {
                             if (isStopped) {
                                 playInfoData.playerState = PlayerState.IDLE
+                                currentPosition = 0
+                                playInfoData.position = currentPosition
                             } else {
                                 playInfoData.playerState = PlayerState.PAUSE
                             }
@@ -232,10 +235,10 @@ object AudioPlayerImpl : AudioPlayer {
                     if (playInfoData.position != currentPosition && playInfoData.playerState == PlayerState.PLAYING) {
                         changed = true
                         playInfoData.position = currentPosition
+
                     }
                 }
                 if (changed) {
-
                     notifyPlayerDataChanged()
                 }
 

@@ -2,20 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/d_56"
+    android:layout_height="80dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingHorizontal="@dimen/d_16">
 
     <ImageView
         android:id="@+id/iv_controller_audio"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:background="@drawable/ic_audiocutter_play" />
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="36dp"
+        android:layout_height="45dp"
         android:layout_weight="1"
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/d_16">
@@ -28,9 +28,9 @@
             android:ellipsize="marquee"
             android:focusable="true"
             android:fontFamily="@font/sanfranciscodisplay_bold"
-            android:text="Name of Audio"
+            android:text="Audio Name"
             android:textColor="@color/colorBack"
-            android:textSize="@dimen/d_16"
+            android:textSize="@dimen/d_18"
             android:textStyle="bold"
             android:singleLine="true" />
 
@@ -40,6 +40,7 @@
             android:layout_weight="1">
 
             <TextView
+                android:gravity="bottom"
                 android:id="@+id/tv_size_audio"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -51,10 +52,11 @@
             <View
                 android:layout_width="0.5dp"
                 android:layout_height="match_parent"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="8dp"
                 android:background="@color/colorGray" />
 
             <TextView
+                android:gravity="bottom"
                 android:id="@+id/tv_bitrate_audio"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

@@ -1,22 +1,13 @@
 package com.example.audiocutter.functions.audiocutterscreen
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.PermissionChecker
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,20 +19,23 @@ import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.rington.RingtonManagerImpl
 import com.example.audiocutter.functions.audiocutterscreen.view.SetAsDialog
+import com.example.audiocutter.functions.audiocutterscreen.view.SetAsDoneDialog
 import com.example.audiocutter.functions.audiocutterscreen.view.TypeAudioSetAs
 import com.example.audiocutter.objects.AudioFile
-import kotlinx.android.synthetic.main.audio_cutter_screen.*
 
 class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
-    SetAsDialog.setAsListener {
-    val KEY_AUDIO = "KEY_AUDIO"
+    SetAsDialog.setAsListener, View.OnClickListener {
     val TAG = AudioCutterScreen::class.java.name
     private lateinit var mView: View
     private lateinit var rvAudioCutter: RecyclerView
     private lateinit var audioCutterAdapter: AudiocutterAdapter
     private lateinit var audioCutterModel: AudioCutterModel
     lateinit var dialog: SetAsDialog
+    lateinit var dialogDone: SetAsDoneDialog
     lateinit var audioCutterItem: AudioCutterView
+    lateinit var ivFile: ImageView
+    var listTmp: MutableList<AudioCutterView> = mutableListOf()
+    var isCheckList = true
 
     private val playerInfoObserver = Observer<PlayerInfo> {
         audioCutterAdapter.mediaInfoUpdate(it)
@@ -67,8 +61,10 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     }
 
     private fun initViews() {
-
+        ivFile = mView.findViewById(R.id.iv_file)
+        ivFile.setOnClickListener(this)
         dialog = SetAsDialog(requireContext())
+        dialogDone = SetAsDoneDialog(requireContext())
         audioCutterAdapter = AudiocutterAdapter(activity as Activity)
         audioCutterAdapter.setAudioCutterListtener(this)
         rvAudioCutter = mView.findViewById(R.id.rv_audiocutter)
@@ -81,11 +77,12 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
             audioCutterModel.getAllAudioFile().observe(this, Observer {
                 audioCutterAdapter.submitList(it)
                 Log.d(TAG, "observerViewModel: ${it.size}")
-                audioCutterAdapter.notifyDataSetChanged()
+//                audioCutterAdapter.notifyDataSetChanged()
             })
         }
 
     }
+
 
     private fun initLists() {
         rvAudioCutter.adapter = audioCutterAdapter
@@ -116,6 +113,8 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         ManagerFactory.getAudioPlayer().stop()
     }
 
+
+
     override fun showDialogSetAs(itemAudio: AudioCutterView) {
         audioCutterItem = itemAudio
         dialog.setOnCallBack(this)
@@ -123,27 +122,72 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     }
 
     override fun setAudioAs(typeAudioSetAs: TypeAudioSetAs) {
+        var rs = false
         Log.d(TAG, "setAudioAs: ${audioCutterItem.audioFile.fileName}")
         when (typeAudioSetAs) {
 
-            TypeAudioSetAs.RINGTONE -> RingtonManagerImpl.setRingTone(
-                requireContext(),
-                audioFile = audioCutterItem.audioFile
-            )
-            TypeAudioSetAs.ALARM -> RingtonManagerImpl.setAlarmManager(
-                requireContext(),
-                audioFile = audioCutterItem.audioFile
-            )
-            TypeAudioSetAs.NOTIFICATION -> RingtonManagerImpl.setNotificationSound(
-                requireContext(),
-                audioFile = audioCutterItem.audioFile
-            )
+            TypeAudioSetAs.RINGTONE -> {
+                rs = RingtonManagerImpl.setRingTone(
+                    requireContext(),
+                    audioFile = audioCutterItem.audioFile
+                )
+            }
+            TypeAudioSetAs.ALARM -> {
+                rs = RingtonManagerImpl.setAlarmManager(
+                    requireContext(),
+                    audioFile = audioCutterItem.audioFile
+                )
+            }
+            TypeAudioSetAs.NOTIFICATION -> {
+                rs = RingtonManagerImpl.setNotificationSound(
+                    requireContext(),
+                    audioFile = audioCutterItem.audioFile
+                )
+            }
         }
-        dialog.dismiss()
+        if (rs) {
+            dialog.dismiss()
+            dialogDone.show()
+        } else {
+            Toast.makeText(requireContext(), "set as fail", Toast.LENGTH_SHORT).show()
+        }
+
     }
 
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.iv_file -> updateAllFile()
+        }
+    }
 
+    private fun updateAllFile() {
+        stop()
+        runOnUI {
+            try {
+                if (isCheckList) {
+                    audioCutterModel.getAllFileByType().observe(this, Observer {
+                        listTmp.clear()
+                        listTmp = it.toMutableList()
+                        audioCutterAdapter.submitList(listTmp)
+                        isCheckList = false
 
+                    })
+                } else {
+                    audioCutterModel.getAllAudioFile().observe(this, Observer {
+                        listTmp.clear()
+                        listTmp = it.toMutableList()
+                        audioCutterAdapter.submitList(listTmp)
+                        isCheckList = true
+                    })
+                }
+
+                Log.d(TAG, "updateAllFile: check $isCheckList    listSize ${listTmp.size}")
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+        }
+    }
 
 
 }

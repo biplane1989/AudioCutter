@@ -2,15 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:gravity="center"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/bt_getlisType"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:text="getListType" />
-
+    <com.example.audiocutter.functions.audiocutterscreen.view.animation.BarVisualizer
+        android:id="@+id/bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        custom:avColor="@color/colorAccent"
+        custom:avDensity="0.5"
+        custom:avSpeed="normal"
+        custom:avType="outline"
+        custom:avWidth="4dp" />
 
 
 </LinearLayout>
