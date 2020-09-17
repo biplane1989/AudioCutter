@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.audiocutterscreen.view
+package com.example.audiocutter.functions.audiocutterscreen.dialog
 
 import android.app.Dialog
 import android.content.Context

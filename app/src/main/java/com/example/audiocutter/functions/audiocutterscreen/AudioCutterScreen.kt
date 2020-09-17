@@ -1,6 +1,5 @@
 package com.example.audiocutter.functions.audiocutterscreen
 
-import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,10 +17,9 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.rington.RingtonManagerImpl
-import com.example.audiocutter.functions.audiocutterscreen.view.SetAsDialog
-import com.example.audiocutter.functions.audiocutterscreen.view.SetAsDoneDialog
+import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDialog
+import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDoneDialog
 import com.example.audiocutter.functions.audiocutterscreen.view.TypeAudioSetAs
-import com.example.audiocutter.objects.AudioFile
 
 class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
     SetAsDialog.setAsListener, View.OnClickListener {
@@ -37,16 +35,28 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     var listTmp: MutableList<AudioCutterView> = mutableListOf()
     var isCheckList = true
 
+    val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
+
+        audioCutterAdapter.submitList(ArrayList(listMusic))
+
+    }
+
     private val playerInfoObserver = Observer<PlayerInfo> {
-        audioCutterAdapter.mediaInfoUpdate(it)
+
+        if (audioCutterModel.isPlayingStatus) {
+
+            audioCutterAdapter.submitList(audioCutterModel.updateMediaInfo(it))
+        }
+
     }
 
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+        audioCutterAdapter = AudiocutterAdapter(requireContext())
+
         audioCutterModel = ViewModelProvider(this).get(AudioCutterModel::class.java)
-        observerViewModel()
+        ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
     override fun onCreateView(
@@ -60,59 +70,52 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         return mView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initLists()
+        runOnUI {
+            val listAudioViewLiveData = audioCutterModel.getAllAudioFile()
+            listAudioViewLiveData.removeObserver(listAudioObserver)
+            listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
+        }
+    }
+
     private fun initViews() {
         ivFile = mView.findViewById(R.id.iv_file)
         ivFile.setOnClickListener(this)
         dialog = SetAsDialog(requireContext())
         dialogDone = SetAsDoneDialog(requireContext())
-        audioCutterAdapter = AudiocutterAdapter(activity as Activity)
+
         audioCutterAdapter.setAudioCutterListtener(this)
         rvAudioCutter = mView.findViewById(R.id.rv_audiocutter)
-        initLists()
 
-    }
-
-    private fun observerViewModel() {
-        runOnUI {
-            audioCutterModel.getAllAudioFile().observe(this, Observer {
-                audioCutterAdapter.submitList(it)
-                Log.d(TAG, "observerViewModel: ${it.size}")
-//                audioCutterAdapter.notifyDataSetChanged()
-            })
-        }
 
     }
 
 
     private fun initLists() {
         rvAudioCutter.adapter = audioCutterAdapter
+        rvAudioCutter.setHasFixedSize(true)
         rvAudioCutter.layoutManager = LinearLayoutManager(requireContext())
     }
 
-    override fun play(audioFile: AudioFile) {
-        runOnUI {
-            Log.d("sesm", "play: ")
-            ManagerFactory.getAudioPlayer().play(audioFile)
-        }
+    override fun play(pos: Int) {
+        audioCutterAdapter.submitList(audioCutterModel.playingAudioAndchangeStatus(pos))
 
     }
 
-    override fun pause() {
-        Log.d("sesm", "pause: ")
-        ManagerFactory.getAudioPlayer().pause()
+    override fun pause(pos: Int) {
+        audioCutterAdapter.submitList(audioCutterModel.pauseAudioAndChangeStatus(pos))
     }
 
-    override fun resume() {
-        Log.d("sesm", "resume: ")
-        ManagerFactory.getAudioPlayer().resume()
+    override fun resume(pos: Int) {
+        audioCutterAdapter.submitList(audioCutterModel.resumeAudioAndChangeStatus(pos))
     }
 
 
-    override fun stop() {
-        Log.d("sesm", "stop: ")
-        ManagerFactory.getAudioPlayer().stop()
+    override fun stop(pos: Int) {
+        audioCutterAdapter.submitList(audioCutterModel.stopAudioAndChangeStatus(pos))
     }
-
 
 
     override fun showDialogSetAs(itemAudio: AudioCutterView) {
@@ -156,12 +159,12 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.iv_file -> updateAllFile()
+//            R.id.iv_file -> updateAllFile()
         }
     }
 
     private fun updateAllFile() {
-        stop()
+
         runOnUI {
             try {
                 if (isCheckList) {

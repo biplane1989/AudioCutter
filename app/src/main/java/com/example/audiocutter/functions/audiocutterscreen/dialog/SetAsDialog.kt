@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.audiocutterscreen.view
+package com.example.audiocutter.functions.audiocutterscreen.dialog
 
 import android.app.Dialog
 import android.content.Context
@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import com.example.audiocutter.R
+import com.example.audiocutter.functions.audiocutterscreen.view.TypeAudioSetAs
 import kotlinx.android.synthetic.main.setas_dialog.*
 
 class SetAsDialog(context: Context) : Dialog(context), View.OnClickListener {

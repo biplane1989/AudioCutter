@@ -155,9 +155,7 @@ object AudioPlayerImpl : AudioPlayer {
     override fun resume() {
         if ( playInfoData.playerState == PlayerState.PAUSE) {
             mPlayer.start()
-
         }
-
     }
 
 
