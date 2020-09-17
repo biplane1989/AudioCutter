@@ -114,6 +114,10 @@ class AudioCutterFragment() : BaseFragment(),
                 iv_check.setImageResource(R.drawable.output_audio_manager_screen_icon_uncheck)
             }
             Constance.ACTION_DELETE_ALL -> {
+                // check nếu tất cả đã xóa thì ẩn nút selectall
+                if (audioCutterViewModel.isAllChecked()) {
+                    cl_delete_all.visibility = View.GONE
+                }
                 audioCutterViewModel.deleteAllItemSelected()
             }
         }

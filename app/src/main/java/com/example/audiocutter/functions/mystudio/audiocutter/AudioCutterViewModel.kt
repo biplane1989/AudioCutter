@@ -14,10 +14,27 @@ import com.example.audiocutter.objects.AudioFile
 class AudioCutterViewModel : BaseViewModel() {
 
     private var mListAudioFileView = ArrayList<AudioFileView>()
+
+    // kiểm tra có đang ở trạng thái checkbox delete ko
     var isDeleteStatus = false
+
+    // kiểm tra nhạc có đang chạy hoặc pause ko để update seekbar và timelife
     var isPlayingStatus = false
 
+    // kiểm tra lần đầu phát nhạc có tồn tại ko
+    var mediaFirstPlay = false
+
+    // vị trí cuối cùng được playing trước update data
+    var positionLastPlaying = -1
+
+    // vị trí mới của bài hát đang playing
+    var OldselectedPosition = -1
+
+
     suspend fun getData(): LiveData<List<AudioFileView>> {
+
+        var oldAudioFileView: AudioFileView
+
         return Transformations.map(
             ManagerFactory.getAudioFileManager().getListAudioCutter()
         ) { listAudioFiles ->
@@ -28,17 +45,33 @@ class AudioCutterViewModel : BaseViewModel() {
                     listAudioFileView.add(AudioFileView(it))
                 }
             } else { // khi thay doi du lieu update
+
+//                nếu đang có 1 audio playing thì gán cho biến mới
+//                if (positionLastPlaying > -1) {
+
+//                    oldAudioFileView = mListAudioFileView.get(positionLastPlaying).copy()
+//                }
+
                 if (isDeleteStatus) {
+                    var index = 0
                     listAudioFiles.forEach {
-                        val audioFileView = AudioFileView(it)
+                        var audioFileView = AudioFileView(it)
 
-                        val itemLoadStatus = audioFileView.itemLoadStatus.copy()
-                        itemLoadStatus.deleteState = DeleteState.UNCHECK
-                        audioFileView.itemLoadStatus = itemLoadStatus
-
+                        // nếu tồn tại audio cũ -> gán lại trạng thái của cũ -> mới  NOTE: luôn luôn chỉ có 1 audio playing nhạc duy nhất
+                        if (index == OldselectedPosition) {  // selectedPosition là vị trí mới mà audio đang playing
+//                            audioFileView = oldAudioFileView
+                            audioFileView.isExpanded = true
+                        } else {
+                            val itemLoadStatus = audioFileView.itemLoadStatus.copy()
+                            itemLoadStatus.deleteState = DeleteState.UNCHECK
+                            audioFileView.itemLoadStatus = itemLoadStatus
+                        }
                         listAudioFileView.add(audioFileView)
+
+
+                        index++
                     }
-                }else{
+                } else {
                     listAudioFiles.forEach {
                         listAudioFileView.add(AudioFileView(it))
                     }
@@ -167,15 +200,6 @@ class AudioCutterViewModel : BaseViewModel() {
     }
 
     fun showPlayingAudio(position: Int): List<AudioFileView> {
-        var index = 0
-        for (item in mListAudioFileView) {
-            if (index != position) {
-                val newItem = item.copy()
-                newItem.isExpanded = false
-                mListAudioFileView[index] = newItem
-            }
-            index++
-        }
         if (mListAudioFileView.get(position).isExpanded) {
             val audioFileView = mListAudioFileView.get(position).copy()
             audioFileView.isExpanded = false
@@ -197,8 +221,32 @@ class AudioCutterViewModel : BaseViewModel() {
         item.itemLoadStatus = itemLoadStatus
         mListAudioFileView[position] = item
 
+        // khi play nhạc reset lại trạng thái các item khác
+        var index = 0
+        for (item in mListAudioFileView) {
+            if (index != position) {
+                val newItem = item.copy()
+                newItem.isExpanded = false
+
+                val itemLoadStatus = newItem.itemLoadStatus.copy()
+                itemLoadStatus.playerState = PlayerState.IDLE
+                newItem.itemLoadStatus = itemLoadStatus
+
+                mListAudioFileView[index] = newItem
+            }
+            index++
+        }
+
         runOnBackground {
+            // nếu lần đầu tiên chưa khởi tạo mediaplay thì chưa stop
+            // mỗi lần phát nhạc sẽ tự động stop mediaplayer
+            if (mediaFirstPlay)
+                ManagerFactory.getAudioPlayer().stop()
             ManagerFactory.getAudioPlayer().play(mListAudioFileView.get(position).audioFile)
+            mediaFirstPlay = true
+
+            // lần cuối cùng trước khi delete -> udpate lại status
+//            positionLastPlaying = position
         }
 
         // trang thai phat nhac
@@ -223,7 +271,6 @@ class AudioCutterViewModel : BaseViewModel() {
     }
 
     fun stopAudioAndChangeStatus(position: Int): List<AudioFileView> {
-
         val item = mListAudioFileView.get(position).copy()
         val itemLoadStatus = item.itemLoadStatus.copy()
         itemLoadStatus.playerState = PlayerState.IDLE
@@ -269,6 +316,7 @@ class AudioCutterViewModel : BaseViewModel() {
         while (i < mListAudioFileView.size) {
             if (mListAudioFileView.get(i).audioFile.file.absoluteFile.equals(playerInfo.currentAudio!!.file.absoluteFile)) {
                 selectedPosition = i
+                OldselectedPosition = selectedPosition
                 break
             }
             i++

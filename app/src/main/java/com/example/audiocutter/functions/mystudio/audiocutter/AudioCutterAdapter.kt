@@ -213,8 +213,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 R.id.ll_audio_item_header -> {
                     val audioFileView = listAudios.get(adapterPosition)
 
-                    audioCutterScreenCallback.stop(adapterPosition)
-
                     when (audioFileView.itemLoadStatus.deleteState) {
                         DeleteState.CHECKED -> {
                             audioCutterScreenCallback.checkDeletePos(adapterPosition)
@@ -226,13 +224,30 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                             audioCutterScreenCallback.isShowPlayingAudio(adapterPosition)
                         }
                     }
+
+
+                    when (audioFileView.itemLoadStatus.playerState) {
+                        PlayerState.IDLE -> {
+                        }
+                        PlayerState.PAUSE -> {
+                            // khi ở trạng thái delete sẽ không stop dc
+                            if (audioFileView.itemLoadStatus.deleteState == DeleteState.HIDE) {
+                                audioCutterScreenCallback.stop(adapterPosition)
+                            }
+                        }
+                        PlayerState.PLAYING -> {
+                            if (audioFileView.itemLoadStatus.deleteState == DeleteState.HIDE) {
+                                audioCutterScreenCallback.stop(adapterPosition)
+                            }
+                        }
+                    }
                 }
                 R.id.iv_pause_play_music -> {
                     val audioFileView = listAudios.get(adapterPosition)
 
                     when (audioFileView.itemLoadStatus.playerState) {
                         PlayerState.IDLE -> {
-
+//                            audioCutterScreenCallback.stop(adapterPosition)
                             audioCutterScreenCallback.play(adapterPosition)
                         }
                         PlayerState.PAUSE -> {
