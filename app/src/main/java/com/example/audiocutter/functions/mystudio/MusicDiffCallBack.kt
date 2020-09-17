@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.mystudio
 
 import androidx.recyclerview.widget.DiffUtil
+import com.example.audiocutter.functions.mystudio.audiocutter.ItemLoadStatus
 
 class MusicDiffCallBack : DiffUtil.ItemCallback<AudioFileView>() {
 
@@ -16,6 +17,7 @@ class MusicDiffCallBack : DiffUtil.ItemCallback<AudioFileView>() {
     }
 
     override fun getChangePayload(oldItem: AudioFileView, newItem: AudioFileView): Any? {
-        return newItem.deleteState
+
+        return newItem.itemLoadStatus
     }
 }

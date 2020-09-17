@@ -9,4 +9,7 @@ object Constance {
     val RINGTONE_TYPE = 0
     val ALARM_TYPE = 1
     val NOTIFICATION_TYPE = 2
+    val DEFAULT_TOTAL_TIME = "/00:00"
+    val DEFAULT_TIME_LIFE = "00:00"
+    val DEFAULT_SEECKBAR = 0
 }

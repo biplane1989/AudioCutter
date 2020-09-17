@@ -9,6 +9,9 @@ import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.main_screen.view.*
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 
 class FakeAudioFileManager : AudioFileManager {
@@ -25,9 +28,16 @@ class FakeAudioFileManager : AudioFileManager {
         listAudioFile = ArrayList<AudioFile>()
         listAudioFile.add(AudioFile(file, "file_name1", 10000, 128))
         listAudioFile.add(AudioFile(file2, "file_name2", 10000, 128))
+        listAudioFile.add(AudioFile(file2, "file_name2", 10000, 128))
+        listAudioFile.add(AudioFile(file2, "file_name2", 10000, 128))
 //        listAudioFile.add(AudioFile(file, "file_name3", 10000, 128))
 //        listAudioFile.add(AudioFile(file, "file_name3", 10000, 128))
         audioFileLiveData.postValue(listAudioFile)
+        MainScope().launch {
+            delay(10000)
+            listAudioFile.removeAt(0)
+            audioFileLiveData.postValue(listAudioFile)
+        }
     }
 
     override suspend fun findAllAudioFiles(context: Context): LiveData<List<AudioFile>> {

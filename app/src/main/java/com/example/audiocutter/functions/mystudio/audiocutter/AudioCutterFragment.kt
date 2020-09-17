@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +16,6 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.functions.mystudio.AudioFileView
 import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.functions.mystudio.DeleteState
 import com.example.audiocutter.functions.mystudio.ShareFragment
 import com.example.audiocutter.functions.mystudio.dialog.*
 import com.example.audiocutter.objects.AudioFile
@@ -42,7 +40,15 @@ class AudioCutterFragment() : BaseFragment(),
     }
 
     private val playerInfoObserver = Observer<PlayerInfo> {
-        audioCutterAdapter.updateMedia(it)
+//        if (!audioCutterViewModel.isDeleteStatus ) {
+//            audioCutterAdapter.submitList(audioCutterViewModel.updatePlayerInfo(it))
+//
+//            Log.d(TAG, "playing:")
+//        }else
+        if (audioCutterViewModel.isPlayingStatus) {
+            audioCutterAdapter.submitList(audioCutterViewModel.updatePlayerInfo(it))
+        }
+
     }
 
     companion object {
@@ -62,6 +68,7 @@ class AudioCutterFragment() : BaseFragment(),
         audioCutterViewModel =
             ViewModelProviders.of(this).get(AudioCutterViewModel::class.java)
         audioCutterAdapter = AudioCutterAdapter(this)
+
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
@@ -94,10 +101,13 @@ class AudioCutterFragment() : BaseFragment(),
     override fun onReceivedAction(fragmentMeta: FragmentMeta) {
 
         when (fragmentMeta.action) {
+            // trang thai isdelete
             Constance.ACTION_UNCHECK -> {
                 audioCutterAdapter.submitList(audioCutterViewModel.changeAutoItemToDelete())
                 cl_delete_all.visibility = View.VISIBLE
+
             }
+            // trang thai undelete
             Constance.ACTION_HIDE -> {
                 audioCutterAdapter.submitList(audioCutterViewModel.changeAutoItemToMore())
                 cl_delete_all.visibility = View.GONE
@@ -109,26 +119,25 @@ class AudioCutterFragment() : BaseFragment(),
         }
     }
 
-    override fun play(audioFile: AudioFile) {
-        runOnUI {
-            ManagerFactory.getAudioPlayer().play(audioFile)
-        }
+    override fun play(position: Int) {
+        audioCutterAdapter.submitList(audioCutterViewModel.playingAudioAndchangeStatus(position))
     }
 
-    override fun pause() {
-        ManagerFactory.getAudioPlayer().pause()
+    override fun pause(position: Int) {
+        audioCutterAdapter.submitList(audioCutterViewModel.pauseAudioAndChangeStatus(position))
     }
 
-    override fun resume() {
-        ManagerFactory.getAudioPlayer().resume()
+    override fun resume(position: Int) {
+
+        audioCutterAdapter.submitList(audioCutterViewModel.resumeAudioAndChangeStatus(position))
     }
 
-    override fun stop() {
-        ManagerFactory.getAudioPlayer().stop()
+    override fun stop(position: Int) {
+        audioCutterAdapter.submitList(audioCutterViewModel.stopAudioAndChangeStatus(position))
     }
 
-    override fun seekTo(position: Int) {
-        ManagerFactory.getAudioPlayer().seek(position)
+    override fun seekTo(cusorPos: Int) {
+        audioCutterViewModel.seekToAudio(cusorPos)
     }
 
     // click item setting
