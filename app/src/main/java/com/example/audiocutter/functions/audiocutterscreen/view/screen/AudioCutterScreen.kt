@@ -18,11 +18,11 @@ import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.core.rington.RingtonManagerImpl
-import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
-import com.example.audiocutter.functions.audiocutterscreen.view.adapter.AudiocutterAdapter
 import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDialog
 import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDoneDialog
+import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import com.example.audiocutter.functions.audiocutterscreen.objs.TypeAudioSetAs
+import com.example.audiocutter.functions.audiocutterscreen.view.adapter.AudiocutterAdapter
 
 class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
     SetAsDialog.setAsListener, View.OnClickListener {
@@ -39,18 +39,14 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     var isCheckList = true
 
     val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-
         audioCutterAdapter.submitList(ArrayList(listMusic))
-
     }
 
     private val playerInfoObserver = Observer<PlayerInfo> {
 
         if (audioCutterModel.isPlayingStatus) {
-
             audioCutterAdapter.submitList(audioCutterModel.updateMediaInfo(it))
         }
-
     }
 
 
@@ -135,6 +131,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
                 rs = RingtonManagerImpl.setRingTone(
                     requireContext(),
                     audioFile = audioCutterItem.audioFile
+//                    audioFile = AudioFile(File(""),"dd",0,0,0, Uri.parse("l"))
                 )
             }
             TypeAudioSetAs.ALARM -> {
@@ -164,6 +161,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 //            R.id.iv_file -> updateAllFile()
         }
     }
+
 
     private fun updateAllFile() {
 
@@ -196,5 +194,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
 
 }
+
+
 
 

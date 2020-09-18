@@ -36,11 +36,9 @@ object AudioPlayerImpl : AudioPlayer {
     fun init(appContext: Context) {
         this.appContext = appContext
         mPlayer = MediaPlayer()
-
-
         audioManager = this.appContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         mPlayer.setOnCompletionListener {
-            Log.d("taih", "setOnCompletionListener")
+            Log.d("sesm", "setOnCompletionListener")
 
             if (playInfoData.playerState != PlayerState.IDLE) {
                 playInfoData.playerState = PlayerState.IDLE
@@ -50,6 +48,12 @@ object AudioPlayerImpl : AudioPlayer {
     }
 
     private fun notifyPlayerDataChanged() {
+
+        Log.d(
+            "taih",
+            "startTimerIfReady: path${playInfoData.currentAudio!!.fileName}   state ${playInfoData.playerState}  duration ${playInfoData.duration}   position ${playInfoData.position}"
+        )
+
         val copy = PlayerInfo(
             playInfoData.currentAudio,
             playInfoData.position,
@@ -66,9 +70,8 @@ object AudioPlayerImpl : AudioPlayer {
 
     override suspend fun play(audioFile: AudioFile): Boolean {
         try {
-            withContext(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
                 synchronized(mPlayer) {
-                    Log.d("taih", "sync start play")
                     stop()
                     if (playInfoData.playerState != PlayerState.IDLE) {
                         playInfoData.playerState = PlayerState.IDLE
@@ -82,7 +85,6 @@ object AudioPlayerImpl : AudioPlayer {
                     mPlayer.prepare()
                     mPlayer.start()
                     isStopped = false;
-                    Log.d("taih", "sync end play")
 
                 }
                 startTimerIfReady()
@@ -199,7 +201,7 @@ object AudioPlayerImpl : AudioPlayer {
             while (mainScope.isActive) {
                 var changed = false
 
-                delay(1000)
+                delay(500)
                 synchronized(mPlayer) {
                     playInfoData.duration = mPlayer.duration
                     var currentPosition = mPlayer.currentPosition
@@ -209,17 +211,17 @@ object AudioPlayerImpl : AudioPlayer {
                         mPlayer.stop()
 
                         if (playInfoData.playerState != PlayerState.IDLE) {
-
                             playInfoData.playerState = PlayerState.IDLE
-                            changed = true
+                            changed = false
                         }
                     }
+
                     if (mPlayer.isPlaying) {
                         if (playInfoData.playerState != PlayerState.PLAYING) {
                             playInfoData.playerState = PlayerState.PLAYING
                             changed = true
                         }
-                    } else
+                    } else {
                         if (playInfoData.playerState == PlayerState.PLAYING) {
                             if (isStopped) {
                                 playInfoData.playerState = PlayerState.IDLE
@@ -230,16 +232,15 @@ object AudioPlayerImpl : AudioPlayer {
                             }
                             changed = true
                         }
+                    }
                     if (playInfoData.position != currentPosition && playInfoData.playerState == PlayerState.PLAYING) {
                         changed = true
                         playInfoData.position = currentPosition
-
                     }
                 }
                 if (changed) {
                     notifyPlayerDataChanged()
                 }
-
             }
         }
     }

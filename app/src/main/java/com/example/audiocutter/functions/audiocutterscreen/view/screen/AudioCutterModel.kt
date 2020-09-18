@@ -41,13 +41,13 @@ class AudioCutterModel : BaseViewModel() {
 
     fun controllerAudio(position: Int, state: PlayerState): List<AudioCutterView> {
         when (state) {
+
             PlayerState.IDLE -> {
                 updateControllerAudio(position, PlayerState.PLAYING, true, PlayerState.IDLE)
             }
             PlayerState.PAUSE -> {
                 updateControllerAudio(position, PlayerState.PLAYING, true, PlayerState.PAUSE)
             }
-
             PlayerState.PLAYING -> {
                 updateControllerAudio(position, PlayerState.PAUSE, false, PlayerState.PLAYING)
             }
@@ -75,35 +75,50 @@ class AudioCutterModel : BaseViewModel() {
 
     fun updateMediaInfo(playerInfo: PlayerInfo): List<AudioCutterView> {
         if (playerInfo.currentAudio != null) {
-            if (currentAudioPlaying.absoluteFile != playerInfo.currentAudio!!.file.absoluteFile) {
+            if (!currentAudioPlaying.absoluteFile.equals(playerInfo.currentAudio!!.file.absoluteFile)) {
 
                 val oldPos = getAudioFilePos(currentAudioPlaying)
                 val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
 
                 if (oldPos != -1) {
-                    val audioFile = mListAudio[oldPos].copy()
-                    audioFile.state = PlayerState.IDLE
-                    mListAudio[oldPos] = audioFile
+                    updateState(oldPos, PlayerState.IDLE)
                 }
                 if (newPos != -1) {
-                    val audioFile = mListAudio[newPos].copy()
-                    audioFile.state = playerInfo.playerState
-                    mListAudio[newPos] = audioFile
+                    updateState(newPos, playerInfo.playerState)
                 }
-                currentAudioPlaying = playerInfo.currentAudio!!.file
+
 
             } else {
                 val atPos = getAudioFilePos(currentAudioPlaying)
                 if (atPos != -1) {
-                    val audioFile = mListAudio[atPos].copy()
-                    audioFile.state = playerInfo.playerState
-                    mListAudio[atPos] = audioFile
+                    updateState(atPos, playerInfo.playerState)
                 }
+
                 currentAudioPlaying = playerInfo.currentAudio!!.file
             }
         }
 
         return mListAudio
+    }
+
+
+    private fun getAudioFilePosNew(file: File): Int {
+        var i = 0
+        while (i < mListAudio.size) {
+            if (mListAudio[i].audioFile.equals(file)) {
+                return i
+            }
+            i++
+        }
+
+        return -1
+    }
+
+
+    private fun updateState(pos: Int, state: PlayerState) {
+        val audioFile = mListAudio[pos].copy()
+        audioFile.state = state
+        mListAudio[pos] = audioFile
     }
 
     private fun getAudioFilePos(file: File): Int {

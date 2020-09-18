@@ -6,15 +6,5 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <com.example.audiocutter.functions.audiocutterscreen.view.animation.BarVisualizer
-        android:id="@+id/bar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        custom:avColor="@color/colorAccent"
-        custom:avDensity="0.5"
-        custom:avSpeed="normal"
-        custom:avType="outline"
-        custom:avWidth="4dp" />
-
 
 </LinearLayout>
