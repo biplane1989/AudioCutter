@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.audiocutterscreen
+package com.example.audiocutter.functions.audiocutterscreen.objs
 
 import android.os.Parcelable
 import com.example.audiocutter.core.manager.PlayerState

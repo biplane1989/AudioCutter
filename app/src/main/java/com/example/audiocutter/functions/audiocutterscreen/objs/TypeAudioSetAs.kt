@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.audiocutterscreen.view
+package com.example.audiocutter.functions.audiocutterscreen.objs
 
 enum class TypeAudioSetAs(type: Int) {
     RINGTONE(1),

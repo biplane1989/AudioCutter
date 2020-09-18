@@ -1,21 +1,11 @@
 package com.example.audiocutter.activities
 
-import android.Manifest
-import android.annotation.SuppressLint
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.PermissionChecker
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
-import com.example.audiocutter.functions.audiocutterscreen.AudioCutterScreen
+import com.example.audiocutter.functions.audiocutterscreen.view.screen.AudioCutterScreen
 
 class MainActivity : BaseActivity() {
     private val CODE_WRITE_SETTINGS_PERMISSION: Int = 1000

@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.audiocutterscreen
+package com.example.audiocutter.functions.audiocutterscreen.view.adapter
 
 
 import android.content.Context
@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
+import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 
 class AudiocutterAdapter(val mContext: Context) :
     ListAdapter<AudioCutterView, AudiocutterAdapter.AudiocutterHolder>(Audiodiff()) {
@@ -199,13 +200,11 @@ class AudiocutterAdapter(val mContext: Context) :
         return runningPos
     }
 
-
     interface AudioCutterListener {
 
         fun play(pos: Int)
         fun pause(pos: Int)
         fun resume(pos: Int)
-        fun stop(pos: Int)
         fun showDialogSetAs(itemAudio: AudioCutterView) {
         }
     }

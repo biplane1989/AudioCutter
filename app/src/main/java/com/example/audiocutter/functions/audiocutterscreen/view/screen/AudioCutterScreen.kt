@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.audiocutterscreen
+package com.example.audiocutter.functions.audiocutterscreen.view.screen
 
 import android.os.Bundle
 import android.util.Log
@@ -16,10 +16,13 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
+import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.core.rington.RingtonManagerImpl
+import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
+import com.example.audiocutter.functions.audiocutterscreen.view.adapter.AudiocutterAdapter
 import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDialog
 import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDoneDialog
-import com.example.audiocutter.functions.audiocutterscreen.view.TypeAudioSetAs
+import com.example.audiocutter.functions.audiocutterscreen.objs.TypeAudioSetAs
 
 class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
     SetAsDialog.setAsListener, View.OnClickListener {
@@ -100,22 +103,21 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     }
 
     override fun play(pos: Int) {
-        audioCutterAdapter.submitList(audioCutterModel.playingAudioAndchangeStatus(pos))
+        val state = PlayerState.IDLE
+        audioCutterAdapter.submitList(audioCutterModel.controllerAudio(pos, state))
 
     }
 
     override fun pause(pos: Int) {
-        audioCutterAdapter.submitList(audioCutterModel.pauseAudioAndChangeStatus(pos))
+        val state = PlayerState.PLAYING
+        audioCutterAdapter.submitList(audioCutterModel.controllerAudio(pos, state))
     }
 
     override fun resume(pos: Int) {
-        audioCutterAdapter.submitList(audioCutterModel.resumeAudioAndChangeStatus(pos))
+        val state = PlayerState.PAUSE
+        audioCutterAdapter.submitList(audioCutterModel.controllerAudio(pos, state))
     }
 
-
-    override fun stop(pos: Int) {
-        audioCutterAdapter.submitList(audioCutterModel.stopAudioAndChangeStatus(pos))
-    }
 
 
     override fun showDialogSetAs(itemAudio: AudioCutterView) {

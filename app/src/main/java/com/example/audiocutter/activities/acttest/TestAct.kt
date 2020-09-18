@@ -4,10 +4,8 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.audiocutter.R
-import com.example.audiocutter.functions.audiocutterscreen.view.animation.BarVisualizer
 
 class TestAct : AppCompatActivity() {
-    private var mVisualizer: BarVisualizer? = null
     lateinit var mediaPlayer: MediaPlayer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,7 +17,6 @@ class TestAct : AppCompatActivity() {
 
     private fun initViews() {
 
-        mVisualizer = findViewById(R.id.bar)
     }
 
     override fun onStart() {
@@ -31,7 +28,6 @@ class TestAct : AppCompatActivity() {
     private fun startPlayingAudio() {
         mediaPlayer.start()
 
-        mVisualizer!!.setAudioSessionId(mediaPlayer.audioSessionId)
     }
 
 }

@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.audiocutterscreen
+package com.example.audiocutter.functions.audiocutterscreen.view.screen
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
@@ -7,6 +7,7 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
+import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import java.io.File
 
 class AudioCutterModel : BaseViewModel() {
@@ -38,67 +39,39 @@ class AudioCutterModel : BaseViewModel() {
     }
 
 
-    // chuyen trang thai play nhac
-    fun playingAudioAndchangeStatus(position: Int): List<AudioCutterView> {
+    fun controllerAudio(position: Int, state: PlayerState): List<AudioCutterView> {
+        when (state) {
+            PlayerState.IDLE -> {
+                updateControllerAudio(position, PlayerState.PLAYING, true, PlayerState.IDLE)
+            }
+            PlayerState.PAUSE -> {
+                updateControllerAudio(position, PlayerState.PLAYING, true, PlayerState.PAUSE)
+            }
 
-        val item = mListAudio.get(position).copy()
-
-        item.state = PlayerState.PLAYING
-        mListAudio[position] = item
-
-        runOnBackground {
-            ManagerFactory.getAudioPlayer().play(mListAudio.get(position).audioFile)
+            PlayerState.PLAYING -> {
+                updateControllerAudio(position, PlayerState.PAUSE, false, PlayerState.PLAYING)
+            }
         }
-        // trang thai phat nhac
-        isPlayingStatus = true
         return mListAudio
     }
 
-    fun pauseAudioAndChangeStatus(position: Int): List<AudioCutterView> {
 
-        val item = mListAudio.get(position).copy()
-
-        item.state = PlayerState.PAUSE
-        mListAudio[position] = item
-
+    fun updateControllerAudio(pos: Int, state: PlayerState, rs: Boolean, stateClick: PlayerState) {
+        val item = mListAudio.get(pos).copy()
+        item.state = state
+        mListAudio[pos] = item
         runOnBackground {
             ManagerFactory.getAudioPlayer().pause()
         }
-        // trang thai phat nhac
-        isPlayingStatus = false
-        return mListAudio
-    }
-
-    fun stopAudioAndChangeStatus(pos: Int): List<AudioCutterView> {
-
-        val item = mListAudio.get(pos).copy()
-        item.state = PlayerState.IDLE
-        mListAudio[pos] = item
-
         runOnBackground {
-            ManagerFactory.getAudioPlayer().stop()
+            when (stateClick) {
+                PlayerState.IDLE -> ManagerFactory.getAudioPlayer().play(item.audioFile)
+                PlayerState.PLAYING -> ManagerFactory.getAudioPlayer().pause()
+                PlayerState.PAUSE -> ManagerFactory.getAudioPlayer().resume()
+            }
         }
-        // trang thai phat nhac
-        isPlayingStatus = false
-        return mListAudio
+        isPlayingStatus = rs
     }
-
-    fun resumeAudioAndChangeStatus(position: Int): List<AudioCutterView> {
-
-
-        val item = mListAudio.get(position).copy()
-        item.state = PlayerState.PLAYING
-        mListAudio[position] = item
-
-        runOnBackground {
-            ManagerFactory.getAudioPlayer().resume()
-        }
-        // trang thai phat nhac
-        isPlayingStatus = true
-
-        return mListAudio
-    }
-
 
     fun updateMediaInfo(playerInfo: PlayerInfo): List<AudioCutterView> {
         if (playerInfo.currentAudio != null) {
