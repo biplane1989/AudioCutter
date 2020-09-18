@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_item"
+    android:background="#FFFFFF"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:gravity="center"
     android:orientation="vertical">
 
     <LinearLayout
@@ -36,7 +39,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:scaleType="centerInside"
-                    android:src="@drawable/output_audio_manager_screen_icon_music" />
+                    android:src="@drawable/my_studio_item_icon_music" />
             </androidx.cardview.widget.CardView>
 
 
@@ -87,7 +90,7 @@
                 android:layout_marginRight="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:src="@drawable/output_audio_manager_screen_icon_setting"
+                android:src="@drawable/my_studio_item_icon_setting"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -100,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
                 android:scaleType="centerInside"
-                android:src="@drawable/output_audio_manager_screen_icon_uncheck"
+                android:src="@drawable/my_studio_screen_icon_uncheck"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -127,7 +130,7 @@
             android:layout_marginLeft="10dp"
             android:layout_weight="0.1"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/output_audio_manager_screen_icon_play" />
+            android:src="@drawable/my_studio_item_icon_play" />
 
         <androidx.appcompat.widget.AppCompatSeekBar
             android:id="@+id/sb_music"

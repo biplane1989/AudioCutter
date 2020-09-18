@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.mystudio.audiocutter
+package com.example.audiocutter.functions.mystudio.fragment
 
 import android.os.Bundle
 import android.util.Log
@@ -21,14 +21,15 @@ import com.example.audiocutter.functions.mystudio.dialog.*
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.fragment_audio_cutter.*
 
-class AudioCutterFragment() : BaseFragment(),
+class MyStudioFragment() : BaseFragment(),
     AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener {
 
     val TAG = "giangtd"
-    lateinit var audioCutterViewModel: AudioCutterViewModel
+    lateinit var myStudioViewModel: MyStudioViewModel
     lateinit var audioCutterAdapter: AudioCutterAdapter
     var isDoubleDeleteClicked = true
 
+    // observer data
     val listAudioObserver = Observer<List<AudioFileView>> { listMusic ->
         if (listMusic.size == 0) {
             ll_no_finish_task.visibility = View.VISIBLE
@@ -39,21 +40,30 @@ class AudioCutterFragment() : BaseFragment(),
 
     }
 
+    // observer playInfo mediaplayer
     private val playerInfoObserver = Observer<PlayerInfo> {
-//        if (!audioCutterViewModel.isDeleteStatus ) {
-//            audioCutterAdapter.submitList(audioCutterViewModel.updatePlayerInfo(it))
-//
-//            Log.d(TAG, "playing:")
-//        }else
-        if (audioCutterViewModel.isPlayingStatus) {
-            audioCutterAdapter.submitList(audioCutterViewModel.updatePlayerInfo(it))
+        if (myStudioViewModel.isPlayingStatus) {
+            audioCutterAdapter.submitList(myStudioViewModel.updatePlayerInfo(it))
         }
 
     }
 
     companion object {
-        fun newInstance(): AudioCutterFragment =
-            AudioCutterFragment()
+        var typeAudio = -1
+        val TAG = "FragmentMyStudio"
+        val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
+
+        @JvmStatic
+        fun newInstance(typeAudio: Int): MyStudioFragment {
+            val MyStudio = MyStudioFragment()
+            val bundle = Bundle()
+            bundle.putInt(BUNDLE_NAME_KEY, typeAudio)
+            MyStudio.arguments = bundle
+            this.typeAudio = typeAudio
+            Log.d(TAG, "newInstance: type audio : " + this.typeAudio)
+            return MyStudio
+        }
+
     }
 
     fun init() {
@@ -65,8 +75,8 @@ class AudioCutterFragment() : BaseFragment(),
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioCutterViewModel =
-            ViewModelProviders.of(this).get(AudioCutterViewModel::class.java)
+        myStudioViewModel =
+            ViewModelProviders.of(this).get(MyStudioViewModel::class.java)
         audioCutterAdapter = AudioCutterAdapter(this)
 
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
@@ -84,8 +94,9 @@ class AudioCutterFragment() : BaseFragment(),
         super.onViewCreated(view, savedInstanceState)
         init()
         runOnUI {
+            // nếu đã đăng ký observer thì phải remove
             pb_audio_cutter.visibility = View.VISIBLE
-            val listAudioViewLiveData = audioCutterViewModel.getData()
+            val listAudioViewLiveData = myStudioViewModel.getData(typeAudio)
             listAudioViewLiveData.removeObserver(listAudioObserver)
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
             pb_audio_cutter.visibility = View.GONE
@@ -93,55 +104,61 @@ class AudioCutterFragment() : BaseFragment(),
         }
 
         iv_check.setOnClickListener(View.OnClickListener {
-            audioCutterAdapter.submitList(audioCutterViewModel.clickSelectAllBtn())
+            audioCutterAdapter.submitList(myStudioViewModel.clickSelectAllBtn())
             checkAllItemSelected()
         })
     }
 
+    // nhận listernner từ fragment khác truyền đến
     override fun onReceivedAction(fragmentMeta: FragmentMeta) {
 
         when (fragmentMeta.action) {
             // trang thai isdelete
             Constance.ACTION_UNCHECK -> {
-                audioCutterAdapter.submitList(audioCutterViewModel.changeAutoItemToDelete())
+                audioCutterAdapter.submitList(myStudioViewModel.changeAutoItemToDelete())
                 cl_delete_all.visibility = View.VISIBLE
 
             }
             // trang thai undelete
             Constance.ACTION_HIDE -> {
-                audioCutterAdapter.submitList(audioCutterViewModel.changeAutoItemToMore())
+                audioCutterAdapter.submitList(myStudioViewModel.changeAutoItemToMore())
                 cl_delete_all.visibility = View.GONE
-                iv_check.setImageResource(R.drawable.output_audio_manager_screen_icon_uncheck)
+                iv_check.setImageResource(R.drawable.my_studio_screen_icon_uncheck)
             }
             Constance.ACTION_DELETE_ALL -> {
                 // check nếu tất cả đã xóa thì ẩn nút selectall
-                if (audioCutterViewModel.isAllChecked()) {
+                if (myStudioViewModel.isAllChecked()) {
                     cl_delete_all.visibility = View.GONE
                 }
-                audioCutterViewModel.deleteAllItemSelected()
+                myStudioViewModel.deleteAllItemSelected()
+            }
+            Constance.ACTION_STOP_MUSIC -> {
+                if (myStudioViewModel.isPlayingStatus) {
+                    myStudioViewModel.stopMediaPlayerWhenTabSelect()
+                }
             }
         }
     }
 
     override fun play(position: Int) {
-        audioCutterAdapter.submitList(audioCutterViewModel.playingAudioAndchangeStatus(position))
+        audioCutterAdapter.submitList(myStudioViewModel.playingAudioAndchangeStatus(position))
     }
 
     override fun pause(position: Int) {
-        audioCutterAdapter.submitList(audioCutterViewModel.pauseAudioAndChangeStatus(position))
+        audioCutterAdapter.submitList(myStudioViewModel.pauseAudioAndChangeStatus(position))
     }
 
     override fun resume(position: Int) {
 
-        audioCutterAdapter.submitList(audioCutterViewModel.resumeAudioAndChangeStatus(position))
+        audioCutterAdapter.submitList(myStudioViewModel.resumeAudioAndChangeStatus(position))
     }
 
     override fun stop(position: Int) {
-        audioCutterAdapter.submitList(audioCutterViewModel.stopAudioAndChangeStatus(position))
+        audioCutterAdapter.submitList(myStudioViewModel.stopAudioAndChangeStatus(position))
     }
 
     override fun seekTo(cusorPos: Int) {
-        audioCutterViewModel.seekToAudio(cusorPos)
+        myStudioViewModel.seekToAudio(cusorPos)
     }
 
     // click item setting
@@ -199,22 +216,21 @@ class AudioCutterFragment() : BaseFragment(),
     }
 
     private fun checkAllItemSelected() {
-        if (audioCutterViewModel.isAllChecked()) {
-            iv_check.setImageResource(R.drawable.output_audio_manager_screen_icon_checked)
+        if (myStudioViewModel.isAllChecked()) {
+            iv_check.setImageResource(R.drawable.my_studio_screen_icon_checked)
         } else {
-            iv_check.setImageResource(R.drawable.output_audio_manager_screen_icon_uncheck)
+            iv_check.setImageResource(R.drawable.my_studio_screen_icon_uncheck)
         }
     }
 
     override fun checkDeletePos(position: Int) {
-        audioCutterAdapter.submitList(audioCutterViewModel.checkItemPosition(position))
+        audioCutterAdapter.submitList(myStudioViewModel.checkItemPosition(position))
         checkAllItemSelected()
     }
 
     override fun isShowPlayingAudio(positition: Int) {
-        audioCutterAdapter.submitList(audioCutterViewModel.showPlayingAudio(positition))
+        audioCutterAdapter.submitList(myStudioViewModel.showPlayingAudio(positition))
     }
-
 
     // hanlder linterner on dialog rename
     override fun onRenameClick() {

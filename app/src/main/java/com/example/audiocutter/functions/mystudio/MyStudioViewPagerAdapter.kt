@@ -3,19 +3,17 @@ package com.example.audiocutter.functions.mystudio
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.example.audiocutter.functions.mystudio.audiocutter.AudioCutterFragment
-import com.example.audiocutter.functions.mystudio.audiomerger.AudioMergerFragment
-import com.example.audiocutter.functions.mystudio.audiomixer.AudioMixerFragment
+import com.example.audiocutter.functions.mystudio.fragment.MyStudioFragment
 
-class MyStudioAdapter(
+class MyStudioViewPagerAdapter(
 
     fm: FragmentManager
 ) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
     override fun getItem(position: Int): Fragment = when (position) {
-        0 -> AudioCutterFragment.newInstance()
-        1 -> AudioMergerFragment.newInstance()
-        else -> AudioMixerFragment.newInstance()
+        0 -> MyStudioFragment.newInstance(Constance.AUDIO_CUTTER)
+        1 -> MyStudioFragment.newInstance(Constance.AUDIO_MERGER)
+        else -> MyStudioFragment.newInstance(Constance.AUDIO_MIXER)
     }
 
     override fun getPageTitle(position: Int): CharSequence = when (position) {

@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.mystudio.audiocutter
+package com.example.audiocutter.functions.mystudio.fragment
 
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.mystudio.DeleteState

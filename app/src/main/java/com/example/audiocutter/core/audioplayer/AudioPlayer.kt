@@ -201,7 +201,6 @@ internal object AudioPlayerImpl : AudioPlayer {
             while (mainScope.isActive) {
                 var changed = false
 
-
                 var currentPosition = mPlayer.currentPosition
                 delay(500)
                 if (currentPosition >= mPlayer.duration) {

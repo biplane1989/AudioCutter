@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.functions.mystudio.audiocutter.AudioCutterFragment
+import com.example.audiocutter.functions.mystudio.fragment.MyStudioFragment
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialog
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialogListener
 import com.google.android.material.tabs.TabLayout
@@ -29,7 +29,7 @@ class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val myStudioAdapter = MyStudioAdapter(baseActivity.supportFragmentManager)
+        val myStudioAdapter = MyStudioViewPagerAdapter(baseActivity.supportFragmentManager)
         view_pager.adapter = myStudioAdapter
 
         tab_layout.setupWithViewPager(view_pager)
@@ -37,16 +37,26 @@ class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
+                sendFragmentAction(
+                    MyStudioFragment::class.java.name,
+                    Constance.ACTION_STOP_MUSIC
+                )
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
                 Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
-
+                sendFragmentAction(
+                    MyStudioFragment::class.java.name,
+                    Constance.ACTION_STOP_MUSIC
+                )
             }
 
             override fun onTabReselected(tab: TabLayout.Tab) {
                 Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
-
+                sendFragmentAction(
+                    MyStudioFragment::class.java.name,
+                    Constance.ACTION_STOP_MUSIC
+                )
             }
         })
 
@@ -54,14 +64,14 @@ class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
             cl_default.visibility = View.GONE
             cl_delete.visibility = View.VISIBLE
 
-            sendFragmentAction(AudioCutterFragment::class.java.name, Constance.ACTION_UNCHECK)
+            sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_UNCHECK)
         })
 
         iv_close.setOnClickListener(View.OnClickListener {
             cl_default.visibility = View.VISIBLE
             cl_delete.visibility = View.GONE
 
-            sendFragmentAction(AudioCutterFragment::class.java.name, Constance.ACTION_HIDE)
+            sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_HIDE)
         })
 
 
@@ -78,7 +88,7 @@ class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
     override fun onDeleteClick() {
         Log.d(TAG, "onDeleteClick: ")
         isDeleteClicked = true
-        sendFragmentAction(AudioCutterFragment::class.java.name, Constance.ACTION_DELETE_ALL)
+        sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_DELETE_ALL)
     }
 
     override fun onCancel() {
