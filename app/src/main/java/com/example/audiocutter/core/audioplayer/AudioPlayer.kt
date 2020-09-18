@@ -50,7 +50,7 @@ object AudioPlayerImpl : AudioPlayer {
     private fun notifyPlayerDataChanged() {
 
         Log.d(
-            "taih",
+            "1111",
             "startTimerIfReady: path${playInfoData.currentAudio!!.fileName}   state ${playInfoData.playerState}  duration ${playInfoData.duration}   position ${playInfoData.position}"
         )
 
@@ -70,7 +70,7 @@ object AudioPlayerImpl : AudioPlayer {
 
     override suspend fun play(audioFile: AudioFile): Boolean {
         try {
-            withContext(Dispatchers.Main) {
+            withContext(Dispatchers.IO) {
                 synchronized(mPlayer) {
                     stop()
                     if (playInfoData.playerState != PlayerState.IDLE) {

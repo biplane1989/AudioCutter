@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.audiocutterscreen.view.screen
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseViewModel
@@ -79,7 +80,7 @@ class AudioCutterModel : BaseViewModel() {
 
                 val oldPos = getAudioFilePos(currentAudioPlaying)
                 val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
-
+                Log.d(TAG, "updateMediaInfo: old pos$oldPos   new pos $newPos")
                 if (oldPos != -1) {
                     updateState(oldPos, PlayerState.IDLE)
                 }
