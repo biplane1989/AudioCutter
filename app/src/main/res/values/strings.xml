@@ -38,4 +38,5 @@
     <string name="my_studio_dialog_set_as_alarm">Alarm</string>
     <string name="my_studio_dialog_set_as_notification">Notification</string>
     <string name="my_studio_screen_item_title">Lorem cillum irure</string>
+    <string name="my_studio_fragment_select_all">SELECT ALL</string>
 </resources>

@@ -13,7 +13,7 @@ object Constance {
     val ALARM_TYPE = 1
     val NOTIFICATION_TYPE = 2
 
-    val AUDIO_CUTTER = 0
-    val AUDIO_MERGER = 1
-    val AUDIO_MIXER = 2
+    val AUDIO_CUTTER = 1
+    val AUDIO_MERGER = 2
+    val AUDIO_MIXER = 3
 }

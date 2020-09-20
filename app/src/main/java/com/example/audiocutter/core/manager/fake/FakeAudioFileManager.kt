@@ -16,12 +16,23 @@ import java.io.File
 
 class FakeAudioFileManager : AudioFileManager {
     private val audioFileLiveData = MutableLiveData<List<AudioFile>>()
-    private lateinit var listAudioFile : ArrayList<AudioFile>
+    private val audioFileLiveData1 = MutableLiveData<List<AudioFile>>()
+    private val audioFileLiveData2 = MutableLiveData<List<AudioFile>>()
+
+    private lateinit var listAudioFile: ArrayList<AudioFile>
+    private lateinit var listAudioFile1: ArrayList<AudioFile>
+    private lateinit var listAudioFile2: ArrayList<AudioFile>
+
 //    val file = File(Environment.getExternalStorageDirectory().toString() + "/Music/Lonely.mp3")
 
-    val file = File(Environment.getExternalStorageDirectory().toString() + "/Download/lonely.mp3")
-    val file2 = File(Environment.getExternalStorageDirectory().toString() + "/Download/aloha.mp3")
-//    val file3 = File(Environment.getExternalStorageDirectory().toString() + "/Download/beep.mp3")
+        val file3 = File(Environment.getExternalStorageDirectory().toString() + "/Download/lonely.mp3")
+//    val file4 = File(Environment.getExternalStorageDirectory().toString() + "/Download/samlam.mp3")
+
+
+    val file =
+        File(Environment.getExternalStorageDirectory().toString() + "/Download/doihoamattroi.mp3")
+    val file2 = File(Environment.getExternalStorageDirectory().toString() + "/Download/xaodong.mp3")
+
 
     init {
         Log.d("001", "file : " + file.absoluteFile)
@@ -29,18 +40,25 @@ class FakeAudioFileManager : AudioFileManager {
         listAudioFile = ArrayList<AudioFile>()
         listAudioFile.add(AudioFile(file, "file_name1", 10000, 128))
         listAudioFile.add(AudioFile(file2, "file_name2", 10000, 128))
-//        listAudioFile.add(AudioFile(file3, "file_name2", 10000, 128))
-//        listAudioFile.add(AudioFile(file2, "file_name2", 10000, 128))
-//        listAudioFile.add(AudioFile(file2, "file_name2", 10000, 128))
-//        listAudioFile.add(AudioFile(file, "file_name3", 10000, 128))
-//        listAudioFile.add(AudioFile(file, "file_name3", 10000, 128))
         audioFileLiveData.postValue(listAudioFile)
-//        MainScope().launch {
-//            delay(10000)
-//            listAudioFile.add(AudioFile(file3, "file_name2", 10000, 128))
-////            listAudioFile.removeAt(0)
-//            audioFileLiveData.postValue(listAudioFile)
-//        }
+//
+//        listAudioFile1 = ArrayList<AudioFile>()
+//        listAudioFile1.add(AudioFile(file3, "file_name1", 10000, 128))
+//        listAudioFile1.add(AudioFile(file4, "file_name2", 10000, 128))
+//        audioFileLiveData1.postValue(listAudioFile1)
+
+//        listAudioFile2 = ArrayList<AudioFile>()
+//        listAudioFile2.add(AudioFile(file, "file_name1", 10000, 128))
+//        listAudioFile2.add(AudioFile(file2, "file_name2", 10000, 128))
+//        audioFileLiveData2.postValue(listAudioFile2)
+
+
+        MainScope().launch {
+            delay(10000)
+            listAudioFile.add(AudioFile(file3, "file_name2", 10000, 128))
+            listAudioFile.removeAt(0)
+            audioFileLiveData.postValue(listAudioFile)
+        }
     }
 
     override suspend fun findAllAudioFiles(context: Context): LiveData<List<AudioFile>> {
@@ -71,4 +89,12 @@ class FakeAudioFileManager : AudioFileManager {
         }
         audioFileLiveData.postValue(listAudioFile)
     }
+
+//    override suspend fun deleteFile(items: List<AudioFile>) {
+//        items.forEach {
+//            listAudioFile.remove(it)
+//        }
+//        audioFileLiveData.postValue(listAudioFile)
+//    }
+
 }

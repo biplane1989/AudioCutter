@@ -209,10 +209,10 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         }
 
         override fun onClick(view: View) {
+            val audioFileView = listAudios.get(adapterPosition)
             when (view.id) {
-                R.id.ll_audio_item_header -> {
-                    val audioFileView = listAudios.get(adapterPosition)
 
+                R.id.ll_audio_item_header -> {
                     when (audioFileView.itemLoadStatus.deleteState) {
                         DeleteState.CHECKED -> {
                             audioCutterScreenCallback.checkDeletePos(adapterPosition)
@@ -242,8 +242,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     }
                 }
                 R.id.iv_pause_play_music -> {
-                    val audioFileView = listAudios.get(adapterPosition)
-
                     when (audioFileView.itemLoadStatus.playerState) {
                         PlayerState.IDLE -> {
                             audioCutterScreenCallback.play(adapterPosition)
@@ -258,7 +256,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
 
                 R.id.iv_setting -> {
-                    val audioFileView = listAudios.get(adapterPosition)
                     audioCutterScreenCallback.showMenu(view, audioFileView.audioFile)
                 }
             }

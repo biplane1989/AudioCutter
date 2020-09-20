@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.mystudio.fragment
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseViewModel
@@ -24,23 +25,20 @@ class MyStudioViewModel : BaseViewModel() {
     var isPlayingStatus = false
 
     suspend fun getData(typeAudio: Int): LiveData<List<AudioFileView>> {
-        if (isPlayingStatus) {
-            runOnBackground {
-                ManagerFactory.getAudioPlayer().stop()
-            }
-        }
-        var listAudioFiles: LiveData<List<AudioFile>>
+        val listAudioFiles: LiveData<List<AudioFile>>
         when (typeAudio) {
             Constance.AUDIO_CUTTER -> {
 
                 listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioCutter()
+                Log.d(TAG, "getData: AUDIO_CUTTER : " + typeAudio)
             }
             Constance.AUDIO_MERGER -> {
                 listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioMerger()
+                Log.d(TAG, "getData: AUDIO_MERGER : " + typeAudio)
             }
             else -> {
-                listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioCutter()
-
+                listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioMixer()
+                Log.d(TAG, "getData: AUDIO_Mixer: " + typeAudio)
             }
         }
         return Transformations.map(
@@ -65,6 +63,8 @@ class MyStudioViewModel : BaseViewModel() {
                             newAudioFileView.itemLoadStatus.deleteState =
                                 DeleteState.UNCHECK
                             newListAudioFileView.add(newAudioFileView)
+
+
                         } else {
                             newListAudioFileView.add(AudioFileView(it))
                         }
@@ -247,13 +247,7 @@ class MyStudioViewModel : BaseViewModel() {
     }
 
     // chuyen trang thai play nhac
-    fun playingAudioAndchangeStatus(position: Int): List<AudioFileView> {
-
-        val item = mListAudioFileView.get(position).copy()
-        val itemLoadStatus = item.itemLoadStatus.copy()
-        itemLoadStatus.playerState = PlayerState.PLAYING
-        item.itemLoadStatus = itemLoadStatus
-        mListAudioFileView[position] = item
+    fun playingAudioAndchangeStatus(position: Int) {
 
         runOnBackground {
             ManagerFactory.getAudioPlayer().play(mListAudioFileView.get(position).audioFile)
@@ -261,50 +255,27 @@ class MyStudioViewModel : BaseViewModel() {
 
         // trang thai phat nhac
         isPlayingStatus = true
-        return mListAudioFileView
     }
 
-    fun pauseAudioAndChangeStatus(position: Int): List<AudioFileView> {
-
-        val item = mListAudioFileView.get(position).copy()
-        val itemLoadStatus = item.itemLoadStatus.copy()
-        itemLoadStatus.playerState = PlayerState.PAUSE
-        item.itemLoadStatus = itemLoadStatus
-        mListAudioFileView[position] = item
+    fun pauseAudioAndChangeStatus(position: Int) {
 
         runOnBackground {
             ManagerFactory.getAudioPlayer().pause()
         }
-        return mListAudioFileView
     }
 
-    fun stopAudioAndChangeStatus(position: Int): List<AudioFileView> {
-        val item = mListAudioFileView.get(position).copy()
-        val itemLoadStatus = item.itemLoadStatus.copy()
-        itemLoadStatus.playerState = PlayerState.IDLE
-        item.itemLoadStatus = itemLoadStatus
-        mListAudioFileView[position] = item
+    fun stopAudioAndChangeStatus(position: Int) {
 
         runOnBackground {
             ManagerFactory.getAudioPlayer().stop()
         }
-        return mListAudioFileView
     }
 
-    fun resumeAudioAndChangeStatus(position: Int): List<AudioFileView> {
-
-        val item = mListAudioFileView.get(position).copy()
-        val itemLoadStatus = item.itemLoadStatus.copy()
-        itemLoadStatus.playerState = PlayerState.PLAYING
-        item.itemLoadStatus = itemLoadStatus
-        mListAudioFileView[position] = item
+    fun resumeAudioAndChangeStatus(position: Int) {
 
         runOnBackground {
             ManagerFactory.getAudioPlayer().resume()
         }
-
-
-        return mListAudioFileView
     }
 
     fun seekToAudio(cusorPos: Int) {
@@ -356,14 +327,13 @@ class MyStudioViewModel : BaseViewModel() {
             val itemLoadStatus = newItem.itemLoadStatus.copy()
             newItem.itemLoadStatus = itemLoadStatus
             mListAudioFileView[index] = newItem
-
-            // nếu audio đang playing thì stop
-            runOnBackground {
-                if (isPlayingStatus) {
-                    ManagerFactory.getAudioPlayer().stop()
-                }
-            }
             index++
+        }
+        // nếu audio đang playing thì stop
+        runOnBackground {
+            if (isPlayingStatus) {
+                ManagerFactory.getAudioPlayer().stop()
+            }
         }
     }
 

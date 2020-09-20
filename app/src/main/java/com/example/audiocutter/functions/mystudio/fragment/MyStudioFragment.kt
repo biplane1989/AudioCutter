@@ -19,7 +19,7 @@ import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.ShareFragment
 import com.example.audiocutter.functions.mystudio.dialog.*
 import com.example.audiocutter.objects.AudioFile
-import kotlinx.android.synthetic.main.fragment_audio_cutter.*
+import kotlinx.android.synthetic.main.fragment_my_studio.*
 
 class MyStudioFragment() : BaseFragment(),
     AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener {
@@ -33,6 +33,7 @@ class MyStudioFragment() : BaseFragment(),
     val listAudioObserver = Observer<List<AudioFileView>> { listMusic ->
         if (listMusic.size == 0) {
             ll_no_finish_task.visibility = View.VISIBLE
+            cl_delete_all.visibility = View.GONE
         } else {
             ll_no_finish_task.visibility = View.GONE
         }
@@ -87,7 +88,7 @@ class MyStudioFragment() : BaseFragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_audio_cutter, container, false)
+        return inflater.inflate(R.layout.fragment_my_studio, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -141,20 +142,20 @@ class MyStudioFragment() : BaseFragment(),
     }
 
     override fun play(position: Int) {
-        audioCutterAdapter.submitList(myStudioViewModel.playingAudioAndchangeStatus(position))
+        myStudioViewModel.playingAudioAndchangeStatus(position)
     }
 
     override fun pause(position: Int) {
-        audioCutterAdapter.submitList(myStudioViewModel.pauseAudioAndChangeStatus(position))
+        myStudioViewModel.pauseAudioAndChangeStatus(position)
     }
 
     override fun resume(position: Int) {
 
-        audioCutterAdapter.submitList(myStudioViewModel.resumeAudioAndChangeStatus(position))
+        myStudioViewModel.resumeAudioAndChangeStatus(position)
     }
 
     override fun stop(position: Int) {
-        audioCutterAdapter.submitList(myStudioViewModel.stopAudioAndChangeStatus(position))
+        myStudioViewModel.stopAudioAndChangeStatus(position)
     }
 
     override fun seekTo(cusorPos: Int) {

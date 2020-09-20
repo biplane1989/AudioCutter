@@ -62,7 +62,8 @@
         android:layout_weight="0.07"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="gone"
+        >
 
         <ImageView
             android:id="@+id/iv_close"
@@ -105,7 +106,7 @@
             android:id="@+id/iv_delete"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="10dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
             android:src="@drawable/my_studio_screen_icon_delete"
