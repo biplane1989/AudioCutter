@@ -12,7 +12,6 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.coroutines.*
-import java.io.FileInputStream
 
 object AudioPlayerImpl : AudioPlayer {
     val TAG = AudioPlayerImpl::class.java.name
@@ -76,12 +75,16 @@ object AudioPlayerImpl : AudioPlayer {
                     if (playInfoData.playerState != PlayerState.IDLE) {
                         playInfoData.playerState = PlayerState.IDLE
                         notifyPlayerDataChanged()
+                    } else if (playInfoData.currentAudio != null && playInfoData.currentAudio != audioFile) {
+
+                        playInfoData.playerState = PlayerState.IDLE
+                        notifyPlayerDataChanged()
                     }
                     playInfoData.currentAudio = audioFile
                     mPlayer.reset()
-                    val ins = FileInputStream(audioFile.file)
-                    Log.d(TAG, "checkUri: ${audioFile.uri}")
-                    mPlayer.setDataSource(ins.fd)
+//                    val ins = FileInputStream(audioFile.file)
+//                    mPlayer.setDataSource(ins.fd)
+                    mPlayer.setDataSource(appContext, audioFile.uri!!)
                     mPlayer.prepare()
                     mPlayer.start()
                     isStopped = false;
@@ -93,8 +96,7 @@ object AudioPlayerImpl : AudioPlayer {
             return true
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.d("taih", "Exception ${e.toString()}")
-            Log.d(TAG, "PlayToPosition: ${e.printStackTrace()}")
+            Log.d(TAG, "exception: ${e.printStackTrace()}")
             mPlayer.stop()
             return false
         }
@@ -233,6 +235,7 @@ object AudioPlayerImpl : AudioPlayer {
                             changed = true
                         }
                     }
+
                     if (playInfoData.position != currentPosition && playInfoData.playerState == PlayerState.PLAYING) {
                         changed = true
                         playInfoData.position = currentPosition

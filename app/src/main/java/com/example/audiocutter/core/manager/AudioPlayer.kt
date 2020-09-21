@@ -16,7 +16,9 @@ class PlayerInfo(
     var playerState: PlayerState,
     var duration: Int,
     var volume: Int
-)
+){
+
+}
 
 
 interface AudioPlayer {
