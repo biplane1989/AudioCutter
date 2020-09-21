@@ -20,11 +20,13 @@ class AudioCutterModel : BaseViewModel() {
 
     suspend fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(AudioFileManagerImpl.findAllAudioFiles()) { listAudioFiles ->
-
-            listAudioFiles.forEach {
-                mListAudio.add(AudioCutterView(it))
+            listAudioFiles?.let {
+                listAudioFiles.forEach {
+                    mListAudio.add(AudioCutterView(it))
+                }
+                mListAudio
             }
-            mListAudio
+
         }
     }
 
@@ -76,7 +78,7 @@ class AudioCutterModel : BaseViewModel() {
 
     fun updateMediaInfo(playerInfo: PlayerInfo): List<AudioCutterView> {
         if (playerInfo.currentAudio != null) {
-            if (!currentAudioPlaying.absoluteFile.equals(playerInfo.currentAudio!!.file.absoluteFile)) {
+            if (currentAudioPlaying.absoluteFile != playerInfo.currentAudio!!.file.absoluteFile) {
 
                 val oldPos = getAudioFilePos(currentAudioPlaying)
                 val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
@@ -102,18 +104,6 @@ class AudioCutterModel : BaseViewModel() {
         return mListAudio
     }
 
-
-    private fun getAudioFilePosNew(file: File): Int {
-        var i = 0
-        while (i < mListAudio.size) {
-            if (mListAudio[i].audioFile.equals(file)) {
-                return i
-            }
-            i++
-        }
-
-        return -1
-    }
 
 
     private fun updateState(pos: Int, state: PlayerState) {

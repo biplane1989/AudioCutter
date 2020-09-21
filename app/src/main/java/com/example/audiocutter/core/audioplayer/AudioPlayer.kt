@@ -76,7 +76,6 @@ object AudioPlayerImpl : AudioPlayer {
                         playInfoData.playerState = PlayerState.IDLE
                         notifyPlayerDataChanged()
                     } else if (playInfoData.currentAudio != null && playInfoData.currentAudio != audioFile) {
-
                         playInfoData.playerState = PlayerState.IDLE
                         notifyPlayerDataChanged()
                     }

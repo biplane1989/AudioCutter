@@ -9,6 +9,7 @@ import android.widget.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
@@ -49,7 +50,6 @@ class AudiocutterAdapter(val mContext: Context) :
         holder.tvBitrateAudio.text = "${itemAudioFile.audioFile.bitRate}Kbs/s"
 
         holder.tvNameAudio.text = itemAudioFile.audioFile.fileName
-
         var size = (itemAudioFile.audioFile.size.toDouble() / SIZE_MB)
 
         if (size >= 1) {
