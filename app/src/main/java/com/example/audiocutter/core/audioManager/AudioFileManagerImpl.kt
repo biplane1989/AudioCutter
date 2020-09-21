@@ -275,8 +275,8 @@ class AudioFileManagerImpl : AudioFileManager {
         }
     }
 
-    override suspend fun deleteFile(listAudioFile: List<AudioFile>) {
-        TODO("Not yet implemented")
+    override suspend fun deleteFile(listAudioFile: List<AudioFile>, typeAudio: Int): Boolean {
+        return true
     }
 }
 

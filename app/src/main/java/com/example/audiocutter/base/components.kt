@@ -133,6 +133,7 @@ abstract class BaseFragment : Fragment() {
     protected lateinit var baseActivity: BaseActivity;
     private val mainScope = MainScope()
     private val fragmentChannelObserver = Observer<FragmentMeta> {
+
         if (it.clsName.equals(this::class.java.name)) {
             onReceivedAction(it)
         }

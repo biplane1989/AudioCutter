@@ -15,11 +15,10 @@ class DeleteDialog : BaseDialog() {
         lateinit var dialogListener: DeleteDialogListener
 
         @JvmStatic
-        fun newInstance(listener: DeleteDialogListener, name: String): DeleteDialog {
+        fun newInstance(listener: DeleteDialogListener): DeleteDialog {
             this.dialogListener = listener
             val dialog = DeleteDialog()
             val bundle = Bundle()
-            bundle.putString(BUNDLE_NAME_KEY, name)
             dialog.arguments = bundle
             return dialog
         }

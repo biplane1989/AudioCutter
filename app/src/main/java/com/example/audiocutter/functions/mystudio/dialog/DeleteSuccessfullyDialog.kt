@@ -8,6 +8,10 @@ import kotlinx.android.synthetic.main.my_studio_dialog_delete_successfully.*
 
 class DeleteSuccessfullyDialog : BaseDialog() {
 
+    companion object {
+        val TAG = "DeleteSuccessfullyDialog"
+    }
+
     override fun getLayoutResId(): Int {
         return R.layout.my_studio_dialog_delete_successfully
     }
@@ -18,5 +22,10 @@ class DeleteSuccessfullyDialog : BaseDialog() {
         iv_close.setOnClickListener(View.OnClickListener {
             dialog?.dismiss()
         })
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_TITLE, R.style.DialogGray)
     }
 }

@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.mystudio.fragment
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.ManagerFactory
@@ -16,6 +17,12 @@ class MyStudioViewModel : BaseViewModel() {
 
     private var mListAudioFileView = ArrayList<AudioFileView>()
 
+    var statusResultDelete: MutableLiveData<Boolean> = MutableLiveData()
+
+    fun getStatusResultDelete(): LiveData<Boolean> {
+        return statusResultDelete
+    }
+
     val TAG = "giangtd"
 
     // kiểm tra có đang ở trạng thái checkbox delete ko
@@ -28,22 +35,16 @@ class MyStudioViewModel : BaseViewModel() {
         val listAudioFiles: LiveData<List<AudioFile>>
         when (typeAudio) {
             Constance.AUDIO_CUTTER -> {
-
                 listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioCutter()
-                Log.d(TAG, "getData: AUDIO_CUTTER : " + typeAudio)
             }
             Constance.AUDIO_MERGER -> {
                 listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioMerger()
-                Log.d(TAG, "getData: AUDIO_MERGER : " + typeAudio)
             }
             else -> {
                 listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioMixer()
-                Log.d(TAG, "getData: AUDIO_Mixer: " + typeAudio)
             }
         }
-        return Transformations.map(
-            listAudioFiles
-        ) { items ->
+        return Transformations.map(listAudioFiles) { items ->
             // lan dau tien lay du lieu
             if (mListAudioFileView.size == 0) {
                 items.forEach {
@@ -60,8 +61,7 @@ class MyStudioViewModel : BaseViewModel() {
                     } else {
                         if (isDeleteStatus) {
                             val newAudioFileView = AudioFileView(it)
-                            newAudioFileView.itemLoadStatus.deleteState =
-                                DeleteState.UNCHECK
+                            newAudioFileView.itemLoadStatus.deleteState = DeleteState.UNCHECK
                             newListAudioFileView.add(newAudioFileView)
 
 
@@ -153,6 +153,16 @@ class MyStudioViewModel : BaseViewModel() {
         return true
     }
 
+    // check xem đã có ít nhất 1 item nào được check delete hay chưa
+    fun isChecked(): Boolean {
+        mListAudioFileView.forEach {
+            if (it.itemLoadStatus.deleteState == DeleteState.CHECKED) {
+                return true
+            }
+        }
+        return false
+    }
+
     fun clickSelectAllBtn(): List<AudioFileView> {
         if (isAllChecked()) {
             return unselectAllItems()
@@ -195,9 +205,11 @@ class MyStudioViewModel : BaseViewModel() {
         return mListAudioFileView
     }
 
-    fun deleteAllItemSelected() {
+    suspend fun deleteAllItemSelected(typeAudio: Int): Boolean {
+
         val listAudioItems = ArrayList<AudioFile>()
-        runOnBackground {
+        return runAndWaitOnBackground {
+            var result = false
             mListAudioFileView.forEach {
                 if (it.itemLoadStatus.deleteState == DeleteState.CHECKED) {
                     if (it.itemLoadStatus.playerState != PlayerState.IDLE) {
@@ -206,7 +218,13 @@ class MyStudioViewModel : BaseViewModel() {
                     listAudioItems.add(it.audioFile)
                 }
             }
-            ManagerFactory.getAudioFileManager().deleteFile(listAudioItems)
+
+            Log.d(TAG, "deleteAllItemSelected: " + ManagerFactory.getAudioFileManager()
+                .deleteFile(listAudioItems, typeAudio))
+            if (ManagerFactory.getAudioFileManager().deleteFile(listAudioItems, typeAudio)) {
+                result = true
+            }
+            result
         }
     }
 

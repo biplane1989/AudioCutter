@@ -62,8 +62,7 @@
         android:layout_weight="0.07"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/iv_close"
@@ -122,20 +121,36 @@
         android:layout_weight="0.93"
         android:orientation="vertical">
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_layout"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_gravity="center"
-            app:tabGravity="fill"
-            app:tabIndicatorColor="#FDAA74"
-            app:tabMode="fixed"
-            app:tabSelectedTextColor="#2E3041" />
+            android:layout_height="wrap_content">
 
-        <androidx.viewpager.widget.ViewPager
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_gravity="center"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tabGravity="fill"
+                app:tabIndicatorColor="#FDAA74"
+                app:tabMode="fixed"
+                app:tabSelectedTextColor="#2E3041" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#4DFFB74D"
+                app:layout_constraintBottom_toBottomOf="@+id/tab_layout" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <com.example.audiocutter.ui.mystudio.CustomViewPager
             android:id="@+id/view_pager"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent" />
+
     </LinearLayout>
 
 

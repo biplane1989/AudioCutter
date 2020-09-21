@@ -39,4 +39,10 @@
     <string name="my_studio_dialog_set_as_notification">Notification</string>
     <string name="my_studio_screen_item_title">Lorem cillum irure</string>
     <string name="my_studio_fragment_select_all">SELECT ALL</string>
+    <string name="AUDIO_CUTTER">Audio Cutter</string>
+    <string name="AUDIO_MERGER">Audio Merger</string>
+    <string name="AUDIO_MIXER">Audio Mixer</string>
+    <string name="ORANGE">ORANGE</string>
+    <string name="my_studio_notification_chose_item_delete">Please chose at least one item !</string>
+    <string name="my_studio_delete_fail">Delete Fail !</string>
 </resources>
