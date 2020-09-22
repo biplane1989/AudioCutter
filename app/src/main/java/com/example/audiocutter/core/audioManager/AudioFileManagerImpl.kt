@@ -17,7 +17,6 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.coroutines.CoroutineScope
@@ -64,7 +63,7 @@ object AudioFileManagerImpl : AudioFileManager {
     @SuppressLint("RestrictedApi", "SimpleDateFormat")
     override suspend fun findAllAudioFiles(): LiveData<List<AudioFile>> =
         withContext(Dispatchers.IO) {
-            var projection = emptyArray<String>()
+            var projection: Array<String>
             val resolver = mContext.contentResolver
             val listData = ArrayList<AudioFile>()
             projection = arrayOf(
@@ -80,13 +79,9 @@ object AudioFileManagerImpl : AudioFileManager {
             val cursor =
                 resolver.query(
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    projection,
-                    null,
-                    null,
-                    null
+                    projection, null,
+                    null, null
                 )
-
-
             try {
                 cursor?.let {
                     val clData = cursor.getColumnIndex(projection[0])
@@ -105,24 +100,14 @@ object AudioFileManagerImpl : AudioFileManager {
                         val name = cursor.getString(clName)
                         val duration = cursor.getString(clDuration)
                         val id = cursor.getString(clID)
-
-                        val bitmap = getBitmapByPath(data)
+                        val bitmap =
+                            getBitmapByPath(data)
                         val title = cursor.getString(clTitle)
                         val album = cursor.getString(clAlbum)
                         val artist = cursor.getString(clArtist)
 
                         //get time of currentDay by Longtime
-                        val time = Date(cursor.getLong(clDateAdded) * 1000)
-                        val cal = Calendar.getInstance()
-                        cal.time = time
-                        val month = cal.get(Calendar.MONTH)
-                        val day = cal.get(Calendar.DAY_OF_MONTH)
-                        val year = cal.get(Calendar.YEAR)
-                        val hours = cal.get(Calendar.HOUR_OF_DAY)
-                        val minutes = cal.get(Calendar.MINUTE)
-
-                        val date = "$hours:$minutes , $day/$month/$year"
-
+                        val date = getDateByDateAdded(cursor.getLong(clDateAdded))
                         var genre: String? = "Unknown"
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             genre =
@@ -140,15 +125,27 @@ object AudioFileManagerImpl : AudioFileManager {
                                     " genre $genre  "
                         )
                         if (file.exists()) {
-                            listData.add(
-                                AudioFile(
-                                    file = file, fileName = name,
-                                    size = file.length(), bitRate = 128,
-                                    time = duration.toLong(), uri = uri,
-                                    bitmap = bitmap, title = title, alBum = album,
-                                    artist = artist, dateAdded = date, genre = genre
+                            if (bitmap != null) {
+                                listData.add(
+                                    AudioFile(
+                                        file = file, fileName = name,
+                                        size = file.length(), bitRate = 128,
+                                        time = duration.toLong(), uri = uri,
+                                        bitmap = bitmap, title = title, alBum = album,
+                                        artist = artist, dateAdded = date, genre = genre
+                                    )
                                 )
-                            )
+                            } else {
+                                listData.add(
+                                    AudioFile(
+                                        file = file, fileName = name,
+                                        size = file.length(), bitRate = 128,
+                                        time = duration.toLong(), uri = uri,
+                                        bitmap = null, title = title, alBum = album,
+                                        artist = artist, dateAdded = date, genre = genre
+                                    )
+                                )
+                            }
                         }
 
                         cursor.moveToNext()
@@ -166,23 +163,61 @@ object AudioFileManagerImpl : AudioFileManager {
             listAllAudioFile
         }
 
-
-    fun getBitmapByPath(path: String?): Bitmap? {
-        val mMediaMeta = MediaMetadataRetriever()
-        val buff: ByteArray?
-        var bitmap: Bitmap?
-        val bitmapFac = BitmapFactory.Options()
+    fun deleteFileFromExternal(audioFile: AudioFile): Boolean {
+        var rs = false
+        val resolver = mContext.contentResolver
+        var rowDeleted = 0
         try {
-            mMediaMeta.setDataSource(path)
-            buff = mMediaMeta.embeddedPicture
-            bitmap = BitmapFactory.decodeByteArray(buff, 0, buff!!.size, bitmapFac)
-
+            val contentValues = ContentValues()
+            contentValues.put(MediaStore.Audio.AudioColumns.DATA, audioFile.file.absolutePath)
+            if (audioFile.file.exists() && audioFile.uri != null) {
+                Log.d(TAG, "deleteFile: ${audioFile.uri}")
+                rowDeleted = resolver.delete(audioFile.uri!!, null, null)
+                if (rowDeleted != 0) {
+                    rs = true
+                }
+            }
+            Log.d(TAG, "onClick: result $rs  rowDelete $rowDeleted")
         } catch (e: Exception) {
             e.printStackTrace()
-            bitmap = BitmapFactory.decodeResource(mContext.resources, R.drawable.ic_music)
+            rs = false
         }
-        return bitmap
+        return rs
+    }
 
+    @SuppressLint("SimpleDateFormat")
+    private fun getDateByDateAdded(date: Long): String? {
+        val time = Date(date * 1000)
+        val cal = Calendar.getInstance()
+        cal.time = time
+        val day = cal.get(Calendar.DAY_OF_MONTH)
+        val month = cal.get(Calendar.MONTH)
+        val year = cal.get(Calendar.YEAR)
+        val hours = cal.get(Calendar.HOUR_OF_DAY)
+        val minutes = cal.get(Calendar.MINUTE)
+
+
+        return "$hours:$minutes , $day/$month/$year"
+    }
+
+
+    fun getBitmapByPath(path: String?): Bitmap? {
+        path?.let {
+            val mMediaMeta = MediaMetadataRetriever()
+            val buff: ByteArray?
+            val bitmap: Bitmap?
+            val bitmapfactory = BitmapFactory.Options()
+
+            try {
+                mMediaMeta.setDataSource(path)
+                buff = mMediaMeta.embeddedPicture
+                bitmap = BitmapFactory.decodeByteArray(buff, 0, buff!!.size, bitmapfactory)
+                return bitmap
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        return null
     }
 
     private fun getUriFromFile(id: String, resolver: ContentResolver, file: File): Uri? {
@@ -222,6 +257,8 @@ object AudioFileManagerImpl : AudioFileManager {
         }
     }
 
+
+
     fun registerContentObserVerDeleted() {
         mContext.contentResolver.registerContentObserver(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -236,8 +273,6 @@ object AudioFileManagerImpl : AudioFileManager {
 
     suspend fun saveFileToExternal(audioFile: AudioFile, typeFile: TypeFile): StateFile =
         withContext(Dispatchers.Main) {
-
-//   android 10 androidmanifest    android:requestLegacyExternalStorage="true"
 
             val stat = Environment.getExternalStorageDirectory().path
 
@@ -388,8 +423,6 @@ object AudioFileManagerImpl : AudioFileManager {
 
         listAllByType.addAll(listTypeMerger)
         listAllByType.addAll(listTypeMixer)
-
-
 
         _listAllAudioByType.postValue(listAllByType)
 

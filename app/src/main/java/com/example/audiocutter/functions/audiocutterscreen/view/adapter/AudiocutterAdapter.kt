@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.audiocutterscreen.view.adapter
 
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,6 @@ import android.widget.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
@@ -114,10 +114,10 @@ class AudiocutterAdapter(val mContext: Context) :
 
         private fun controllerAudio() {
             val itemAudio = listAudios.get(adapterPosition)
+            Log.d("TAG", "controllerAudio: ${itemAudio.audioFile.file.absolutePath}")
             if (adapterPosition == -1) {
                 return
             }
-
             when (itemAudio.state) {
                 PlayerState.IDLE -> {
                     mCallBack.play(adapterPosition)

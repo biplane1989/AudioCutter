@@ -7,39 +7,71 @@
     android:paddingHorizontal="@dimen/d_16"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/d_56"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:layout_height="@dimen/d_56">
+
+        <EditText
+            android:id="@+id/edt_auciocutter_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_edt_audiocutter_screen"
+            android:paddingStart="40dp"
+            android:singleLine="true"
+            android:visibility="gone">
+
+            <requestFocus />
+        </EditText>
 
         <ImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:id="@+id/iv_audiocutter_screen_back"
+            android:layout_width="@dimen/d_36"
+            android:layout_height="@dimen/d_36"
+            android:layout_centerVertical="true"
             android:src="@drawable/ic_audiocutter_back" />
 
         <TextView
-            android:layout_width="0dp"
+            android:id="@+id/tv_audiocutter_screen"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/d_16"
-            android:layout_weight="1"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="46dp"
+            android:fontFamily="@font/sanfranciscodisplay_bold"
             android:text="MP3 Cutter"
-            android:textColor="@color/colorBack"
-            android:textSize="@dimen/d_18"
-            android:textStyle="bold" />
+            android:textColor="@color/colorBlack"
+            android:textSize="@dimen/d_18" />
+
 
         <ImageView
-            android:id="@+id/iv_file"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginRight="20dp"
+            android:id="@+id/iv_audiocutter_screen_search"
+            android:layout_width="@dimen/d_36"
+            android:layout_height="@dimen/d_36"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_audiocutter_search" />
+
+        <ImageView
+            android:id="@+id/iv_audiocutter_screen_file"
+            android:layout_width="@dimen/d_36"
+            android:layout_height="@dimen/d_36"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@id/iv_audiocutter_screen_search"
             android:src="@drawable/ic_audiocutter_file" />
 
         <ImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/ic_audiocutter_search" />
-    </LinearLayout>
+            android:id="@+id/iv_audiocutter_screen_close"
+            android:layout_width="@dimen/d_36"
+            android:layout_height="@dimen/d_36"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:padding="@dimen/d_5"
+            android:src="@drawable/ic_close"
+            android:visibility="gone" />
+
+
+    </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_audiocutter"
@@ -47,5 +79,18 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         tools:listitem="@layout/item_audio" />
+
+
+    <TextView
+        android:layout_gravity="center"
+        android:id="@+id/tv_empty_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:fontFamily="@font/sanfranciscodisplay_regular"
+        android:text="No result."
+        android:visibility="gone"
+        android:textColor="@color/colorgray"
+        android:textSize="@dimen/d_18" />
 
 </LinearLayout>
