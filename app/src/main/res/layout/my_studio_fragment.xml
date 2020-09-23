@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
     <ProgressBar
         android:id="@+id/pb_audio_cutter"
         style="@style/Widget.AppCompat.ProgressBar"
@@ -15,7 +14,6 @@
         android:layout_gravity="center"
         android:indeterminate="true"
         android:indeterminateBehavior="repeat"
-        android:indeterminateTint="#FDAA74"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

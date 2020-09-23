@@ -18,6 +18,8 @@ import com.example.audiocutter.functions.mystudio.MusicDiffCallBack
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
 import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 interface AudioCutterScreenCallback {
     fun play(position: Int)
@@ -95,6 +97,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
                     holder.tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
                     holder.tvTotal.text = Constance.TIME_TOTAL_DEFAULT
+                    holder.sbMusic.progress = 0
                 }
             }
         }
@@ -131,12 +134,21 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             val audioFileView = getItem(adapterPosition)
 
             tvTitle.setText(audioFileView.audioFile.fileName)
-            tvInfo.setText(audioFileView.audioFile.size.toString() + " MB" + " | " + audioFileView.audioFile.bitRate.toString() + "kb/s")
+            if (audioFileView.audioFile.size / (1024 * 1024) > 0) {
 
-            audioFileView.audioFile.file.absoluteFile?.let {
-                Glide.with(itemView.context).load(audioFileView.audioFile.file.absoluteFile)
-                    .transition(DrawableTransitionOptions.withCrossFade()).dontAnimate()
-                    .into(ivAvatar)
+                tvInfo.setText(
+                    String.format(
+                        "%.1f",
+                        (audioFileView.audioFile.size) / (1024 * 1024).toDouble()
+                    )
+                            + " MB" + " | " + audioFileView.audioFile.bitRate.toString() + "kb/s"
+                )
+            } else {
+                tvInfo.setText(((audioFileView.audioFile.size) / (1024)).toString() + " KB" + " | " + audioFileView.audioFile.bitRate.toString() + "kb/s")
+            }
+
+            audioFileView.audioFile.bitmap?.let {
+                ivAvatar.setImageBitmap(it)
             }
 
             if (audioFileView.isExpanded) {
@@ -177,6 +189,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
                     tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
                     tvTotal.text = Constance.TIME_TOTAL_DEFAULT
+                    sbMusic.progress = 0
                 }
             }
 

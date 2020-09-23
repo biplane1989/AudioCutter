@@ -134,13 +134,14 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:tabGravity="fill"
                 app:tabIndicatorColor="#FDAA74"
+                app:tabIndicatorHeight="2dp"
                 app:tabMode="fixed"
                 app:tabSelectedTextColor="#2E3041" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#4DFFB74D"
+                android:background="#F6F6F6"
                 app:layout_constraintBottom_toBottomOf="@+id/tab_layout" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

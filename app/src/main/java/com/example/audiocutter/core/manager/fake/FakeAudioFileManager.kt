@@ -3,6 +3,7 @@ package com.example.audiocutter.core.manager.fake
 import android.os.Environment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.objects.AudioFile
@@ -98,14 +99,15 @@ class FakeAudioFileManager : AudioFileManager {
     override suspend fun getListAudioFileByType(typeFile: Folder): LiveData<List<AudioFile>> {
         when (typeFile) {
             Folder.TYPE_CUTTER -> {
-                return audioFileLiveData
+                return AudioFileManagerImpl.findAllAudioFiles()
             }
             Folder.TYPE_MERGER -> {
-                return audioFileLiveData1
+                return AudioFileManagerImpl.findAllAudioFiles()
             }
             Folder.TYPE_MIXER -> {
-                return audioFileLiveData2
+                return AudioFileManagerImpl.findAllAudioFiles()
             }
+
         }
         return audioFileLiveData
     }

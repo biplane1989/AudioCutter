@@ -38,18 +38,18 @@ class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
         tabPosition = tab_layout.selectedTabPosition
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
+//                Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
                 sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_STOP_MUSIC)
                 tabPosition = tab.position
 
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
-                Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
+//                Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
             }
 
             override fun onTabReselected(tab: TabLayout.Tab) {
-                Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
+//                Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
             }
         })
 
