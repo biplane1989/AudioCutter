@@ -15,6 +15,7 @@ import android.os.Environment
 import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.core.manager.AudioFileManager
@@ -258,7 +259,6 @@ object AudioFileManagerImpl : AudioFileManager {
         }
 
     }
-
 
 
     override fun buildAudioFile(filePath: String): AudioFile {

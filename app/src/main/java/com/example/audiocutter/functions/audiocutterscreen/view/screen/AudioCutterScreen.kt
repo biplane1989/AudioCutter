@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.audiocutterscreen.view.screen
 
+import android.app.Activity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -127,7 +129,6 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     }
 
 
-
     private fun initViews() {
 
         ivFile = mView.findViewById(R.id.iv_audiocutter_screen_file)
@@ -150,6 +151,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     }
 
     fun hideOrShowEditText(status: Int) {
+
         ivClose.visibility = status
         edtSearch.visibility = status
     }
@@ -158,6 +160,17 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         ivSearch.visibility = status
         tvAudioScreen.visibility = status
         ivFile.visibility = status
+    }
+
+
+    fun hideKeyBroad() {
+        val imm =
+            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        var view = requireActivity().currentFocus
+        if (view == null) {
+            view = View(activity)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
 
@@ -239,6 +252,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         rvAudioCutter.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
         audioCutterAdapter.submitList(listTmp)
+        hideKeyBroad()
         hideOrShowEditText(View.GONE)
         hideOrShowView(View.VISIBLE)
     }

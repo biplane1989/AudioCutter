@@ -89,7 +89,7 @@ class AudioCutterModel : BaseViewModel() {
             } else {
                 val atPos = getAudioFilePos(currentAudioPlaying)
                 if (atPos != -1) {
-                    Log.d(TAG, "updateMediaInfo: atPOs   ${mListAudio.get(atPos).state}  ")
+                    Log.d(TAG, "updateMediaInfo: atPOs   ${mListAudio.get(atPos).state}")
                     updateState(atPos, playerInfo.playerState)
                 }
             }

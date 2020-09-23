@@ -2,7 +2,6 @@ package com.example.audiocutter.functions.audiocutterscreen.view.adapter
 
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,6 @@ import android.widget.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
@@ -20,7 +18,6 @@ class AudiocutterAdapter(val mContext: Context) :
     lateinit var mCallBack: AudioCutterListener
     val SIZE_MB = 1024 * 1024
     var listAudios = mutableListOf<AudioCutterView>()
-    var currentHolder: AudiocutterHolder? = null
 
 
 
@@ -47,32 +44,7 @@ class AudiocutterAdapter(val mContext: Context) :
 
 
     override fun onBindViewHolder(holder: AudiocutterHolder, position: Int) {
-        val itemAudioFile = getItem(position)
-        holder.tvBitrateAudio.text = "${itemAudioFile.audioFile.bitRate}Kbs/s"
-
-        holder.tvNameAudio.text = itemAudioFile.audioFile.fileName
-        var size = (itemAudioFile.audioFile.size.toDouble() / SIZE_MB)
-
-        if (size >= 1) {
-            size = Math.floor(size * 10) / 10
-            holder.tvSizeAudio.text = "$size Mb"
-        } else {
-            size = (itemAudioFile.audioFile.size.toDouble() / 1024)
-            size = Math.floor(size * 10) / 10
-            holder.tvSizeAudio.text = "$size Kb"
-        }
-
-        when (itemAudioFile.state ) {
-            PlayerState.PLAYING -> {
-                holder.ivController.setImageResource(R.drawable.ic_audiocutter_pause)
-            }
-            PlayerState.PAUSE -> {
-                holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
-            }
-            PlayerState.IDLE -> {
-                holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
-            }
-        }
+        holder.bind()
 
     }
 
@@ -85,6 +57,20 @@ class AudiocutterAdapter(val mContext: Context) :
         super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
+        } else {
+            val itemAudioFile = getItem(position)
+//            val audioCutterView = payloads.firstOrNull() as AudioCutterView
+            when (itemAudioFile.state) {
+                PlayerState.PLAYING -> {
+                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_pause)
+                }
+                PlayerState.PAUSE -> {
+                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
+                }
+                PlayerState.IDLE -> {
+                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
+                }
+            }
         }
     }
 
@@ -102,6 +88,35 @@ class AudiocutterAdapter(val mContext: Context) :
             lnMenu.setOnClickListener(this)
         }
 
+        fun bind() {
+            val itemAudioFile = getItem(position)
+            tvBitrateAudio.text = "${itemAudioFile.audioFile.bitRate}Kbs/s"
+
+            tvNameAudio.text = itemAudioFile.audioFile.fileName
+            var size = (itemAudioFile.audioFile.size.toDouble() / SIZE_MB)
+
+            if (size >= 1) {
+                size = Math.floor(size * 10) / 10
+                tvSizeAudio.text = "$size Mb"
+            } else {
+                size = (itemAudioFile.audioFile.size.toDouble() / 1024)
+                size = Math.floor(size * 10) / 10
+                tvSizeAudio.text = "$size Kb"
+            }
+
+            when (itemAudioFile.state) {
+                PlayerState.PLAYING -> {
+                    ivController.setImageResource(R.drawable.ic_audiocutter_pause)
+                }
+                PlayerState.PAUSE -> {
+                    ivController.setImageResource(R.drawable.ic_audiocutter_play)
+                }
+                PlayerState.IDLE -> {
+                    ivController.setImageResource(R.drawable.ic_audiocutter_play)
+                }
+            }
+        }
+
 
         override fun onClick(p0: View) {
             val itemAudio = getItem(adapterPosition)
@@ -114,7 +129,6 @@ class AudiocutterAdapter(val mContext: Context) :
 
         private fun controllerAudio() {
             val itemAudio = listAudios.get(adapterPosition)
-            Log.d("TAG", "controllerAudio: ${itemAudio.audioFile.file.absolutePath}")
             if (adapterPosition == -1) {
                 return
             }
@@ -179,6 +193,10 @@ class Audiodiff : DiffUtil.ItemCallback<AudioCutterView>() {
 
     override fun areContentsTheSame(oldItem: AudioCutterView, newItem: AudioCutterView): Boolean {
         return oldItem == newItem
+    }
+
+    override fun getChangePayload(oldItem: AudioCutterView, newItem: AudioCutterView): Any? {
+        return newItem.state
     }
 
 }
