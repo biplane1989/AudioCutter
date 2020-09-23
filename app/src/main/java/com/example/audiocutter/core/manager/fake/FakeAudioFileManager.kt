@@ -1,17 +1,11 @@
 package com.example.audiocutter.core.manager.fake
 
-import android.content.Context
 import android.os.Environment
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.audiocutter.R
+import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.objects.AudioFile
-import kotlinx.android.synthetic.main.main_screen.view.*
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.File
 
 class FakeAudioFileManager : AudioFileManager {
@@ -29,8 +23,10 @@ class FakeAudioFileManager : AudioFileManager {
     val file4 = File(Environment.getExternalStorageDirectory().toString() + "/Download/aloha.mp3")
 
 
-    val file1 = File(Environment.getExternalStorageDirectory()
-        .toString() + "/Download/doihoamattroi.mp3")
+    val file1 = File(
+        Environment.getExternalStorageDirectory()
+            .toString() + "/Download/doihoamattroi.mp3"
+    )
     val file2 = File(Environment.getExternalStorageDirectory().toString() + "/Download/xaodong.mp3")
 
 
@@ -68,38 +64,27 @@ class FakeAudioFileManager : AudioFileManager {
         return AudioFile(File(filePath), "file_name1", 10000, 128)
     }
 
-    override suspend fun getListAudioCutter(): LiveData<List<AudioFile>> {
-
-        return audioFileLiveData
-
+    override fun saveFile(audioFile: AudioFile, typeFile: Folder): Boolean {
+        TODO()
     }
 
-    override suspend fun getListAudioMerger(): LiveData<List<AudioFile>> {
-        return audioFileLiveData1
-    }
-
-    override suspend fun getListAudioMixer(): LiveData<List<AudioFile>> {
-        return audioFileLiveData2
-    }
-
-    override suspend fun deleteFile(items: List<AudioFile>, typeAudio: Int): Boolean {
-
-        when (typeAudio) {
-            0 -> {
+    override suspend fun deleteFile(items: List<AudioFile>, typeFile: Folder): Boolean {
+        when (typeFile) {
+            Folder.TYPE_CUTTER -> {
                 items.forEach {
                     listAudioFile.remove(it)
                 }
                 audioFileLiveData.postValue(listAudioFile)
                 return true
             }
-            1 -> {
+            Folder.TYPE_MERGER -> {
                 items.forEach {
                     listAudioFile1.remove(it)
                 }
                 audioFileLiveData1.postValue(listAudioFile1)
                 return false
             }
-            2 -> {
+            Folder.TYPE_MIXER -> {
                 items.forEach {
                     listAudioFile2.remove(it)
                 }
@@ -108,5 +93,20 @@ class FakeAudioFileManager : AudioFileManager {
             }
             else -> return false
         }
+    }
+
+    override suspend fun getListAudioFileByType(typeFile: Folder): LiveData<List<AudioFile>> {
+        when (typeFile) {
+            Folder.TYPE_CUTTER -> {
+                return audioFileLiveData
+            }
+            Folder.TYPE_MERGER -> {
+                return audioFileLiveData1
+            }
+            Folder.TYPE_MIXER -> {
+                return audioFileLiveData2
+            }
+        }
+        return audioFileLiveData
     }
 }

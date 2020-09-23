@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.ManagerFactory
+import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.mystudio.AudioFileView
@@ -35,13 +36,13 @@ class MyStudioViewModel : BaseViewModel() {
         val listAudioFiles: LiveData<List<AudioFile>>
         when (typeAudio) {
             Constance.AUDIO_CUTTER -> {
-                listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioCutter()
+                listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_CUTTER)
             }
             Constance.AUDIO_MERGER -> {
-                listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioMerger()
+                listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_MERGER)
             }
             else -> {
-                listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioMixer()
+                listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_MIXER)
             }
         }
         return Transformations.map(listAudioFiles) { items ->
@@ -218,10 +219,20 @@ class MyStudioViewModel : BaseViewModel() {
                     listAudioItems.add(it.audioFile)
                 }
             }
+            var folder = Folder.TYPE_MIXER
+            when(typeAudio){
+                0 -> {
+                    folder = Folder.TYPE_CUTTER
+                }
+                1 -> {
+                    folder = Folder.TYPE_MERGER
+                }
+                2 -> {
+                    folder = Folder.TYPE_MIXER
+                }
+            }
 
-            Log.d(TAG, "deleteAllItemSelected: " + ManagerFactory.getAudioFileManager()
-                .deleteFile(listAudioItems, typeAudio))
-            if (ManagerFactory.getAudioFileManager().deleteFile(listAudioItems, typeAudio)) {
+            if (ManagerFactory.getAudioFileManager().deleteFile(listAudioItems, folder)) {
                 result = true
             }
             result

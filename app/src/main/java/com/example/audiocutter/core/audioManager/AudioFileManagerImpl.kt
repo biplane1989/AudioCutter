@@ -24,8 +24,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -163,7 +161,11 @@ object AudioFileManagerImpl : AudioFileManager {
             listAllAudioFile
         }
 
-    fun deleteFileFromExternal(audioFile: AudioFile): Boolean {
+    override suspend fun deleteFile(listAudioFile: List<AudioFile>, typeFile: Folder): Boolean {
+        TODO("Not yet implemented")
+    }
+
+   /* override fun deleteFile(audioFile: AudioFile): Boolean {
         var rs = false
         val resolver = mContext.contentResolver
         var rowDeleted = 0
@@ -183,7 +185,7 @@ object AudioFileManagerImpl : AudioFileManager {
             rs = false
         }
         return rs
-    }
+    }*/
 
     @SuppressLint("SimpleDateFormat")
     private fun getDateByDateAdded(date: Long): String? {
@@ -270,8 +272,12 @@ object AudioFileManagerImpl : AudioFileManager {
         mContext.contentResolver.unregisterContentObserver(audioFileObserver)
     }
 
+    override fun saveFile(audioFile: AudioFile, typeFile: Folder): Boolean {
+        TODO("Not yet implemented")
+    }
 
-    suspend fun saveFileToExternal(audioFile: AudioFile, typeFile: TypeFile): StateFile =
+
+/* override suspend fun saveFile(audioFile: AudioFile, typeFile: TypeFile): StateFile =
         withContext(Dispatchers.Main) {
 
             val stat = Environment.getExternalStorageDirectory().path
@@ -323,9 +329,9 @@ object AudioFileManagerImpl : AudioFileManager {
                 Log.d(TAG, "saveFileToExternal: out of memory")
                 StateFile.STATE_FULL_MEMORY
             }
-        }
+        }*/
 
-    suspend fun getListAudioFileByType(typeFile: TypeFile): LiveData<List<AudioFile>> {
+    override suspend fun getListAudioFileByType(typeFile: Folder): LiveData<List<AudioFile>> {
         return withContext(Dispatchers.IO) {
 
             val listData = ArrayList<AudioFile>()
@@ -334,9 +340,9 @@ object AudioFileManagerImpl : AudioFileManager {
             val pathParent: String
             try {
                 when (typeFile) {
-                    TypeFile.TYPE_CUTTER -> pathParent = "$SUB_PATH/cutter"
-                    TypeFile.TYPE_MERGER -> pathParent = "$SUB_PATH/merger"
-                    TypeFile.TYPE_MIXER -> pathParent = "$SUB_PATH/mixer"
+                    Folder.TYPE_CUTTER -> pathParent = "$SUB_PATH/cutter"
+                    Folder.TYPE_MERGER -> pathParent = "$SUB_PATH/merger"
+                    Folder.TYPE_MIXER -> pathParent = "$SUB_PATH/mixer"
                 }
                 Log.d(TAG, "getListFileByType: $pathParent")
                 val file = File(pathParent)
@@ -410,9 +416,9 @@ object AudioFileManagerImpl : AudioFileManager {
             : LiveData<List<AudioFile>> {
         listAllByType.clear()
 
-        val listTypeCutter = getListAudioFileByType(TypeFile.TYPE_CUTTER).value!!
-        val listTypeMerger = getListAudioFileByType(TypeFile.TYPE_MERGER).value!!
-        val listTypeMixer = getListAudioFileByType(TypeFile.TYPE_MIXER).value!!
+        val listTypeCutter = getListAudioFileByType(Folder.TYPE_CUTTER).value!!
+        val listTypeMerger = getListAudioFileByType(Folder.TYPE_MERGER).value!!
+        val listTypeMixer = getListAudioFileByType(Folder.TYPE_MIXER).value!!
 
 
         Log.d(TAG, "getAllListByType: ${listTypeCutter.size}")
@@ -433,5 +439,7 @@ object AudioFileManagerImpl : AudioFileManager {
         return listAllAudioByType
 
     }
+
+
 }
 

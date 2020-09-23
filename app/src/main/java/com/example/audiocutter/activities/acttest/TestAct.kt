@@ -34,9 +34,9 @@ class TestAct : AppCompatActivity(), View.OnClickListener {
                 0, Uri.parse("content://media/external/audio/media/414")
             )
 
-            val rs = AudioFileManagerImpl.deleteFileFromExternal(audioFile)
+           /* val rs = AudioFileManagerImpl.deleteFile(audioFile, )*/
 
-            Log.d("TAG", "onClick: $rs")
+            /*Log.d("TAG", "onClick: $rs")*/
         }
     }
 

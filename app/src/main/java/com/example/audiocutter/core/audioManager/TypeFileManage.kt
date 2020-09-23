@@ -1,6 +1,6 @@
 package com.example.audiocutter.core.audioManager
 
-enum class TypeFile(type: String) {
+enum class Folder(type: String) {
     TYPE_CUTTER("cutter"),
     TYPE_MERGER("merger"),
     TYPE_MIXER("mixer")
