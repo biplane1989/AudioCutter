@@ -8,4 +8,6 @@
     <color name="colorgray">#8C8C8C</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorAlpha">#00FFFFFF</color>
+    <color name="main_screen_title_text_color">#2E3041</color>
+    <color name="main_screen_item_text_color">#FFFFFF</color>
 </resources>

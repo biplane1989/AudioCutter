@@ -1,8 +1,280 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/ln_main"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:weightSum="10">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_screen_title_margin_left"
+            android:layout_marginTop="@dimen/main_screen_title_margin_right"
+            android:fontFamily="@font/sanfrancisco_bold"
+            android:text="@string/main_screen_title"
+            android:textColor="@color/main_screen_title_text_color"
+            android:textSize="@dimen/main_screen_title_text_size"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="6">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_mp3_cutter"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginLeft="@dimen/main_screen_item_magrin_left_parent"
+                android:layout_marginRight="@dimen/main_screen_magin_item"
+                android:layout_marginBottom="@dimen/main_screen_magin_item"
+                android:background="@drawable/main_screen_item_selector_mp3_cutter"
+                app:layout_constraintBottom_toTopOf="@id/cl_audio_mixer"
+                app:layout_constraintEnd_toStartOf="@id/cl_audio_merger"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+
+                <ImageView
+                    android:id="@+id/iv_mp3_cutter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/main_screen_item_icon_margin"
+                    android:layout_marginEnd="@dimen/main_screen_item_icon_margin"
+                    android:src="@drawable/main_screen_ic_mp3_cutter"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_mp3_cutter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/main_screen_item_icon_margin"
+                    android:layout_marginBottom="@dimen/main_screen_item_icon_margin"
+                    android:fontFamily="@font/sanfrancisco_bold"
+                    android:text="@string/main_screen_mp3_cutter_text"
+                    android:textColor="@color/main_screen_item_text_color"
+                    android:textSize="@dimen/main_screen_item_text_size"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_audio_merger"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginLeft="@dimen/main_screen_magin_item"
+                android:layout_marginRight="@dimen/main_screen_item_magrin_right_parent"
+                android:layout_marginBottom="@dimen/main_screen_magin_item"
+                android:background="@drawable/main_screen_item_selector_audio_merger"
+                app:layout_constraintBottom_toTopOf="@id/cl_contacts"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/cl_mp3_cutter"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/iv_audio_merger"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/main_screen_item_icon_margin"
+                    android:layout_marginEnd="@dimen/main_screen_item_icon_margin"
+                    android:src="@drawable/main_screen_ic_audio_merger"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_audio_merger"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/main_screen_item_icon_margin"
+                    android:layout_marginBottom="@dimen/main_screen_item_icon_margin"
+                    android:fontFamily="@font/sanfrancisco_bold"
+                    android:text="@string/main_screen_audio_merger_text"
+                    android:textColor="@color/main_screen_item_text_color"
+                    android:textSize="@dimen/main_screen_item_text_size"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_audio_mixer"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginLeft="@dimen/main_screen_item_magrin_left_parent"
+                android:layout_marginTop="@dimen/main_screen_magin_item"
+                android:layout_marginRight="@dimen/main_screen_magin_item"
+                android:layout_marginBottom="@dimen/main_screen_magin_item"
+                android:background="@drawable/main_screen_item_selector_audio_mixer"
+                app:layout_constraintBottom_toTopOf="@id/cl_my_studio"
+                app:layout_constraintEnd_toStartOf="@id/cl_contacts"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cl_mp3_cutter">
+
+                <ImageView
+                    android:id="@+id/iv_audio_mixer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/main_screen_item_icon_margin"
+                    android:layout_marginEnd="@dimen/main_screen_item_icon_margin"
+                    android:src="@drawable/main_screen_ic_audio_mixer"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_audio_mixer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/main_screen_item_icon_margin"
+                    android:layout_marginBottom="@dimen/main_screen_item_icon_margin"
+                    android:fontFamily="@font/sanfrancisco_bold"
+                    android:text="@string/main_screen_audio_mixer_text"
+                    android:textColor="@color/main_screen_item_text_color"
+                    android:textSize="@dimen/main_screen_item_text_size"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_contacts"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginLeft="@dimen/main_screen_magin_item"
+                android:layout_marginTop="@dimen/main_screen_magin_item"
+                android:layout_marginRight="@dimen/main_screen_item_magrin_right_parent"
+                android:layout_marginBottom="@dimen/main_screen_magin_item"
+                android:background="@drawable/main_screen_item_selector_contacts"
+                app:layout_constraintBottom_toTopOf="@id/cl_flash_call"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/cl_audio_mixer"
+                app:layout_constraintTop_toBottomOf="@id/cl_audio_merger">
+
+
+                <ImageView
+                    android:id="@+id/iv_contacts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/main_screen_item_icon_margin"
+                    android:layout_marginEnd="@dimen/main_screen_item_icon_margin"
+                    android:src="@drawable/main_screen_ic_contacts"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_contacts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/main_screen_item_icon_margin"
+                    android:layout_marginBottom="@dimen/main_screen_item_icon_margin"
+                    android:fontFamily="@font/sanfrancisco_bold"
+                    android:text="@string/main_screen_contacts_text"
+                    android:textColor="@color/main_screen_item_text_color"
+                    android:textSize="@dimen/main_screen_item_text_size"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_my_studio"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginLeft="@dimen/main_screen_item_magrin_left_parent"
+                android:layout_marginTop="@dimen/main_screen_magin_item"
+                android:layout_marginRight="@dimen/main_screen_magin_item"
+                android:layout_marginBottom="@dimen/main_screen_item_magrin_bottom_parent"
+                android:background="@drawable/main_screen_item_selector_my_studio"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/cl_flash_call"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cl_audio_mixer">
+
+                <ImageView
+                    android:id="@+id/iv_my_studio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/main_screen_item_icon_margin"
+                    android:layout_marginEnd="@dimen/main_screen_item_icon_margin"
+                    android:src="@drawable/main_screen_ic_my_studio"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_my_studio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/main_screen_item_icon_margin"
+                    android:layout_marginBottom="@dimen/main_screen_item_icon_margin"
+                    android:fontFamily="@font/sanfrancisco_bold"
+                    android:text="@string/main_screen_my_studio_text"
+                    android:textColor="@color/main_screen_item_text_color"
+                    android:textSize="@dimen/main_screen_item_text_size"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_flash_call"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginLeft="@dimen/main_screen_magin_item"
+                android:layout_marginTop="@dimen/main_screen_magin_item"
+                android:layout_marginRight="@dimen/main_screen_item_magrin_right_parent"
+                android:layout_marginBottom="@dimen/main_screen_item_magrin_bottom_parent"
+                android:background="@drawable/main_screen_item_selector_flash_call"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/cl_my_studio"
+                app:layout_constraintTop_toBottomOf="@id/cl_contacts">
+
+                <ImageView
+                    android:id="@+id/iv_flash_call"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/main_screen_item_icon_margin"
+                    android:layout_marginEnd="@dimen/main_screen_item_icon_margin"
+                    android:src="@drawable/main_screen_ic_flash_call"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_flash_call"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/main_screen_item_icon_margin"
+                    android:layout_marginBottom="@dimen/main_screen_item_icon_margin"
+                    android:fontFamily="@font/sanfrancisco_bold"
+                    android:text="@string/main_screen_flash_call_text"
+                    android:textColor="@color/main_screen_item_text_color"
+                    android:textSize="@dimen/main_screen_item_text_size"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
 
 </LinearLayout>
