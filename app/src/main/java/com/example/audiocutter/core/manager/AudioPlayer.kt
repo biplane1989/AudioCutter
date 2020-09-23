@@ -7,7 +7,6 @@ enum class PlayerState(value: Int) {
     IDLE(1),
     PLAYING(2),
     PAUSE(3)
-
 }
 
 class PlayerInfo(
@@ -16,10 +15,7 @@ class PlayerInfo(
     var playerState: PlayerState,
     var duration: Int,
     var volume: Int
-){
-
-}
-
+)
 
 interface AudioPlayer {
     suspend fun play(audioFile: AudioFile): Boolean
