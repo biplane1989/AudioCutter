@@ -46,6 +46,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     lateinit var tvEmptyList: TextView
     lateinit var ivClose: ImageView
     lateinit var edtSearch: EditText
+    var currentPos = -1
 
 
     var listTmp: MutableList<AudioCutterView> = mutableListOf()
@@ -92,7 +93,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                seachAudioByName(edtSearch.text.toString())
+                searchAudioByName(edtSearch.text.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -101,7 +102,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         })
     }
 
-    private fun seachAudioByName(yourTextSearch: String) {
+    private fun searchAudioByName(yourTextSearch: String) {
         rvAudioCutter.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
         if (yourTextSearch.isEmpty()) {
@@ -169,17 +170,20 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     }
 
     override fun play(pos: Int) {
+        currentPos = pos
         val state = PlayerState.IDLE
         audioCutterAdapter.submitList(audioCutterModel.controllerAudio(pos, state))
 
     }
 
     override fun pause(pos: Int) {
+        currentPos = pos
         val state = PlayerState.PLAYING
         audioCutterAdapter.submitList(audioCutterModel.controllerAudio(pos, state))
     }
 
     override fun resume(pos: Int) {
+        currentPos = pos
         val state = PlayerState.PAUSE
         audioCutterAdapter.submitList(audioCutterModel.controllerAudio(pos, state))
     }
@@ -252,6 +256,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         runOnUI {
             try {
                 if (isCheckList) {
+                    ManagerFactory.getAudioPlayer().stop()
                     audioCutterModel.getAllFileByType().observe(this, Observer {
                         listTmp.clear()
                         listTmp.addAll(it.toMutableList())
@@ -265,6 +270,9 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
                         audioCutterAdapter.submitList(listTmp)
                         isCheckList = true
                     })
+                }
+                if (currentPos != -1) {
+                    ManagerFactory.getAudioPlayer().stop()
                 }
                 Log.d(TAG, "updateAllFile: check $isCheckList    listSize ${listTmp.size}")
             } catch (e: Exception) {

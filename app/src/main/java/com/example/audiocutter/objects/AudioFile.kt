@@ -18,7 +18,7 @@ class AudioFile(
     val artist: String? = "",
     val dateAdded: String? = "",
     val genre: String? = ""
-): Serializable {
+) {
 
     override fun equals(other: Any?): Boolean {
         if (other is AudioFile) {

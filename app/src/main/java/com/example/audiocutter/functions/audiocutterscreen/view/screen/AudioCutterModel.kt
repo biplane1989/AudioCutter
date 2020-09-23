@@ -43,6 +43,9 @@ class AudioCutterModel : BaseViewModel() {
     }
 
 
+
+
+
     fun controllerAudio(position: Int, state: PlayerState): List<AudioCutterView> {
         when (state) {
 
@@ -56,9 +59,8 @@ class AudioCutterModel : BaseViewModel() {
                 updateControllerAudio(position, PlayerState.PAUSE, false, PlayerState.PLAYING)
             }
         }
-        mListAudio.clear()
-        mListSearch.addAll(mListSearch)
-        return mListSearch
+
+        return mListAudio
     }
 
 
@@ -66,9 +68,7 @@ class AudioCutterModel : BaseViewModel() {
         val item = mListAudio.get(pos).copy()
         item.state = state
         mListAudio[pos] = item
-        runOnBackground {
-            ManagerFactory.getAudioPlayer().pause()
-        }
+
         runOnBackground {
             when (stateClick) {
                 PlayerState.IDLE -> ManagerFactory.getAudioPlayer().play(item.audioFile)
@@ -80,28 +80,26 @@ class AudioCutterModel : BaseViewModel() {
     }
 
     fun updateMediaInfo(playerInfo: PlayerInfo): List<AudioCutterView> {
+        Log.d(TAG, "updateMediaInfo: ${playerInfo.playerState}")
         if (playerInfo.currentAudio != null) {
             if (!currentAudioPlaying.absoluteFile.equals(playerInfo.currentAudio!!.file.absoluteFile)) {
 
                 val oldPos = getAudioFilePos(currentAudioPlaying)
                 val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
-                Log.d(TAG, "updateMediaInfo: old pos$oldPos   new pos $newPos")
                 if (oldPos != -1) {
                     updateState(oldPos, PlayerState.IDLE)
                 }
                 if (newPos != -1) {
                     updateState(newPos, playerInfo.playerState)
                 }
-
-
             } else {
                 val atPos = getAudioFilePos(currentAudioPlaying)
                 if (atPos != -1) {
+                    Log.d(TAG, "updateMediaInfo: atPOs   ${mListAudio.get(atPos).state}  ")
                     updateState(atPos, playerInfo.playerState)
                 }
-
-                currentAudioPlaying = playerInfo.currentAudio!!.file
             }
+            currentAudioPlaying = playerInfo.currentAudio!!.file
         }
 
         return mListAudio
@@ -136,7 +134,10 @@ class AudioCutterModel : BaseViewModel() {
             if (rs) {
                 mListSearch.add(it)
             }
-            Log.d(TAG, "searchAudio: filename ${it.audioFile.fileName} textsearch $yourTextSearch  result $rs")
+            Log.d(
+                TAG,
+                "searchAudio: filename ${it.audioFile.fileName} textsearch $yourTextSearch  result $rs"
+            )
         }
         return mListSearch
     }

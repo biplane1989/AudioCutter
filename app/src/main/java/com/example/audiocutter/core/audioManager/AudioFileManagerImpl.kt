@@ -24,6 +24,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -43,9 +45,19 @@ object AudioFileManagerImpl : AudioFileManager {
     val listAllAudioFile: LiveData<List<AudioFile>>
         get() = _listAllAudioFile
 
-    private var _listAudioByType = MutableLiveData<List<AudioFile>>(ArrayList())
-    val listAudioByType: LiveData<List<AudioFile>>
-        get() = _listAudioByType
+    private var _listAudioMixer = MutableLiveData<List<AudioFile>>(ArrayList())
+    val listAudioMixer: LiveData<List<AudioFile>>
+        get() = _listAudioMixer
+
+
+    private var _listAudioMeger = MutableLiveData<List<AudioFile>>(ArrayList())
+    val listAudioMeger: LiveData<List<AudioFile>>
+        get() = _listAudioMeger
+
+
+    private var _listAudioCutter = MutableLiveData<List<AudioFile>>(ArrayList())
+    val listAudioCutter: LiveData<List<AudioFile>>
+        get() = _listAudioCutter
 
 
     private var _listAllAudioByType = MutableLiveData<List<AudioFile>>()
@@ -56,136 +68,143 @@ object AudioFileManagerImpl : AudioFileManager {
 
     fun init(context: Context) {
         mContext = context
+        _listAllAudioFile.value = ScanAllFile()
     }
 
-    @SuppressLint("RestrictedApi", "SimpleDateFormat")
-    override suspend fun findAllAudioFiles(): LiveData<List<AudioFile>> =
-        withContext(Dispatchers.IO) {
-            var projection: Array<String>
-            val resolver = mContext.contentResolver
-            val listData = ArrayList<AudioFile>()
-            projection = arrayOf(
-                MediaStore.Audio.Media.DATA,
-                MediaStore.Audio.Media.DISPLAY_NAME,
-                MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media._ID,
-                MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.DATE_ADDED
+
+    private fun ScanAllFile(): List<AudioFile> {
+        var projection: Array<String>
+        val resolver = mContext.contentResolver
+        val listData = ArrayList<AudioFile>()
+        projection = arrayOf(
+            MediaStore.Audio.Media.DATA,
+            MediaStore.Audio.Media.DISPLAY_NAME,
+            MediaStore.Audio.Media.DURATION,
+            MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.TITLE,
+            MediaStore.Audio.Media.ALBUM,
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media.DATE_ADDED
+        )
+        val cursor =
+            resolver.query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                projection, null,
+                null, null
             )
-            val cursor =
-                resolver.query(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    projection, null,
-                    null, null
-                )
-            try {
-                cursor?.let {
-                    val clData = cursor.getColumnIndex(projection[0])
-                    val clName = cursor.getColumnIndex(projection[1])
-                    val clDuration = cursor.getColumnIndex(projection[2])
-                    val clID = cursor.getColumnIndex(projection[3])
-                    val clTitle = cursor.getColumnIndex(projection[4])
-                    val clAlbum = cursor.getColumnIndex(projection[5])
-                    val clArtist = cursor.getColumnIndex(projection[6])
-                    val clDateAdded = cursor.getColumnIndex(projection[7])
+        try {
+            cursor?.let {
+                val clData = cursor.getColumnIndex(projection[0])
+                val clName = cursor.getColumnIndex(projection[1])
+                val clDuration = cursor.getColumnIndex(projection[2])
+                val clID = cursor.getColumnIndex(projection[3])
+                val clTitle = cursor.getColumnIndex(projection[4])
+                val clAlbum = cursor.getColumnIndex(projection[5])
+                val clArtist = cursor.getColumnIndex(projection[6])
+                val clDateAdded = cursor.getColumnIndex(projection[7])
 
 
-                    cursor.moveToFirst()
-                    while (!cursor.isAfterLast) {
-                        val data = cursor.getString(clData)
-                        val name = cursor.getString(clName)
-                        val duration = cursor.getString(clDuration)
-                        val id = cursor.getString(clID)
-                        val bitmap =
-                            getBitmapByPath(data)
-                        val title = cursor.getString(clTitle)
-                        val album = cursor.getString(clAlbum)
-                        val artist = cursor.getString(clArtist)
+                cursor.moveToFirst()
+                while (!cursor.isAfterLast) {
+                    val data = cursor.getString(clData)
+                    val name = cursor.getString(clName)
+                    val duration = cursor.getString(clDuration)
+                    val id = cursor.getString(clID)
+                    val bitmap =
+                        getBitmapByPath(data)
+                    val title = cursor.getString(clTitle)
+                    val album = cursor.getString(clAlbum)
+                    val artist = cursor.getString(clArtist)
 
-                        //get time of currentDay by Longtime
-                        val date = getDateByDateAdded(cursor.getLong(clDateAdded))
-                        var genre: String? = "Unknown"
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            genre =
-                                cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.GENRE))
-                        }
-
-                        val file = File(data)
-                        val uri = getUriFromFile(id, resolver, file)
-                        Log.d(
-                            "TAG",
-                            "findAllAudioFiles: data :$data \n name : $name   \n ID  $id  \n duration: $duration \n sie ${file.length()}   \n URI $uri \n title :$title \n" +
-                                    " album : $album   \n" +
-                                    " artist  $artist  \n" +
-                                    " date: $date \n" +
-                                    " genre $genre  "
-                        )
-                        if (file.exists()) {
-                            if (bitmap != null) {
-                                listData.add(
-                                    AudioFile(
-                                        file = file, fileName = name,
-                                        size = file.length(), bitRate = 128,
-                                        time = duration.toLong(), uri = uri,
-                                        bitmap = bitmap, title = title, alBum = album,
-                                        artist = artist, dateAdded = date, genre = genre
-                                    )
-                                )
-                            } else {
-                                listData.add(
-                                    AudioFile(
-                                        file = file, fileName = name,
-                                        size = file.length(), bitRate = 128,
-                                        time = duration.toLong(), uri = uri,
-                                        bitmap = null, title = title, alBum = album,
-                                        artist = artist, dateAdded = date, genre = genre
-                                    )
-                                )
-                            }
-                        }
-
-                        cursor.moveToNext()
+                    //get time of currentDay by Longtime
+                    val date = getDateByDateAdded(cursor.getLong(clDateAdded))
+                    var genre: String? = "Unknown"
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        genre =
+                            cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.GENRE))
                     }
+
+                    val file = File(data)
+                    val uri = getUriFromFile(id, resolver, file)
+                    Log.d(
+                        "TAG",
+                        "findAllAudioFiles: data :$data \n name : $name   \n ID  $id  \n duration: $duration \n sie ${file.length()}   \n URI $uri \n title :$title \n" +
+                                " album : $album   \n" +
+                                " artist  $artist  \n" +
+                                " date: $date \n" +
+                                " genre $genre  "
+                    )
+                    if (file.exists()) {
+                        if (bitmap != null) {
+                            listData.add(
+                                AudioFile(
+                                    file = file, fileName = name,
+                                    size = file.length(), bitRate = 128,
+                                    time = duration.toLong(), uri = uri,
+                                    bitmap = bitmap, title = title, alBum = album,
+                                    artist = artist, dateAdded = date, genre = genre
+                                )
+                            )
+                        } else {
+                            listData.add(
+                                AudioFile(
+                                    file = file, fileName = name,
+                                    size = file.length(), bitRate = 128,
+                                    time = duration.toLong(), uri = uri,
+                                    bitmap = null, title = title, alBum = album,
+                                    artist = artist, dateAdded = date, genre = genre
+                                )
+                            )
+                        }
+                    }
+
+                    cursor.moveToNext()
                 }
-                Log.d(TAG, "sizeListAllAudioFile: ${listData.size}")
-                _listAllAudioFile.postValue(listData)
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                cursor?.close()
             }
+            Log.d(TAG, "sizeListAllAudioFile: ${listData.size}")
+            _listAllAudioFile.postValue(listData)
 
-            listAllAudioFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            cursor?.close()
         }
 
-    override suspend fun deleteFile(listAudioFile: List<AudioFile>, typeFile: Folder): Boolean {
-        TODO("Not yet implemented")
+        return listData
     }
 
-   /* override fun deleteFile(audioFile: AudioFile): Boolean {
+    override suspend fun findAllAudioFiles(): LiveData<List<AudioFile>> {
+        return listAllAudioFile
+    }
+
+    override suspend fun deleteFile(listAudioFile: List<AudioFile>, typeFile: Folder): Boolean {
         var rs = false
         val resolver = mContext.contentResolver
-        var rowDeleted = 0
+        var rowDeleted: Int
         try {
-            val contentValues = ContentValues()
-            contentValues.put(MediaStore.Audio.AudioColumns.DATA, audioFile.file.absolutePath)
-            if (audioFile.file.exists() && audioFile.uri != null) {
-                Log.d(TAG, "deleteFile: ${audioFile.uri}")
-                rowDeleted = resolver.delete(audioFile.uri!!, null, null)
-                if (rowDeleted != 0) {
-                    rs = true
+            listAudioFile.forEach { audioFile ->
+                if (audioFile.file.exists() && audioFile.uri != null) {
+                    Log.d(TAG, "deleteFile: ${audioFile.uri}")
+                    rowDeleted = resolver.delete(audioFile.uri!!, null, null)
+                    val result = audioFile.file.delete()
+                    if (rowDeleted != 0 && result) {
+                        rs = true
+                    }
                 }
             }
-            Log.d(TAG, "onClick: result $rs  rowDelete $rowDeleted")
+            val listAudio = scanListAudioFileByType(typeFile)
+
+            when (typeFile) {
+                Folder.TYPE_CUTTER -> _listAudioCutter.postValue(listAudio)
+                Folder.TYPE_MIXER -> _listAudioMixer.postValue(listAudio)
+                Folder.TYPE_MERGER -> _listAudioMeger.postValue(listAudio)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             rs = false
         }
         return rs
-    }*/
+    }
 
     @SuppressLint("SimpleDateFormat")
     private fun getDateByDateAdded(date: Long): String? {
@@ -197,7 +216,6 @@ object AudioFileManagerImpl : AudioFileManager {
         val year = cal.get(Calendar.YEAR)
         val hours = cal.get(Calendar.HOUR_OF_DAY)
         val minutes = cal.get(Calendar.MINUTE)
-
 
         return "$hours:$minutes , $day/$month/$year"
     }
@@ -242,19 +260,28 @@ object AudioFileManagerImpl : AudioFileManager {
     }
 
 
+
     override fun buildAudioFile(filePath: String): AudioFile {
-        TODO("Not yet implemented")
+        val fileAudio = File(filePath)
+        val uri = getUriByPath(fileAudio)
+        val duration = getDurationByPath(fileAudio)
+        return AudioFile(
+            fileAudio,
+            fileAudio.name,
+            fileAudio.length(),
+            128,
+            duration.toLong(),
+            uri
+        )
     }
 
     class AudioFileObserver(handler: Handler?) : ContentObserver(handler) {
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             CoroutineScope(Dispatchers.IO).launch {
-
                 Log.d("TAG", "changeList: $uri")
-                val listAllAudio = findAllAudioFiles().value
-                Log.d(TAG, "changeList: ${listAllAudio!!.size}")
+                val listAllAudio = ScanAllFile()
+                Log.d(TAG, "changeList: ${listAllAudio.size}")
                 _listAllAudioFile.postValue(listAllAudio)
-
             }
         }
     }
@@ -272,14 +299,9 @@ object AudioFileManagerImpl : AudioFileManager {
         mContext.contentResolver.unregisterContentObserver(audioFileObserver)
     }
 
-    override fun saveFile(audioFile: AudioFile, typeFile: Folder): Boolean {
-        TODO("Not yet implemented")
-    }
 
-
-/* override suspend fun saveFile(audioFile: AudioFile, typeFile: TypeFile): StateFile =
+    override suspend fun saveFile(audioFile: AudioFile, typeFile: Folder): StateFile =
         withContext(Dispatchers.Main) {
-
             val stat = Environment.getExternalStorageDirectory().path
 
             Log.d(TAG, "saveFileToExternal: $stat")
@@ -295,45 +317,48 @@ object AudioFileManagerImpl : AudioFileManager {
             )
             if (!audioFile.file.isFile || !audioFile.file.isDirectory) {
                 StateFile.STATE_FILE_NOT_FOUND
-            }
-            if (availableSize + currentSize < totalSize) {
-                val SUB_PATH = "${Environment.getExternalStorageDirectory()}/AudioCutter"
-                val pathParent: String
-                try {
-                    when (typeFile) {
-                        TypeFile.TYPE_CUTTER -> pathParent = "$SUB_PATH/cutter"
-                        TypeFile.TYPE_MERGER -> pathParent = "$SUB_PATH/merger"
-                        TypeFile.TYPE_MIXER -> pathParent = "$SUB_PATH/mixer"
-                    }
-                    Log.d(TAG, "saveFileToExternal:pathParent $pathParent")
 
-                    val dic = File(pathParent)
-                    if (!dic.exists()) {
-                        dic.mkdirs()
-                    }
-                    withContext(Dispatchers.IO) {
-                        val fileChild = File(pathParent, audioFile.fileName)
-                        val fout = FileOutputStream(fileChild)
-                        fout.write(audioFile.file.readBytes())
-                        fout.close()
-                    }
-                    Log.d(TAG, "saveFileToExternal: save success")
-                    StateFile.STATE_SAVE_SUCCESS
+            } else
+                if (availableSize + currentSize < totalSize) {
+                    val SUB_PATH = "${Environment.getExternalStorageDirectory()}/AudioCutter"
+                    val pathParent: String
+                    try {
+                        when (typeFile) {
+                            Folder.TYPE_CUTTER -> pathParent = "$SUB_PATH/cutter"
+                            Folder.TYPE_MERGER -> pathParent = "$SUB_PATH/merger"
+                            Folder.TYPE_MIXER -> pathParent = "$SUB_PATH/mixer"
+                        }
+                        Log.d(TAG, "saveFileToExternal:pathParent $pathParent")
 
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    Log.d(TAG, "saveFileToExternal: ${e.printStackTrace()} ")
-                    StateFile.STATE_SAVE_FAIL
+                        val dic = File(pathParent)
+                        if (!dic.exists()) {
+                            dic.mkdirs()
+                        }
+                        withContext(Dispatchers.IO) {
+                            val fileChild = File(pathParent, audioFile.fileName)
+                            val fout = FileOutputStream(fileChild)
+                            fout.write(audioFile.file.readBytes())
+                            fout.close()
+                        }
+                        val listAudio = scanListAudioFileByType(typeFile)
+                        when (typeFile) {
+                            Folder.TYPE_CUTTER -> _listAudioCutter.postValue(listAudio)
+                            Folder.TYPE_MIXER -> _listAudioMixer.postValue(listAudio)
+                            Folder.TYPE_MERGER -> _listAudioMeger.postValue(listAudio)
+                        }
+                        StateFile.STATE_SAVE_SUCCESS
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        Log.d(TAG, "saveFileToExternal: ${e.printStackTrace()} ")
+                        StateFile.STATE_SAVE_FAIL
+                    }
+                } else {
+                    StateFile.STATE_FULL_MEMORY
                 }
-            } else {
-                Log.d(TAG, "saveFileToExternal: out of memory")
-                StateFile.STATE_FULL_MEMORY
-            }
-        }*/
+        }
 
-    override suspend fun getListAudioFileByType(typeFile: Folder): LiveData<List<AudioFile>> {
+    private suspend fun scanListAudioFileByType(typeFile: Folder): List<AudioFile> {
         return withContext(Dispatchers.IO) {
-
             val listData = ArrayList<AudioFile>()
             val SUB_PATH = "${Environment.getExternalStorageDirectory()}/AudioCutter"
 
@@ -350,10 +375,7 @@ object AudioFileManagerImpl : AudioFileManager {
                 listFiles?.let {
 
                     for (itemFile in it) {
-                        val mediaMetadataRetriever = MediaMetadataRetriever()
-                        mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
-                        val duration =
-                            mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!
+                        val duration = getDurationByPath(itemFile)
                         val uri = getUriByPath(itemFile)
 
                         uri?.let {
@@ -373,15 +395,31 @@ object AudioFileManagerImpl : AudioFileManager {
                             "getListFileByType :duration $duration   name  ${itemFile.name}   size  ${itemFile.length()}   URI $uri"
                         )
                     }
-                    _listAudioByType.postValue(listData)
+                    _listAudioMixer.postValue(listData)
 
                     Log.d("taih", "size: ${listData.size}")
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "exception: ${e.printStackTrace()}")
             }
-            listAudioByType
+            listData
         }
+    }
+
+    override suspend fun getListAudioFileByType(typeFile: Folder): LiveData<List<AudioFile>> {
+        _listAudioMixer.value = scanListAudioFileByType(typeFile)
+        return listAudioMixer
+    }
+
+    private fun getDurationByPath(itemFile: File?): String {
+        if (itemFile != null) {
+            val mediaMetadataRetriever = MediaMetadataRetriever()
+            mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
+            val duration =
+                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!
+            return duration
+        }
+        return ""
     }
 
     private fun getUriByPath(itemFile: File): Uri? {
@@ -426,7 +464,6 @@ object AudioFileManagerImpl : AudioFileManager {
         Log.d(TAG, "getAllListByType: ${listTypeMixer.size}")
 
         listAllByType.addAll(listTypeCutter)
-
         listAllByType.addAll(listTypeMerger)
         listAllByType.addAll(listTypeMixer)
 

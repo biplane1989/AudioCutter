@@ -230,6 +230,7 @@ object AudioPlayerImpl : AudioPlayer {
                                 playInfoData.position = currentPosition
                             } else {
                                 playInfoData.playerState = PlayerState.PAUSE
+                                Log.d("nmcode", "startTimerIfReady: ${playInfoData.playerState}")
                             }
                             changed = true
                         }

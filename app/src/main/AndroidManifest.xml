@@ -22,6 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activities.MainActivity">
+
+        </activity>
+        <activity android:name=".activities.acttest.TestAct">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
