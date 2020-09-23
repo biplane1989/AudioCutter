@@ -56,7 +56,9 @@ class AudioCutterModel : BaseViewModel() {
                 updateControllerAudio(position, PlayerState.PAUSE, false, PlayerState.PLAYING)
             }
         }
-        return mListAudio
+        mListAudio.clear()
+        mListSearch.addAll(mListSearch)
+        return mListSearch
     }
 
 
