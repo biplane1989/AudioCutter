@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.audiocutterscreen.view.adapter
 
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,6 +61,7 @@ class AudiocutterAdapter(val mContext: Context) :
             size = Math.floor(size * 10) / 10
             holder.tvSizeAudio.text = "$size Kb"
         }
+
         when (itemAudioFile.state ) {
             PlayerState.PLAYING -> {
                 holder.ivController.setImageResource(R.drawable.ic_audiocutter_pause)
@@ -112,10 +114,10 @@ class AudiocutterAdapter(val mContext: Context) :
 
         private fun controllerAudio() {
             val itemAudio = listAudios.get(adapterPosition)
+            Log.d("TAG", "controllerAudio: ${itemAudio.audioFile.file.absolutePath}")
             if (adapterPosition == -1) {
                 return
             }
-
             when (itemAudio.state) {
                 PlayerState.IDLE -> {
                     mCallBack.play(adapterPosition)

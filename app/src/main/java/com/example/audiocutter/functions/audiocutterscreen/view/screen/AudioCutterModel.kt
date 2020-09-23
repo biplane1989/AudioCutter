@@ -16,28 +16,29 @@ class AudioCutterModel : BaseViewModel() {
     private var currentAudioPlaying: File = File("")
     var isPlayingStatus = false
     private var mListAudio = ArrayList<AudioCutterView>()
+    private var mListSearch = ArrayList<AudioCutterView>()
 
 
     suspend fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(AudioFileManagerImpl.findAllAudioFiles()) { listAudioFiles ->
-            listAudioFiles?.let {
-                listAudioFiles.forEach {
-                    mListAudio.add(AudioCutterView(it))
-                }
-                mListAudio
+            mListAudio.clear()
+            listAudioFiles.forEach {
+                mListAudio.add(AudioCutterView(it))
             }
-
+            mListAudio
         }
     }
 
 
+
     suspend fun getAllFileByType(): LiveData<List<AudioCutterView>> {
         return Transformations.map(AudioFileManagerImpl.getAllListByType()) { listAudioFilebyTypes ->
-            val listAudioCutterItem = ArrayList<AudioCutterView>()
+            val listAllbyType = ArrayList<AudioCutterView>()
+            listAllbyType.clear()
             listAudioFilebyTypes.forEach {
-                listAudioCutterItem.add(AudioCutterView(it))
+                listAllbyType.add(AudioCutterView(it))
             }
-            listAudioCutterItem
+            listAllbyType
         }
     }
 
@@ -78,7 +79,7 @@ class AudioCutterModel : BaseViewModel() {
 
     fun updateMediaInfo(playerInfo: PlayerInfo): List<AudioCutterView> {
         if (playerInfo.currentAudio != null) {
-            if (currentAudioPlaying.absoluteFile != playerInfo.currentAudio!!.file.absoluteFile) {
+            if (!currentAudioPlaying.absoluteFile.equals(playerInfo.currentAudio!!.file.absoluteFile)) {
 
                 val oldPos = getAudioFilePos(currentAudioPlaying)
                 val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
@@ -121,6 +122,25 @@ class AudioCutterModel : BaseViewModel() {
             i++
         }
         return -1
+    }
+
+    fun searchAudio(
+        listTmp: MutableList<AudioCutterView>,
+        yourTextSearch: String
+    ): ArrayList<AudioCutterView> {
+        mListSearch = ArrayList()
+        listTmp.forEach {
+            val rs = it.audioFile.fileName.toLowerCase().contains(yourTextSearch.toLowerCase())
+            if (rs) {
+                mListSearch.add(it)
+            }
+            Log.d(TAG, "searchAudio: filename ${it.audioFile.fileName} textsearch $yourTextSearch  result $rs")
+        }
+        return mListSearch
+    }
+
+    fun getListsearch(): ArrayList<AudioCutterView> {
+        return mListSearch
     }
 
 
