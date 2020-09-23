@@ -16,7 +16,6 @@ class AudioCutterModel : BaseViewModel() {
     private var currentAudioPlaying: File = File("")
     var isPlayingStatus = false
     private var mListAudio = ArrayList<AudioCutterView>()
-    private var mListSearch = ArrayList<AudioCutterView>()
 
 
     suspend fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
@@ -32,23 +31,18 @@ class AudioCutterModel : BaseViewModel() {
 
 
     suspend fun getAllFileByType(): LiveData<List<AudioCutterView>> {
-        return Transformations.map(AudioFileManagerImpl.getAllListByType()) { listAudioFilebyTypes ->
-            val listAllbyType = ArrayList<AudioCutterView>()
-            listAllbyType.clear()
-            listAudioFilebyTypes.forEach {
-                listAllbyType.add(AudioCutterView(it))
+        return Transformations.map(AudioFileManagerImpl.getAllListByType()) { listAudioFiles ->
+            mListAudio.clear()
+            listAudioFiles.forEach {
+                mListAudio.add(AudioCutterView(it))
             }
-            listAllbyType
+            mListAudio
         }
     }
 
 
-
-
-
     fun controllerAudio(position: Int, state: PlayerState): List<AudioCutterView> {
         when (state) {
-
             PlayerState.IDLE -> {
                 updateControllerAudio(position, PlayerState.PLAYING, true, PlayerState.IDLE)
             }
@@ -128,22 +122,18 @@ class AudioCutterModel : BaseViewModel() {
         listTmp: MutableList<AudioCutterView>,
         yourTextSearch: String
     ): ArrayList<AudioCutterView> {
-        mListSearch = ArrayList()
+        mListAudio.clear()
         listTmp.forEach {
             val rs = it.audioFile.fileName.toLowerCase().contains(yourTextSearch.toLowerCase())
             if (rs) {
-                mListSearch.add(it)
+                mListAudio.add(it)
             }
-            Log.d(
-                TAG,
-                "searchAudio: filename ${it.audioFile.fileName} textsearch $yourTextSearch  result $rs"
-            )
         }
-        return mListSearch
+        return mListAudio
     }
 
     fun getListsearch(): ArrayList<AudioCutterView> {
-        return mListSearch
+        return mListAudio
     }
 
 

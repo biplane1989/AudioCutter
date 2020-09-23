@@ -50,7 +50,6 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
 
     var listTmp: MutableList<AudioCutterView> = mutableListOf()
-    var mlistSearch: MutableList<AudioCutterView> = mutableListOf()
     var isCheckList = true
 
     val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
@@ -70,7 +69,6 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         super.onPostCreate(savedInstanceState)
         audioCutterAdapter = AudiocutterAdapter(requireContext())
         audioCutterModel = ViewModelProvider(this).get(AudioCutterModel::class.java)
-        mlistSearch.clear()
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
@@ -87,9 +85,20 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         return mView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initLists()
+        runOnUI {
+            val listAudioViewLiveData = audioCutterModel.getAllAudioFile()
+            listAudioViewLiveData.removeObserver(listAudioObserver)
+            listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
+        }
+    }
+
     private fun checkEdtSearchAudio() {
         edtSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -112,21 +121,11 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
             audioCutterAdapter.submitList(audioCutterModel.getListsearch())
             Log.d(TAG, "seachAudioByName: ${audioCutterModel.getListsearch().size}")
         } else {
-            mlistSearch.clear()
             rvAudioCutter.visibility = View.GONE
             tvEmptyList.visibility = View.VISIBLE
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initLists()
-        runOnUI {
-            val listAudioViewLiveData = audioCutterModel.getAllAudioFile()
-            listAudioViewLiveData.removeObserver(listAudioObserver)
-            listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
-        }
-    }
 
 
     private fun initViews() {
@@ -147,7 +146,6 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
         audioCutterAdapter.setAudioCutterListtener(this)
         rvAudioCutter = mView.findViewById(R.id.rv_audiocutter)
-
 
     }
 
@@ -205,7 +203,6 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
                 rs = RingtonManagerImpl.setRingTone(
                     requireContext(),
                     audioFile = audioCutterItem.audioFile
-//                    audioFile = AudioFile(File(""),"dd",0,0,0, Uri.parse("l"))
                 )
             }
             TypeAudioSetAs.ALARM -> {
@@ -280,6 +277,11 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
             }
 
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        ManagerFactory.getAudioPlayer().stop()
     }
 
 

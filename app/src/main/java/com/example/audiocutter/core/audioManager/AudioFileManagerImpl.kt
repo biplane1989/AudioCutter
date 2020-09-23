@@ -280,7 +280,7 @@ object AudioFileManagerImpl : AudioFileManager {
             CoroutineScope(Dispatchers.IO).launch {
                 Log.d("TAG", "changeList: $uri")
                 val listAllAudio = ScanAllFile()
-                Log.d(TAG, "changeList: ${listAllAudio.size}")
+//                Log.d(TAG, "changeList: ${listAllAudio.size}")
                 _listAllAudioFile.postValue(listAllAudio)
             }
         }
@@ -454,9 +454,9 @@ object AudioFileManagerImpl : AudioFileManager {
             : LiveData<List<AudioFile>> {
         listAllByType.clear()
 
-        val listTypeCutter = getListAudioFileByType(Folder.TYPE_CUTTER).value!!
-        val listTypeMerger = getListAudioFileByType(Folder.TYPE_MERGER).value!!
-        val listTypeMixer = getListAudioFileByType(Folder.TYPE_MIXER).value!!
+        val listTypeCutter = scanListAudioFileByType(Folder.TYPE_CUTTER)
+        val listTypeMerger = scanListAudioFileByType(Folder.TYPE_MERGER)
+        val listTypeMixer = scanListAudioFileByType(Folder.TYPE_MIXER)
 
 
         Log.d(TAG, "getAllListByType: ${listTypeCutter.size}")
