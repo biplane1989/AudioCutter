@@ -13,6 +13,7 @@
         android:layout_height="@dimen/d_56">
 
         <EditText
+            android:textIsSelectable="true"
             android:focusableInTouchMode="true"
             android:id="@+id/edt_auciocutter_search"
             android:layout_width="match_parent"

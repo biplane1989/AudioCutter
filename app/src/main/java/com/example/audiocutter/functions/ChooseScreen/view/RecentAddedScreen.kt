@@ -1,7 +1,6 @@
 package com.example.audiocutter.functions.ChooseScreen.view
 
 import android.app.Activity
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,9 +43,12 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
     lateinit var edtSearch: EditText
     var currentPos = -1
 
+    //rlt_next_recent_parent
+
     lateinit var ivNextRecent: ImageView
     lateinit var tvNextRecent: TextView
     lateinit var rltNextRecent: RelativeLayout
+    lateinit var rltNextRecentParent: RelativeLayout
 
     var listTmp: MutableList<AudioCutterView> = mutableListOf()
     var isCheckList = true
@@ -58,7 +59,6 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
     }
 
     private val playerInfoObserver = Observer<PlayerInfo> {
-
         if (audioRecentModel.isPlayingStatus) {
             audioRecentAdapter.submitList(audioRecentModel.updateMediaInfo(it))
         }
@@ -113,6 +113,7 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
 
     private fun searchAudioByName(yourTextSearch: String) {
         rvAudioRecent.visibility = View.VISIBLE
+        rltNextRecentParent.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
         if (yourTextSearch.isEmpty()) {
             audioRecentAdapter.submitList(listTmp)
@@ -121,6 +122,7 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
             audioRecentAdapter.submitList(audioRecentModel.getListsearch())
         } else {
             rvAudioRecent.visibility = View.GONE
+            rltNextRecentParent.visibility = View.GONE
             tvEmptyList.visibility = View.VISIBLE
         }
     }
@@ -129,6 +131,7 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
     private fun initViews() {
 
         rltNextRecent = mView.findViewById(R.id.rlt_next_recent)
+        rltNextRecentParent = mView.findViewById(R.id.rlt_next_recent_parent)
         ivNextRecent = mView.findViewById(R.id.iv_next_recent)
         tvNextRecent = mView.findViewById(R.id.tv_next_recent)
 
@@ -151,6 +154,13 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
         rvAudioRecent = mView.findViewById(R.id.rv_recent)
 
     }
+
+    fun showKeybroad() {
+        val imm =
+            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+    }
+
 
     fun hideOrShowEditText(status: Int) {
         ivBackEdt.visibility = status
@@ -201,28 +211,31 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
         audioRecentAdapter.submitList(audioRecentModel.controllerAudio(pos, state))
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    override fun changeClickItem(pos: Int, rs: Boolean) {
+    override fun chooseItemAudio(pos: Int, rs: Boolean) {
         audioRecentAdapter.submitList(audioRecentModel.changeItemAudioFile(pos, rs))
 
-
         if (audioRecentModel.checkList()) {
-            rltNextRecent.isEnabled = true
-            rltNextRecent.setBackgroundResource(R.drawable.bg_next_recent_audio_enabled)
-            ivNextRecent.setColorFilter(requireActivity().getColor(R.color.colorWhite))
-            tvNextRecent.setTextColor(requireActivity().getColor(R.color.colorWhite))
+            setColorForView(R.color.colorWhite, R.drawable.bg_next_recent_audio_enabled, true)
         } else {
-            rltNextRecent.isEnabled = false
-            rltNextRecent.setBackgroundResource(R.drawable.bg_next_recent_audio_disabled)
-            ivNextRecent.setColorFilter(requireActivity().getColor(R.color.colorBlack))
-            tvNextRecent.setTextColor(requireActivity().getColor(R.color.colorBlack))
+            setColorForView(R.color.colorBlack, R.drawable.bg_next_recent_audio_disabled, false)
         }
+        if (audioRecentModel.isCheckItem) {
+            showToast("You can select only 2 item")
+        }
+    }
+
+
+    private fun setColorForView(color: Int, bg: Int, rs: Boolean) {
+        rltNextRecent.isEnabled = rs
+        rltNextRecent.setBackgroundResource(bg)
+        ivNextRecent.setColorFilter(requireActivity().resources.getColor(color));
+        tvNextRecent.setTextColor(requireActivity().resources.getColor(color))
     }
 
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.iv_audiorecent_screen_file -> updateAllFile()
+            R.id.iv_audiorecent_screen_file -> changeListFile()
             R.id.iv_recent_screen_search -> searchAudiofile()
             R.id.iv_recent_screen_back_edt -> previousStatus()
             R.id.iv_recent_screen_close -> clearText()
@@ -231,7 +244,14 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
     }
 
     private fun handleAudiofile() {
-        showToast("this is button usage to handle audio")
+        val listItemHandle = audioRecentModel.getListItemChoose()
+
+//        listItemHandle.forEach {
+//            Log.d(TAG, "handleAudiofile: ${it.audioFile.fileName}")
+//        }
+
+        /**place handle listItem choose*/
+
     }
 
     private fun clearText() {
@@ -242,6 +262,7 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
 
     private fun previousStatus() {
         rvAudioRecent.visibility = View.VISIBLE
+        rltNextRecentParent.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
         audioRecentAdapter.submitList(listTmp)
         hideKeyBroad()
@@ -250,12 +271,16 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
     }
 
     private fun searchAudiofile() {
+        showKeybroad()
         hideOrShowEditText(View.VISIBLE)
         hideOrShowView(View.GONE)
     }
 
 
-    private fun updateAllFile() {
+    private fun changeListFile() {
+
+
+        setColorForView(R.color.colorBlack, R.drawable.bg_next_recent_audio_disabled, false)
         runOnUI {
             try {
                 if (isCheckList) {

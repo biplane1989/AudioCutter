@@ -87,12 +87,14 @@ class RecentAdapter(val mContext: Context) :
         val tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_audio_recent)
         val tvSizeAudio = itemView.findViewById<TextView>(R.id.tv_size_audio_recent)
         val tvBitrateAudio = itemView.findViewById<TextView>(R.id.tv_bitrate_audio_recent)
+        val lnItem = itemView.findViewById<LinearLayout>(R.id.ln_item_audio_recent_screen)
 
         val lnMenu = itemView.findViewById<LinearLayout>(R.id.ln_menu_recent)
 
         init {
             ivController.setOnClickListener(this)
             lnMenu.setOnClickListener(this)
+            lnItem.setOnClickListener(this)
         }
 
         fun bind() {
@@ -134,7 +136,8 @@ class RecentAdapter(val mContext: Context) :
             val item = getItem(adapterPosition)
             when (p0.id) {
                 R.id.iv_controller_audio_recent -> controllerAudio()
-                R.id.ln_menu_recent -> mCallBack.changeClickItem(adapterPosition, item.isChecked)
+                R.id.ln_menu_recent -> mCallBack.chooseItemAudio(adapterPosition, item.isChecked)
+                R.id.ln_item_audio_recent_screen -> mCallBack.chooseItemAudio(adapterPosition, item.isChecked)
             }
         }
 
@@ -165,7 +168,7 @@ class RecentAdapter(val mContext: Context) :
         fun play(pos: Int)
         fun pause(pos: Int)
         fun resume(pos: Int)
-        fun changeClickItem(pos: Int, rs: Boolean)
+        fun chooseItemAudio(pos: Int, rs: Boolean)
     }
 }
 

@@ -54,4 +54,5 @@
     <string name="ORANGE">ORANGE</string>
     <string name="my_studio_notification_chose_item_delete">Please chose at least one item !</string>
     <string name="my_studio_delete_fail">Delete Fail !</string>
+    <string name="countFile">2 file</string>
 </resources>

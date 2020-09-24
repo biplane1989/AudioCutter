@@ -176,6 +176,12 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
+    fun showKeybroad() {
+        val imm =
+            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+    }
+
 
     private fun initLists() {
         rvAudioCutter.adapter = audioCutterAdapter
@@ -268,6 +274,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     }
 
     private fun searchAudiofile() {
+        showKeybroad()
         hideOrShowEditText(View.VISIBLE)
         hideOrShowView(View.GONE)
     }

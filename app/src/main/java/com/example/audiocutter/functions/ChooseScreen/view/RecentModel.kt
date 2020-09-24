@@ -11,12 +11,15 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import com.example.audiocutter.functions.audiocutterscreen.view.screen.AudioCutterModel
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
 
 class RecentModel :BaseViewModel(){
     private val TAG = AudioCutterModel::class.java.name
     private var currentAudioPlaying: File = File("")
     var isPlayingStatus = false
     private var mListAudio = ArrayList<AudioCutterView>()
+    var isCheckItem = false
 
 
     suspend fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
@@ -138,14 +141,30 @@ class RecentModel :BaseViewModel(){
     }
 
     fun changeItemAudioFile(pos: Int, rs: Boolean): List<AudioCutterView>? {
+        var itemAudio: AudioCutterView
+        var count = 0
         if (!rs) {
-            val itemAudio = mListAudio.get(pos).copy()
+            itemAudio = mListAudio.get(pos).copy()
             itemAudio.isChecked = true
             mListAudio[pos] = itemAudio
         } else {
-            val itemAudio = mListAudio.get(pos).copy()
+            itemAudio = mListAudio.get(pos).copy()
             itemAudio.isChecked = false
             mListAudio[pos] = itemAudio
+        }
+
+        for (item in mListAudio) {
+            if (item.isChecked) {
+                count++
+                Log.d(TAG, "changeItemAudioFile: $count")
+                if (count > 2 && itemAudio.isChecked) {
+                    itemAudio.isChecked = false
+                    mListAudio[pos] = itemAudio
+                    isCheckItem = true
+                } else if (count < 2) {
+                    isCheckItem = false
+                }
+            }
         }
         return mListAudio
     }
@@ -153,7 +172,7 @@ class RecentModel :BaseViewModel(){
     fun checkList(): Boolean {
         var count = 0
         for (item in mListAudio) {
-            if (item.isChecked == true) {
+            if (item.isChecked) {
                 count++
             }
         }
@@ -165,7 +184,7 @@ class RecentModel :BaseViewModel(){
         return false
     }
 
-    fun getItemChoose(): List<AudioCutterView> {
+    fun getListItemChoose(): List<AudioCutterView> {
         var listAudio = mutableListOf<AudioCutterView>()
         for (item in mListAudio) {
             if (item.isChecked) {
