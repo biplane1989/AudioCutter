@@ -15,7 +15,6 @@ import android.os.Environment
 import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
-import android.view.inputmethod.InputMethodManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.core.manager.AudioFileManager
@@ -85,7 +84,8 @@ object AudioFileManagerImpl : AudioFileManager {
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media.ALBUM,
             MediaStore.Audio.Media.ARTIST,
-            MediaStore.Audio.Media.DATE_ADDED
+            MediaStore.Audio.Media.DATE_ADDED,
+            MediaStore.Audio.Media.MIME_TYPE
         )
         val cursor =
             resolver.query(
@@ -103,6 +103,7 @@ object AudioFileManagerImpl : AudioFileManager {
                 val clAlbum = cursor.getColumnIndex(projection[5])
                 val clArtist = cursor.getColumnIndex(projection[6])
                 val clDateAdded = cursor.getColumnIndex(projection[7])
+                val clMimeType = cursor.getColumnIndex(projection[8])
 
 
                 cursor.moveToFirst()
@@ -116,6 +117,7 @@ object AudioFileManagerImpl : AudioFileManager {
                     val title = cursor.getString(clTitle)
                     val album = cursor.getString(clAlbum)
                     val artist = cursor.getString(clArtist)
+                    val mimeType = cursor.getString(clMimeType)
 
                     //get time of currentDay by Longtime
                     val date = getDateByDateAdded(cursor.getLong(clDateAdded))
@@ -129,11 +131,12 @@ object AudioFileManagerImpl : AudioFileManager {
                     val uri = getUriFromFile(id, resolver, file)
                     Log.d(
                         "TAG",
-                        "findAllAudioFiles: data :$data \n name : $name   \n ID  $id  \n duration: $duration \n sie ${file.length()}   \n URI $uri \n title :$title \n" +
-                                " album : $album   \n" +
-                                " artist  $artist  \n" +
-                                " date: $date \n" +
-                                " genre $genre  "
+                        "findAllAudioFiles: data :$data \n name : $name   \n ID  $id  \n" +
+                                " duration: $duration \n sie ${file.length()}  " +
+                                " \n URI $uri \n title :$title \n" +
+                                " album : $album   \n" + " artist  $artist  \n" +
+                                " date: $date \n" + " genre $genre  \n " +
+                                "MimeType $mimeType"
                     )
                     if (file.exists()) {
                         if (bitmap != null) {
@@ -142,8 +145,10 @@ object AudioFileManagerImpl : AudioFileManager {
                                     file = file, fileName = name,
                                     size = file.length(), bitRate = 128,
                                     time = duration.toLong(), uri = uri,
-                                    bitmap = bitmap, title = title, alBum = album,
-                                    artist = artist, dateAdded = date, genre = genre
+                                    bitmap = bitmap, title = title,
+                                    alBum = album, artist = artist,
+                                    dateAdded = date, genre = genre,
+                                    mimeType = mimeType
                                 )
                             )
                         } else {
@@ -153,7 +158,9 @@ object AudioFileManagerImpl : AudioFileManager {
                                     size = file.length(), bitRate = 128,
                                     time = duration.toLong(), uri = uri,
                                     bitmap = null, title = title, alBum = album,
-                                    artist = artist, dateAdded = date, genre = genre
+                                    artist = artist, dateAdded = date, genre = genre,
+                                    mimeType = mimeType
+
                                 )
                             )
                         }

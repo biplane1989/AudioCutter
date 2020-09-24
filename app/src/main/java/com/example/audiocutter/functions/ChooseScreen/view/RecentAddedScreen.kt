@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.ChooseScreen.view
 
 import android.app.Activity
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,10 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TableRow
-import android.widget.TextView
+import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,6 +45,9 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
     lateinit var edtSearch: EditText
     var currentPos = -1
 
+    lateinit var ivNextRecent: ImageView
+    lateinit var tvNextRecent: TextView
+    lateinit var rltNextRecent: RelativeLayout
 
     var listTmp: MutableList<AudioCutterView> = mutableListOf()
     var isCheckList = true
@@ -126,6 +128,10 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
 
     private fun initViews() {
 
+        rltNextRecent = mView.findViewById(R.id.rlt_next_recent)
+        ivNextRecent = mView.findViewById(R.id.iv_next_recent)
+        tvNextRecent = mView.findViewById(R.id.tv_next_recent)
+
         ivFile = mView.findViewById(R.id.iv_audiorecent_screen_file)
         ivBack = mView.findViewById(R.id.iv_recent_screen_back)
         ivBackEdt = mView.findViewById(R.id.iv_recent_screen_back_edt)
@@ -139,6 +145,7 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
         ivSearch.setOnClickListener(this)
         ivBackEdt.setOnClickListener(this)
         ivClose.setOnClickListener(this)
+        rltNextRecent.setOnClickListener(this)
 
         audioRecentAdapter.setAudioCutterListtener(this)
         rvAudioRecent = mView.findViewById(R.id.rv_recent)
@@ -194,6 +201,24 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
         audioRecentAdapter.submitList(audioRecentModel.controllerAudio(pos, state))
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun changeClickItem(pos: Int, rs: Boolean) {
+        audioRecentAdapter.submitList(audioRecentModel.changeItemAudioFile(pos, rs))
+
+
+        if (audioRecentModel.checkList()) {
+            rltNextRecent.isEnabled = true
+            rltNextRecent.setBackgroundResource(R.drawable.bg_next_recent_audio_enabled)
+            ivNextRecent.setColorFilter(requireActivity().getColor(R.color.colorWhite))
+            tvNextRecent.setTextColor(requireActivity().getColor(R.color.colorWhite))
+        } else {
+            rltNextRecent.isEnabled = false
+            rltNextRecent.setBackgroundResource(R.drawable.bg_next_recent_audio_disabled)
+            ivNextRecent.setColorFilter(requireActivity().getColor(R.color.colorBlack))
+            tvNextRecent.setTextColor(requireActivity().getColor(R.color.colorBlack))
+        }
+    }
+
 
     override fun onClick(v: View) {
         when (v.id) {
@@ -201,7 +226,12 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
             R.id.iv_recent_screen_search -> searchAudiofile()
             R.id.iv_recent_screen_back_edt -> previousStatus()
             R.id.iv_recent_screen_close -> clearText()
+            R.id.rlt_next_recent -> handleAudiofile()
         }
+    }
+
+    private fun handleAudiofile() {
+        showToast("this is button usage to handle audio")
     }
 
     private fun clearText() {
@@ -254,6 +284,7 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
 
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

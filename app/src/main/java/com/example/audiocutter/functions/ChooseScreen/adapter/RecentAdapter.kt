@@ -72,6 +72,10 @@ class RecentAdapter(val mContext: Context) :
                     holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }
             }
+            when (itemAudioFile.isChecked) {
+                true -> holder.ivChecked.setImageResource(R.drawable.ic_recent_checkdone)
+                false -> holder.ivChecked.setImageResource(R.drawable.ic_recent_noncheck)
+            }
         }
     }
 
@@ -79,9 +83,11 @@ class RecentAdapter(val mContext: Context) :
         View.OnClickListener {
 
         val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio_recent)
+        val ivChecked = itemView.findViewById<ImageView>(R.id.iv_recent_check)
         val tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_audio_recent)
         val tvSizeAudio = itemView.findViewById<TextView>(R.id.tv_size_audio_recent)
         val tvBitrateAudio = itemView.findViewById<TextView>(R.id.tv_bitrate_audio_recent)
+
         val lnMenu = itemView.findViewById<LinearLayout>(R.id.ln_menu_recent)
 
         init {
@@ -116,12 +122,19 @@ class RecentAdapter(val mContext: Context) :
                     ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }
             }
+            when (itemAudioFile.isChecked) {
+                true -> ivChecked.setImageResource(R.drawable.ic_recent_checkdone)
+                false -> ivChecked.setImageResource(R.drawable.ic_recent_noncheck)
+            }
+
         }
 
 
         override fun onClick(p0: View) {
+            val item = getItem(adapterPosition)
             when (p0.id) {
                 R.id.iv_controller_audio_recent -> controllerAudio()
+                R.id.ln_menu_recent -> mCallBack.changeClickItem(adapterPosition, item.isChecked)
             }
         }
 
@@ -152,6 +165,7 @@ class RecentAdapter(val mContext: Context) :
         fun play(pos: Int)
         fun pause(pos: Int)
         fun resume(pos: Int)
+        fun changeClickItem(pos: Int, rs: Boolean)
     }
 }
 

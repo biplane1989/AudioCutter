@@ -3,7 +3,6 @@ package com.example.audiocutter.objects
 import android.graphics.Bitmap
 import android.net.Uri
 import java.io.File
-import java.io.Serializable
 
 class AudioFile(
     val file: File,
@@ -17,7 +16,8 @@ class AudioFile(
     val alBum: String? = "",
     val artist: String? = "",
     val dateAdded: String? = "",
-    val genre: String? = ""
+    val genre: String? = "",
+    val mimeType: String? = ""
 ) {
 
     override fun equals(other: Any?): Boolean {

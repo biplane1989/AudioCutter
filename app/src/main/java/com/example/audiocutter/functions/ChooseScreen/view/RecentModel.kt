@@ -137,5 +137,43 @@ class RecentModel :BaseViewModel(){
         return mListAudio
     }
 
+    fun changeItemAudioFile(pos: Int, rs: Boolean): List<AudioCutterView>? {
+        if (!rs) {
+            val itemAudio = mListAudio.get(pos).copy()
+            itemAudio.isChecked = true
+            mListAudio[pos] = itemAudio
+        } else {
+            val itemAudio = mListAudio.get(pos).copy()
+            itemAudio.isChecked = false
+            mListAudio[pos] = itemAudio
+        }
+        return mListAudio
+    }
+
+    fun checkList(): Boolean {
+        var count = 0
+        for (item in mListAudio) {
+            if (item.isChecked == true) {
+                count++
+            }
+        }
+        if (count > 2 || count < 2) {
+            return false
+        } else if (count == 2) {
+            return true
+        }
+        return false
+    }
+
+    fun getItemChoose(): List<AudioCutterView> {
+        var listAudio = mutableListOf<AudioCutterView>()
+        for (item in mListAudio) {
+            if (item.isChecked) {
+                listAudio.add(item)
+            }
+        }
+        return listAudio
+    }
+
 
 }

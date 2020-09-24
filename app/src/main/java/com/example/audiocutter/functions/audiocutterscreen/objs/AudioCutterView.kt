@@ -5,6 +5,7 @@ import com.example.audiocutter.objects.AudioFile
 
 data class AudioCutterView(
     val audioFile: AudioFile,
-    var state: PlayerState = PlayerState.IDLE
+    var state: PlayerState = PlayerState.IDLE,
+    var isChecked :Boolean= false
 
 )
