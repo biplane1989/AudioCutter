@@ -24,16 +24,12 @@ enum class MixSelector {
 data class AudioCutConfig(val startPosition: Int, val endPosition: Int, val volumePercent: Int = 100, val fileName: String, val inEffect: Effect = Effect.OFF, val outEffect: Effect = Effect.OFF, val bitRate: BitRate = BitRate._128kb, val format: AudioFormat = AudioFormat.MP3)
 data class AudioMixConfig(val selector: MixSelector = MixSelector.LONGEST, val volumePercent1: Int = 100, val volumePercent2: Int = 100)
 data class OutputAudioInfo(val audioFile: AudioFile, var percent: Int)
-interface AudioProcessListener : LifecycleOwner {
-    fun onStart()
-    fun onProcessing(percent: Int)
-    fun onFinish()
-}
-
+data class AudioMergingInfo(val audioFile: AudioFile, val percent:Int)
 interface AudioCutter {
-    suspend fun cut(audioFile: AudioFile, audioCutConfig: AudioCutConfig, audioProcessListener: AudioProcessListener): AudioFile
-    suspend fun merge(listAudioFile: List<AudioFile>, fileName: String, audioProcessListener: AudioProcessListener): AudioFile
-    suspend fun mix(audioFile1: AudioFile, audioFile2: AudioFile, audioMixConfig: AudioMixConfig, audioProcessListener: AudioProcessListener): AudioFile
+    suspend fun cut(audioFile: AudioFile, audioCutConfig: AudioCutConfig): AudioFile
+    suspend fun merge(listAudioFile: List<AudioFile>, fileName: String): AudioFile
+    suspend fun mix(audioFile1: AudioFile, audioFile2: AudioFile, audioMixConfig: AudioMixConfig): AudioFile
+    fun getAudioMergingInfo() : LiveData<AudioMergingInfo>
 
     fun getListAudioCuttingInfo(): LiveData<List<OutputAudioInfo>>
     fun getListAudioMergingInfo(): LiveData<List<OutputAudioInfo>>
