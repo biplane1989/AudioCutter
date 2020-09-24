@@ -30,8 +30,4 @@ interface AudioCutter {
     suspend fun merge(listAudioFile: List<AudioFile>, fileName: String): AudioFile
     suspend fun mix(audioFile1: AudioFile, audioFile2: AudioFile, audioMixConfig: AudioMixConfig): AudioFile
     fun getAudioMergingInfo() : LiveData<AudioMergingInfo>
-
-    fun getListAudioCuttingInfo(): LiveData<List<OutputAudioInfo>>
-    fun getListAudioMergingInfo(): LiveData<List<OutputAudioInfo>>
-    fun getListAudioMixingInfo(): LiveData<List<OutputAudioInfo>>
 }

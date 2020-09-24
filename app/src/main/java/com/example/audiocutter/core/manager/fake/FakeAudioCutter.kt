@@ -34,7 +34,7 @@ class FakeAudioCutter : AudioCutter {
     }
 
 
-    override suspend fun cut(audioFile: AudioFile, audioCutConfig: AudioCutConfig, audioProcessListener: AudioProcessListener): AudioFile {
+    /*override suspend fun cut(audioFile: AudioFile, audioCutConfig: AudioCutConfig, audioProcessListener: AudioProcessListener): AudioFile {
         return withContext(Dispatchers.Default) {
             audioProcessListener.onStart()
             var count = 0
@@ -77,17 +77,25 @@ class FakeAudioCutter : AudioCutter {
             audioProcessListener.onFinish()
             listAudioFile[0]
         }
+    }*/
+
+    override suspend fun cut(audioFile: AudioFile, audioCutConfig: AudioCutConfig): AudioFile {
+        TODO("Not yet implemented")
     }
 
-    override fun getListAudioCuttingInfo(): LiveData<List<OutputAudioInfo>> {
-        return audioCuttingLiveData
+    override suspend fun merge(listAudioFile: List<AudioFile>, fileName: String): AudioFile {
+        TODO("Not yet implemented")
     }
 
-    override fun getListAudioMergingInfo(): LiveData<List<OutputAudioInfo>> {
-        return audioMergingLiveData
+    override suspend fun mix(
+        audioFile1: AudioFile,
+        audioFile2: AudioFile,
+        audioMixConfig: AudioMixConfig
+    ): AudioFile {
+        TODO("Not yet implemented")
     }
 
-    override fun getListAudioMixingInfo(): LiveData<List<OutputAudioInfo>> {
-        return audioMixingLiveData
+    override fun getAudioMergingInfo(): LiveData<AudioMergingInfo> {
+        TODO("Not yet implemented")
     }
 }
