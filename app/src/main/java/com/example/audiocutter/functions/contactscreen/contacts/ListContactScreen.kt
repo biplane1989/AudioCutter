@@ -1,25 +1,21 @@
 package com.example.audiocutter.functions.contactscreen.contacts
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.core.manager.ContactManagerImpl
 import com.example.audiocutter.functions.contactscreen.ContactItemView
-import com.example.audiocutter.functions.mystudioscreen.AudioFileView
-import com.example.audiocutter.functions.mystudioscreen.fragment.MyStudioViewModel
 import kotlinx.android.synthetic.main.list_contact_screen.*
-import kotlinx.android.synthetic.main.my_studio_fragment.*
-import kotlinx.coroutines.delay
-import java.util.function.Consumer
+
 
 class ListContactScreen : BaseFragment() {
 
@@ -38,7 +34,11 @@ class ListContactScreen : BaseFragment() {
         rv_list_contact.adapter = listContactAdapter
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.list_contact_screen, container, false)
     }
 
@@ -69,6 +69,21 @@ class ListContactScreen : BaseFragment() {
             cl_search.visibility = View.GONE
         })
 
+        iv_clear.setOnClickListener(View.OnClickListener {
+            edt_search.text.clear()
+        })
+
+        edt_search.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                listContactAdapter.submitList(mlistContactViewModel.searchContact(edt_search.text.toString()))
+            }
+        })
 
     }
 }

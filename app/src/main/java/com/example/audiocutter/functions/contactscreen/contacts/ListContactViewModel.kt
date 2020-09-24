@@ -87,4 +87,13 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
         return listContact
     }
 
+    fun searchContact(data: String): ArrayList<ContactItemView> {
+        val newListContact = ArrayList<ContactItemView>()
+        for (contact in mListContactItemView) {
+            if (contact.contactItem.name.toUpperCase().contains(data.toUpperCase())) {
+                newListContact.add(contact)
+            }
+        }
+        return newListContact
+    }
 }
