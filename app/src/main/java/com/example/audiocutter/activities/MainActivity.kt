@@ -1,17 +1,12 @@
 package com.example.audiocutter.activities
 
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.FragmentTransaction
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
-import com.example.audiocutter.core.audioplayer.AudioPlayerImpl
-import com.example.audiocutter.functions.MainScreen
-import com.example.audiocutter.functions.mystudio.OutputAudioManagerScreen
-import com.example.audiocutter.objects.AudioFile
-import kotlinx.android.synthetic.main.main_screen.*
-import java.io.File
+import com.example.audiocutter.functions.contactscreen.contacts.ListContactAdapter
+import com.example.audiocutter.functions.contactscreen.contacts.ListContactScreen
+import com.example.audiocutter.functions.mystudioscreen.OutputAudioManagerScreen
 
 class MainActivity : BaseActivity() {
     override fun createView(savedInstanceState: Bundle?) {
@@ -22,11 +17,11 @@ class MainActivity : BaseActivity() {
     override fun onPostCreate() {
         super.onPostCreate()
 //        val outputAudioManagerScreen = OutputAudioManagerScreen.newInstance(false)
-        val outputAudioManagerScreen = OutputAudioManagerScreen()
+        val listContactScreen = ListContactScreen()
 
         val fragmentManager = supportFragmentManager
         val transaction: FragmentTransaction = fragmentManager.beginTransaction()
-        transaction.replace(R.id.fl_home, outputAudioManagerScreen)
+        transaction.replace(R.id.fl_home, listContactScreen)
         transaction.commit()
     }
 

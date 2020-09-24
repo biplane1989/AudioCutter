@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.mystudio.dialog
+package com.example.audiocutter.functions.mystudioscreen.dialog
 
 import android.os.Bundle
 import android.view.View
@@ -6,7 +6,6 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_dialog_info.*
-import kotlinx.android.synthetic.main.my_studio_dialog_delete.*
 import java.text.SimpleDateFormat
 
 class InfoDialog : BaseDialog() {

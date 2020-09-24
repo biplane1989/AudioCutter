@@ -1,8 +1,5 @@
-package com.example.audiocutter.functions.mystudio.fragment
+package com.example.audiocutter.functions.mystudioscreen.fragment
 
-import android.graphics.Color
-import android.graphics.PorterDuff
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,11 +17,11 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.channel.FragmentMeta
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
-import com.example.audiocutter.functions.mystudio.AudioFileView
-import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.functions.mystudio.OutputAudioManagerScreen
-import com.example.audiocutter.functions.mystudio.ShareFragment
-import com.example.audiocutter.functions.mystudio.dialog.*
+import com.example.audiocutter.functions.mystudioscreen.AudioFileView
+import com.example.audiocutter.functions.mystudioscreen.Constance
+import com.example.audiocutter.functions.mystudioscreen.OutputAudioManagerScreen
+import com.example.audiocutter.functions.mystudioscreen.ShareFragment
+import com.example.audiocutter.functions.mystudioscreen.dialog.*
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_fragment.*
 import kotlinx.coroutines.delay

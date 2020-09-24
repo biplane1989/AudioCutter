@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.mystudio.fragment
+package com.example.audiocutter.functions.mystudioscreen.fragment
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -7,18 +7,15 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.functions.mystudio.AudioFileView
-import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.functions.mystudio.DeleteState
-import com.example.audiocutter.functions.mystudio.MusicDiffCallBack
+import com.example.audiocutter.functions.mystudioscreen.AudioFileView
+import com.example.audiocutter.functions.mystudioscreen.Constance
+import com.example.audiocutter.functions.mystudioscreen.DeleteState
+import com.example.audiocutter.functions.mystudioscreen.MusicDiffCallBack
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
 import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.ArrayList
 
 interface AudioCutterScreenCallback {
@@ -32,19 +29,13 @@ interface AudioCutterScreenCallback {
     fun isShowPlayingAudio(positition: Int)
 }
 
-class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallback) :
-    ListAdapter<AudioFileView, AudioCutterAdapter.ViewHolder>(
-        MusicDiffCallBack()
-    ) {
+class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallback) : ListAdapter<AudioFileView, AudioCutterAdapter.ViewHolder>(MusicDiffCallBack()) {
 
     private val TAG = "giangtd"
     private var listAudios = ArrayList<AudioFileView>()
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): AudioCutterAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AudioCutterAdapter.ViewHolder {
         val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.my_studio_screen_item, parent, false)
         return ViewHolder(itemView)
@@ -79,11 +70,9 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
             }
             val audioFileView = getItem(position)
-            holder.tvTotal.text =
-                "/" + simpleDateFormat.format(audioFileView.itemLoadStatus.duration)
+            holder.tvTotal.text = "/" + simpleDateFormat.format(audioFileView.itemLoadStatus.duration)
             holder.sbMusic.max = audioFileView.itemLoadStatus.duration
-            holder.tvTimeLife.text =
-                simpleDateFormat.format(audioFileView.itemLoadStatus.currPos)
+            holder.tvTimeLife.text = simpleDateFormat.format(audioFileView.itemLoadStatus.currPos)
             holder.sbMusic.progress = audioFileView.itemLoadStatus.currPos
 
             when (itemLoadStatus.playerState) {
@@ -114,8 +103,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         }
     }
 
-    inner class ViewHolder(itemView: View) :
-        RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
         val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar_music)
         val ivSetting: ImageView = itemView.findViewById(R.id.iv_setting)
@@ -136,13 +124,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             tvTitle.setText(audioFileView.audioFile.fileName)
             if (audioFileView.audioFile.size / (1024 * 1024) > 0) {
 
-                tvInfo.setText(
-                    String.format(
-                        "%.1f",
-                        (audioFileView.audioFile.size) / (1024 * 1024).toDouble()
-                    )
-                            + " MB" + " | " + audioFileView.audioFile.bitRate.toString() + "kb/s"
-                )
+                tvInfo.setText(String.format("%.1f", (audioFileView.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + audioFileView.audioFile.bitRate.toString() + "kb/s")
             } else {
                 tvInfo.setText(((audioFileView.audioFile.size) / (1024)).toString() + " KB" + " | " + audioFileView.audioFile.bitRate.toString() + "kb/s")
             }
@@ -193,11 +175,9 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
             }
 
-            tvTotal.text =
-                "/" + simpleDateFormat.format(audioFileView.itemLoadStatus.duration)
+            tvTotal.text = "/" + simpleDateFormat.format(audioFileView.itemLoadStatus.duration)
             sbMusic.max = audioFileView.itemLoadStatus.duration
-            tvTimeLife.text =
-                simpleDateFormat.format(audioFileView.itemLoadStatus.currPos)
+            tvTimeLife.text = simpleDateFormat.format(audioFileView.itemLoadStatus.currPos)
 
             sbMusic.progress = audioFileView.itemLoadStatus.currPos
 

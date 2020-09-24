@@ -1,10 +1,10 @@
-package com.example.audiocutter.functions.mystudio.dialog
+package com.example.audiocutter.functions.mystudioscreen.dialog
 
 import android.os.Bundle
 import android.view.View
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
-import com.example.audiocutter.functions.mystudio.Constance
+import com.example.audiocutter.functions.mystudioscreen.Constance
 import kotlinx.android.synthetic.main.my_studio_dialog_set_as.*
 
 class SetAsDialog : BaseDialog() {

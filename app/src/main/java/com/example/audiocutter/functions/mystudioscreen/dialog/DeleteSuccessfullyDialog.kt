@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.mystudio.dialog
+package com.example.audiocutter.functions.mystudioscreen.dialog
 
 import android.os.Bundle
 import android.view.View

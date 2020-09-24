@@ -1,6 +1,6 @@
-package com.example.audiocutter.functions.mystudio
+package com.example.audiocutter.functions.mystudioscreen
 
-import com.example.audiocutter.functions.mystudio.fragment.ItemLoadStatus
+import com.example.audiocutter.functions.mystudioscreen.fragment.ItemLoadStatus
 import com.example.audiocutter.objects.AudioFile
 
 

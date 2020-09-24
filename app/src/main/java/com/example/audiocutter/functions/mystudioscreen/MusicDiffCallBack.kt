@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.mystudio
+package com.example.audiocutter.functions.mystudioscreen
 
 import androidx.recyclerview.widget.DiffUtil
 
