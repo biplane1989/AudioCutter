@@ -4,38 +4,38 @@
     android:layout_height="80dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingHorizontal="@dimen/d_16">
+   >
 
     <ImageView
 
-        android:id="@+id/iv_controller_audio"
+        android:id="@+id/iv_controller_audio_recent"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:background="?attr/selectableItemBackground"
         android:src="@drawable/ic_audiocutter_play" />
 
     <LinearLayout
-        android:id="@+id/ln_item_audio_cutter_screen"
-        android:background="?attr/selectableItemBackground"
+        android:id="@+id/ln_item_audio_recent_screen"
         android:layout_width="0dp"
         android:layout_height="45dp"
         android:layout_weight="1"
+        android:background="?attr/selectableItemBackground"
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/d_16">
 
         <TextView
-            android:id="@+id/tv_name_audio"
+            android:id="@+id/tv_name_audio_recent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
             android:ellipsize="marquee"
             android:focusable="true"
             android:fontFamily="@font/sanfranciscodisplay_bold"
+            android:singleLine="true"
             android:text="Audio Name"
             android:textColor="@color/colorBlack"
             android:textSize="@dimen/d_18"
-            android:textStyle="bold"
-            android:singleLine="true" />
+            android:textStyle="bold" />
 
         <TableRow
             android:layout_width="match_parent"
@@ -43,12 +43,12 @@
             android:layout_weight="1">
 
             <TextView
-                android:gravity="bottom"
-                android:id="@+id/tv_size_audio"
+                android:id="@+id/tv_size_audio_recent"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginRight="@dimen/d_5"
                 android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:gravity="bottom"
                 android:text="2.1 MB"
                 android:textSize="@dimen/d_13" />
 
@@ -59,28 +59,28 @@
                 android:background="@color/colorGray" />
 
             <TextView
-                android:gravity="bottom"
-                android:id="@+id/tv_bitrate_audio"
+                android:id="@+id/tv_bitrate_audio_recent"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:fontFamily="@font/sanfranciscodisplay_regular"
                 android:layout_marginLeft="@dimen/d_5"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:gravity="bottom"
                 android:text="128kb/s"
                 android:textSize="@dimen/d_13" />
         </TableRow>
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/ln_menu"
+        android:id="@+id/ln_menu_recent"
         android:layout_width="50dp"
         android:layout_height="match_parent"
         android:gravity="center">
 
         <ImageView
+            android:layout_width="@dimen/d_20"
+            android:layout_height="@dimen/d_20"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:layout_width="@dimen/d_16"
-            android:layout_height="@dimen/d_16"
-            android:src="@drawable/ic_audiocutter_popupmenu" />
+            android:src="@drawable/ic_recent_noncheck" />
 
     </LinearLayout>
 

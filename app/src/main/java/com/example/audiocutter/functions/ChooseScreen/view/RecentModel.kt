@@ -1,6 +1,5 @@
-package com.example.audiocutter.functions.audiocutterscreen.view.screen
+package com.example.audiocutter.functions.ChooseScreen.view
 
-import android.os.Build
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
@@ -10,9 +9,10 @@ import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
+import com.example.audiocutter.functions.audiocutterscreen.view.screen.AudioCutterModel
 import java.io.File
 
-class AudioCutterModel : BaseViewModel() {
+class RecentModel :BaseViewModel(){
     private val TAG = AudioCutterModel::class.java.name
     private var currentAudioPlaying: File = File("")
     var isPlayingStatus = false

@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.audiocutterscreen.view.screen
+package com.example.audiocutter.functions.ChooseScreen.view
 
 import android.app.Activity
 import android.os.Bundle
@@ -11,8 +11,8 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TableRow
 import android.widget.TextView
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,29 +23,24 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.core.rington.RingtonManagerImpl
+import com.example.audiocutter.functions.ChooseScreen.adapter.RecentAdapter
 import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDialog
-import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDoneDialog
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
-import com.example.audiocutter.functions.audiocutterscreen.objs.TypeAudioSetAs
-import com.example.audiocutter.functions.audiocutterscreen.view.adapter.AudiocutterAdapter
+import com.example.audiocutter.functions.audiocutterscreen.view.screen.AudioCutterScreen
 
+class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.AudioRecentListener {
 
-class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
-    SetAsDialog.setAsListener, View.OnClickListener {
     val TAG = AudioCutterScreen::class.java.name
     private lateinit var mView: View
-    private lateinit var rvAudioCutter: RecyclerView
-    private lateinit var audioCutterAdapter: AudiocutterAdapter
-    private lateinit var audioCutterModel: AudioCutterModel
+    private lateinit var rvAudioRecent: RecyclerView
+    private lateinit var audioRecentAdapter: RecentAdapter
+    private lateinit var audioRecentModel: RecentModel
     lateinit var dialog: SetAsDialog
-    lateinit var dialogDone: SetAsDoneDialog
-    lateinit var audioCutterItem: AudioCutterView
     lateinit var ivFile: ImageView
     lateinit var ivSearch: ImageView
     lateinit var ivBack: ImageView
     lateinit var ivBackEdt: ImageView
-    lateinit var tvAudioScreen: TextView
+    lateinit var tbName: TableRow
     lateinit var tvEmptyList: TextView
     lateinit var ivClose: ImageView
     lateinit var edtSearch: EditText
@@ -57,21 +52,21 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
     val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
         listTmp = listMusic.toMutableList()
-        audioCutterAdapter.submitList(ArrayList(listMusic))
+        audioRecentAdapter.submitList(ArrayList(listMusic))
     }
 
     private val playerInfoObserver = Observer<PlayerInfo> {
 
-        if (audioCutterModel.isPlayingStatus) {
-            audioCutterAdapter.submitList(audioCutterModel.updateMediaInfo(it))
+        if (audioRecentModel.isPlayingStatus) {
+            audioRecentAdapter.submitList(audioRecentModel.updateMediaInfo(it))
         }
     }
 
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioCutterAdapter = AudiocutterAdapter(requireContext())
-        audioCutterModel = ViewModelProvider(this).get(AudioCutterModel::class.java)
+        audioRecentAdapter = RecentAdapter(requireContext())
+        audioRecentModel = ViewModelProvider(this).get(RecentModel::class.java)
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
@@ -81,7 +76,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mView = inflater.inflate(R.layout.audio_cutter_screen, container, false)
+        mView = inflater.inflate(R.layout.recent_added_screen, container, false)
         AudioFileManagerImpl.registerContentObserVerDeleted()
         initViews()
         checkEdtSearchAudio()
@@ -92,7 +87,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         super.onViewCreated(view, savedInstanceState)
         initLists()
         runOnUI {
-            val listAudioViewLiveData = audioCutterModel.getAllAudioFile()
+            val listAudioViewLiveData = audioRecentModel.getAllAudioFile()
             listAudioViewLiveData.removeObserver(listAudioObserver)
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
         }
@@ -115,16 +110,15 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     }
 
     private fun searchAudioByName(yourTextSearch: String) {
-        rvAudioCutter.visibility = View.VISIBLE
+        rvAudioRecent.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
         if (yourTextSearch.isEmpty()) {
-            audioCutterAdapter.submitList(listTmp)
+            audioRecentAdapter.submitList(listTmp)
         }
-        if (audioCutterModel.searchAudio(listTmp, yourTextSearch).isNotEmpty()) {
-            audioCutterAdapter.submitList(audioCutterModel.getListsearch())
-            Log.d(TAG, "seachAudioByName: ${audioCutterModel.getListsearch().size}")
+        if (audioRecentModel.searchAudio(listTmp, yourTextSearch).isNotEmpty()) {
+            audioRecentAdapter.submitList(audioRecentModel.getListsearch())
         } else {
-            rvAudioCutter.visibility = View.GONE
+            rvAudioRecent.visibility = View.GONE
             tvEmptyList.visibility = View.VISIBLE
         }
     }
@@ -132,24 +126,22 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
     private fun initViews() {
 
-        ivFile = mView.findViewById(R.id.iv_audiocutter_screen_file)
-        ivBack = mView.findViewById(R.id.iv_audiocutter_screen_back)
-        ivBackEdt = mView.findViewById(R.id.iv_audiocutter_screen_back_edt)
-        ivClose = mView.findViewById(R.id.iv_audiocutter_screen_close)
-        ivSearch = mView.findViewById(R.id.iv_audiocutter_screen_search)
-        tvAudioScreen = mView.findViewById(R.id.tv_audiocutter_screen)
-        tvEmptyList = mView.findViewById(R.id.tv_empty_list)
-        edtSearch = mView.findViewById(R.id.edt_auciocutter_search)
+        ivFile = mView.findViewById(R.id.iv_audiorecent_screen_file)
+        ivBack = mView.findViewById(R.id.iv_recent_screen_back)
+        ivBackEdt = mView.findViewById(R.id.iv_recent_screen_back_edt)
+        ivClose = mView.findViewById(R.id.iv_recent_screen_close)
+        ivSearch = mView.findViewById(R.id.iv_recent_screen_search)
+        tbName = mView.findViewById(R.id.tb_name_recent)
+        tvEmptyList = mView.findViewById(R.id.tv_empty_list_recent)
+        edtSearch = mView.findViewById(R.id.edt_recent_search)
 
         ivFile.setOnClickListener(this)
         ivSearch.setOnClickListener(this)
         ivBackEdt.setOnClickListener(this)
         ivClose.setOnClickListener(this)
-        dialog = SetAsDialog(requireContext())
-        dialogDone = SetAsDoneDialog(requireContext())
 
-        audioCutterAdapter.setAudioCutterListtener(this)
-        rvAudioCutter = mView.findViewById(R.id.rv_audiocutter)
+        audioRecentAdapter.setAudioCutterListtener(this)
+        rvAudioRecent = mView.findViewById(R.id.rv_recent)
 
     }
 
@@ -161,7 +153,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
     fun hideOrShowView(status: Int) {
         ivSearch.visibility = status
-        tvAudioScreen.visibility = status
+        tbName.visibility = status
         ivFile.visibility = status
     }
 
@@ -178,77 +170,37 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
 
     private fun initLists() {
-        rvAudioCutter.adapter = audioCutterAdapter
-        rvAudioCutter.setHasFixedSize(true)
-        rvAudioCutter.layoutManager = LinearLayoutManager(requireContext())
+        rvAudioRecent.adapter = audioRecentAdapter
+        rvAudioRecent.setHasFixedSize(true)
+        rvAudioRecent.layoutManager = LinearLayoutManager(requireContext())
     }
 
     override fun play(pos: Int) {
         currentPos = pos
         val state = PlayerState.IDLE
-        audioCutterAdapter.submitList(audioCutterModel.controllerAudio(pos, state))
+        audioRecentAdapter.submitList(audioRecentModel.controllerAudio(pos, state))
 
     }
 
     override fun pause(pos: Int) {
         currentPos = pos
         val state = PlayerState.PLAYING
-        audioCutterAdapter.submitList(audioCutterModel.controllerAudio(pos, state))
+        audioRecentAdapter.submitList(audioRecentModel.controllerAudio(pos, state))
     }
 
     override fun resume(pos: Int) {
         currentPos = pos
         val state = PlayerState.PAUSE
-        audioCutterAdapter.submitList(audioCutterModel.controllerAudio(pos, state))
+        audioRecentAdapter.submitList(audioRecentModel.controllerAudio(pos, state))
     }
 
-
-
-    override fun showDialogSetAs(itemAudio: AudioCutterView) {
-        audioCutterItem = itemAudio
-        dialog.setOnCallBack(this)
-        dialog.show()
-    }
-
-    override fun setAudioAs(typeAudioSetAs: TypeAudioSetAs) {
-        var rs = false
-        Log.d(TAG, "setAudioAs: ${audioCutterItem.audioFile.fileName}")
-        when (typeAudioSetAs) {
-
-            TypeAudioSetAs.RINGTONE -> {
-                rs = RingtonManagerImpl.setRingTone(
-                    requireContext(),
-                    audioFile = audioCutterItem.audioFile
-                )
-            }
-            TypeAudioSetAs.ALARM -> {
-                rs = RingtonManagerImpl.setAlarmManager(
-                    requireContext(),
-                    audioFile = audioCutterItem.audioFile
-                )
-            }
-            TypeAudioSetAs.NOTIFICATION -> {
-                rs = RingtonManagerImpl.setNotificationSound(
-                    requireContext(),
-                    audioFile = audioCutterItem.audioFile
-                )
-            }
-        }
-        if (rs) {
-            dialog.dismiss()
-            dialogDone.show()
-        } else {
-            Toast.makeText(requireContext(), "set as fail", Toast.LENGTH_SHORT).show()
-        }
-
-    }
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.iv_audiocutter_screen_file -> updateAllFile()
-            R.id.iv_audiocutter_screen_search -> searchAudiofile()
-            R.id.iv_audiocutter_screen_back_edt -> previousStatus()
-            R.id.iv_audiocutter_screen_close -> clearText()
+            R.id.iv_audiorecent_screen_file -> updateAllFile()
+            R.id.iv_recent_screen_search -> searchAudiofile()
+            R.id.iv_recent_screen_back_edt -> previousStatus()
+            R.id.iv_recent_screen_close -> clearText()
         }
     }
 
@@ -259,9 +211,9 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     }
 
     private fun previousStatus() {
-        rvAudioCutter.visibility = View.VISIBLE
+        rvAudioRecent.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
-        audioCutterAdapter.submitList(listTmp)
+        audioRecentAdapter.submitList(listTmp)
         hideKeyBroad()
         hideOrShowEditText(View.GONE)
         hideOrShowView(View.VISIBLE)
@@ -278,17 +230,17 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
             try {
                 if (isCheckList) {
                     ManagerFactory.getAudioPlayer().stop()
-                    audioCutterModel.getAllFileByType().observe(this, Observer {
+                    audioRecentModel.getAllFileByType().observe(this, Observer {
                         listTmp.clear()
                         listTmp.addAll(it.toMutableList())
-                        audioCutterAdapter.submitList(listTmp)
+                        audioRecentAdapter.submitList(listTmp)
                         isCheckList = false
                     })
                 } else {
-                    audioCutterModel.getAllAudioFile().observe(this, Observer {
+                    audioRecentModel.getAllAudioFile().observe(this, Observer {
                         listTmp.clear()
                         listTmp.addAll(it.toMutableList())
-                        audioCutterAdapter.submitList(listTmp)
+                        audioRecentAdapter.submitList(listTmp)
                         isCheckList = true
                     })
                 }
