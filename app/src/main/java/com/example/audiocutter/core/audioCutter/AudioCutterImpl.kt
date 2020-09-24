@@ -17,18 +17,6 @@ class AudioCutterImpl : AudioCutter {
         TODO("Not yet implemented")
     }
 
-    override fun getListAudioCuttingInfo(): LiveData<List<OutputAudioInfo>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getListAudioMergingInfo(): LiveData<List<OutputAudioInfo>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getListAudioMixingInfo(): LiveData<List<OutputAudioInfo>> {
-        TODO("Not yet implemented")
-    }
-
     override fun getAudioMergingInfo(): LiveData<AudioMergingInfo> {
         TODO("Not yet implemented")
     }
