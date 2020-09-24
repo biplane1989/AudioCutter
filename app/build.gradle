@@ -54,4 +54,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
+    //ffmpeg
+    implementation 'com.arthenica:mobile-ffmpeg-full:4.4.LTS'
+
 }
