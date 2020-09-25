@@ -176,6 +176,7 @@ class RecentModel :BaseViewModel(){
                 count++
             }
         }
+
         if (count > 2 || count < 2) {
             return false
         } else if (count == 2) {

@@ -203,6 +203,7 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
         currentPos = pos
         val state = PlayerState.PLAYING
         audioRecentAdapter.submitList(audioRecentModel.controllerAudio(pos, state))
+
     }
 
     override fun resume(pos: Int) {

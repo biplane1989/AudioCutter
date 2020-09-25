@@ -213,7 +213,7 @@ object AudioPlayerImpl : AudioPlayer {
 
                         if (playInfoData.playerState != PlayerState.IDLE) {
                             playInfoData.playerState = PlayerState.IDLE
-                            changed = false
+                            changed = true
                         }
                     }
 

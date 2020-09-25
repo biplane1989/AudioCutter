@@ -81,11 +81,13 @@ class AudiocutterAdapter(val mContext: Context) :
         val tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_audio)
         val tvSizeAudio = itemView.findViewById<TextView>(R.id.tv_size_audio)
         val tvBitrateAudio = itemView.findViewById<TextView>(R.id.tv_bitrate_audio)
+        val lnChild = itemView.findViewById<LinearLayout>(R.id.ln_item_audio_cutter_screen)
         val lnMenu = itemView.findViewById<LinearLayout>(R.id.ln_menu)
 
         init {
             ivController.setOnClickListener(this)
             lnMenu.setOnClickListener(this)
+            lnChild.setOnClickListener(this)
         }
 
         fun bind() {
@@ -122,6 +124,7 @@ class AudiocutterAdapter(val mContext: Context) :
             val itemAudio = getItem(adapterPosition)
             when (p0.id) {
                 R.id.iv_controller_audio -> controllerAudio()
+                R.id.ln_item_audio_cutter_screen -> controllerAudio()
                 R.id.ln_menu -> showPopupMenu(itemAudio)
             }
         }

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="80dp"
+    android:id="@+id/ln_item_audio_cutter_screen"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingHorizontal="@dimen/d_16">
@@ -15,7 +16,7 @@
         android:src="@drawable/ic_audiocutter_play" />
 
     <LinearLayout
-        android:id="@+id/ln_item_audio_cutter_screen"
+
         android:background="?attr/selectableItemBackground"
         android:layout_width="0dp"
         android:layout_height="45dp"
