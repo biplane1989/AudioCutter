@@ -13,15 +13,16 @@ import com.example.audiocutter.core.manager.AudioMergingInfo
 import com.example.audiocutter.core.manager.AudioMixConfig
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import java.io.File
 import java.util.*
 
 
 class AudioCutterImpl : AudioCutter {
     private var audioFileUpdate = MutableLiveData<AudioMergingInfo>()
     private val itemMergeInfo = AudioMergingInfo(null, 0)
+    private var timeVideo: Int = 0
+    private lateinit var audioFileCut: AudioFile
 
     private val PATH_DEFAUL_FOLDER = "${Environment.getExternalStorageDirectory()}/AudioCutter/"
     private val PATH_CUT_FOLDER = "${PATH_DEFAUL_FOLDER}cutter"
@@ -29,7 +30,7 @@ class AudioCutterImpl : AudioCutter {
     private val PATH_MIXER_FOLDER = "${PATH_DEFAUL_FOLDER}mixer"
 
     private val CMD_CUT_AUDIO_TIME =
-        "-y -ss %d -i %s -t %d -b:a %dk -af volume='between(t,0,%f)*(t/%d)+between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d))':eval=frame %s"
+        "-y -ss %d -i %s -t %d -b:a %dk -af \"volume='(between(t,0,%f)*(t/%d)+between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d)))*%f'\":eval=frame %s"
 
     init {
         Utils.createFolder(
@@ -42,20 +43,21 @@ class AudioCutterImpl : AudioCutter {
         )
         Config.setLogLevel(Level.AV_LOG_INFO)
         Config.enableStatisticsCallback {
-            Log.e(TAG, it.toString())
+            val percent = (it.time * 100) / timeVideo
+            Log.e(TAG, "percent: $percent")
+            MainScope().launch {
+                updateItemLiveData(audioFileCut, (it.time * 100) / timeVideo)
+            }
         }
     }
 
-    //between(t, 0, volumeStart) * (t / volumeStart) + between(t, volumeStart + 1, endTime - volumeEnd) + between(t, endTime - volumeEnd, endTime) * ((endTime - t) / (endTime - volumeEnd));
     override suspend fun cut(audioFile: AudioFile, audioCutConfig: AudioCutConfig): AudioFile {
-        var audioFileCut = audioFile
+        this.timeVideo = audioCutConfig.endPosition * 1000
+        audioFileCut = audioFile
 
-        val fileNameReplace = audioFile.fileName.replace(" ", "").trim().plus(audioFile.mimeType)
         audioFileCut.fileName = audioCutConfig.fileName.plus(audioFile.mimeType)
         audioFileCut.bitRate = audioCutConfig.bitRate.value
         audioFileCut.time = audioCutConfig.endPosition.toLong()
-
-//        var itemFile = Utils.changeNameFile(audioFile, fileNameReplace)
 
         updateItemLiveData(audioFileCut, 0)
 
@@ -63,7 +65,7 @@ class AudioCutterImpl : AudioCutter {
             Locale.ENGLISH,
             CMD_CUT_AUDIO_TIME,
             audioCutConfig.startPosition,
-            audioFile.file.absolutePath.replace(" ", "%20"),
+            "'${audioFile.file.absolutePath}'",
             audioCutConfig.endPosition,
             audioCutConfig.bitRate.value,
             if (audioCutConfig.inEffect.time == 0) 0f else (audioCutConfig.inEffect.time - 0.0001).toFloat(),
@@ -75,30 +77,34 @@ class AudioCutterImpl : AudioCutter {
             audioCutConfig.endPosition,
             audioCutConfig.endPosition,
             (audioCutConfig.endPosition - audioCutConfig.outEffect.time),
+            (audioCutConfig.volumePercent / 100).toFloat(),
             PATH_CUT_FOLDER.plus("/${audioFileCut.fileName}")
         )
+        Log.e(TAG, format)
 
-        val returnCode = FFmpeg.executeAsync(
+        val returnCode = FFmpeg.execute(
             format
-        ) { id, returnCode ->
-            when (returnCode) {
-                Config.RETURN_CODE_SUCCESS -> {
-                    Log.e(Config.TAG, "Async command execution completed successfully.")
-                }
-                Config.RETURN_CODE_CANCEL -> {
-                    Log.e(Config.TAG, "Async command execution cancelled by user.")
-                }
-                else -> {
-                    Log.e(
-                        Config.TAG,
-                        String.format("Async command execution failed with rc=%d.", returnCode)
-                    )
-                    Config.printLastCommandOutput(Log.ERROR)
-                }
+        )
+        when (returnCode) {
+            Config.RETURN_CODE_SUCCESS -> {
+                audioFileCut.file = File(PATH_CUT_FOLDER.plus("/${audioFileCut.fileName}"))
+                updateItemLiveData(audioFile, 100)
+                return audioFileCut
+            }
+            Config.RETURN_CODE_CANCEL -> {
+                //cancel
+            }
+            else -> {
+                Log.e(
+                    Config.TAG,
+                    String.format("Async command execution failed with rc=%d.", returnCode)
+                )
+                Config.printLastCommandOutput(Log.ERROR)
             }
         }
 
-        return dataProcessing(audioFile)
+
+        return audioFileCut
     }
 
     override suspend fun mix(
@@ -106,7 +112,11 @@ class AudioCutterImpl : AudioCutter {
         audioFile2: AudioFile,
         audioMixConfig: AudioMixConfig
     ): AudioFile {
-       return dataProcessing(audioFile1)
+        return dataProcessing(audioFile1)
+    }
+
+    override suspend fun cancelTask() {
+        FFmpeg.cancel()
     }
 
     override suspend fun merge(listAudioFile: List<AudioFile>, fileName: String): AudioFile {

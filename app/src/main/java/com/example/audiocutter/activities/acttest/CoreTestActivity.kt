@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import android.view.View
+import androidx.lifecycle.Observer
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.core.audioCutter.AudioCutterImpl
@@ -34,8 +35,9 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
         setContentView(R.layout.activity_core_test)
         file = File(PATH_FOLDER)
         test_cut_bt.setOnClickListener(this)
-        audioCutterImpl.getAudioMergingInfo().observe(this, androidx.lifecycle.Observer {
-            Log.e(TAG, "onCreate: " + it.percent)
+        var i = 0
+        audioCutterImpl.getAudioMergingInfo().observe(this, Observer {
+            Log.e(TAG, "onCreate: " + it.percent + " i: " + i++)
         })
 
         for (t in 0..50) {
@@ -63,16 +65,16 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
                             null,
                             null,
                             "abc",
-                            null, null, null, null,".mp3"
+                            null, null, null, null, ".mp3"
                         ),
                         AudioCutConfig(
                             20,
                             60,
-                            100,
-                            "testCut",
-                            Effect.AFTER_3_S,
-                            Effect.AFTER_3_S,
-                            BitRate._128kb,
+                            300,
+                            "testCut1",
+                            Effect.AFTER_6_S,
+                            Effect.AFTER_6_S,
+                            BitRate._320kb,
                             AudioFormat.MP3
                         )
                     )

@@ -95,6 +95,10 @@ class FakeAudioCutter : AudioCutter {
         TODO("Not yet implemented")
     }
 
+    override suspend fun cancelTask() {
+        TODO("Not yet implemented")
+    }
+
     override fun getAudioMergingInfo(): LiveData<AudioMergingInfo> {
         TODO("Not yet implemented")
     }
