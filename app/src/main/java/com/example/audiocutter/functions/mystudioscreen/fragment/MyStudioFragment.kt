@@ -27,8 +27,7 @@ import kotlinx.android.synthetic.main.my_studio_fragment.*
 import kotlinx.coroutines.delay
 
 
-class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener,
-    SetAsDialogListener, DeleteDialogListener {
+class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener {
 
     val TAG = "giangtd"
     lateinit var myStudioViewModel: MyStudioViewModel
@@ -87,39 +86,19 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
 
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
 
-//        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
-//            val wrapDrawable = DrawableCompat.wrap(pb_audio_cutter.getIndeterminateDrawable())
-//            DrawableCompat.setTint(
-//                wrapDrawable,
-//                ContextCompat.getColor(requireContext(), R.color.progressbar_color)
-//            )
-//            pb_audio_cutter.setIndeterminateDrawable(DrawableCompat.unwrap<Drawable>(wrapDrawable))
-//        }
-
-//        val progressDrawable: Drawable = pb_audio_cutter.getProgressDrawable().mutate()
-//        progressDrawable.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
-//        pb_audio_cutter.setProgressDrawable(progressDrawable)
-
         isLoading = true
         runOnUI {
             delay(5000)
-            val listAudioViewLiveData =
-                myStudioViewModel.getData(typeAudio) // get data from funtion newIntance
+            val listAudioViewLiveData = myStudioViewModel.getData(typeAudio) // get data from funtion newIntance
             listAudioViewLiveData.observe(this as LifecycleOwner, listAudioObserver)
             isLoading = false
 
-            currentView?.findViewById<ProgressBar>(R.id.pb_audio_cutter)?.visibility =
-                View.GONE    // tai day hamonCreateView da chay xong r do runOnUI
+            currentView?.findViewById<ProgressBar>(R.id.pb_audio_cutter)?.visibility = View.GONE    // tai day hamonCreateView da chay xong r do runOnUI
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        typeAudio =
-            requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        typeAudio = requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
         currentView = inflater.inflate(R.layout.my_studio_fragment, container, false)
         return currentView
     }
@@ -271,11 +250,7 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
     override fun onReceivedAction(fragmentMeta: FragmentMeta) {
         // nếu typeAudio không bằng data của fragment thoát
 
-        if (fragmentMeta.action in arrayListOf(
-                Constance.ACTION_CHECK_DELETE,
-                Constance.ACTION_DELETE_ALL
-            )
-        ) if (typeAudio != (fragmentMeta.data as Int)) {
+        if (fragmentMeta.action in arrayListOf(Constance.ACTION_CHECK_DELETE, Constance.ACTION_DELETE_ALL)) if (typeAudio != (fragmentMeta.data as Int)) {
             return
         }
         when (fragmentMeta.action) {
@@ -298,30 +273,16 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
                 }
 
                 runOnUI {
-                    if (myStudioViewModel.deleteAllItemSelected(
-                            requireArguments().getInt(
-                                BUNDLE_NAME_KEY
-                            )
-                        )
-                    ) { // nếu delete thành công thì sẽ hiện dialog thành công
+                    if (myStudioViewModel.deleteAllItemSelected(requireArguments().getInt(BUNDLE_NAME_KEY))) { // nếu delete thành công thì sẽ hiện dialog thành công
                         val dialog = DeleteSuccessfullyDialog()
                         dialog.show(childFragmentManager, DeleteSuccessfullyDialog.TAG)
 
 
                     } else {
-                        Toast.makeText(
-                            context,
-                            getString(R.string.my_studio_delete_fail),
-                            Toast.LENGTH_SHORT
-                        )
+                        Toast.makeText(context, getString(R.string.my_studio_delete_fail), Toast.LENGTH_SHORT)
                             .show()
                     }
-                    Log.d(
-                        TAG,
-                        "onReceivedAction: " + myStudioViewModel.deleteAllItemSelected(
-                            requireArguments().getInt(BUNDLE_NAME_KEY)
-                        )
-                    )
+                    Log.d(TAG, "onReceivedAction: " + myStudioViewModel.deleteAllItemSelected(requireArguments().getInt(BUNDLE_NAME_KEY)))
                 }
             }
             Constance.ACTION_STOP_MUSIC -> {
@@ -332,17 +293,9 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
 
             Constance.ACTION_CHECK_DELETE -> {
                 if (!myStudioViewModel.isChecked()) {
-                    sendFragmentAction(
-                        OutputAudioManagerScreen::class.java.name,
-                        Constance.ACTION_CHECK_DELETE,
-                        false
-                    )
+                    sendFragmentAction(OutputAudioManagerScreen::class.java.name, Constance.ACTION_CHECK_DELETE, false)
                 } else {
-                    sendFragmentAction(
-                        OutputAudioManagerScreen::class.java.name,
-                        Constance.ACTION_CHECK_DELETE,
-                        true
-                    )
+                    sendFragmentAction(OutputAudioManagerScreen::class.java.name, Constance.ACTION_CHECK_DELETE, true)
                 }
             }
         }

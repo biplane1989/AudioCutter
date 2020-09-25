@@ -4,39 +4,50 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.core.manager.ContactManager
-import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.ContactItem
-import java.io.File
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class FakeContactManager : ContactManager {
     private val contactLiveData = MutableLiveData<List<ContactItem>>()
 
     init {
         val contactItemList = ArrayList<ContactItem>()
-        contactItemList.add(ContactItem("1", "name 1", "phoneNumber 1", "thumbnail 1"))
-        contactItemList.add(ContactItem("2", "Orange", "phoneNumber 2", "thumbnail 2"))
-        contactItemList.add(ContactItem("3", "BBBB", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "ô", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "ơ", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "O", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "O", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "E", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "Ê", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "062", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "..", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "@@", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "###", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "A", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "AAA", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "Ă", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "a", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "ấ", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "â", "phoneNumber 3", "thumbnail 3"))
-        contactItemList.add(ContactItem("3", "ẵ", "phoneNumber 3", "thumbnail 3"))
+        contactItemList.add(ContactItem("A", "1", "thumbnail 3", null))
+        contactItemList.add(ContactItem("AAA", "2", "thumbnail 3", "@@@@"))
+        contactItemList.add(ContactItem("name 1", "3", "thumbnail 1", "@@@@"))
+        contactItemList.add(ContactItem("Orange", "4", "thumbnail 2", "@@@@"))
+        contactItemList.add(ContactItem("BBBB", "5", "thumbnail 3", null))
+        contactItemList.add(ContactItem("ô", "6", "thumbnail 3", null))
+        contactItemList.add(ContactItem("ơ", "7", "thumbnail 3", "@@@@"))
+        contactItemList.add(ContactItem("O", "8", "thumbnail 3", "@@@@"))
+        contactItemList.add(ContactItem("O", "9", "thumbnail 3", null))
+        contactItemList.add(ContactItem("E", "11", "thumbnail 3", "@@@@"))
+        contactItemList.add(ContactItem("Ê", "121", "thumbnail 3", null))
+        contactItemList.add(ContactItem("062", "13", "thumbnail 3", "@@@@"))
+        contactItemList.add(ContactItem("..", "12", "thumbnail 3", "@@@@"))
+        contactItemList.add(ContactItem("@@", "14", "thumbnail 3", "@@@@"))
+        contactItemList.add(ContactItem("###", "15", "thumbnail 3", "@@@@"))
+        contactItemList.add(ContactItem("Ă", "16", "thumbnail 3", "@@@@"))
+        contactItemList.add(ContactItem("a", "17", "thumbnail 3", "@@@@"))
+        contactItemList.add(ContactItem("ấ", "123", "thumbnail 3", "@@@@"))
+        contactItemList.add(ContactItem("â", "1234", "thumbnail 3", "@@@@"))
+        contactItemList.add(ContactItem("ẵ", "12345", "thumbnail 3", "@@@@"))
         contactLiveData.postValue(contactItemList)
+
+        MainScope().launch {
+            delay(10000)
+//            contactItemList.add(ContactItem("AAAhhhhh", "321", "thumbnail 3", null))
+            contactItemList.removeAt(4)
+//            val item = contactItemList.get(0).copy()
+//            item.ringtone = "orange"
+//            contactItemList.set(0, item)
+            contactLiveData.postValue(contactItemList)
+        }
     }
 
-    override suspend fun getListContact(context: Context): LiveData<List<ContactItem>> {
+    override suspend fun getListContact(): LiveData<List<ContactItem>> {
         return contactLiveData
     }
 }

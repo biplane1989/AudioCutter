@@ -6,6 +6,7 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.functions.contactscreen.contacts.ListContactAdapter
 import com.example.audiocutter.functions.contactscreen.contacts.ListContactScreen
+import com.example.audiocutter.functions.contactscreen.select.ListSelectAudioScreen
 import com.example.audiocutter.functions.mystudioscreen.OutputAudioManagerScreen
 
 class MainActivity : BaseActivity() {
@@ -18,6 +19,7 @@ class MainActivity : BaseActivity() {
         super.onPostCreate()
 //        val outputAudioManagerScreen = OutputAudioManagerScreen.newInstance(false)
         val listContactScreen = ListContactScreen()
+//        val listContactScreen = ListSelectAudioScreen()
 
         val fragmentManager = supportFragmentManager
         val transaction: FragmentTransaction = fragmentManager.beginTransaction()

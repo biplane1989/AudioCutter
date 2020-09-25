@@ -10,15 +10,15 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_default"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="44dp"
         android:layout_marginBottom="2dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/iv_back"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginLeft="10dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginLeft="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
             android:src="@mipmap/list_contact_icon_back"
@@ -27,12 +27,12 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_contacts"
+            android:id="@+id/tv_select"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="9dp"
             android:fontFamily="@font/sanfranciscodisplay_bold"
-            android:text="Contacts"
+            android:text="Select"
             android:textColor="#2E3041"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -41,10 +41,20 @@
             app:layout_constraintTop_toTopOf="@id/iv_back" />
 
         <ImageView
+            android:id="@+id/iv_file"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_audiocutter_file"
+            app:layout_constraintBottom_toBottomOf="@id/iv_search"
+            app:layout_constraintEnd_toStartOf="@id/iv_search"
+            app:layout_constraintTop_toTopOf="@id/iv_search" />
+
+        <ImageView
             android:id="@+id/iv_search"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginRight="10dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginRight="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
             android:src="@mipmap/list_contact_icon_search"
@@ -58,16 +68,18 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_search"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="44dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:layout_marginBottom="2dp"
+        android:background="@drawable/bg_edt_list_contact"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/iv_search_close"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginLeft="10dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
             android:src="@mipmap/list_contact_icon_back"
@@ -79,18 +91,15 @@
             android:id="@+id/edt_search"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="#F6F6F6"
-            android:hint="Search..."
+            android:backgroundTint="#F1F1F1"
             app:layout_constraintBottom_toBottomOf="@id/iv_search_close"
             app:layout_constraintEnd_toStartOf="@id/iv_clear"
-            app:layout_constraintStart_toEndOf="@id/iv_search_close"
-            app:layout_constraintTop_toTopOf="@id/iv_search_close" />
+            app:layout_constraintStart_toEndOf="@id/iv_search_close" />
 
         <ImageView
             android:id="@+id/iv_clear"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginRight="10dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
             android:src="@mipmap/list_contact_icon_search_clear"
@@ -101,7 +110,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_list_contact"
+        android:id="@+id/rv_list_select_audio"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

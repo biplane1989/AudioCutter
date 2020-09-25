@@ -1,21 +1,20 @@
 package com.example.audiocutter.functions.contactscreen.contacts
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
-import android.provider.MediaStore
+import android.preference.PreferenceActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
-import com.example.audiocutter.functions.contactscreen.ContactItemView
-import java.util.ArrayList
+import com.example.audiocutter.util.Utils
+import java.util.*
+
 
 class ListContactAdapter(context: Context?) : ListAdapter<ContactItemView, RecyclerView.ViewHolder>(ContactDiffCallBack()) {
 
@@ -62,6 +61,44 @@ class ListContactAdapter(context: Context?) : ListAdapter<ContactItemView, Recyc
         }
     }
 
+    // khi chi thay doi 1 truong trong data
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+        super.onBindViewHolder(holder, position, payloads)
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position)
+        } else {
+            if (mContext == null) {
+                return
+            }
+            if (holder is HeaderViewHolder) {
+                val headerViewHolder = holder as HeaderViewHolder
+                headerViewHolder.onBind()
+            } else {
+                val itemViewHolder = holder as ItemViewHolder
+                val ringtone = payloads.firstOrNull() as String
+                val contactItem = getItem(position)
+
+                if (ringtone != null) {
+                    itemViewHolder.tvRingtoneDefault.visibility = View.GONE
+                    itemViewHolder.cvDefault.visibility = View.GONE
+                    itemViewHolder.tvRingtone.visibility = View.VISIBLE
+
+                    val ringtoneTitle = Utils.getPlayList(mContext!!, contactItem.contactItem.ringtone!!)   // get name song by uri
+                    itemViewHolder.tvRingtone.text = ringtoneTitle
+                } else {
+                    itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
+                    itemViewHolder.cvDefault.visibility = View.VISIBLE
+                    itemViewHolder.tvRingtone.visibility = View.GONE
+
+                    val ringtoneDefault = Utils.getPlayList(mContext!!, Utils.getCurrentSound(mContext!!)
+                        .toString())
+                    itemViewHolder.tvRingtoneDefault.text = ringtoneDefault
+                }
+//            }
+            }
+        }
+    }
+
     override fun getItemCount(): Int {
         return mListContact.size
     }
@@ -69,19 +106,36 @@ class ListContactAdapter(context: Context?) : ListAdapter<ContactItemView, Recyc
     inner class ItemViewHolder(itemView: View, context: Context?) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.findViewById(R.id.tv_name)
         val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar)
-        val ringtone: TextView = itemView.findViewById(R.id.tv_ringtone)
-        val ringtoneDefault: TextView = itemView.findViewById(R.id.tv_ringtone_default)
+        val tvRingtone: TextView = itemView.findViewById(R.id.tv_ringtone)
+        val tvRingtoneDefault: TextView = itemView.findViewById(R.id.tv_ringtone_default)
+        val cvDefault: CardView = itemView.findViewById(R.id.cv_default)
 
         fun onBind() {
             val contentItem = getItem(adapterPosition)
             tvName.text = contentItem.contactItem.name
-            val avatar = getImageCover(contentItem.contactItem.thumb)
+            val avatar = Utils.getImageCover(mContext!!, contentItem.contactItem.thumb)
 
             if (avatar != null) {
                 ivAvatar.setImageBitmap(avatar)
             }
-        }
+            if (contentItem.contactItem.ringtone != null) {
 
+                tvRingtoneDefault.visibility = View.GONE
+                cvDefault.visibility = View.GONE
+                tvRingtone.visibility = View.VISIBLE
+
+                val ringtoneTitle = Utils.getPlayList(mContext!!, contentItem.contactItem.ringtone!!)   // get name song by uri
+                tvRingtone.text = ringtoneTitle
+            } else {
+                tvRingtoneDefault.visibility = View.VISIBLE
+                cvDefault.visibility = View.VISIBLE
+                tvRingtone.visibility = View.GONE
+
+                val ringtoneDefault = Utils.getPlayList(mContext!!, Utils.getCurrentSound(mContext!!)
+                    .toString())
+                tvRingtoneDefault.text = ringtoneDefault
+            }
+        }
     }
 
     inner class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -98,18 +152,6 @@ class ListContactAdapter(context: Context?) : ListAdapter<ContactItemView, Recyc
         const val CONTENT_VIEW = 1
     }
 
-    fun getImageCover(path: String?): Bitmap? {
-        try {
-            if (path != null) {
-                val bitmap = MediaStore.Images.Media.getBitmap(mContext?.contentResolver, Uri.parse(path))
-                return bitmap
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return null
-    }
-
 }
 
 class ContactDiffCallBack : DiffUtil.ItemCallback<ContactItemView>() {
@@ -124,6 +166,6 @@ class ContactDiffCallBack : DiffUtil.ItemCallback<ContactItemView>() {
 
     override fun getChangePayload(oldItem: ContactItemView, newItem: ContactItemView): Any? {
 
-        return newItem
+        return newItem.contactItem.ringtone
     }
 }

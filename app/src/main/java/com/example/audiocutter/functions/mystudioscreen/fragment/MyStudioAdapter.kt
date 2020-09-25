@@ -45,7 +45,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         holder.bind()
     }
 
-    // khi chỉ thay đổi 1 phần trên ui
+    // khi chi thay doi 1 truong trong data
     override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
         super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {

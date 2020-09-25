@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.contactscreen
+package com.example.audiocutter.functions.contactscreen.contacts
 
 import com.example.audiocutter.objects.ContactItem
 

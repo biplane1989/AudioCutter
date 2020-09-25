@@ -3,7 +3,6 @@ package com.example.audiocutter.functions.contactscreen.contacts
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.functions.contactscreen.ContactItemView
+import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
+import com.example.audiocutter.core.manager.ContactManagerImpl
 import kotlinx.android.synthetic.main.list_contact_screen.*
 
 
@@ -34,12 +34,10 @@ class ListContactScreen : BaseFragment() {
         rv_list_contact.adapter = listContactAdapter
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.list_contact_screen, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val mView = inflater.inflate(R.layout.list_contact_screen, container, false)
+        ContactManagerImpl.registerContentObserVerDeleted()
+        return mView
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -51,7 +49,9 @@ class ListContactScreen : BaseFragment() {
         runOnUI {
             val listContact = mlistContactViewModel.getData() // get data from funtion newIntance
             listContact.observe(this as LifecycleOwner, listContactObserver)
+//            ContactManagerImpl.getListContact(requireContext())
         }
+
 
     }
 
