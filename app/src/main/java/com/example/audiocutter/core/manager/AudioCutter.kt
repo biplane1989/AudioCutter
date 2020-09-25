@@ -1,16 +1,14 @@
 package com.example.audiocutter.core.manager
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import com.example.audiocutter.objects.AudioFile
 
-enum class Effect {
-    OFF, AFTER_1_S, AFTER_2_S, AFTER_3_S, AFTER_4_S, AFTER_5_S, AFTER_6_S
+enum class Effect(val time: Int) {
+    OFF(0), AFTER_1_S(1), AFTER_2_S(2), AFTER_3_S(3), AFTER_4_S(4), AFTER_5_S(5), AFTER_6_S(6)
 }
 
-enum class BitRate {
-    _128kb, _64_kb
+enum class BitRate(val value : Int) {
+    _128kb(128), _64kb(64), _32kb(32), _192kb(192), _256kb(256), _320kb(320)
 }
 
 enum class AudioFormat {

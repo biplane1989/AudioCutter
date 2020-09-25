@@ -15,13 +15,13 @@ import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.activity_core_test.*
 import java.io.File
 
-open class CoreTestActivity : BaseActivity(), View.OnClickListener {
+class CoreTestActivity : BaseActivity(), View.OnClickListener {
     private val audioCutterImpl = AudioCutterImpl()
     private lateinit var file: File
-    private val NAME_FILE = "Anh Đợi Em Này_Thanh Hưng.mp3"
+    private val NAME_FILE = "Anh Đợi Em Này_Thanh Hưng"
     private val PATH_FOLDER: String =
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            .plus("/$NAME_FILE").toString()
+            .plus("/${NAME_FILE.plus(".mp3")}").toString()
 
     private lateinit var audioFile: AudioFile
 
@@ -37,6 +37,16 @@ open class CoreTestActivity : BaseActivity(), View.OnClickListener {
         audioCutterImpl.getAudioMergingInfo().observe(this, androidx.lifecycle.Observer {
             Log.e(TAG, "onCreate: " + it.percent)
         })
+
+        for (t in 0..50) {
+            val test = between(t, 0, 4) * (t / 4) + between(t, 4, 42) + between(
+                t,
+                44,
+                50
+            ) * (1 - (t / (50 - 44)))
+            println(test)
+        }
+
     }
 
     override fun onClick(p0: View?) {
@@ -53,15 +63,15 @@ open class CoreTestActivity : BaseActivity(), View.OnClickListener {
                             null,
                             null,
                             "abc",
-                            null, null, null, null
+                            null, null, null, null,".mp3"
                         ),
                         AudioCutConfig(
-                            20000,
-                            60000,
+                            20,
+                            60,
                             100,
                             "testCut",
-                            Effect.OFF,
-                            Effect.OFF,
+                            Effect.AFTER_3_S,
+                            Effect.AFTER_3_S,
                             BitRate._128kb,
                             AudioFormat.MP3
                         )
@@ -70,6 +80,14 @@ open class CoreTestActivity : BaseActivity(), View.OnClickListener {
             }
         }
     }
+}
+
+
+fun between(t: Int, start: Int, end: Int): Int {
+    return if (t in start..end)
+        1
+    else
+        0
 }
 
 private operator fun File.plus(separator: String): Any {
