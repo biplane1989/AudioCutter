@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.ChooseScreen.view
+package com.example.audiocutter.functions.MixAudioScreen.view
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -9,21 +9,18 @@ import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
-import com.example.audiocutter.functions.audiocutterscreen.view.screen.AudioCutterModel
 import java.io.File
-import java.util.*
-import kotlin.collections.ArrayList
 
-class RecentModel :BaseViewModel(){
-    private val TAG = AudioCutterModel::class.java.name
+class MixModel : BaseViewModel() {
+    private val TAG = MixModel::class.java.name
     private var currentAudioPlaying: File = File("")
     var isPlayingStatus = false
     private var mListAudio = ArrayList<AudioCutterView>()
-    var isCheckItem = false
+    var isChooseItem = false
 
 
     suspend fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
-        return Transformations.map(AudioFileManagerImpl.findAllAudioFiles()) { listAudioFiles ->
+        return Transformations.map(ManagerFactory.getAudioFileManagerImpl().findAllAudioFiles()) { listAudioFiles ->
             mListAudio.clear()
             listAudioFiles.forEach {
                 mListAudio.add(AudioCutterView(it))
@@ -34,8 +31,9 @@ class RecentModel :BaseViewModel(){
 
 
 
+
     suspend fun getAllFileByType(): LiveData<List<AudioCutterView>> {
-        return Transformations.map(AudioFileManagerImpl.getAllListByType()) { listAudioFiles ->
+        return Transformations.map(ManagerFactory.getAudioFileManagerImpl().getAllListByType()) { listAudioFiles ->
             mListAudio.clear()
             listAudioFiles.forEach {
                 mListAudio.add(AudioCutterView(it))
@@ -48,30 +46,31 @@ class RecentModel :BaseViewModel(){
     fun controllerAudio(position: Int, state: PlayerState): List<AudioCutterView> {
         when (state) {
             PlayerState.IDLE -> {
-                updateControllerAudio(position, PlayerState.PLAYING, true, PlayerState.IDLE)
-            }
-            PlayerState.PAUSE -> {
-                updateControllerAudio(position, PlayerState.PLAYING, true, PlayerState.PAUSE)
+                updateControllerAudio(position, PlayerState.PLAYING, true, 1)
             }
             PlayerState.PLAYING -> {
-                updateControllerAudio(position, PlayerState.PAUSE, false, PlayerState.PLAYING)
+                updateControllerAudio(position, PlayerState.PAUSE, false, 2)
             }
+            PlayerState.PAUSE -> {
+                updateControllerAudio(position, PlayerState.PLAYING, true, 3)
+            }
+
         }
 
         return mListAudio
     }
 
 
-    fun updateControllerAudio(pos: Int, state: PlayerState, rs: Boolean, stateClick: PlayerState) {
-        val item = mListAudio.get(pos).copy()
+    fun updateControllerAudio(pos: Int, state: PlayerState, rs: Boolean, numClick: Int) {
+        val item = mListAudio[pos].copy()
         item.state = state
         mListAudio[pos] = item
 
         runOnBackground {
-            when (stateClick) {
-                PlayerState.IDLE -> ManagerFactory.getAudioPlayer().play(item.audioFile)
-                PlayerState.PLAYING -> ManagerFactory.getAudioPlayer().pause()
-                PlayerState.PAUSE -> ManagerFactory.getAudioPlayer().resume()
+            when (numClick) {
+                1 -> ManagerFactory.getAudioPlayer().play(item.audioFile)
+                2 -> ManagerFactory.getAudioPlayer().pause()
+               3 -> ManagerFactory.getAudioPlayer().resume()
             }
         }
         isPlayingStatus = rs
@@ -80,7 +79,7 @@ class RecentModel :BaseViewModel(){
     fun updateMediaInfo(playerInfo: PlayerInfo): List<AudioCutterView> {
         Log.d(TAG, "updateMediaInfo: ${playerInfo.playerState}")
         if (playerInfo.currentAudio != null) {
-            if (!currentAudioPlaying.absoluteFile.equals(playerInfo.currentAudio!!.file.absoluteFile)) {
+            if (currentAudioPlaying.absoluteFile != playerInfo.currentAudio!!.file.absoluteFile) {
 
                 val oldPos = getAudioFilePos(currentAudioPlaying)
                 val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
@@ -114,7 +113,7 @@ class RecentModel :BaseViewModel(){
     private fun getAudioFilePos(file: File): Int {
         var i = 0
         while (i < mListAudio.size) {
-            if (mListAudio.get(i).audioFile.file.equals(file)) {
+            if (mListAudio[i].audioFile.file == file) {
                 return i
             }
             i++
@@ -141,14 +140,14 @@ class RecentModel :BaseViewModel(){
     }
 
     fun changeItemAudioFile(pos: Int, rs: Boolean): List<AudioCutterView>? {
-        var itemAudio: AudioCutterView
+        val itemAudio: AudioCutterView
         var count = 0
         if (!rs) {
-            itemAudio = mListAudio.get(pos).copy()
+            itemAudio = mListAudio[pos].copy()
             itemAudio.isChecked = true
             mListAudio[pos] = itemAudio
         } else {
-            itemAudio = mListAudio.get(pos).copy()
+            itemAudio = mListAudio[pos].copy()
             itemAudio.isChecked = false
             mListAudio[pos] = itemAudio
         }
@@ -160,29 +159,23 @@ class RecentModel :BaseViewModel(){
                 if (count > 2 && itemAudio.isChecked) {
                     itemAudio.isChecked = false
                     mListAudio[pos] = itemAudio
-                    isCheckItem = true
+                    isChooseItem = true
                 } else if (count < 2) {
-                    isCheckItem = false
+                    isChooseItem = false
                 }
             }
         }
         return mListAudio
     }
 
-    fun checkList(): Boolean {
+    fun checkList(): Int {
         var count = 0
         for (item in mListAudio) {
             if (item.isChecked) {
                 count++
             }
         }
-
-        if (count > 2 || count < 2) {
-            return false
-        } else if (count == 2) {
-            return true
-        }
-        return false
+        return count
     }
 
     fun getListItemChoose(): List<AudioCutterView> {

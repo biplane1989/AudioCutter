@@ -3,12 +3,11 @@ package com.example.audiocutter.activities.acttest
 import android.os.Bundle
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
-import com.example.audiocutter.functions.ChooseScreen.view.RecentAddedScreen
-import com.example.audiocutter.functions.audiocutterscreen.view.screen.AudioCutterScreen
+import com.example.audiocutter.functions.MixAudioScreen.view.MixerAudioScreen
 
 class TestAct : BaseActivity() {
 //        lateinit var audioCutterScreen: AudioCutterScreen
-    lateinit var recentAddedScreen: RecentAddedScreen
+    lateinit var recentAddedScreen: MixerAudioScreen
     override fun createView(savedInstanceState: Bundle?) {
         setContentView(R.layout.act_test)
         initViews()
@@ -16,7 +15,7 @@ class TestAct : BaseActivity() {
 
     private fun initViews() {
 //        audioCutterScreen = AudioCutterScreen()
-        recentAddedScreen = RecentAddedScreen()
+        recentAddedScreen = MixerAudioScreen()
         supportFragmentManager.beginTransaction().replace(R.id.ln_main, recentAddedScreen).commit()
     }
 

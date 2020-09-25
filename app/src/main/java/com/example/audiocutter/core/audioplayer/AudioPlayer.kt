@@ -24,8 +24,8 @@ object AudioPlayerImpl : AudioPlayer {
 
 
     private var _mPlayInfo = MutableLiveData<PlayerInfo>()
-    val playInfoData = PlayerInfo(null, 0, PlayerState.IDLE, 0, 0)
-    val mPlayInfo: LiveData<PlayerInfo>
+    private val playInfoData = PlayerInfo(null, 0, PlayerState.IDLE, 0, 0)
+    private val mPlayInfo: LiveData<PlayerInfo>
         get() = _mPlayInfo
 
 
@@ -53,7 +53,7 @@ object AudioPlayerImpl : AudioPlayer {
             "startTimerIfReady: path${playInfoData.currentAudio!!.fileName}   state ${playInfoData.playerState}  duration ${playInfoData.duration}   position ${playInfoData.position}"
         )
 
-        val copy = PlayerInfo(
+        val playInfoCopy = PlayerInfo(
             playInfoData.currentAudio,
             playInfoData.position,
             playInfoData.playerState,
@@ -61,9 +61,9 @@ object AudioPlayerImpl : AudioPlayer {
             playInfoData.volume
         )
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            _mPlayInfo.value = copy
+            _mPlayInfo.value = playInfoCopy
         } else {
-            mainScope.launch { _mPlayInfo.value = copy }
+            mainScope.launch { _mPlayInfo.value = playInfoCopy }
         }
     }
 
@@ -202,7 +202,7 @@ object AudioPlayerImpl : AudioPlayer {
             while (mainScope.isActive) {
                 var changed = false
 
-                delay(500)
+                delay(2000)
                 synchronized(mPlayer) {
                     playInfoData.duration = mPlayer.duration
                     var currentPosition = mPlayer.currentPosition
@@ -230,7 +230,7 @@ object AudioPlayerImpl : AudioPlayer {
                                 playInfoData.position = currentPosition
                             } else {
                                 playInfoData.playerState = PlayerState.PAUSE
-                                Log.d("nmcode", "startTimerIfReady: ${playInfoData.playerState}")
+//                                Log.d("nmcode", "startTimerIfReady: ${playInfoData.playerState}")
                             }
                             changed = true
                         }

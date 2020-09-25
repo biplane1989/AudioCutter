@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.ChooseScreen.adapter
+package com.example.audiocutter.functions.MixAudioScreen.adapter
 
 
 import android.content.Context
@@ -15,14 +15,14 @@ import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 
-class RecentAdapter(val mContext: Context) :
-    ListAdapter<AudioCutterView, RecentAdapter.RecentHolder>(Audiodiff()) {
-    lateinit var mCallBack: AudioRecentListener
+class MixAdapter(val mContext: Context) :
+    ListAdapter<AudioCutterView, MixAdapter.RecentHolder>(Audiodiff()) {
+    lateinit var mCallBack: AudioMixerListener
     val SIZE_MB = 1024 * 1024
     var listAudios = mutableListOf<AudioCutterView>()
 
 
-    fun setAudioCutterListtener(event: AudioRecentListener) {
+    fun setAudioCutterListtener(event: AudioMixerListener) {
         mCallBack = event
     }
 
@@ -39,7 +39,7 @@ class RecentAdapter(val mContext: Context) :
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecentHolder {
-        val view = LayoutInflater.from(mContext).inflate(R.layout.item_audio_recent, parent, false)
+        val view = LayoutInflater.from(mContext).inflate(R.layout.item_audio_mixer, parent, false)
         return RecentHolder(view)
     }
 
@@ -73,8 +73,8 @@ class RecentAdapter(val mContext: Context) :
                 }
             }
             when (itemAudioFile.isChecked) {
-                true -> holder.ivChecked.setImageResource(R.drawable.ic_recent_checkdone)
-                false -> holder.ivChecked.setImageResource(R.drawable.ic_recent_noncheck)
+                true -> holder.ivChecked.setImageResource(R.drawable.ic_mixer_checkdone)
+                false -> holder.ivChecked.setImageResource(R.drawable.ic_mixer_noncheck)
             }
         }
     }
@@ -116,17 +116,19 @@ class RecentAdapter(val mContext: Context) :
             when (itemAudioFile.state) {
                 PlayerState.PLAYING -> {
                     ivController.setImageResource(R.drawable.ic_audiocutter_pause)
+                    return
                 }
                 PlayerState.PAUSE -> {
                     ivController.setImageResource(R.drawable.ic_audiocutter_play)
+                    return
                 }
                 PlayerState.IDLE -> {
                     ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }
             }
             when (itemAudioFile.isChecked) {
-                true -> ivChecked.setImageResource(R.drawable.ic_recent_checkdone)
-                false -> ivChecked.setImageResource(R.drawable.ic_recent_noncheck)
+                true -> ivChecked.setImageResource(R.drawable.ic_mixer_checkdone)
+                false -> ivChecked.setImageResource(R.drawable.ic_mixer_noncheck)
             }
 
         }
@@ -164,7 +166,7 @@ class RecentAdapter(val mContext: Context) :
 
     }
 
-    interface AudioRecentListener {
+    interface AudioMixerListener {
 
         fun play(pos: Int)
         fun pause(pos: Int)

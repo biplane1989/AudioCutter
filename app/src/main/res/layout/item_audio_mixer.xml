@@ -56,7 +56,7 @@
                 android:layout_width="0.5dp"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
-                android:background="@color/colorGray" />
+                android:background="@color/colorgray" />
 
             <TextView
                 android:id="@+id/tv_bitrate_audio_recent"
@@ -81,7 +81,7 @@
             android:layout_width="@dimen/d_20"
             android:layout_height="@dimen/d_20"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_recent_noncheck" />
+            android:src="@drawable/ic_mixer_noncheck" />
 
     </LinearLayout>
 

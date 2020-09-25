@@ -1,5 +1,6 @@
-package com.example.audiocutter.functions.ChooseScreen.view
+package com.example.audiocutter.functions.MixAudioScreen.view
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
 import android.text.Editable
@@ -20,18 +21,18 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.functions.ChooseScreen.adapter.RecentAdapter
+import com.example.audiocutter.functions.MixAudioScreen.adapter.MixAdapter
 import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDialog
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import com.example.audiocutter.functions.audiocutterscreen.view.screen.AudioCutterScreen
 
-class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.AudioRecentListener {
+class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioMixerListener {
 
     val TAG = AudioCutterScreen::class.java.name
     private lateinit var mView: View
-    private lateinit var rvAudioRecent: RecyclerView
-    private lateinit var audioRecentAdapter: RecentAdapter
-    private lateinit var audioRecentModel: RecentModel
+    private lateinit var rvAudioMix: RecyclerView
+    private lateinit var audioMixAdapter: MixAdapter
+    private lateinit var audioMixModel: MixModel
     lateinit var dialog: SetAsDialog
     lateinit var ivFile: ImageView
     lateinit var ivSearch: ImageView
@@ -45,40 +46,41 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
 
     //rlt_next_recent_parent
 
-    lateinit var ivNextRecent: ImageView
-    lateinit var tvNextRecent: TextView
-    lateinit var rltNextRecent: RelativeLayout
-    lateinit var rltNextRecentParent: RelativeLayout
+    lateinit var ivNextMix: ImageView
+    lateinit var tvNextMix: TextView
+    lateinit var tvCountFile: TextView
+    lateinit var rltNextMix: RelativeLayout
+    lateinit var rltNextMixParent: RelativeLayout
 
     var listTmp: MutableList<AudioCutterView> = mutableListOf()
-    var isCheckList = true
+    var isChangeList = true
 
     val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
         listTmp = listMusic.toMutableList()
-        audioRecentAdapter.submitList(ArrayList(listMusic))
+        audioMixAdapter.submitList(ArrayList(listMusic))
+
     }
 
     private val playerInfoObserver = Observer<PlayerInfo> {
-        if (audioRecentModel.isPlayingStatus) {
-            audioRecentAdapter.submitList(audioRecentModel.updateMediaInfo(it))
+        if (audioMixModel.isPlayingStatus) {
+            audioMixAdapter.submitList(audioMixModel.updateMediaInfo(it))
         }
     }
 
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioRecentAdapter = RecentAdapter(requireContext())
-        audioRecentModel = ViewModelProvider(this).get(RecentModel::class.java)
+        audioMixAdapter = MixAdapter(requireContext())
+        audioMixModel = ViewModelProvider(this).get(MixModel::class.java)
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
     override fun onCreateView(
-
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mView = inflater.inflate(R.layout.recent_added_screen, container, false)
+        mView = inflater.inflate(R.layout.mixer_screen, container, false)
         AudioFileManagerImpl.registerContentObserVerDeleted()
         initViews()
         checkEdtSearchAudio()
@@ -89,7 +91,7 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
         super.onViewCreated(view, savedInstanceState)
         initLists()
         runOnUI {
-            val listAudioViewLiveData = audioRecentModel.getAllAudioFile()
+            val listAudioViewLiveData = audioMixModel.getAllAudioFile()
             listAudioViewLiveData.removeObserver(listAudioObserver)
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
         }
@@ -102,6 +104,7 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                Log.d(TAG, "onTextChanged: $p0 - $p1-  $p2- $p3")
                 searchAudioByName(edtSearch.text.toString())
             }
 
@@ -112,17 +115,17 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
     }
 
     private fun searchAudioByName(yourTextSearch: String) {
-        rvAudioRecent.visibility = View.VISIBLE
-        rltNextRecentParent.visibility = View.VISIBLE
+        rvAudioMix.visibility = View.VISIBLE
+        rltNextMixParent.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
         if (yourTextSearch.isEmpty()) {
-            audioRecentAdapter.submitList(listTmp)
+            audioMixAdapter.submitList(listTmp)
         }
-        if (audioRecentModel.searchAudio(listTmp, yourTextSearch).isNotEmpty()) {
-            audioRecentAdapter.submitList(audioRecentModel.getListsearch())
+        if (audioMixModel.searchAudio(listTmp, yourTextSearch).isNotEmpty()) {
+            audioMixAdapter.submitList(audioMixModel.getListsearch())
         } else {
-            rvAudioRecent.visibility = View.GONE
-            rltNextRecentParent.visibility = View.GONE
+            rvAudioMix.visibility = View.GONE
+            rltNextMixParent.visibility = View.GONE
             tvEmptyList.visibility = View.VISIBLE
         }
     }
@@ -130,28 +133,30 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
 
     private fun initViews() {
 
-        rltNextRecent = mView.findViewById(R.id.rlt_next_recent)
-        rltNextRecentParent = mView.findViewById(R.id.rlt_next_recent_parent)
-        ivNextRecent = mView.findViewById(R.id.iv_next_recent)
-        tvNextRecent = mView.findViewById(R.id.tv_next_recent)
+        rltNextMix = mView.findViewById(R.id.rlt_next_mixer)
+        rltNextMixParent = mView.findViewById(R.id.rlt_next_mixer_parent)
+        ivNextMix = mView.findViewById(R.id.iv_next_mixer)
+        tvNextMix = mView.findViewById(R.id.tv_next_mixer)
+        tvCountFile = mView.findViewById(R.id.tv_count_file)
 
-        ivFile = mView.findViewById(R.id.iv_audiorecent_screen_file)
-        ivBack = mView.findViewById(R.id.iv_recent_screen_back)
-        ivBackEdt = mView.findViewById(R.id.iv_recent_screen_back_edt)
-        ivClose = mView.findViewById(R.id.iv_recent_screen_close)
-        ivSearch = mView.findViewById(R.id.iv_recent_screen_search)
-        tbName = mView.findViewById(R.id.tb_name_recent)
-        tvEmptyList = mView.findViewById(R.id.tv_empty_list_recent)
-        edtSearch = mView.findViewById(R.id.edt_recent_search)
+        ivFile = mView.findViewById(R.id.iv_audio_mixer_screen_file)
+        ivBack = mView.findViewById(R.id.iv_mixer_screen_back)
+        ivBackEdt = mView.findViewById(R.id.iv_mixer_screen_back_edt)
+        ivClose = mView.findViewById(R.id.iv_mixer_screen_close)
+        ivSearch = mView.findViewById(R.id.iv_mixer_screen_search)
+        tbName = mView.findViewById(R.id.tb_name_mixer)
+        tvEmptyList = mView.findViewById(R.id.tv_empty_list_mixer)
+        edtSearch = mView.findViewById(R.id.edt_mixer_search)
 
         ivFile.setOnClickListener(this)
         ivSearch.setOnClickListener(this)
         ivBackEdt.setOnClickListener(this)
         ivClose.setOnClickListener(this)
-        rltNextRecent.setOnClickListener(this)
+        rltNextMix.setOnClickListener(this)
 
-        audioRecentAdapter.setAudioCutterListtener(this)
-        rvAudioRecent = mView.findViewById(R.id.rv_recent)
+        audioMixAdapter.setAudioCutterListtener(this)
+        rvAudioMix = mView.findViewById(R.id.rv_mixer)
+
 
     }
 
@@ -187,65 +192,70 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
 
 
     private fun initLists() {
-        rvAudioRecent.adapter = audioRecentAdapter
-        rvAudioRecent.setHasFixedSize(true)
-        rvAudioRecent.layoutManager = LinearLayoutManager(requireContext())
+
+
+        rvAudioMix.adapter = audioMixAdapter
+        rvAudioMix.setHasFixedSize(true)
+        rvAudioMix.layoutManager = LinearLayoutManager(requireContext())
+
     }
 
     override fun play(pos: Int) {
         currentPos = pos
         val state = PlayerState.IDLE
-        audioRecentAdapter.submitList(audioRecentModel.controllerAudio(pos, state))
+        audioMixAdapter.submitList(audioMixModel.controllerAudio(pos, state))
 
     }
 
     override fun pause(pos: Int) {
         currentPos = pos
         val state = PlayerState.PLAYING
-        audioRecentAdapter.submitList(audioRecentModel.controllerAudio(pos, state))
+        audioMixAdapter.submitList(audioMixModel.controllerAudio(pos, state))
 
     }
 
     override fun resume(pos: Int) {
         currentPos = pos
         val state = PlayerState.PAUSE
-        audioRecentAdapter.submitList(audioRecentModel.controllerAudio(pos, state))
+        audioMixAdapter.submitList(audioMixModel.controllerAudio(pos, state))
     }
 
+    @SuppressLint("SetTextI18n")
     override fun chooseItemAudio(pos: Int, rs: Boolean) {
-        audioRecentAdapter.submitList(audioRecentModel.changeItemAudioFile(pos, rs))
+        audioMixAdapter.submitList(audioMixModel.changeItemAudioFile(pos, rs))
 
-        if (audioRecentModel.checkList()) {
-            setColorForView(R.color.colorWhite, R.drawable.bg_next_recent_audio_enabled, true)
+        if (audioMixModel.checkList() == 2) {
+            setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_mixer_audio_enabled, true)
         } else {
-            setColorForView(R.color.colorBlack, R.drawable.bg_next_recent_audio_disabled, false)
+            setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_mixer_audio_disabled, false)
         }
-        if (audioRecentModel.isCheckItem) {
+        if (audioMixModel.isChooseItem) {
             showToast("You can select only 2 item")
         }
+        tvCountFile.text = "${audioMixModel.checkList()} file"
     }
 
 
-    private fun setColorForView(color: Int, bg: Int, rs: Boolean) {
-        rltNextRecent.isEnabled = rs
-        rltNextRecent.setBackgroundResource(bg)
-        ivNextRecent.setColorFilter(requireActivity().resources.getColor(color));
-        tvNextRecent.setTextColor(requireActivity().resources.getColor(color))
+    private fun setColorButtonNext(color: Int, bg: Int, rs: Boolean) {
+        rltNextMix.isEnabled = rs
+        rltNextMix.setBackgroundResource(bg)
+        ivNextMix.setColorFilter(requireActivity().resources.getColor(color));
+        tvNextMix.setTextColor(requireActivity().resources.getColor(color))
     }
 
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.iv_audiorecent_screen_file -> changeListFile()
-            R.id.iv_recent_screen_search -> searchAudiofile()
-            R.id.iv_recent_screen_back_edt -> previousStatus()
-            R.id.iv_recent_screen_close -> clearText()
-            R.id.rlt_next_recent -> handleAudiofile()
+            R.id.iv_audio_mixer_screen_file -> changeListFile()
+            R.id.iv_mixer_screen_search -> searchAudiofile()
+            R.id.iv_mixer_screen_back_edt -> previousStatus()
+            R.id.iv_mixer_screen_close -> clearText()
+            R.id.rlt_next_mixer -> handleAudiofile()
         }
     }
 
     private fun handleAudiofile() {
-        val listItemHandle = audioRecentModel.getListItemChoose()
+        val listItemHandle = audioMixModel.getListItemChoose()
 
 //        listItemHandle.forEach {
 //            Log.d(TAG, "handleAudiofile: ${it.audioFile.fileName}")
@@ -262,10 +272,11 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
     }
 
     private fun previousStatus() {
-        rvAudioRecent.visibility = View.VISIBLE
-        rltNextRecentParent.visibility = View.VISIBLE
+        edtSearch.setText("")
+        rvAudioMix.visibility = View.VISIBLE
+        rltNextMixParent.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
-        audioRecentAdapter.submitList(listTmp)
+        audioMixAdapter.submitList(listTmp)
         hideKeyBroad()
         hideOrShowEditText(View.GONE)
         hideOrShowView(View.VISIBLE)
@@ -280,34 +291,34 @@ class RecentAddedScreen : BaseFragment(), View.OnClickListener, RecentAdapter.Au
 
     private fun changeListFile() {
 
-
-        setColorForView(R.color.colorBlack, R.drawable.bg_next_recent_audio_disabled, false)
+        setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_mixer_audio_disabled, false)
         runOnUI {
             try {
-                if (isCheckList) {
+                if (isChangeList) {
+                    tvCountFile.text = requireActivity().resources.getText(R.string.countFile)
                     ManagerFactory.getAudioPlayer().stop()
-                    audioRecentModel.getAllFileByType().observe(this, Observer {
+                    audioMixModel.getAllFileByType().observe(this, Observer {
                         listTmp.clear()
                         listTmp.addAll(it.toMutableList())
-                        audioRecentAdapter.submitList(listTmp)
-                        isCheckList = false
+                        audioMixAdapter.submitList(listTmp)
+                        isChangeList = false
                     })
                 } else {
-                    audioRecentModel.getAllAudioFile().observe(this, Observer {
+                    tvCountFile.text = requireActivity().resources.getText(R.string.countFile)
+                    audioMixModel.getAllAudioFile().observe(this, Observer {
                         listTmp.clear()
                         listTmp.addAll(it.toMutableList())
-                        audioRecentAdapter.submitList(listTmp)
-                        isCheckList = true
+                        audioMixAdapter.submitList(listTmp)
+                        isChangeList = true
                     })
                 }
                 if (currentPos != -1) {
                     ManagerFactory.getAudioPlayer().stop()
                 }
-                Log.d(TAG, "updateAllFile: check $isCheckList    listSize ${listTmp.size}")
+                Log.d(TAG, "updateAllFile: check $isChangeList    listSize ${listTmp.size}")
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
         }
     }
 

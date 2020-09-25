@@ -20,7 +20,7 @@ class AudioCutterModel : BaseViewModel() {
 
 
     suspend fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
-        return Transformations.map(AudioFileManagerImpl.findAllAudioFiles()) { listAudioFiles ->
+        return Transformations.map(ManagerFactory.getAudioFileManagerImpl().findAllAudioFiles()) { listAudioFiles ->
             mListAudio.clear()
             listAudioFiles.forEach {
                 mListAudio.add(AudioCutterView(it))
@@ -32,7 +32,7 @@ class AudioCutterModel : BaseViewModel() {
 
 
     suspend fun getAllFileByType(): LiveData<List<AudioCutterView>> {
-        return Transformations.map(AudioFileManagerImpl.getAllListByType()) { listAudioFiles ->
+        return Transformations.map(ManagerFactory.getAudioFileManagerImpl().getAllListByType()) { listAudioFiles ->
             mListAudio.clear()
             listAudioFiles.forEach {
                 mListAudio.add(AudioCutterView(it))
@@ -40,7 +40,6 @@ class AudioCutterModel : BaseViewModel() {
             mListAudio
         }
     }
-
 
     fun controllerAudio(position: Int, state: PlayerState): List<AudioCutterView> {
         when (state) {

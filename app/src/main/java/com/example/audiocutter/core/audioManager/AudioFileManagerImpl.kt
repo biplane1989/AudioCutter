@@ -84,8 +84,7 @@ object AudioFileManagerImpl : AudioFileManager {
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media.ALBUM,
             MediaStore.Audio.Media.ARTIST,
-            MediaStore.Audio.Media.DATE_ADDED,
-            MediaStore.Audio.Media.MIME_TYPE
+            MediaStore.Audio.Media.DATE_ADDED
         )
         val cursor =
             resolver.query(
@@ -103,13 +102,18 @@ object AudioFileManagerImpl : AudioFileManager {
                 val clAlbum = cursor.getColumnIndex(projection[5])
                 val clArtist = cursor.getColumnIndex(projection[6])
                 val clDateAdded = cursor.getColumnIndex(projection[7])
-                val clMimeType = cursor.getColumnIndex(projection[8])
 
 
                 cursor.moveToFirst()
                 while (!cursor.isAfterLast) {
+                    var name: String
                     val data = cursor.getString(clData)
-                    val name = cursor.getString(clName)
+                    val preName = cursor.getString(clName)
+                    if (preName.contains(".")) {
+                        name = preName.substring(0, preName.lastIndexOf("."))
+                    } else {
+                        name = preName
+                    }
                     val duration = cursor.getString(clDuration)
                     val id = cursor.getString(clID)
                     val bitmap =
@@ -117,7 +121,7 @@ object AudioFileManagerImpl : AudioFileManager {
                     val title = cursor.getString(clTitle)
                     val album = cursor.getString(clAlbum)
                     val artist = cursor.getString(clArtist)
-                    val mimeType = cursor.getString(clMimeType)
+                    val mimeType = preName.substring(preName.lastIndexOf("."), preName.length)
 
                     //get time of currentDay by Longtime
                     val date = getDateByDateAdded(cursor.getLong(clDateAdded))
@@ -136,13 +140,13 @@ object AudioFileManagerImpl : AudioFileManager {
                                 " \n URI $uri \n title :$title \n" +
                                 " album : $album   \n" + " artist  $artist  \n" +
                                 " date: $date \n" + " genre $genre  \n " +
-                                "MimeType $mimeType"
+                                "MimeType $mimeType \n filePAth Ab ${file.absolutePath} \n parent${file.parent} "
                     )
                     if (file.exists()) {
                         if (bitmap != null) {
                             listData.add(
                                 AudioFile(
-                                    file = file, fileName = name,
+                                    file = file, fileName = name.trim(),
                                     size = file.length(), bitRate = 128,
                                     time = duration.toLong(), uri = uri,
                                     bitmap = bitmap, title = title,

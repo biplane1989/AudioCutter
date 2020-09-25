@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
-import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.core.rington.RingtonManagerImpl
@@ -82,7 +81,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         savedInstanceState: Bundle?
     ): View? {
         mView = inflater.inflate(R.layout.audio_cutter_screen, container, false)
-        AudioFileManagerImpl.registerContentObserVerDeleted()
+        ManagerFactory.getAudioFileManagerImpl().registerContentObserVerDeleted()
         initViews()
         checkEdtSearchAudio()
         return mView
