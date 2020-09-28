@@ -15,8 +15,8 @@ enum class AudioFormat {
     MP3, ACC
 }
 
-enum class MixSelector {
-    LONGEST, SHORTEST
+enum class MixSelector(val type: String) {
+    LONGEST("longest"), SHORTEST("shortest")
 }
 
 data class AudioCutConfig(
@@ -31,6 +31,7 @@ data class AudioCutConfig(
 )
 
 data class AudioMixConfig(
+    val fileName: String,
     val selector: MixSelector = MixSelector.LONGEST,
     val volumePercent1: Int = 100,
     val volumePercent2: Int = 100

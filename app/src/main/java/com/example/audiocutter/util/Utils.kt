@@ -30,4 +30,12 @@ object Utils {
         }
         return null
     }
+
+    fun deleteFile(pathFile: String): Boolean {
+        val file = File(pathFile)
+        if (file.exists()) {
+            return file.delete()
+        }
+        return false
+    }
 }

@@ -2,6 +2,7 @@ package com.example.audiocutter.objects
 
 import android.graphics.Bitmap
 import android.net.Uri
+import com.example.audiocutter.core.manager.BitRate
 import java.io.File
 import java.io.Serializable
 
@@ -26,4 +27,20 @@ data class AudioFile(
         }
         return super.equals(other)
     }
+
+    constructor() : this(
+        File(""),
+        "",
+        0,
+        BitRate._128kb.value,
+        0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+    )
 }
