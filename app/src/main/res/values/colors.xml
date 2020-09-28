@@ -12,4 +12,5 @@
     <color name="main_screen_item_text_color">#FFFFFF</color>
     <color name="colorYelow">#FFCB59</color>
     <color name="colorYelowDark">#FDAA74</color>
+    <color name="colorYelowAlpha">#54FFE7AC</color>
 </resources>

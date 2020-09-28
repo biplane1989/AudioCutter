@@ -151,7 +151,6 @@ class AudiocutterAdapter(val mContext: Context) :
 
         private fun showPopupMenu(itemAudio: AudioCutterView) {
             val popupMenu = PopupMenu(mContext, lnMenu)
-
             popupMenu.menuInflater.inflate(R.menu.menu_item_audio, popupMenu.menu)
             popupMenu.setOnMenuItemClickListener {
 

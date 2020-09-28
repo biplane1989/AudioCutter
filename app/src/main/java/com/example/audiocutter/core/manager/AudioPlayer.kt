@@ -6,7 +6,8 @@ import com.example.audiocutter.objects.AudioFile
 enum class PlayerState(value: Int) {
     IDLE(1),
     PLAYING(2),
-    PAUSE(3)
+    PAUSE(3),
+    PREPARING(4)
 }
 
 class PlayerInfo(

@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.ManagerFactory
-import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
@@ -14,7 +13,6 @@ import java.io.File
 class MixModel : BaseViewModel() {
     private val TAG = MixModel::class.java.name
     private var currentAudioPlaying: File = File("")
-    var isPlayingStatus = false
     private var mListAudio = ArrayList<AudioCutterView>()
     var isChooseItem = false
 
@@ -42,39 +40,6 @@ class MixModel : BaseViewModel() {
         }
     }
 
-
-    fun controllerAudio(position: Int, state: PlayerState): List<AudioCutterView> {
-        when (state) {
-            PlayerState.IDLE -> {
-                updateControllerAudio(position, PlayerState.PLAYING, true, 1)
-            }
-            PlayerState.PLAYING -> {
-                updateControllerAudio(position, PlayerState.PAUSE, false, 2)
-            }
-            PlayerState.PAUSE -> {
-                updateControllerAudio(position, PlayerState.PLAYING, true, 3)
-            }
-
-        }
-
-        return mListAudio
-    }
-
-
-    fun updateControllerAudio(pos: Int, state: PlayerState, rs: Boolean, numClick: Int) {
-        val item = mListAudio[pos].copy()
-        item.state = state
-        mListAudio[pos] = item
-
-        runOnBackground {
-            when (numClick) {
-                1 -> ManagerFactory.getAudioPlayer().play(item.audioFile)
-                2 -> ManagerFactory.getAudioPlayer().pause()
-               3 -> ManagerFactory.getAudioPlayer().resume()
-            }
-        }
-        isPlayingStatus = rs
-    }
 
     fun updateMediaInfo(playerInfo: PlayerInfo): List<AudioCutterView> {
         Log.d(TAG, "updateMediaInfo: ${playerInfo.playerState}")
@@ -139,7 +104,7 @@ class MixModel : BaseViewModel() {
         return mListAudio
     }
 
-    fun changeItemAudioFile(pos: Int, rs: Boolean): List<AudioCutterView>? {
+    fun chooseItemAudioFile(pos: Int, rs: Boolean): List<AudioCutterView>? {
         val itemAudio: AudioCutterView
         var count = 0
         if (!rs) {
@@ -186,6 +151,20 @@ class MixModel : BaseViewModel() {
             }
         }
         return listAudio
+    }
+
+    suspend fun play(pos: Int) {
+        val audioItem = mListAudio[pos]
+        ManagerFactory.getAudioPlayer().play(audioItem.audioFile)
+
+    }
+
+    fun pause() {
+        ManagerFactory.getAudioPlayer().pause()
+    }
+
+    fun resume() {
+        ManagerFactory.getAudioPlayer().resume()
     }
 
 

@@ -13,7 +13,7 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.coroutines.*
 
-object AudioPlayerImpl : AudioPlayer {
+object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     val TAG = AudioPlayerImpl::class.java.name
 
 
@@ -70,7 +70,6 @@ object AudioPlayerImpl : AudioPlayer {
     override suspend fun play(audioFile: AudioFile): Boolean {
         try {
             withContext(Dispatchers.IO) {
-                synchronized(mPlayer) {
                     stop()
                     if (playInfoData.playerState != PlayerState.IDLE) {
                         playInfoData.playerState = PlayerState.IDLE
@@ -83,15 +82,12 @@ object AudioPlayerImpl : AudioPlayer {
                     mPlayer.reset()
 //                    val ins = FileInputStream(audioFile.file)
 //                    mPlayer.setDataSource(ins.fd)
-                    mPlayer.setDataSource(appContext, audioFile.uri!!)
-                    mPlayer.prepare()
-                    mPlayer.start()
+                    prepare(audioFile)
                     isStopped = false;
 
                 }
                 startTimerIfReady()
 
-            }
             return true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -101,6 +97,25 @@ object AudioPlayerImpl : AudioPlayer {
         }
 
     }
+
+    private fun prepare(audioFile: AudioFile) {
+        playInfoData.playerState = PlayerState.PREPARING
+        mPlayer = MediaPlayer().apply {
+            setOnPreparedListener(this@AudioPlayerImpl)
+            setDataSource(appContext, audioFile.uri!!)
+            prepareAsync()
+        }
+    }
+
+    override fun onPrepared(player: MediaPlayer?) {
+        playInfoData.position = 0
+        playInfoData.duration = player?.duration!!
+
+        player.start()
+        playInfoData.playerState = PlayerState.PLAYING
+        notifyPlayerDataChanged()
+    }
+
 
     override suspend fun play(audioFile: AudioFile, currentPosition: Int) {
         /* try {
@@ -202,8 +217,7 @@ object AudioPlayerImpl : AudioPlayer {
             while (mainScope.isActive) {
                 var changed = false
 
-                delay(2000)
-                synchronized(mPlayer) {
+                delay(250)
                     playInfoData.duration = mPlayer.duration
                     var currentPosition = mPlayer.currentPosition
                     if (currentPosition >= mPlayer.duration) {
@@ -240,7 +254,6 @@ object AudioPlayerImpl : AudioPlayer {
                         changed = true
                         playInfoData.position = currentPosition
                     }
-                }
                 if (changed) {
                     notifyPlayerDataChanged()
                 }
@@ -252,5 +265,6 @@ object AudioPlayerImpl : AudioPlayer {
     override fun getPlayerInfo(): LiveData<PlayerInfo> {
         return mPlayInfo
     }
+
 
 }

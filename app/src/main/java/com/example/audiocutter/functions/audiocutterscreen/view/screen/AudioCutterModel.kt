@@ -15,7 +15,6 @@ import java.io.File
 class AudioCutterModel : BaseViewModel() {
     private val TAG = AudioCutterModel::class.java.name
     private var currentAudioPlaying: File = File("")
-    var isPlayingStatus = false
     private var mListAudio = ArrayList<AudioCutterView>()
 
 
@@ -41,37 +40,22 @@ class AudioCutterModel : BaseViewModel() {
         }
     }
 
-    fun controllerAudio(position: Int, state: PlayerState): List<AudioCutterView> {
-        when (state) {
-            PlayerState.IDLE -> {
-                updateControllerAudio(position, PlayerState.PLAYING, true, PlayerState.IDLE)
-            }
-            PlayerState.PAUSE -> {
-                updateControllerAudio(position, PlayerState.PLAYING, true, PlayerState.PAUSE)
-            }
-            PlayerState.PLAYING -> {
-                updateControllerAudio(position, PlayerState.PAUSE, false, PlayerState.PLAYING)
-            }
-        }
 
-        return mListAudio
+    suspend fun play(pos: Int) {
+        val audioItem = mListAudio[pos]
+        ManagerFactory.getAudioPlayer().play(audioItem.audioFile)
+
+    }
+
+    fun pause() {
+        ManagerFactory.getAudioPlayer().pause()
+    }
+
+    fun resume() {
+        ManagerFactory.getAudioPlayer().resume()
     }
 
 
-    fun updateControllerAudio(pos: Int, state: PlayerState, rs: Boolean, stateClick: PlayerState) {
-        val item = mListAudio.get(pos).copy()
-        item.state = state
-        mListAudio[pos] = item
-
-        runOnBackground {
-            when (stateClick) {
-                PlayerState.IDLE -> ManagerFactory.getAudioPlayer().play(item.audioFile)
-                PlayerState.PLAYING -> ManagerFactory.getAudioPlayer().pause()
-                PlayerState.PAUSE -> ManagerFactory.getAudioPlayer().resume()
-            }
-        }
-        isPlayingStatus = rs
-    }
 
     fun updateMediaInfo(playerInfo: PlayerInfo): List<AudioCutterView> {
         Log.d(TAG, "updateMediaInfo: ${playerInfo.playerState}")

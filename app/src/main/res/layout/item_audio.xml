@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="80dp"
     android:id="@+id/ln_item_audio_cutter_screen"
+    android:background="?attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingHorizontal="@dimen/d_16">
@@ -17,7 +18,7 @@
 
     <LinearLayout
 
-        android:background="?attr/selectableItemBackground"
+
         android:layout_width="0dp"
         android:layout_height="45dp"
         android:layout_weight="1"

@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/colorWhite"
     android:orientation="vertical"
-    android:paddingHorizontal="@dimen/d_16"
-    android:layout_height="match_parent">
+    android:paddingHorizontal="@dimen/d_16">
 
     <RelativeLayout
-        android:background="?attr/selectableItemBackground"
+        android:id="@+id/rlt_actionbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/d_56">
+        android:layout_height="@dimen/d_56"
+        android:background="?attr/selectableItemBackground">
 
         <EditText
-            android:textIsSelectable="true"
-            android:focusableInTouchMode="true"
-            android:id="@+id/edt_auciocutter_search"
+            android:id="@+id/edt_cutter_search"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/bg_edt_audiocutter_screen"
+            android:focusableInTouchMode="true"
             android:paddingStart="40dp"
             android:singleLine="true"
             android:visibility="gone">
@@ -27,56 +28,64 @@
         </EditText>
 
         <ImageView
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:id="@+id/iv_audiocutter_screen_back"
+            android:id="@+id/iv_cutter_screen_back"
             android:layout_width="@dimen/d_30"
             android:layout_height="@dimen/d_30"
             android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_audiocutter_back" />
 
 
         <ImageView
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:id="@+id/iv_audiocutter_screen_back_edt"
+            android:id="@+id/iv_cutter_screen_back_edt"
             android:layout_width="@dimen/d_30"
             android:layout_height="@dimen/d_30"
             android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_audiocutter_back" />
 
-
-        <TextView
-            android:id="@+id/tv_audiocutter_screen"
+        <TableRow
+            android:id="@+id/tb_name_cutter"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:layout_marginLeft="46dp"
-            android:fontFamily="@font/sanfranciscodisplay_bold"
-            android:text="MP3 Cutter"
-            android:textColor="@color/colorBlack"
-            android:textSize="@dimen/d_18" />
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_cutter_screen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:text="Audio Cutter"
+                android:textColor="@color/colorBlack"
+                android:textIsSelectable="true"
+                android:textSize="@dimen/d_18" />
+        </TableRow>
 
 
         <ImageView
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:id="@+id/iv_audiocutter_screen_search"
+            android:id="@+id/iv_cutter_screen_search"
             android:layout_width="@dimen/d_30"
             android:layout_height="@dimen/d_30"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_audiocutter_search" />
 
         <ImageView
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:id="@+id/iv_audiocutter_screen_file"
+            android:id="@+id/iv_audio_cutter_screen_file"
             android:layout_width="@dimen/d_30"
             android:layout_height="@dimen/d_30"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@id/iv_audiocutter_screen_search"
+            android:layout_toLeftOf="@id/iv_cutter_screen_search"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_audiocutter_file" />
 
         <ImageView
-            android:id="@+id/iv_audiocutter_screen_close"
+            android:id="@+id/iv_cutter_screen_close"
             android:layout_width="@dimen/d_30"
             android:layout_height="@dimen/d_30"
             android:layout_alignParentRight="true"
@@ -90,23 +99,25 @@
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_audiocutter"
+        android:id="@+id/rv_audio_cutter"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_below="@id/rlt_actionbar"
         tools:listitem="@layout/item_audio" />
 
 
     <TextView
-        android:layout_gravity="center"
-        android:id="@+id/tv_empty_list"
+        android:id="@+id/tv_empty_list_cutter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
         android:fontFamily="@font/sanfranciscodisplay_regular"
+        android:layout_gravity="center"
         android:text="No result."
-        android:visibility="gone"
         android:textColor="@color/colorgray"
-        android:textSize="@dimen/d_18" />
+        android:textSize="@dimen/d_18"
+        android:visibility="gone" />
 
-</LinearLayout>
+
+</RelativeLayout>

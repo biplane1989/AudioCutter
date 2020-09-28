@@ -21,7 +21,6 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
-import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.core.rington.RingtonManagerImpl
 import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDialog
 import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDoneDialog
@@ -61,9 +60,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
     private val playerInfoObserver = Observer<PlayerInfo> {
 
-        if (audioCutterModel.isPlayingStatus) {
             audioCutterAdapter.submitList(audioCutterModel.updateMediaInfo(it))
-        }
     }
 
 
@@ -131,14 +128,14 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
     private fun initViews() {
 
-        ivFile = mView.findViewById(R.id.iv_audiocutter_screen_file)
-        ivBack = mView.findViewById(R.id.iv_audiocutter_screen_back)
-        ivBackEdt = mView.findViewById(R.id.iv_audiocutter_screen_back_edt)
-        ivClose = mView.findViewById(R.id.iv_audiocutter_screen_close)
-        ivSearch = mView.findViewById(R.id.iv_audiocutter_screen_search)
-        tvAudioScreen = mView.findViewById(R.id.tv_audiocutter_screen)
-        tvEmptyList = mView.findViewById(R.id.tv_empty_list)
-        edtSearch = mView.findViewById(R.id.edt_auciocutter_search)
+        ivFile = mView.findViewById(R.id.iv_audio_cutter_screen_file)
+        ivBack = mView.findViewById(R.id.iv_cutter_screen_back)
+        ivBackEdt = mView.findViewById(R.id.iv_cutter_screen_back_edt)
+        ivClose = mView.findViewById(R.id.iv_cutter_screen_close)
+        ivSearch = mView.findViewById(R.id.iv_cutter_screen_search)
+        tvAudioScreen = mView.findViewById(R.id.tv_cutter_screen)
+        tvEmptyList = mView.findViewById(R.id.tv_empty_list_cutter)
+        edtSearch = mView.findViewById(R.id.edt_cutter_search)
 
         ivFile.setOnClickListener(this)
         ivSearch.setOnClickListener(this)
@@ -148,7 +145,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         dialogDone = SetAsDoneDialog(requireContext())
 
         audioCutterAdapter.setAudioCutterListtener(this)
-        rvAudioCutter = mView.findViewById(R.id.rv_audiocutter)
+        rvAudioCutter = mView.findViewById(R.id.rv_audio_cutter)
 
     }
 
@@ -188,25 +185,24 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         rvAudioCutter.layoutManager = LinearLayoutManager(requireContext())
     }
 
-    override fun play(pos: Int) {
-        currentPos = pos
-        val state = PlayerState.IDLE
-        audioCutterAdapter.submitList(audioCutterModel.controllerAudio(pos, state))
 
+    override fun play(pos: Int) {
+        runOnUI {
+            currentPos = pos
+            audioCutterModel.play(pos)
+        }
     }
 
     override fun pause(pos: Int) {
         currentPos = pos
-        val state = PlayerState.PLAYING
-        audioCutterAdapter.submitList(audioCutterModel.controllerAudio(pos, state))
+        audioCutterModel.pause()
+
     }
 
     override fun resume(pos: Int) {
         currentPos = pos
-        val state = PlayerState.PAUSE
-        audioCutterAdapter.submitList(audioCutterModel.controllerAudio(pos, state))
+        audioCutterModel.resume()
     }
-
 
 
     override fun showDialogSetAs(itemAudio: AudioCutterView) {
@@ -250,10 +246,10 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.iv_audiocutter_screen_file -> updateAllFile()
-            R.id.iv_audiocutter_screen_search -> searchAudiofile()
-            R.id.iv_audiocutter_screen_back_edt -> previousStatus()
-            R.id.iv_audiocutter_screen_close -> clearText()
+            R.id.iv_audio_cutter_screen_file -> updateAllFile()
+            R.id.iv_cutter_screen_search -> searchAudiofile()
+            R.id.iv_cutter_screen_back_edt -> previousStatus()
+            R.id.iv_cutter_screen_close -> clearText()
         }
     }
 

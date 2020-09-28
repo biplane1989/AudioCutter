@@ -20,7 +20,6 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
-import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.MixAudioScreen.adapter.MixAdapter
 import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDialog
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
@@ -62,9 +61,7 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     }
 
     private val playerInfoObserver = Observer<PlayerInfo> {
-        if (audioMixModel.isPlayingStatus) {
             audioMixAdapter.submitList(audioMixModel.updateMediaInfo(it))
-        }
     }
 
 
@@ -160,27 +157,27 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
 
     }
 
-    fun showKeybroad() {
+    private fun showKeybroad() {
         val imm =
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
 
 
-    fun hideOrShowEditText(status: Int) {
+    private fun hideOrShowEditText(status: Int) {
         ivBackEdt.visibility = status
         ivClose.visibility = status
         edtSearch.visibility = status
     }
 
-    fun hideOrShowView(status: Int) {
+    private fun hideOrShowView(status: Int) {
         ivSearch.visibility = status
         tbName.visibility = status
         ivFile.visibility = status
     }
 
 
-    fun hideKeyBroad() {
+    private fun hideKeyBroad() {
         val imm =
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         var view = requireActivity().currentFocus
@@ -201,28 +198,26 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     }
 
     override fun play(pos: Int) {
-        currentPos = pos
-        val state = PlayerState.IDLE
-        audioMixAdapter.submitList(audioMixModel.controllerAudio(pos, state))
-
+        runOnUI {
+            currentPos = pos
+            audioMixModel.play(pos)
+        }
     }
 
     override fun pause(pos: Int) {
         currentPos = pos
-        val state = PlayerState.PLAYING
-        audioMixAdapter.submitList(audioMixModel.controllerAudio(pos, state))
+        audioMixModel.pause()
 
     }
 
     override fun resume(pos: Int) {
         currentPos = pos
-        val state = PlayerState.PAUSE
-        audioMixAdapter.submitList(audioMixModel.controllerAudio(pos, state))
+        audioMixModel.resume()
     }
 
     @SuppressLint("SetTextI18n")
     override fun chooseItemAudio(pos: Int, rs: Boolean) {
-        audioMixAdapter.submitList(audioMixModel.changeItemAudioFile(pos, rs))
+        audioMixAdapter.submitList(audioMixModel.chooseItemAudioFile(pos, rs))
 
         if (audioMixModel.checkList() == 2) {
             setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_mixer_audio_enabled, true)

@@ -3,8 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="80dp"
     android:gravity="center_vertical"
-    android:orientation="horizontal"
-   >
+    android:id="@+id/ln_item_audio_recent_screen"
+    android:background="?attr/selectableItemBackground"
+
+    android:orientation="horizontal">
 
     <ImageView
 
@@ -15,11 +17,10 @@
         android:src="@drawable/ic_audiocutter_play" />
 
     <LinearLayout
-        android:id="@+id/ln_item_audio_recent_screen"
         android:layout_width="0dp"
         android:layout_height="45dp"
         android:layout_weight="1"
-        android:background="?attr/selectableItemBackground"
+
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/d_16">
 
