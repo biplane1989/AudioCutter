@@ -110,4 +110,8 @@ class FakeAudioFileManager : AudioFileManager {
         }
         return audioFileLiveData
     }
+
+    override fun getDurationByPath(itemFile: File?): String {
+        return ""
+    }
 }

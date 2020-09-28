@@ -17,8 +17,9 @@ class ProgressCustomView :
 
     private var mPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var mPaint2: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private var animator: ValueAnimator = ValueAnimator.ofFloat(0f, width.toFloat())
+    private lateinit var animator: ValueAnimator
     var currStartLineX: Float = 0f
+    var widthTmp: Int? = 0
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -29,9 +30,10 @@ class ProgressCustomView :
     )
 
     init {
-        mPaint.color = resources.getColor(R.color.colorWhite)
+
+        mPaint.color = resources.getColor(R.color.colorBlack)
         mPaint.style = Paint.Style.FILL
-        mPaint2.color = resources.getColor(R.color.colorYelowAlpha)
+        mPaint2.color = resources.getColor(R.color.colorWhite)
         mPaint2.style = Paint.Style.FILL
     }
 
@@ -47,8 +49,14 @@ class ProgressCustomView :
 
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        widthTmp = w
+
+    }
 
     fun startAnimator(duration: Long) {
+        animator = ValueAnimator.ofFloat(0f, widthTmp!!.toFloat())
         animator.duration = duration
         animator.addUpdateListener {
             val value = it.animatedValue as Float

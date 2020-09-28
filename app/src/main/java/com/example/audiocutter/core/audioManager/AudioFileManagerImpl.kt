@@ -422,7 +422,7 @@ object AudioFileManagerImpl : AudioFileManager {
         return listAudioMixer
     }
 
-    private fun getDurationByPath(itemFile: File?): String {
+    override fun getDurationByPath(itemFile: File?): String {
         if (itemFile != null) {
             val mediaMetadataRetriever = MediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(itemFile.absolutePath)

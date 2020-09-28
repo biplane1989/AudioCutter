@@ -112,6 +112,8 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     }
 
     private fun searchAudioByName(yourTextSearch: String) {
+        setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_mixer_audio_disabled, false)
+        tvCountFile.text = "0 file"
         rvAudioMix.visibility = View.VISIBLE
         rltNextMixParent.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
