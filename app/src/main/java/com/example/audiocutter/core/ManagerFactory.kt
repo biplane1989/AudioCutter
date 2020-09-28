@@ -7,6 +7,8 @@ import com.example.audiocutter.core.manager.*
 import com.example.audiocutter.core.manager.fake.FakeAudioCutter
 import com.example.audiocutter.core.manager.fake.FakeAudioFileManager
 import com.example.audiocutter.core.manager.fake.FakeContactManager
+import com.example.audiocutter.core.rington.RingtonManager
+import com.example.audiocutter.core.rington.RingtonManagerImpl
 
 object ManagerFactory {
     private val mAudioFileManager: AudioFileManager = FakeAudioFileManager()
@@ -17,6 +19,7 @@ object ManagerFactory {
         AudioPlayerImpl.init(appContext)
         AudioFileManagerImpl.init(appContext)
         ContactManagerImpl.init(appContext)
+        RingtonManagerImpl.init(appContext)
     }
 
     fun getAudioFileManager(): AudioFileManager {
@@ -36,5 +39,8 @@ object ManagerFactory {
         return AudioPlayerImpl
     }
 
+    fun getRingtoneManager(): RingtonManager {
+        return RingtonManagerImpl
+    }
 
 }

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +17,12 @@ import com.example.audiocutter.util.Utils
 import java.util.*
 
 
-class ListContactAdapter(context: Context?) : ListAdapter<ContactItemView, RecyclerView.ViewHolder>(ContactDiffCallBack()) {
+interface ContactCallback {
+
+    fun itemOnClick(phoneNumber: String, uri: String)
+}
+
+class ListContactAdapter(context: Context?, var contactCallback: ContactCallback) : ListAdapter<ContactItemView, RecyclerView.ViewHolder>(ContactDiffCallBack()) {
 
     var mListContact: ArrayList<ContactItemView> = ArrayList()
 
@@ -103,12 +109,13 @@ class ListContactAdapter(context: Context?) : ListAdapter<ContactItemView, Recyc
         return mListContact.size
     }
 
-    inner class ItemViewHolder(itemView: View, context: Context?) : RecyclerView.ViewHolder(itemView) {
+    inner class ItemViewHolder(itemView: View, context: Context?) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         val tvName: TextView = itemView.findViewById(R.id.tv_name)
         val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar)
         val tvRingtone: TextView = itemView.findViewById(R.id.tv_ringtone)
         val tvRingtoneDefault: TextView = itemView.findViewById(R.id.tv_ringtone_default)
         val cvDefault: CardView = itemView.findViewById(R.id.cv_default)
+        val clItemContact: ConstraintLayout = itemView.findViewById(R.id.cl_item_contact)
 
         fun onBind() {
             val contentItem = getItem(adapterPosition)
@@ -134,6 +141,17 @@ class ListContactAdapter(context: Context?) : ListAdapter<ContactItemView, Recyc
                 val ringtoneDefault = Utils.getPlayList(mContext!!, Utils.getCurrentSound(mContext!!)
                     .toString())
                 tvRingtoneDefault.text = ringtoneDefault
+            }
+
+            clItemContact.setOnClickListener(this)
+
+        }
+
+        override fun onClick(view: View?) {
+            when (view?.id) {
+                R.id.cl_item_contact -> {
+                    contactCallback.itemOnClick(getItem(adapterPosition).contactItem.phoneNumber, getItem(adapterPosition).contactItem.ringtone.toString())
+                }
             }
         }
     }

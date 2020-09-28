@@ -21,9 +21,9 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
     private var mListContactItemView = ArrayList<ContactItemView>()
 
     suspend fun getData(): LiveData<List<ContactItemView>> {
-        val listContactItem: LiveData<List<ContactItem>> = ContactManagerImpl.getListContact()
-//        val listContactItem: LiveData<List<ContactItem>> = ManagerFactory.getContactManager()
-//            .getListContact()
+//        val listContactItem: LiveData<List<ContactItem>> = ContactManagerImpl.getListContact()
+        val listContactItem: LiveData<List<ContactItem>> = ManagerFactory.getContactManager()
+            .getListContact()
 
         return Transformations.map(listContactItem) { contacts ->
             if (mListContactItemView.size == 0) {
@@ -66,7 +66,7 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
 
     // tao header cho list contact
     private fun getHeaderListLatter(contactList: ArrayList<ContactItemView>): ArrayList<ContactItemView> {
-        var listContact = ArrayList<ContactItemView>()
+        val listContact = ArrayList<ContactItemView>()
         Collections.sort(contactList, Comparator<ContactItemView> { user1, user2 ->
             java.lang.String.valueOf(user1.contactItem.name.get(0)).toUpperCase()
                 .compareTo(java.lang.String.valueOf(user2.contactItem.name.get(0)).toUpperCase())

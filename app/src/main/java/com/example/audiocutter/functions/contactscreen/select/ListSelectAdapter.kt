@@ -12,25 +12,19 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
-import com.example.audiocutter.core.audioplayer.AudioPlayerImpl.stop
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.functions.mystudioscreen.AudioFileView
 import com.example.audiocutter.functions.mystudioscreen.Constance
-import com.example.audiocutter.functions.mystudioscreen.DeleteState
-import com.example.audiocutter.functions.mystudioscreen.MusicDiffCallBack
-import com.example.audiocutter.functions.mystudioscreen.fragment.AudioCutterAdapter
-import com.example.audiocutter.functions.mystudioscreen.fragment.AudioCutterScreenCallback
-import com.example.audiocutter.functions.mystudioscreen.fragment.ItemLoadStatus
-import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
 import java.text.SimpleDateFormat
 
 interface SelectAudioScreenCallback {
     fun play(position: Int)
-    fun pause(position: Int)
-    fun resume(position: Int)
+    fun pause()
+    fun resume()
     fun stop(position: Int)
     fun seekTo(cusorPos: Int)
+    fun isShowPlayingAudio(positition: Int)
+    fun isSelect(position: Int)
 }
 
 class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback) : ListAdapter<SelectItemView, ListSelectAdapter.ViewHolder>(SelectAudioDiffCallBack()) {
@@ -55,14 +49,14 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
         } else {
-            val itemLoadStatus = payloads.firstOrNull() as ItemLoadStatus
+            val newItem = payloads.firstOrNull() as SelectItemView
             val selectItemView = getItem(position)
             holder.tvTotal.text = "/" + simpleDateFormat.format(selectItemView.selectItemStatus.duration)
             holder.sbMusic.max = selectItemView.selectItemStatus.duration
             holder.tvTimeLife.text = simpleDateFormat.format(selectItemView.selectItemStatus.currPos)
             holder.sbMusic.progress = selectItemView.selectItemStatus.currPos
 
-            when (itemLoadStatus.playerState) {
+            when (newItem.selectItemStatus.playerState) {
                 PlayerState.PLAYING -> {
                     holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_pause)
                 }
@@ -75,6 +69,11 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                     holder.tvTotal.text = Constance.TIME_TOTAL_DEFAULT
                     holder.sbMusic.progress = 0
                 }
+            }
+            if (selectItemView.isSelect) {
+                holder.ivSelect.setImageResource(R.drawable.list_contact_select)
+            } else {
+                holder.ivSelect.setImageResource(R.drawable.list_contact_unselect)
             }
         }
     }
@@ -103,6 +102,8 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         val tvTotal: TextView = itemView.findViewById(R.id.tv_time_total)
         val llAudioHeader: LinearLayout = itemView.findViewById(R.id.ll_audio_item_header)
         val llItem: LinearLayout = itemView.findViewById(R.id.ll_item)
+        val ivSelect: ImageView = itemView.findViewById(R.id.iv_select)
+
         fun bind() {
             val selectItemView = getItem(adapterPosition)
 
@@ -124,6 +125,12 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             } else {
                 llPlayMusic.visibility = View.GONE
                 llItem.setBackgroundColor(Color.WHITE)
+            }
+
+            if (selectItemView.isSelect) {
+                ivSelect.setImageResource(R.drawable.list_contact_select)
+            } else {
+                ivSelect.setImageResource(R.drawable.list_contact_unselect)
             }
 
 
@@ -171,17 +178,8 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             val audioFileView = listAudios.get(adapterPosition)
             when (view.id) {
                 R.id.ll_audio_item_header -> {
-                    when (audioFileView.selectItemStatus.playerState) {
-                        PlayerState.IDLE -> {
-                        }
-                        PlayerState.PAUSE -> {
-                            // khi ở trạng thái delete sẽ không stop dc
-                            selectAudioScreenCallback.stop(adapterPosition)
-                        }
-                        PlayerState.PLAYING -> {
-                            selectAudioScreenCallback.stop(adapterPosition)
-                        }
-                    }
+                    selectAudioScreenCallback.isShowPlayingAudio(adapterPosition)
+                    selectAudioScreenCallback.isSelect(adapterPosition)
                 }
                 R.id.iv_pause_play_music -> {
                     when (audioFileView.selectItemStatus.playerState) {
@@ -189,10 +187,10 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                             selectAudioScreenCallback.play(adapterPosition)
                         }
                         PlayerState.PAUSE -> {
-                            selectAudioScreenCallback.resume(adapterPosition)
+                            selectAudioScreenCallback.resume()
                         }
                         PlayerState.PLAYING -> {
-                            selectAudioScreenCallback.pause(adapterPosition)
+                            selectAudioScreenCallback.pause()
                         }
                     }
                 }
@@ -213,7 +211,6 @@ class SelectAudioDiffCallBack : DiffUtil.ItemCallback<SelectItemView>() {
     }
 
     override fun getChangePayload(oldItem: SelectItemView, newItem: SelectItemView): Any? {
-
-        return newItem.selectItemStatus
+        return newItem
     }
 }

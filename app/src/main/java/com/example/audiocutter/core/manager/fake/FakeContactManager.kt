@@ -34,12 +34,13 @@ class FakeContactManager : ContactManager {
         contactItemList.add(ContactItem("ấ", "123", "thumbnail 3", "@@@@"))
         contactItemList.add(ContactItem("â", "1234", "thumbnail 3", "@@@@"))
         contactItemList.add(ContactItem("ẵ", "12345", "thumbnail 3", "@@@@"))
+
         contactLiveData.postValue(contactItemList)
 
         MainScope().launch {
             delay(10000)
 //            contactItemList.add(ContactItem("AAAhhhhh", "321", "thumbnail 3", null))
-            contactItemList.removeAt(4)
+//            contactItemList.removeAt(4)
 //            val item = contactItemList.get(0).copy()
 //            item.ringtone = "orange"
 //            contactItemList.set(0, item)

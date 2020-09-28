@@ -71,25 +71,12 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_title_music" />
 
             <ImageView
-                android:id="@+id/iv_unselect"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginRight="10dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:scaleType="centerInside"
-                android:src="@mipmap/list_contact_unselect"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
                 android:id="@+id/iv_select"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginRight="10dp"
                 android:scaleType="centerInside"
-                android:src="@mipmap/list_contact_select"
-                android:visibility="gone"
+                android:src="@drawable/list_contact_unselect"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

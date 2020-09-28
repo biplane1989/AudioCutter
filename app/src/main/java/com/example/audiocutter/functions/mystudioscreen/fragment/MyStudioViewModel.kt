@@ -35,13 +35,16 @@ class MyStudioViewModel : BaseViewModel() {
         val listAudioFiles: LiveData<List<AudioFile>>
         when (typeAudio) {
             Constance.AUDIO_CUTTER -> {
-                listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_CUTTER)
+                listAudioFiles = ManagerFactory.getAudioFileManager()
+                    .getListAudioFileByType(Folder.TYPE_CUTTER)
             }
             Constance.AUDIO_MERGER -> {
-                listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_MERGER)
+                listAudioFiles = ManagerFactory.getAudioFileManager()
+                    .getListAudioFileByType(Folder.TYPE_MERGER)
             }
             else -> {
-                listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_MIXER)
+                listAudioFiles = ManagerFactory.getAudioFileManager()
+                    .getListAudioFileByType(Folder.TYPE_MIXER)
             }
         }
         return Transformations.map(listAudioFiles) { items ->
@@ -219,7 +222,7 @@ class MyStudioViewModel : BaseViewModel() {
                 }
             }
             var folder = Folder.TYPE_MIXER
-            when(typeAudio){
+            when (typeAudio) {
                 0 -> {
                     folder = Folder.TYPE_CUTTER
                 }
@@ -292,11 +295,19 @@ class MyStudioViewModel : BaseViewModel() {
         }
     }
 
-    fun stopAudioAndChangeStatus(position: Int) {
+    fun stopAudioAndChangeStatus(position: Int): List<AudioFileView> {
 
         runOnBackground {
             ManagerFactory.getAudioPlayer().stop()
         }
+        val audioFileView = mListAudioFileView.get(position).copy()
+        val itemLoadStatus = audioFileView.itemLoadStatus.copy()
+        itemLoadStatus.playerState = PlayerState.IDLE
+        audioFileView.itemLoadStatus = itemLoadStatus
+
+        mListAudioFileView.set(position, audioFileView)
+
+        return mListAudioFileView
     }
 
     fun resumeAudioAndChangeStatus(position: Int) {

@@ -21,7 +21,7 @@
             android:layout_marginLeft="10dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
-            android:src="@mipmap/list_contact_icon_back"
+            android:src="@drawable/list_contact_icon_back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -47,7 +47,7 @@
             android:layout_marginRight="10dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
-            android:src="@mipmap/list_contact_icon_search"
+            android:src="@drawable/list_contact_icon_search"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -70,7 +70,7 @@
             android:layout_marginLeft="10dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
-            android:src="@mipmap/list_contact_icon_back"
+            android:src="@drawable/list_contact_icon_back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -93,7 +93,7 @@
             android:layout_marginRight="10dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
-            android:src="@mipmap/list_contact_icon_search_clear"
+            android:src="@drawable/list_contact_icon_search_clear"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -104,5 +104,34 @@
         android:id="@+id/rv_list_contact"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_no_contact"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/list_contact_no_contact"
+            app:layout_constraintBottom_toTopOf="@+id/tv_title_no_contact"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_title_no_contact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sanfranciscodisplay_regular"
+            android:text="@string/list_contact_notification_no_contact"
+            android:textColor="#9C9C9C"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

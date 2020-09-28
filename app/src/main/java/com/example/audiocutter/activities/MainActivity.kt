@@ -9,21 +9,30 @@ import com.example.audiocutter.functions.contactscreen.contacts.ListContactScree
 import com.example.audiocutter.functions.contactscreen.select.ListSelectAudioScreen
 import com.example.audiocutter.functions.mystudioscreen.OutputAudioManagerScreen
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), ListContactScreen.mainCallBack {
     override fun createView(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_main)
 
     }
 
+    val fragmentManager = supportFragmentManager
+
     override fun onPostCreate() {
         super.onPostCreate()
-//        val outputAudioManagerScreen = OutputAudioManagerScreen.newInstance(false)
-        val listContactScreen = ListContactScreen()
+//        val listContactScreen = OutputAudioManagerScreen()
+        val listContactScreen = ListContactScreen(this)
 //        val listContactScreen = ListSelectAudioScreen()
-
-        val fragmentManager = supportFragmentManager
         val transaction: FragmentTransaction = fragmentManager.beginTransaction()
         transaction.replace(R.id.fl_home, listContactScreen)
+        transaction.addToBackStack(null)
+        transaction.commit()
+    }
+
+    override fun item(phone: String, uri: String) {
+        val listContactScreen = ListSelectAudioScreen.newInstance(phone, uri)
+        val transaction: FragmentTransaction = fragmentManager.beginTransaction()
+        transaction.replace(R.id.fl_home, listContactScreen)
+        transaction.addToBackStack(null)
         transaction.commit()
     }
 

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cl_item_contact"
     android:layout_width="match_parent"
-    android:background="#FFFFFF"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/iv_avatar"
@@ -12,7 +13,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:src="@mipmap/list_contact_item_avatar"
+        android:src="@drawable/list_contact_item_avatar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

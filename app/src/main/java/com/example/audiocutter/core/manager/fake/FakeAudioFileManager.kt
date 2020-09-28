@@ -7,6 +7,9 @@ import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.objects.AudioFile
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 
 class FakeAudioFileManager : AudioFileManager {
@@ -34,8 +37,10 @@ class FakeAudioFileManager : AudioFileManager {
     init {
 
         listAudioFile = ArrayList<AudioFile>()
-        listAudioFile.add(AudioFile(file1, "file_name1", 10000, 128))
-        listAudioFile.add(AudioFile(file2, "file_name2", 10000, 128))
+        listAudioFile.add(AudioFile(file1, file1.name, 10000, 128))
+        listAudioFile.add(AudioFile(file2, file2.name, 10000, 128))
+        listAudioFile.add(AudioFile(file3, file3.name, 10000, 128))
+        listAudioFile.add(AudioFile(file4, file4.name, 10000, 128))
         audioFileLiveData.postValue(listAudioFile)
 
         listAudioFile1 = ArrayList<AudioFile>()
@@ -51,14 +56,15 @@ class FakeAudioFileManager : AudioFileManager {
 
 //        MainScope().launch {
 //            delay(10000)
-////            listAudioFile.add(AudioFile(file3, "file_name2", 10000, 128))
-//            listAudioFile.removeAt(0)
+//            listAudioFile.add(AudioFile(file3, "file_name2", 10000, 128))
+////            listAudioFile.removeAt(0)
 //            audioFileLiveData.postValue(listAudioFile)
 //        }
     }
 
     override suspend fun findAllAudioFiles(): LiveData<List<AudioFile>> {
         return audioFileLiveData
+//        return AudioFileManagerImpl.findAllAudioFiles()
     }
 
     override fun buildAudioFile(filePath: String): AudioFile {

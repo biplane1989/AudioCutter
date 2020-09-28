@@ -3,9 +3,11 @@ package com.example.audiocutter.functions.contactscreen.contacts
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -17,7 +19,9 @@ import com.example.audiocutter.core.manager.ContactManagerImpl
 import kotlinx.android.synthetic.main.list_contact_screen.*
 
 
-class ListContactScreen : BaseFragment() {
+class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCallback {
+
+    val callBack = mainCallBack
 
     val TAG = "giangtd"
     lateinit var listContactAdapter: ListContactAdapter
@@ -25,7 +29,14 @@ class ListContactScreen : BaseFragment() {
 
     // observer data
     val listContactObserver = Observer<List<ContactItemView>> { listContact ->
-        listContactAdapter.submitList(ArrayList(listContact))
+        if (listContact.size <= 0) {
+            rv_list_contact.visibility = View.GONE
+            cl_no_contact.visibility = View.VISIBLE
+        } else {
+            rv_list_contact.visibility = View.VISIBLE
+            cl_no_contact.visibility = View.GONE
+            listContactAdapter.submitList(ArrayList(listContact))
+        }
     }
 
     fun init() {
@@ -45,7 +56,7 @@ class ListContactScreen : BaseFragment() {
 
         mlistContactViewModel = ViewModelProviders.of(this)
             .get(ListContactViewModel(activity!!.application)::class.java)
-        listContactAdapter = ListContactAdapter(context)
+        listContactAdapter = ListContactAdapter(context, this)
         runOnUI {
             val listContact = mlistContactViewModel.getData() // get data from funtion newIntance
             listContact.observe(this as LifecycleOwner, listContactObserver)
@@ -81,9 +92,26 @@ class ListContactScreen : BaseFragment() {
             }
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                listContactAdapter.submitList(mlistContactViewModel.searchContact(edt_search.text.toString()))
+                if (mlistContactViewModel.searchContact(edt_search.text.toString()).size <= 0) {
+                    rv_list_contact.visibility = View.GONE
+                    cl_no_contact.visibility = View.VISIBLE
+                } else {
+                    rv_list_contact.visibility = View.VISIBLE
+                    cl_no_contact.visibility = View.GONE
+                    listContactAdapter.submitList(mlistContactViewModel.searchContact(edt_search.text.toString()))
+                }
             }
         })
 
+    }
+
+    override fun itemOnClick(phoneNumber: String, uri: String) {
+        Log.d(TAG, "itemOnClick: $$$$$$$$$$$$")
+        callBack.item(phoneNumber, uri)
+
+    }
+
+    interface mainCallBack {
+        fun item(phone: String, uri: String)
     }
 }

@@ -88,7 +88,6 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
 
         isLoading = true
         runOnUI {
-            delay(5000)
             val listAudioViewLiveData = myStudioViewModel.getData(typeAudio) // get data from funtion newIntance
             listAudioViewLiveData.observe(this as LifecycleOwner, listAudioObserver)
             isLoading = false
@@ -249,7 +248,7 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
     // nhận listernner từ fragment khác truyền đến
     override fun onReceivedAction(fragmentMeta: FragmentMeta) {
         // nếu typeAudio không bằng data của fragment thoát
-
+        // ap dung 2 kieu truyen du lieu. 1 qua newIntent fragment, 2. truyen qua call back sendFragment
         if (fragmentMeta.action in arrayListOf(Constance.ACTION_CHECK_DELETE, Constance.ACTION_DELETE_ALL)) if (typeAudio != (fragmentMeta.data as Int)) {
             return
         }

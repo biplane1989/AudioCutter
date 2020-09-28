@@ -5,11 +5,11 @@ import com.example.audiocutter.objects.AudioFile
 
 interface RingtonManager {
 
-    fun setAlarmManager(context: Context, audioFile: AudioFile): Boolean
+    fun setAlarmManager( audioFile: AudioFile): Boolean
 
-    fun setNotificationSound(context: Context, audioFile: AudioFile): Boolean
+    fun setNotificationSound( audioFile: AudioFile): Boolean
 
-    fun setRingTone(context: Context, audioFile: AudioFile): Boolean
+    fun setRingTone( audioFile: AudioFile): Boolean
 
-    fun setRingToneWithContactNumber(context: Context, audioFile: AudioFile, contactNumber: String): Boolean
+    fun setRingToneWithContactNumber( audioFile: AudioFile, contactNumber: String): Boolean
 }
