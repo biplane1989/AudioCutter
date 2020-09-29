@@ -1,6 +1,5 @@
 package com.example.audiocutter.functions.contactscreen.select
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -17,10 +16,11 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
+import com.example.audiocutter.functions.mystudioscreen.fragment.MyStudioFragment
 import kotlinx.android.synthetic.main.list_contact_select_screen.*
 
 
-class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback {
+class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.OnClickListener {
 
     val TAG = "giangtd"
     lateinit var mListSelectAudioViewModel: ListSelectAudioViewModel
@@ -29,14 +29,14 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback {
     companion object {
         val TAG = "ListSelectAudioScreen"
         val BUNDLE_NAME_KEY_PHONE_NUMBER = "BUNDLE_NAME_KEY_PHONE_NUMBER"
-        val BUNDLE_NAME_KEY_URI = "BUNDLE_NAME_KEY_URI"
+        val BUNDLE_NAME_KEY_FILE_NAME = "BUNDLE_NAME_KEY_URI"
 
         @JvmStatic
         fun newInstance(phoneNumber: String, uri: String): ListSelectAudioScreen {
             val MyStudio = ListSelectAudioScreen()
             val bundle = Bundle()
             bundle.putString(BUNDLE_NAME_KEY_PHONE_NUMBER, phoneNumber)
-            bundle.putString(BUNDLE_NAME_KEY_URI, uri)
+            bundle.putString(BUNDLE_NAME_KEY_FILE_NAME, uri)
             MyStudio.arguments = bundle
             return MyStudio
         }
@@ -49,10 +49,19 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback {
             cl_bottom.visibility = View.GONE
             cl_no_audio.visibility = View.VISIBLE
         } else {
-            rv_list_select_audio.visibility = View.VISIBLE
-            cl_bottom.visibility = View.VISIBLE
-            cl_no_audio.visibility = View.GONE
-            mListSelectAdapter.submitList(ArrayList(listAudio))
+            runOnUI {
+                rv_list_select_audio.visibility = View.VISIBLE
+                cl_bottom.visibility = View.VISIBLE
+                cl_no_audio.visibility = View.GONE
+                mListSelectAdapter.submitList(ArrayList(listAudio))
+
+                val fileName = requireArguments().getString(BUNDLE_NAME_KEY_FILE_NAME)
+
+                if (fileName != null) {
+                    mListSelectAdapter.submitList(mListSelectAudioViewModel.setSelectRingtone(fileName))
+                    rv_list_select_audio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))
+                }
+            }
         }
 
     }
@@ -92,19 +101,11 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback {
         super.onViewCreated(view, savedInstanceState)
         init()
 
-        iv_search.setOnClickListener(View.OnClickListener {
-            cl_default.visibility = View.GONE
-            cl_search.visibility = View.VISIBLE
-        })
-
-        iv_search_close.setOnClickListener(View.OnClickListener {
-            cl_default.visibility = View.VISIBLE
-            cl_search.visibility = View.GONE
-        })
-
-        iv_clear.setOnClickListener(View.OnClickListener {
-            edt_search.text.clear()
-        })
+        iv_search.setOnClickListener(this)
+        iv_search_close.setOnClickListener(this)
+        iv_clear.setOnClickListener(this)
+        btn_save.setOnClickListener(this)
+        iv_file.setOnClickListener(this)
 
         edt_search.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
@@ -127,20 +128,8 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback {
             }
         })
 
-        btn_save.setOnClickListener(View.OnClickListener {
-            if (mListSelectAudioViewModel.setRingtone("001")) {
-                Toast.makeText(context, "Set Ringtone Success !", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "Set Ringtone Failure !", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-       iv_file.setOnClickListener(View.OnClickListener {
-//           val intent = Intent(Intent.ACTION_GET_CONTENT)
-//           intent.type = "file/*"
-//           startActivityForResult(intent, PICKFILE_REQUEST_CODE)
-       })
     }
+
 
     override fun play(position: Int) {
         mListSelectAudioViewModel.playAudio(position)
@@ -169,6 +158,35 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback {
 
     override fun isSelect(position: Int) {
         mListSelectAdapter.submitList(mListSelectAudioViewModel.selectAudio(position))
+    }
+
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            R.id.iv_search -> {
+                cl_default.visibility = View.GONE
+                cl_search.visibility = View.VISIBLE
+            }
+            R.id.iv_search_close -> {
+                cl_default.visibility = View.VISIBLE
+                cl_search.visibility = View.GONE
+            }
+            R.id.iv_clear -> {
+                edt_search.text.clear()
+            }
+            R.id.btn_save -> {
+                if (mListSelectAudioViewModel.setRingtone(requireArguments().getInt(BUNDLE_NAME_KEY_PHONE_NUMBER)
+                        .toString())) {
+                    Toast.makeText(context, "Set Ringtone Success !", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Set Ringtone Failure !", Toast.LENGTH_SHORT).show()
+                }
+            }
+            R.id.iv_file -> {
+                //           val intent = Intent(Intent.ACTION_GET_CONTENT)
+//           intent.type = "file/*"
+//           startActivityForResult(intent, PICKFILE_REQUEST_CODE)
+            }
+        }
     }
 
 }

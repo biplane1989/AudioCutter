@@ -3,23 +3,20 @@ package com.example.audiocutter.functions.contactscreen.contacts
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.ContactManagerImpl
 import kotlinx.android.synthetic.main.list_contact_screen.*
 
 
-class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCallback {
+class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCallback, View.OnClickListener {
 
     val callBack = mainCallBack
 
@@ -60,7 +57,6 @@ class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCal
         runOnUI {
             val listContact = mlistContactViewModel.getData() // get data from funtion newIntance
             listContact.observe(this as LifecycleOwner, listContactObserver)
-//            ContactManagerImpl.getListContact(requireContext())
         }
 
 
@@ -70,19 +66,9 @@ class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCal
         super.onViewCreated(view, savedInstanceState)
         init()
 
-        iv_search.setOnClickListener(View.OnClickListener {
-            cl_default.visibility = View.GONE
-            cl_search.visibility = View.VISIBLE
-        })
-
-        iv_search_close.setOnClickListener(View.OnClickListener {
-            cl_default.visibility = View.VISIBLE
-            cl_search.visibility = View.GONE
-        })
-
-        iv_clear.setOnClickListener(View.OnClickListener {
-            edt_search.text.clear()
-        })
+        iv_search.setOnClickListener(this)
+        iv_search_close.setOnClickListener(this)
+        iv_clear.setOnClickListener(this)
 
         edt_search.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
@@ -102,16 +88,29 @@ class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCal
                 }
             }
         })
-
     }
 
     override fun itemOnClick(phoneNumber: String, uri: String) {
-        Log.d(TAG, "itemOnClick: $$$$$$$$$$$$")
         callBack.item(phoneNumber, uri)
-
     }
 
     interface mainCallBack {
         fun item(phone: String, uri: String)
+    }
+
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            R.id.iv_search -> {
+                cl_default.visibility = View.GONE
+                cl_search.visibility = View.VISIBLE
+            }
+            R.id.iv_search_close -> {
+                cl_default.visibility = View.VISIBLE
+                cl_search.visibility = View.GONE
+            }
+            R.id.iv_clear -> {
+                edt_search.text.clear()
+            }
+        }
     }
 }

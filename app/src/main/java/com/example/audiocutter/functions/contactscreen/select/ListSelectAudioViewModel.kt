@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.contactscreen.select
 
+import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
@@ -11,13 +12,13 @@ import com.example.audiocutter.objects.AudioFile
 
 class ListSelectAudioViewModel : BaseViewModel() {
 
+    var isPlayingStatus = false
     private var mListAudioFileView = ArrayList<SelectItemView>()
     val TAG = "giangtd"
 
     suspend fun getData(): LiveData<List<SelectItemView>> {
         val listAudioFiles: LiveData<List<AudioFile>>
         listAudioFiles = ManagerFactory.getAudioFileManager().findAllAudioFiles()
-//        listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_CUTTER)
 
         return Transformations.map(listAudioFiles) { items ->
             // lan dau tien lay du lieu
@@ -53,7 +54,32 @@ class ListSelectAudioViewModel : BaseViewModel() {
         return null
     }
 
-    var isPlayingStatus = false
+    fun setSelectRingtone(fileName: String): List<SelectItemView> {
+        var index = 0
+        for (item in mListAudioFileView) {
+            if (TextUtils.equals(item.audioFile.fileName, fileName)) {
+                val newItem = item.copy()
+                newItem.isSelect = true
+                mListAudioFileView.set(index, newItem)
+                break
+            }
+            index++
+        }
+        return mListAudioFileView
+    }
+
+    fun getIndexSelectRingtone(fileName: String): Int {
+        var index = 0
+        for (item in mListAudioFileView) {
+            if (TextUtils.equals(item.audioFile.fileName, fileName)) {
+
+                return index
+            }
+            index++
+        }
+        return 0
+    }
+
     fun showPlayingAudio(position: Int): List<SelectItemView> {
 
         // khi play nhac reset lai trang thai cac item khac
@@ -186,5 +212,4 @@ class ListSelectAudioViewModel : BaseViewModel() {
         }
         return false
     }
-
 }

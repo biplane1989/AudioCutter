@@ -89,18 +89,17 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                     itemViewHolder.cvDefault.visibility = View.GONE
                     itemViewHolder.tvRingtone.visibility = View.VISIBLE
 
-                    val ringtoneTitle = Utils.getPlayList(mContext!!, contactItem.contactItem.ringtone!!)   // get name song by uri
-                    itemViewHolder.tvRingtone.text = ringtoneTitle
+                    val contactInfomation = Utils.getPlayList(mContext!!, contactItem.contactItem.ringtone!!)   // get name song by uri
+                    itemViewHolder.tvRingtone.text = contactInfomation.title
                 } else {
                     itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
                     itemViewHolder.cvDefault.visibility = View.VISIBLE
                     itemViewHolder.tvRingtone.visibility = View.GONE
 
-                    val ringtoneDefault = Utils.getPlayList(mContext!!, Utils.getCurrentSound(mContext!!)
+                    val contactInfomation = Utils.getPlayList(mContext!!, Utils.getCurrentSound(mContext!!)
                         .toString())
-                    itemViewHolder.tvRingtoneDefault.text = ringtoneDefault
+                    itemViewHolder.tvRingtoneDefault.text = contactInfomation.title
                 }
-//            }
             }
         }
     }
@@ -131,16 +130,16 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 cvDefault.visibility = View.GONE
                 tvRingtone.visibility = View.VISIBLE
 
-                val ringtoneTitle = Utils.getPlayList(mContext!!, contentItem.contactItem.ringtone!!)   // get name song by uri
-                tvRingtone.text = ringtoneTitle
+                val contactInfomation = Utils.getPlayList(mContext!!, contentItem.contactItem.ringtone!!)   // get name song by uri
+                tvRingtone.text = contactInfomation.title
             } else {
                 tvRingtoneDefault.visibility = View.VISIBLE
                 cvDefault.visibility = View.VISIBLE
                 tvRingtone.visibility = View.GONE
 
-                val ringtoneDefault = Utils.getPlayList(mContext!!, Utils.getCurrentSound(mContext!!)
+                val contactInfomation = Utils.getPlayList(mContext!!, Utils.getCurrentSound(mContext!!)
                     .toString())
-                tvRingtoneDefault.text = ringtoneDefault
+                tvRingtoneDefault.text = contactInfomation.title
             }
 
             clItemContact.setOnClickListener(this)
@@ -150,7 +149,14 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
         override fun onClick(view: View?) {
             when (view?.id) {
                 R.id.cl_item_contact -> {
-                    contactCallback.itemOnClick(getItem(adapterPosition).contactItem.phoneNumber, getItem(adapterPosition).contactItem.ringtone.toString())
+                    val contactInfomation: ContactInfomation
+                    if (getItem(adapterPosition).contactItem.ringtone != null) {
+                        contactInfomation = Utils.getPlayList(mContext!!, getItem(adapterPosition).contactItem.ringtone!!)
+                    } else {
+                        contactInfomation = Utils.getPlayList(mContext!!, Utils.getCurrentSound(mContext!!)
+                            .toString())
+                    }
+                    contactCallback.itemOnClick(getItem(adapterPosition).contactItem.phoneNumber, contactInfomation.fileName)
                 }
             }
         }
@@ -161,7 +167,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
 
         fun onBind() {
             val headerItem = getItem(adapterPosition)
-            tvHeader.text = headerItem.contactItem.name.get(0).toUpperCase().toString()
+            tvHeader.text = headerItem.contactHeader.get(0).toUpperCase().toString()
         }
     }
 
@@ -169,7 +175,6 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
         const val SECTION_VIEW = 0
         const val CONTENT_VIEW = 1
     }
-
 }
 
 class ContactDiffCallBack : DiffUtil.ItemCallback<ContactItemView>() {

@@ -23,7 +23,8 @@ object ManagerFactory {
     }
 
     fun getAudioFileManager(): AudioFileManager {
-        return mAudioFileManager
+//        return mAudioFileManager
+        return AudioFileManagerImpl
     }
 
     fun getAudioCutter(): AudioCutter {
@@ -31,8 +32,8 @@ object ManagerFactory {
     }
 
     fun getContactManager(): ContactManager {
-        return mContactManager
-//        return ContactManagerImpl
+//        return mContactManager
+        return ContactManagerImpl
     }
 
     fun getAudioPlayer(): AudioPlayer {

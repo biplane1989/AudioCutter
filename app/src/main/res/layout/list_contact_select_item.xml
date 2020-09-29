@@ -44,16 +44,19 @@
 
             <TextView
                 android:id="@+id/tv_title_music"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginLeft="15dp"
+                android:ellipsize="end"
                 android:fontFamily="@font/sanfranciscodisplay_bold"
                 android:gravity="top"
+                android:maxLines="1"
                 android:text="@string/my_studio_screen_item_title"
                 android:textColor="#2E3041"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@id/tv_info_music"
+                app:layout_constraintEnd_toStartOf="@id/iv_select"
                 app:layout_constraintStart_toEndOf="@id/cv_avatar"
                 app:layout_constraintTop_toTopOf="@id/cv_avatar" />
 

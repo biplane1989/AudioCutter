@@ -6,7 +6,9 @@ import android.graphics.Bitmap
 import android.media.RingtoneManager
 import android.net.Uri
 import android.provider.MediaStore
+import com.example.audiocutter.functions.contactscreen.contacts.ContactInfomation
 import java.text.Normalizer
+import java.util.regex.Pattern
 
 object Utils {
 
@@ -18,9 +20,31 @@ object Utils {
     }
 
     // lay ten bai hat theo uri
-    fun getPlayList(context: Context, uri: String): String? {
+    fun getPlayList(context: Context, uri: String): ContactInfomation {
+        var contactInfomation = ContactInfomation("", "")
         var audioTitle = ""
-        val proj = arrayOf(MediaStore.Audio.Media.TITLE)
+        var fileName = ""
+        val proj = arrayOf(MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DISPLAY_NAME)
+        val audioCursor: Cursor? = context.contentResolver.query(Uri.parse(uri), proj, null, null, null)
+        try {
+            if (audioCursor != null) {
+                if (audioCursor.moveToFirst()) {
+                    audioTitle = audioCursor.getString(0)
+                    fileName = audioCursor.getString(1)
+
+                    contactInfomation = ContactInfomation(audioTitle, fileName)
+                }
+            }
+        } finally {
+            audioCursor?.close()
+        }
+        return contactInfomation
+    }
+
+    // lay path bai hat theo uri
+    fun getPathByUri(context: Context, uri: String): String? {
+        var audioTitle = ""
+        val proj = arrayOf(MediaStore.Audio.Media.DATA)
         var audioCursor: Cursor? = context.contentResolver.query(Uri.parse(uri), proj, null, null, null)
         try {
             if (audioCursor != null) {
@@ -53,6 +77,18 @@ object Utils {
             }
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+        return null
+    }
+
+    // convert ky tu co dau sang khong dau
+    fun covertToString(value: String?): String? {
+        try {
+            val temp = Normalizer.normalize(value, Normalizer.Form.NFD)
+            val pattern: Pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+")
+            return pattern.matcher(temp).replaceAll("")
+        } catch (ex: java.lang.Exception) {
+            ex.printStackTrace()
         }
         return null
     }
