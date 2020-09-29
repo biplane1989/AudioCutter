@@ -19,6 +19,10 @@ enum class MixSelector(val type: String) {
     LONGEST("longest"), SHORTEST("shortest")
 }
 
+enum class FFMpegState {
+    IDE,RUNNING, CANCEL, FAIL
+}
+
 data class AudioCutConfig(
     val startPosition: Int,
     val endPosition: Int,
@@ -38,7 +42,7 @@ data class AudioMixConfig(
 )
 
 data class OutputAudioInfo(val audioFile: AudioFile, var percent: Int)
-data class AudioMergingInfo(var audioFile: AudioFile?, var percent: Int)
+data class AudioMergingInfo(var audioFile: AudioFile?, var percent: Int, var state: FFMpegState)
 interface AudioCutter {
     suspend fun cut(audioFile: AudioFile, audioCutConfig: AudioCutConfig): AudioFile
     suspend fun merge(listAudioFile: List<AudioFile>, fileName: String): AudioFile
@@ -48,6 +52,6 @@ interface AudioCutter {
         audioMixConfig: AudioMixConfig
     ): AudioFile
 
-    suspend fun cancelTask()
+    suspend fun cancelTask(): Boolean
     fun getAudioMergingInfo(): LiveData<AudioMergingInfo>
 }

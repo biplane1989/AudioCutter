@@ -22,7 +22,7 @@ import java.util.*
 
 class AudioCutterImpl : AudioCutter {
     private var audioFileUpdate = MutableLiveData<AudioMergingInfo>()
-    private val itemMergeInfo = AudioMergingInfo(null, 0)
+    private val itemMergeInfo = AudioMergingInfo(null, 0, FFMpegState.IDE)
     private var timeVideo: Long = 0
     private var audioFileCore = AudioFile()
 
@@ -53,7 +53,11 @@ class AudioCutterImpl : AudioCutter {
             audioFileCore.size = it.size * 1204
             mainScope.launch {
                 Log.e(TAG, "percent: $percent")
-                updateItemLiveData(audioFileCore, ((it.time * 100) / timeVideo).toInt())
+                updateItemLiveData(
+                    audioFileCore,
+                    ((it.time * 100) / timeVideo).toInt(),
+                    FFMpegState.RUNNING
+                )
             }
         }
     }
@@ -63,8 +67,6 @@ class AudioCutterImpl : AudioCutter {
             timeVideo = (audioCutConfig.endPosition * 1000).toLong()
             val fileCutPath =
                 PATH_CUT_FOLDER.plus("/${audioCutConfig.fileName.plus(audioFile.mimeType)}")
-
-            updateItemLiveData(audioFileCore, 0)
 
             val format = String.format(
                 Locale.ENGLISH,
@@ -105,10 +107,11 @@ class AudioCutterImpl : AudioCutter {
                         null,
                         audioFile.mimeType!!
                     )
-                    updateItemLiveData(audioFile, 100)
+                    updateItemLiveData(audioFile, 100, FFMpegState.RUNNING)
                     return@withContext audioFileCore
                 }
                 Config.RETURN_CODE_CANCEL -> {
+                    updateItemLiveData(audioFileCore, 0, FFMpegState.CANCEL)
                     Utils.deleteFile(fileCutPath)
                 }
                 else -> {
@@ -116,7 +119,7 @@ class AudioCutterImpl : AudioCutter {
                         Config.TAG,
                         String.format("Async command execution failed with rc=%d.", returnCode)
                     )
-                    Config.printLastCommandOutput(Log.ERROR)
+                    updateItemLiveData(audioFileCore, 0, FFMpegState.FAIL)
                 }
             }
         }
@@ -137,6 +140,7 @@ class AudioCutterImpl : AudioCutter {
             } else {
                 if (audioFile1.time - audioFile2.time >= 0) audioFile2.time else audioFile1.time
             }
+
             var requestCode = FFmpeg.execute(
                 String.format(
                     Locale.ENGLISH,
@@ -165,10 +169,11 @@ class AudioCutterImpl : AudioCutter {
                         null,
                         mimeType
                     )
-                    updateItemLiveData(audioFileCore, 100)
+                    updateItemLiveData(audioFileCore, 100, FFMpegState.RUNNING)
                     return@withContext audioFileCore
                 }
                 Config.RETURN_CODE_CANCEL -> {
+                    updateItemLiveData(audioFileCore, 0, FFMpegState.CANCEL)
                     Utils.deleteFile(filePath)
                 }
                 else -> {
@@ -176,7 +181,7 @@ class AudioCutterImpl : AudioCutter {
                         Config.TAG,
                         String.format("Async command execution failed with rc=%d.", requestCode)
                     )
-                    Config.printLastCommandOutput(Log.ERROR)
+                    updateItemLiveData(audioFileCore, 0, FFMpegState.FAIL)
                 }
             }
 
@@ -184,8 +189,9 @@ class AudioCutterImpl : AudioCutter {
         return audioFileCore
     }
 
-    override suspend fun cancelTask() {
+    override suspend fun cancelTask(): Boolean {
         FFmpeg.cancel()
+        return true
     }
 
     override suspend fun merge(listAudioFile: List<AudioFile>, fileName: String): AudioFile {
@@ -226,10 +232,11 @@ class AudioCutterImpl : AudioCutter {
                         null,
                         mimeType
                     )
-                    updateItemLiveData(audioFileCore, 100)
+                    updateItemLiveData(audioFileCore, 100, FFMpegState.RUNNING)
                     return@withContext audioFileCore
                 }
                 Config.RETURN_CODE_CANCEL -> {
+                    updateItemLiveData(audioFileCore, 0, FFMpegState.CANCEL)
                     Utils.deleteFile(pathFileMerge)
                 }
                 else -> {
@@ -237,7 +244,7 @@ class AudioCutterImpl : AudioCutter {
                         Config.TAG,
                         String.format("Async command execution failed with rc=%d.", returnCode)
                     )
-                    Config.printLastCommandOutput(Log.ERROR)
+                    updateItemLiveData(audioFileCore, 0, FFMpegState.FAIL)
                 }
             }
         }
@@ -248,9 +255,10 @@ class AudioCutterImpl : AudioCutter {
         return audioFileUpdate
     }
 
-    private fun updateItemLiveData(audioFile: AudioFile, percent: Int) {
+    private fun updateItemLiveData(audioFile: AudioFile, percent: Int, state: FFMpegState) {
         itemMergeInfo.audioFile = audioFile
         itemMergeInfo.percent = percent
+        itemMergeInfo.state = state
         audioFileUpdate.postValue(itemMergeInfo)
     }
 

@@ -4,9 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.core.manager.*
 import com.example.audiocutter.objects.AudioFile
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import java.io.File
 
 class FakeAudioCutter : AudioCutter {
@@ -95,7 +92,7 @@ class FakeAudioCutter : AudioCutter {
         TODO("Not yet implemented")
     }
 
-    override suspend fun cancelTask() {
+    override suspend fun cancelTask(): Boolean {
         TODO("Not yet implemented")
     }
 
