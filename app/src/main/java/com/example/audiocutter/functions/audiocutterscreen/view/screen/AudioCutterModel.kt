@@ -90,7 +90,8 @@ class AudioCutterModel : BaseViewModel() {
         audioFile.currentPos = playerInfo.position.toLong()
         audioFile.duration = playerInfo.duration.toLong()
         mListAudio[pos] = audioFile
-        Log.d("manhGK", "updateState:  currentpos  ${playerInfo.position} \n duration ${playerInfo.duration}")
+        Log.d("manhGK", "updateState:  currentpos  ${playerInfo.position} \n duration ${playerInfo.duration}  "
+        )
     }
 
 

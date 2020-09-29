@@ -84,7 +84,6 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 //                    mPlayer.setDataSource(ins.fd)
                     prepare(audioFile)
                     isStopped = false;
-
                 }
                 startTimerIfReady()
 

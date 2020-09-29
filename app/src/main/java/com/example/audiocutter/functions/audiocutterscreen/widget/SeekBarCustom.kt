@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
-import android.util.TypedValue
 import android.view.View
 import com.example.audiocutter.R
 
@@ -15,8 +14,6 @@ class SeekBarCustom :
     private var mPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var mPaint2: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     var currStartLineX: Float = 0f
-    var isCheckDraw = false
-//    var mCanvas = Canvas()
 
 
     constructor(context: Context?) : super(context)
@@ -36,18 +33,19 @@ class SeekBarCustom :
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-//        mCanvas = canvas
         drawBG(canvas)
     }
 
 
     private fun drawBG(canvas: Canvas) {
-        if (!isCheckDraw) {
-            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), mPaint)
-            canvas.drawRect(0f, 0f, currStartLineX, width / 2f, mPaint2)
-        } else {
-            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), mPaint)
-        }
+        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), mPaint)
+        canvas.drawRect(0f, 0f, currStartLineX, width / 2f, mPaint2)
+
+    }
+
+    fun resetView() {
+        currStartLineX = 0f
+        invalidate()
     }
 
 
@@ -66,15 +64,6 @@ class SeekBarCustom :
             }
             invalidate()
         }
-    }
-
-
-    private fun convertDP(num: Long): Float {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            num.toFloat(),
-            resources.displayMetrics
-        )
     }
 
 

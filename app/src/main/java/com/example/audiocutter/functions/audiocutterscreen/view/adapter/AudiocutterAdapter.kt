@@ -2,7 +2,6 @@ package com.example.audiocutter.functions.audiocutterscreen.view.adapter
 
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -112,11 +111,10 @@ class AudiocutterAdapter(val mContext: Context) :
 
             when (itemAudioFile.state) {
                 PlayerState.PLAYING -> {
+                    sbAudio.resetView()
                     sbAudio.visibility = View.VISIBLE
                     ivController.setImageResource(R.drawable.ic_audiocutter_pause)
                     sbAudio.updateSB(itemAudioFile.currentPos, itemAudioFile.duration)
-
-
                 }
                 PlayerState.PAUSE -> {
                     ivController.setImageResource(R.drawable.ic_audiocutter_play)
