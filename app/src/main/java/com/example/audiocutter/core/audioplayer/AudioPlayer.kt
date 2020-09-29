@@ -217,38 +217,43 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
             while (mainScope.isActive) {
                 var changed = false
 
-                delay(250)
-                    playInfoData.duration = mPlayer.duration
-                    var currentPosition = mPlayer.currentPosition
-                    if (currentPosition >= mPlayer.duration) {
-                        currentPosition = 0
-                        playInfoData.position = currentPosition
-                        mPlayer.stop()
+                delay(500)
+                playInfoData.duration = mPlayer.duration
+                var currentPosition = mPlayer.currentPosition
+                if (currentPosition >= mPlayer.duration) {
+                    currentPosition = 0
+                    playInfoData.position = currentPosition
+                    mPlayer.stop()
 
-                        if (playInfoData.playerState != PlayerState.IDLE) {
+                    if (playInfoData.playerState != PlayerState.IDLE) {
+                        playInfoData.playerState = PlayerState.IDLE
+                        Log.d("nmcode", "startTimerIfReady11: ${playInfoData.playerState}")
+                        changed = true
+                    }
+                }
+
+                if (playInfoData.playerState == PlayerState.PREPARING) {
+                    changed = false
+                }
+
+
+                if (mPlayer.isPlaying) {
+                    if (playInfoData.playerState != PlayerState.PLAYING) {
+                        playInfoData.playerState = PlayerState.PLAYING
+                        changed = true
+                    }
+                } else {
+                    if (playInfoData.playerState == PlayerState.PLAYING) {
+                        if (isStopped) {
                             playInfoData.playerState = PlayerState.IDLE
-                            changed = true
+                            currentPosition = 0
+                            playInfoData.position = currentPosition
+                        } else {
+                            playInfoData.playerState = PlayerState.PAUSE
                         }
+                        changed = true
                     }
-
-                    if (mPlayer.isPlaying) {
-                        if (playInfoData.playerState != PlayerState.PLAYING) {
-                            playInfoData.playerState = PlayerState.PLAYING
-                            changed = true
-                        }
-                    } else {
-                        if (playInfoData.playerState == PlayerState.PLAYING) {
-                            if (isStopped) {
-                                playInfoData.playerState = PlayerState.IDLE
-                                currentPosition = 0
-                                playInfoData.position = currentPosition
-                            } else {
-                                playInfoData.playerState = PlayerState.PAUSE
-//                                Log.d("nmcode", "startTimerIfReady: ${playInfoData.playerState}")
-                            }
-                            changed = true
-                        }
-                    }
+                }
 
                     if (playInfoData.position != currentPosition && playInfoData.playerState == PlayerState.PLAYING) {
                         changed = true

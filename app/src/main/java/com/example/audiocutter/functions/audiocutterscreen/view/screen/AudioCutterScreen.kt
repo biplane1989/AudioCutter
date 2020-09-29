@@ -27,6 +27,7 @@ import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDoneDialo
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import com.example.audiocutter.functions.audiocutterscreen.objs.TypeAudioSetAs
 import com.example.audiocutter.functions.audiocutterscreen.view.adapter.AudiocutterAdapter
+import com.example.audiocutter.functions.audiocutterscreen.widget.SeekBarCustom
 
 
 class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
@@ -149,20 +150,20 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
     }
 
-    fun hideOrShowEditText(status: Int) {
+    private fun hideOrShowEditText(status: Int) {
         ivBackEdt.visibility = status
         ivClose.visibility = status
         edtSearch.visibility = status
     }
 
-    fun hideOrShowView(status: Int) {
+    private fun hideOrShowView(status: Int) {
         ivSearch.visibility = status
         tvAudioScreen.visibility = status
         ivFile.visibility = status
     }
 
 
-    fun hideKeyBroad() {
+    private fun hideKeyBroad() {
         val imm =
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         var view = requireActivity().currentFocus
@@ -172,7 +173,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    fun showKeybroad() {
+    private fun showKeybroad() {
         val imm =
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
@@ -254,7 +255,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     }
 
     private fun clearText() {
-        if (!edtSearch.text.toString().isEmpty()) {
+        if (edtSearch.text.toString().isNotEmpty()) {
             edtSearch.setText("")
         }
     }

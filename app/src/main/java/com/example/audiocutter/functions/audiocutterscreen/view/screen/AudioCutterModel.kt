@@ -1,12 +1,10 @@
 package com.example.audiocutter.functions.audiocutterscreen.view.screen
 
-import android.os.Build
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.ManagerFactory
-import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
@@ -16,6 +14,7 @@ class AudioCutterModel : BaseViewModel() {
     private val TAG = AudioCutterModel::class.java.name
     private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
+    var duration: Long? = 0L
 
 
     suspend fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
@@ -44,7 +43,6 @@ class AudioCutterModel : BaseViewModel() {
     suspend fun play(pos: Int) {
         val audioItem = mListAudio[pos]
         ManagerFactory.getAudioPlayer().play(audioItem.audioFile)
-
     }
 
     fun pause() {
@@ -56,7 +54,6 @@ class AudioCutterModel : BaseViewModel() {
     }
 
 
-
     fun updateMediaInfo(playerInfo: PlayerInfo): List<AudioCutterView> {
         Log.d(TAG, "updateMediaInfo: ${playerInfo.playerState}")
         if (playerInfo.currentAudio != null) {
@@ -65,16 +62,20 @@ class AudioCutterModel : BaseViewModel() {
                 val oldPos = getAudioFilePos(currentAudioPlaying)
                 val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
                 if (oldPos != -1) {
-                    updateState(oldPos, PlayerState.IDLE)
+                    val audioFile = mListAudio[oldPos].copy()
+                    audioFile.state = PlayerState.IDLE
+                    audioFile.currentPos = playerInfo.position.toLong()
+                    audioFile.duration = playerInfo.duration.toLong()
+                    mListAudio[oldPos] = audioFile
                 }
                 if (newPos != -1) {
-                    updateState(newPos, playerInfo.playerState)
+                    updateState(newPos, playerInfo)
                 }
             } else {
                 val atPos = getAudioFilePos(currentAudioPlaying)
                 if (atPos != -1) {
                     Log.d(TAG, "updateMediaInfo: atPOs   ${mListAudio.get(atPos).state}")
-                    updateState(atPos, playerInfo.playerState)
+                    updateState(atPos, playerInfo)
                 }
             }
             currentAudioPlaying = playerInfo.currentAudio!!.file
@@ -83,13 +84,15 @@ class AudioCutterModel : BaseViewModel() {
         return mListAudio
     }
 
-
-
-    private fun updateState(pos: Int, state: PlayerState) {
+    private fun updateState(pos: Int, playerInfo: PlayerInfo) {
         val audioFile = mListAudio[pos].copy()
-        audioFile.state = state
+        audioFile.state = playerInfo.playerState
+        audioFile.currentPos = playerInfo.position.toLong()
+        audioFile.duration = playerInfo.duration.toLong()
         mListAudio[pos] = audioFile
+        Log.d("manhGK", "updateState:  currentpos  ${playerInfo.position} \n duration ${playerInfo.duration}")
     }
+
 
     private fun getAudioFilePos(file: File): Int {
         var i = 0

@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.audiocutterscreen.view.adapter
 
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
+import com.example.audiocutter.functions.audiocutterscreen.widget.SeekBarCustom
+import kotlin.math.floor
 
 class AudiocutterAdapter(val mContext: Context) :
     ListAdapter<AudioCutterView, AudiocutterAdapter.AudiocutterHolder>(Audiodiff()) {
@@ -83,6 +86,7 @@ class AudiocutterAdapter(val mContext: Context) :
         val tvBitrateAudio = itemView.findViewById<TextView>(R.id.tv_bitrate_audio)
         val lnChild = itemView.findViewById<LinearLayout>(R.id.ln_item_audio_cutter_screen)
         val lnMenu = itemView.findViewById<LinearLayout>(R.id.ln_menu)
+        val sbAudio = itemView.findViewById<SeekBarCustom>(R.id.sb_audio_cutter_screen)
 
         init {
             ivController.setOnClickListener(this)
@@ -98,23 +102,30 @@ class AudiocutterAdapter(val mContext: Context) :
             var size = (itemAudioFile.audioFile.size.toDouble() / SIZE_MB)
 
             if (size >= 1) {
-                size = Math.floor(size * 10) / 10
+                size = floor(size * 10) / 10
                 tvSizeAudio.text = "$size Mb"
             } else {
                 size = (itemAudioFile.audioFile.size.toDouble() / 1024)
-                size = Math.floor(size * 10) / 10
+                size = floor(size * 10) / 10
                 tvSizeAudio.text = "$size Kb"
             }
 
             when (itemAudioFile.state) {
                 PlayerState.PLAYING -> {
+                    sbAudio.visibility = View.VISIBLE
                     ivController.setImageResource(R.drawable.ic_audiocutter_pause)
+                    sbAudio.updateSB(itemAudioFile.currentPos, itemAudioFile.duration)
+
+
                 }
                 PlayerState.PAUSE -> {
                     ivController.setImageResource(R.drawable.ic_audiocutter_play)
+                    sbAudio.updateSB(itemAudioFile.currentPos, itemAudioFile.duration)
                 }
                 PlayerState.IDLE -> {
+                    sbAudio.visibility = View.GONE
                     ivController.setImageResource(R.drawable.ic_audiocutter_play)
+                    sbAudio.updateSB(itemAudioFile.currentPos, itemAudioFile.duration)
                 }
             }
         }
