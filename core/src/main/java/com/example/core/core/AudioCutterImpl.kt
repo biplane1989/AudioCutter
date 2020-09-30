@@ -1,7 +1,5 @@
-package com.example.audiocutter.core.audioCutter
+package com.example.core.core
 
-import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -9,9 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.arthenica.mobileffmpeg.Level
-import com.example.audiocutter.core.manager.*
-import com.example.audiocutter.objects.AudioFile
-import com.example.audiocutter.util.Utils
+import com.example.core.Utils.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -24,7 +20,9 @@ class AudioCutterImpl : AudioCutter {
     private var audioFileUpdate = MutableLiveData<AudioMergingInfo>()
     private val itemMergeInfo = AudioMergingInfo(null, 0, FFMpegState.IDE)
     private var timeVideo: Long = 0
-    private var audioFileCore = AudioFile()
+    private var audioFileCore = AudioCore()
+    private val CODEC_MP3 = "libmp3lame"
+    private val CODEC_AAC = "aac"
 
     private val PATH_DEFAUL_FOLDER = "${Environment.getExternalStorageDirectory()}/AudioCutter/"
     private val PATH_CUT_FOLDER = "${PATH_DEFAUL_FOLDER}cutter"
@@ -32,11 +30,11 @@ class AudioCutterImpl : AudioCutter {
     private val PATH_MIXER_FOLDER = "${PATH_DEFAUL_FOLDER}mixer"
     private val mainScope = MainScope()
     private val CMD_CUT_AUDIO_TIME =
-        "-y -ss %d -i \'%s\' -t %d -b:a %dk -af \"volume='(between(t,0,%f)*(t/%d)+between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d)))*%f'\":eval=frame %s"
+        "-y -ss %d -i \'%s\' -c copy -t %d -b:a %dk -af \"volume='(between(t,0,%f)*(t/%d)+between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d)))*%f'\":eval=frame -c:a %s %s"
     private val CMD_CONCAT_AUDIO =
-        "-y %s -filter_complex \"concat=n=%d:v=0:a=1[a]\" -map \"[a]\" -codec:a libmp3lame -b:a %dk %s"
+        "-y %s -filter_complex \"concat=n=%d:v=0:a=1[a]\" -map \"[a]\" -c:a %s -b:a %dk %s"
     private val CMD_MIX_AUDIO =
-        "-y -i \'%s\' -i \'%s\' -filter_complex \"[0:0]volume=%f[a];[1:0]volume=%f[b];[a][b]amix=inputs=2:duration=%s:dropout_transition=0[a]\" -map \"[a]\" -c:a libmp3lame -q:a 0 %s"
+        "-y -i \'%s\' -i \'%s\' -filter_complex \"[0:0]volume=%f[a];[1:0]volume=%f[b];[a][b]amix=inputs=2:duration=%s:dropout_transition=0[a]\" -map \"[a]\" -c:a %s -q:a 0 %s"
 
     init {
         Utils.createFolder(
@@ -62,11 +60,15 @@ class AudioCutterImpl : AudioCutter {
         }
     }
 
-    override suspend fun cut(audioFile: AudioFile, audioCutConfig: AudioCutConfig): AudioFile {
+    override suspend fun cut(audioFile: AudioCore, audioCutConfig: AudioCutConfig): AudioCore {
         withContext(Dispatchers.Default) {
             timeVideo = (audioCutConfig.endPosition * 1000).toLong()
+            val mimeType =
+                if (audioCutConfig.format == AudioFormat.MP3) AudioFormat.MP3.type else AudioFormat.ACC.type
+            val codec = if (audioCutConfig.format == AudioFormat.MP3) CODEC_MP3 else CODEC_AAC
             val fileCutPath =
-                PATH_CUT_FOLDER.plus("/${audioCutConfig.fileName.plus(audioFile.mimeType)}")
+                PATH_CUT_FOLDER.plus("/${audioCutConfig.fileName.plus(mimeType)}")
+
 
             val format = String.format(
                 Locale.ENGLISH,
@@ -85,9 +87,10 @@ class AudioCutterImpl : AudioCutter {
                 audioCutConfig.endPosition,
                 (audioCutConfig.endPosition - audioCutConfig.outEffect.time),
                 (audioCutConfig.volumePercent / 100).toFloat(),
+                codec,
                 fileCutPath
             )
-
+            Log.e(TAG, format)
             val returnCode = FFmpeg.execute(
                 format
             )
@@ -97,15 +100,8 @@ class AudioCutterImpl : AudioCutter {
                         fileCutPath,
                         audioCutConfig.fileName,
                         audioCutConfig.bitRate.value,
-                        null,
                         timeVideo,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        audioFile.mimeType!!
+                        mimeType
                     )
                     updateItemLiveData(audioFile, 100, FFMpegState.RUNNING)
                     return@withContext audioFileCore
@@ -129,11 +125,13 @@ class AudioCutterImpl : AudioCutter {
     }
 
     override suspend fun mix(
-        audioFile1: AudioFile, audioFile2: AudioFile, audioMixConfig: AudioMixConfig
-    ): AudioFile {
+        audioFile1: AudioCore, audioFile2: AudioCore, audioMixConfig: AudioMixConfig
+    ): AudioCore {
         withContext(Dispatchers.Default) {
             val fileName = audioMixConfig.fileName
-            val mimeType = ".mp3"
+            val mimeType =
+                if (audioMixConfig.format == AudioFormat.MP3) AudioFormat.MP3.type else AudioFormat.ACC.type
+            val codec = if (audioMixConfig.format == AudioFormat.MP3) CODEC_MP3 else CODEC_AAC
             val filePath = PATH_MIXER_FOLDER.plus("/${fileName.plus(mimeType)}")
             timeVideo = if (audioMixConfig.selector == MixSelector.LONGEST) {
                 if (audioFile1.time - audioFile2.time >= 0) audioFile1.time else audioFile2.time
@@ -149,7 +147,7 @@ class AudioCutterImpl : AudioCutter {
                     audioFile2.file.absolutePath,
                     (audioMixConfig.volumePercent1 / 100).toFloat(),
                     (audioMixConfig.volumePercent2 / 100).toFloat(),
-                    audioMixConfig.selector.type,
+                    audioMixConfig.selector.type, codec,
                     filePath
                 )
             )
@@ -159,14 +157,7 @@ class AudioCutterImpl : AudioCutter {
                         filePath,
                         fileName,
                         0,
-                        null,
                         timeVideo,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
                         mimeType
                     )
                     updateItemLiveData(audioFileCore, 100, FFMpegState.RUNNING)
@@ -194,9 +185,15 @@ class AudioCutterImpl : AudioCutter {
         return true
     }
 
-    override suspend fun merge(listAudioFile: List<AudioFile>, fileName: String): AudioFile {
+    override suspend fun merge(
+        listAudioFile: List<AudioCore>,
+        fileName: String,
+        audioFormat: AudioFormat
+    ): AudioCore {
         withContext(Dispatchers.Default) {
-            val mimeType = ".mp3"
+            val mimeType =
+                if (audioFormat == AudioFormat.MP3) AudioFormat.MP3.type else AudioFormat.ACC.type
+            val codec = if (audioFormat == AudioFormat.MP3) CODEC_MP3 else CODEC_AAC
             val sizeAudioFile = listAudioFile.size
             val pathFileMerge = PATH_MERGE_FOLDER.plus("/${fileName.plus(mimeType)}")
             val bitRateFile = 256
@@ -211,7 +208,7 @@ class AudioCutterImpl : AudioCutter {
                     Locale.ENGLISH,
                     CMD_CONCAT_AUDIO,
                     cmd_input,
-                    sizeAudioFile,
+                    sizeAudioFile, codec,
                     bitRateFile, pathFileMerge
                 )
             )
@@ -222,14 +219,7 @@ class AudioCutterImpl : AudioCutter {
                         pathFileMerge,
                         fileName,
                         bitRateFile,
-                        null,
                         timeVideo,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
                         mimeType
                     )
                     updateItemLiveData(audioFileCore, 100, FFMpegState.RUNNING)
@@ -255,7 +245,7 @@ class AudioCutterImpl : AudioCutter {
         return audioFileUpdate
     }
 
-    private fun updateItemLiveData(audioFile: AudioFile, percent: Int, state: FFMpegState) {
+    private fun updateItemLiveData(audioFile: AudioCore, percent: Int, state: FFMpegState) {
         itemMergeInfo.audioFile = audioFile
         itemMergeInfo.percent = percent
         itemMergeInfo.state = state
@@ -266,11 +256,8 @@ class AudioCutterImpl : AudioCutter {
         path: String,
         name: String,
         bitRate: Int,
-        fileUri: Uri?, fileTime: Long,
-        fileBitmap: Bitmap?,
-        fileTitle: String?,
-        fileArtist: String?,
-        fileAlbum: String?, fileDate: String?, fileGenre: String?, fileType: String
+        fileTime: Long,
+        fileType: String
     ) {
         val fileAudio = File(path)
         audioFileCore.file = fileAudio
@@ -278,15 +265,9 @@ class AudioCutterImpl : AudioCutter {
         audioFileCore.size = fileAudio.length()
         audioFileCore.bitRate = bitRate
         audioFileCore.time = fileTime
-        audioFileCore.uri = fileUri
-        audioFileCore.bitmap = fileBitmap
-        audioFileCore.title = fileTitle
-        audioFileCore.alBum = fileAlbum
-        audioFileCore.artist = fileArtist
-        audioFileCore.dateAdded = fileDate
-        audioFileCore.genre = fileGenre
         audioFileCore.mimeType = fileType
     }
+
 
     companion object {
         private const val TAG = "AudioCutterImpl"

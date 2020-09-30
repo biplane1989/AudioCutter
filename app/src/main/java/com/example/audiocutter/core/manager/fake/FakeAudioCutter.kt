@@ -2,8 +2,7 @@ package com.example.audiocutter.core.manager.fake
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.audiocutter.core.manager.*
-import com.example.audiocutter.objects.AudioFile
+import com.example.core.core.*
 import java.io.File
 
 class FakeAudioCutter : AudioCutter {
@@ -16,79 +15,91 @@ class FakeAudioCutter : AudioCutter {
         val listMergingAudio = ArrayList<OutputAudioInfo>()
         val listMixingAudio = ArrayList<OutputAudioInfo>()
 
-        listCuttingAudio.add(OutputAudioInfo(AudioFile(File(""), "file_name1", 10000, 128), 50))
-        listCuttingAudio.add(OutputAudioInfo(AudioFile(File(""), "file_name2", 10000, 128), 100))
+        listCuttingAudio.add(
+            OutputAudioInfo(
+                AudioCore(
+                    File(""),
+                    "file_name1",
+                    10000,
+                    128
+                ), 50
+            )
+        )
+        listCuttingAudio.add(
+            OutputAudioInfo(
+                AudioCore(
+                    File(""),
+                    "file_name2",
+                    10000,
+                    128
+                ), 100
+            )
+        )
         audioCuttingLiveData.postValue(listCuttingAudio)
 
-        listMergingAudio.add(OutputAudioInfo(AudioFile(File(""), "file_name3", 10000, 128), 50))
-        listMergingAudio.add(OutputAudioInfo(AudioFile(File(""), "file_name4", 10000, 128), 100))
+        listMergingAudio.add(
+            OutputAudioInfo(
+                AudioCore(
+                    File(""),
+                    "file_name3",
+                    10000,
+                    128
+                ), 50
+            )
+        )
+        listMergingAudio.add(
+            OutputAudioInfo(
+                AudioCore(
+                    File(""),
+                    "file_name4",
+                    10000,
+                    128
+                ), 100
+            )
+        )
         audioMergingLiveData.postValue(listMergingAudio)
 
-        listMixingAudio.add(OutputAudioInfo(AudioFile(File(""), "file_name5", 10000, 128), 50))
-        listMixingAudio.add(OutputAudioInfo(AudioFile(File(""), "file_name6", 10000, 128), 100))
+        listMixingAudio.add(
+            OutputAudioInfo(
+                AudioCore(
+                    File(""),
+                    "file_name5",
+                    10000,
+                    128
+                ), 50
+            )
+        )
+        listMixingAudio.add(
+            OutputAudioInfo(
+                AudioCore(
+                    File(""),
+                    "file_name6",
+                    10000,
+                    128
+                ), 100
+            )
+        )
         audioMixingLiveData.postValue(listMixingAudio)
 
     }
 
-
-    /*override suspend fun cut(audioFile: AudioFile, audioCutConfig: AudioCutConfig, audioProcessListener: AudioProcessListener): AudioFile {
-        return withContext(Dispatchers.Default) {
-            audioProcessListener.onStart()
-            var count = 0
-            while (count < 10) {
-                audioProcessListener.onProcessing(count * 10)
-                delay(1000)
-                count++
-            }
-
-            audioProcessListener.onFinish()
-            audioFile
-        }
-    }
-
-    override suspend fun mix(audioFile1: AudioFile, audioFile2: AudioFile, audioMixConfig: AudioMixConfig, audioProcessListener: AudioProcessListener): AudioFile {
-        return withContext(Dispatchers.Default) {
-            audioProcessListener.onStart()
-            var count = 0
-            while (count < 10) {
-                audioProcessListener.onProcessing(count * 10)
-                delay(1000)
-                count++
-            }
-
-            audioProcessListener.onFinish()
-            audioFile1
-        }
-    }
-
-    override suspend fun merge(listAudioFile: List<AudioFile>, fileName: String, audioProcessListener: AudioProcessListener): AudioFile {
-        return withContext(Dispatchers.Default) {
-            audioProcessListener.onStart()
-            var count = 0
-            while (count < 10) {
-                audioProcessListener.onProcessing(count * 10)
-                delay(1000)
-                count++
-            }
-
-            audioProcessListener.onFinish()
-            listAudioFile[0]
-        }
-    }*/
-
-    override suspend fun cut(audioFile: AudioFile, audioCutConfig: AudioCutConfig): AudioFile {
+    override suspend fun cut(audioFile: AudioCore, audioCutConfig: AudioCutConfig): AudioCore {
         TODO("Not yet implemented")
     }
 
-    override suspend fun merge(listAudioFile: List<AudioFile>, fileName: String): AudioFile {
+    override suspend fun merge(
+        listAudioFile: List<AudioCore>,
+        fileName: String,
+        audioFormat: AudioFormat
+    ): AudioCore {
         TODO("Not yet implemented")
     }
 
     override suspend fun mix(
-        audioFile1: AudioFile,
-        audioFile2: AudioFile,
+        audioFile1: AudioCore,
+        audioFile2: AudioCore,
         audioMixConfig: AudioMixConfig
-    ): AudioFile {
+    ): AudioCore {
         TODO("Not yet implemented")
     }
 

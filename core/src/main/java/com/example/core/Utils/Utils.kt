@@ -1,6 +1,5 @@
-package com.example.audiocutter.util
+package com.example.core.Utils
 
-import com.example.audiocutter.objects.AudioFile
 import java.io.File
 
 object Utils {
@@ -18,17 +17,6 @@ object Utils {
                 File(it).mkdirs()
             }
         }
-    }
-
-    fun changeNameFile(audioFile: AudioFile, fileName: String): File? {
-        val filePath = audioFile.file.absolutePath
-        var fileFrom = File(filePath)
-        var fileTo = File(audioFile.file.parent, fileName)
-        if (fileFrom.exists()) {
-            fileFrom.renameTo(fileTo)
-            return fileFrom
-        }
-        return null
     }
 
     fun deleteFile(pathFile: String): Boolean {

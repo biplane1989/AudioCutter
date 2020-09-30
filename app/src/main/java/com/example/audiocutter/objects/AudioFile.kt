@@ -2,7 +2,7 @@ package com.example.audiocutter.objects
 
 import android.graphics.Bitmap
 import android.net.Uri
-import com.example.audiocutter.core.manager.BitRate
+import com.example.core.core.BitRate
 import java.io.File
 import java.io.Serializable
 

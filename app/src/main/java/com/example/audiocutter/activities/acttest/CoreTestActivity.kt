@@ -11,9 +11,7 @@ import android.view.View
 import androidx.lifecycle.Observer
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
-import com.example.audiocutter.core.audioCutter.AudioCutterImpl
-import com.example.audiocutter.core.manager.*
-import com.example.audiocutter.objects.AudioFile
+import com.example.core.core.*
 import kotlinx.android.synthetic.main.activity_core_test.*
 import java.io.File
 
@@ -27,8 +25,8 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
             .plus("/${NAME_FILE.plus(".mp3")}").toString()
 
     private var path = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS).toString()
-    private lateinit var audioFile: AudioFile
-    private var listAudio = ArrayList<AudioFile>()
+    private lateinit var audioFile: AudioCore
+    private var listAudio = ArrayList<AudioCore>()
 
     companion object {
         private const val TAG = "CoreTestActivity"
@@ -58,54 +56,41 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
             ) * (1 - (t / (50 - 44)))
             println(test)
         }
-        var item = AudioFile(
+        var item = AudioCore(
             file,
             NAME_FILE,
-            200000,
+            file.length(),
             128,
             getTimeAudio(file, this),
-            null,
-            null,
-            "abc",
-            null, null, null, null, ".mp3"
+            ".mp3"
         )
-        var item1 = AudioFile(
+        var item1 = AudioCore(
             file1,
             "Tướng Quân",
             file1.length(),
             128,
             getTimeAudio(file1, this),
-            null,
-            null,
-            "abc",
-            null, null, null, null, ".flac"
+            ".flac"
         )
-        var item2 = AudioFile(
+        var item2 = AudioCore(
             file2,
             "sample1",
             file2.length(),
             128,
             getTimeAudio(file2, this),
-            null,
-            null,
-            "abc",
-            null, null, null, null, ".aac"
+            ".aac"
         )
-        var item3 = AudioFile(
+        var item3 = AudioCore(
             file3,
             "file_example_WAV_1MG",
             file3.length(),
             128,
-            getTimeAudio(file3, this),
-            null,
-            null,
-            "abc",
-            null, null, null, null, ".wav"
+            getTimeAudio(file3, this), ".wav"
         )
+        listAudio.add(item)
         listAudio.add(item1)
         listAudio.add(item2)
         listAudio.add(item3)
-        listAudio.add(item)
 
     }
 
@@ -113,19 +98,8 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
         when (p0) {
             test_cut_bt -> {
                 runOnUI {
-                    val audioFile1 = AudioFile(
-                        file,
-                        NAME_FILE,
-                        200000,
-                        128,
-                        360000,
-                        null,
-                        null,
-                        "abc",
-                        null, null, null, null, ".mp3"
-                    )
                     audioFile = audioCutterImpl.cut(
-                        audioFile1,
+                        listAudio[0],
                         AudioCutConfig(
                             20,
                             60,
@@ -133,8 +107,8 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
                             "testCut1",
                             Effect.AFTER_6_S,
                             Effect.AFTER_6_S,
-                            BitRate._320kb,
-                            AudioFormat.MP3
+                            BitRate._256kb,
+                            AudioFormat.ACC
                         )
                     )
                     Log.e(TAG, "cut: $audioFile ")
@@ -142,7 +116,7 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
             }
             test_concat_bt -> {
                 runOnUI {
-                    var audioFile = audioCutterImpl.merge(listAudio, "concatVideo")
+                    var audioFile = audioCutterImpl.merge(listAudio, "concatVideo", AudioFormat.ACC)
                     Log.e(TAG, "concat: $audioFile ")
                 }
             }
@@ -155,8 +129,13 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
                 runOnUI {
                     audioCutterImpl.mix(
                         listAudio[0],
-                        listAudio[2],
-                        AudioMixConfig("testMix", MixSelector.LONGEST, 100, 50)
+                        listAudio[1],
+                        AudioMixConfig(
+                            "testMix",
+                            MixSelector.LONGEST,
+                            100,
+                            100, AudioFormat.ACC
+                        )
                     )
                 }
             }
