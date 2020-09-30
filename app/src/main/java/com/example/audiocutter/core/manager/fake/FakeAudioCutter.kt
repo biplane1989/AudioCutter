@@ -33,52 +33,6 @@ class FakeAudioCutter : AudioCutter {
 
     }
 
-
-    /*override suspend fun cut(audioFile: AudioFile, audioCutConfig: AudioCutConfig, audioProcessListener: AudioProcessListener): AudioFile {
-        return withContext(Dispatchers.Default) {
-            audioProcessListener.onStart()
-            var count = 0
-            while (count < 10) {
-                audioProcessListener.onProcessing(count * 10)
-                delay(1000)
-                count++
-            }
-
-            audioProcessListener.onFinish()
-            audioFile
-        }
-    }
-
-    override suspend fun mix(audioFile1: AudioFile, audioFile2: AudioFile, audioMixConfig: AudioMixConfig, audioProcessListener: AudioProcessListener): AudioFile {
-        return withContext(Dispatchers.Default) {
-            audioProcessListener.onStart()
-            var count = 0
-            while (count < 10) {
-                audioProcessListener.onProcessing(count * 10)
-                delay(1000)
-                count++
-            }
-
-            audioProcessListener.onFinish()
-            audioFile1
-        }
-    }
-
-    override suspend fun merge(listAudioFile: List<AudioFile>, fileName: String, audioProcessListener: AudioProcessListener): AudioFile {
-        return withContext(Dispatchers.Default) {
-            audioProcessListener.onStart()
-            var count = 0
-            while (count < 10) {
-                audioProcessListener.onProcessing(count * 10)
-                delay(1000)
-                count++
-            }
-
-            audioProcessListener.onFinish()
-            listAudioFile[0]
-        }
-    }*/
-
     override suspend fun cut(audioFile: AudioFile, audioCutConfig: AudioCutConfig): AudioFile {
         TODO("Not yet implemented")
     }
