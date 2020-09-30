@@ -111,6 +111,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     }
 
     private fun searchAudioByName(yourTextSearch: String) {
+
         rvAudioCutter.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
         if (yourTextSearch.isEmpty()) {

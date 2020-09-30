@@ -52,7 +52,6 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
             "1111",
             "startTimerIfReady: path${playInfoData.currentAudio!!.fileName}   state ${playInfoData.playerState}  duration ${playInfoData.duration}   position ${playInfoData.position}"
         )
-
         val playInfoCopy = PlayerInfo(
             playInfoData.currentAudio,
             playInfoData.position,
@@ -215,7 +214,6 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         mainScope.launch {
             while (mainScope.isActive) {
                 var changed = false
-
                 delay(500)
                 playInfoData.duration = mPlayer.duration
                 var currentPosition = mPlayer.currentPosition
@@ -253,11 +251,19 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                         changed = true
                     }
                 }
+                /**edit afternoon 30-9-2020*/
+                if (currentPosition >= playInfoData.duration && playInfoData.playerState != PlayerState.IDLE) {
+                    playInfoData.playerState = PlayerState.IDLE
+                    currentPosition = 0
+                    playInfoData.position = currentPosition
+                    mPlayer.stop()
+                }
+                /***/
 
-                    if (playInfoData.position != currentPosition && playInfoData.playerState == PlayerState.PLAYING) {
-                        changed = true
-                        playInfoData.position = currentPosition
-                    }
+                if (playInfoData.position != currentPosition && playInfoData.playerState == PlayerState.PLAYING) {
+                    changed = true
+                    playInfoData.position = currentPosition
+                }
                 if (changed) {
                     notifyPlayerDataChanged()
                 }
