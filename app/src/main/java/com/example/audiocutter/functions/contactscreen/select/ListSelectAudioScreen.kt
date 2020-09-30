@@ -1,12 +1,17 @@
 package com.example.audiocutter.functions.contactscreen.select
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -16,7 +21,6 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
-import com.example.audiocutter.functions.mystudioscreen.fragment.MyStudioFragment
 import kotlinx.android.synthetic.main.list_contact_select_screen.*
 
 
@@ -25,6 +29,9 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     val TAG = "giangtd"
     lateinit var mListSelectAudioViewModel: ListSelectAudioViewModel
     lateinit var mListSelectAdapter: ListSelectAdapter
+    var isLoading = false   // trang thai load cua progressbar
+    var currentView: View? = null
+    val REQ_CODE_PICK_SOUNDFILE = 1989
 
     companion object {
         val TAG = "ListSelectAudioScreen"
@@ -45,12 +52,12 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     // observer data
     val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
         if (listAudio.size <= 0) {
-            rv_list_select_audio.visibility = View.GONE
+            cl_select.visibility = View.GONE
             cl_bottom.visibility = View.GONE
             cl_no_audio.visibility = View.VISIBLE
         } else {
             runOnUI {
-                rv_list_select_audio.visibility = View.VISIBLE
+                cl_select.visibility = View.VISIBLE
                 cl_bottom.visibility = View.VISIBLE
                 cl_no_audio.visibility = View.GONE
                 mListSelectAdapter.submitList(ArrayList(listAudio))
@@ -81,7 +88,8 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.list_contact_select_screen, container, false)
+        currentView = inflater.inflate(R.layout.list_contact_select_screen, container, false)
+        return currentView
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -91,9 +99,13 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         mListSelectAdapter = ListSelectAdapter(this)
 
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+        isLoading = true
         runOnUI {
             val listSelectViewLiveData = mListSelectAudioViewModel.getData() // get data from funtion newIntance
             listSelectViewLiveData.observe(this as LifecycleOwner, listAudioObserver)
+            isLoading = false
+            currentView?.findViewById<ProgressBar>(R.id.pb_select)?.visibility = View.GONE    // tai day hamonCreateView da chay xong r do runOnUI
+
         }
     }
 
@@ -107,6 +119,12 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         btn_save.setOnClickListener(this)
         iv_file.setOnClickListener(this)
 
+        if (isLoading) {
+            pb_select.visibility = View.VISIBLE
+        } else {
+            pb_select.visibility = View.GONE
+        }
+
         edt_search.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
             }
@@ -114,26 +132,24 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
 
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                if (mListSelectAudioViewModel.searchAudioFile(edt_search.text.toString()).size <= 0) {
-                    rv_list_select_audio.visibility = View.GONE
+            override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
+                if (mListSelectAudioViewModel.searchAudioFile(textChange.toString()).size <= 0) {
+                    cl_select.visibility = View.GONE
                     cl_bottom.visibility = View.GONE
                     cl_no_audio.visibility = View.VISIBLE
                 } else {
-                    rv_list_select_audio.visibility = View.VISIBLE
+                    cl_select.visibility = View.VISIBLE
                     cl_bottom.visibility = View.VISIBLE
                     cl_no_audio.visibility = View.GONE
-                    mListSelectAdapter.submitList(mListSelectAudioViewModel.searchAudioFile(edt_search.text.toString()))
+                    mListSelectAdapter.submitList(mListSelectAudioViewModel.searchAudioFile(textChange.toString()))
                 }
             }
         })
-
     }
 
 
     override fun play(position: Int) {
         mListSelectAudioViewModel.playAudio(position)
-        Log.d(TAG, "play: ")
     }
 
     override fun pause() {
@@ -160,21 +176,25 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         mListSelectAdapter.submitList(mListSelectAudioViewModel.selectAudio(position))
     }
 
+
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.iv_search -> {
+                showKeyboard()
                 cl_default.visibility = View.GONE
                 cl_search.visibility = View.VISIBLE
             }
             R.id.iv_search_close -> {
                 cl_default.visibility = View.VISIBLE
                 cl_search.visibility = View.GONE
+                edt_search.text.clear()
+                hideKeyboard()
             }
             R.id.iv_clear -> {
                 edt_search.text.clear()
             }
             R.id.btn_save -> {
-                if (mListSelectAudioViewModel.setRingtone(requireArguments().getInt(BUNDLE_NAME_KEY_PHONE_NUMBER)
+                if (mListSelectAudioViewModel.setRingtone(requireArguments().getString(BUNDLE_NAME_KEY_PHONE_NUMBER)
                         .toString())) {
                     Toast.makeText(context, "Set Ringtone Success !", Toast.LENGTH_SHORT).show()
                 } else {
@@ -182,10 +202,27 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
                 }
             }
             R.id.iv_file -> {
-                //           val intent = Intent(Intent.ACTION_GET_CONTENT)
-//           intent.type = "file/*"
-//           startActivityForResult(intent, PICKFILE_REQUEST_CODE)
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                intent.type = "audio/mpeg"
+                startActivityForResult(intent, REQ_CODE_PICK_SOUNDFILE)
             }
+        }
+    }
+
+    private fun hideKeyboard() {
+        val view = activity?.currentFocus
+        if (view != null) {
+            val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+    }
+
+    private fun showKeyboard() {
+        val view = activity?.currentFocus
+        if (view != null) {
+            edt_search.requestFocus()
+            val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
         }
     }
 

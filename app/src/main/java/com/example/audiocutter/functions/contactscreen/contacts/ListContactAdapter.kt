@@ -1,7 +1,6 @@
 package com.example.audiocutter.functions.contactscreen.contacts
 
 import android.content.Context
-import android.preference.PreferenceActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,8 +23,6 @@ interface ContactCallback {
 
 class ListContactAdapter(context: Context?, var contactCallback: ContactCallback) : ListAdapter<ContactItemView, RecyclerView.ViewHolder>(ContactDiffCallBack()) {
 
-    var mListContact: ArrayList<ContactItemView> = ArrayList()
-
     var mContext: Context? = context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -37,7 +34,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (mListContact[position].isHeader) {
+        return if (getItem(position).isHeader) {
             SECTION_VIEW
         } else {
             CONTENT_VIEW
@@ -45,13 +42,12 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
     }
 
     override fun submitList(list: List<ContactItemView>?) {
-        if (list != null) {
-            mListContact = ArrayList(list)
-            super.submitList(mListContact)
-        } else {
-            mListContact = ArrayList()
-            super.submitList(mListContact)
+        if(list != null){
+            super.submitList(ArrayList(list))
+        }else{
+            super.submitList(null)
         }
+
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -96,16 +92,12 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                     itemViewHolder.cvDefault.visibility = View.VISIBLE
                     itemViewHolder.tvRingtone.visibility = View.GONE
 
-                    val contactInfomation = Utils.getPlayList(mContext!!, Utils.getCurrentSound(mContext!!)
+                    val contactInfomation = Utils.getPlayList(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
                         .toString())
                     itemViewHolder.tvRingtoneDefault.text = contactInfomation.title
                 }
             }
         }
-    }
-
-    override fun getItemCount(): Int {
-        return mListContact.size
     }
 
     inner class ItemViewHolder(itemView: View, context: Context?) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
@@ -137,7 +129,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 cvDefault.visibility = View.VISIBLE
                 tvRingtone.visibility = View.GONE
 
-                val contactInfomation = Utils.getPlayList(mContext!!, Utils.getCurrentSound(mContext!!)
+                val contactInfomation = Utils.getPlayList(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
                     .toString())
                 tvRingtoneDefault.text = contactInfomation.title
             }
@@ -153,7 +145,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                     if (getItem(adapterPosition).contactItem.ringtone != null) {
                         contactInfomation = Utils.getPlayList(mContext!!, getItem(adapterPosition).contactItem.ringtone!!)
                     } else {
-                        contactInfomation = Utils.getPlayList(mContext!!, Utils.getCurrentSound(mContext!!)
+                        contactInfomation = Utils.getPlayList(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
                             .toString())
                     }
                     contactCallback.itemOnClick(getItem(adapterPosition).contactItem.phoneNumber, contactInfomation.fileName)

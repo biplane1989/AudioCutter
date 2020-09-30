@@ -8,8 +8,10 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.MediaStore
+import android.util.Log
 import com.example.audiocutter.core.manager.ContactManagerImpl
 import com.example.audiocutter.objects.AudioFile
+import com.example.audiocutter.objects.ContactItem
 import java.io.File
 
 object RingtonManagerImpl : RingtonManager {
@@ -57,21 +59,25 @@ object RingtonManagerImpl : RingtonManager {
         if (uri != null) {
             val lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, contactNumber)
             val projection = arrayOf(ContactsContract.Contacts._ID, ContactsContract.Contacts.LOOKUP_KEY)
-            val data: Cursor? = mContext.getContentResolver()
+            val cursor: Cursor? = mContext.getContentResolver()
                 .query(lookupUri, projection, null, null, null)
-            if (data != null) {
+
+            if (cursor != null) {
                 try {
-                    if (data.moveToFirst()) {
-                        // Get the contact lookup Uri
-                        val contactId = data.getLong(0)
-                        val lookupKey = data.getString(1)
-                        val contactUri = ContactsContract.Contacts.getLookupUri(contactId, lookupKey)
-                        val uriString = uri.toString()
-                        values.put(ContactsContract.Contacts.CUSTOM_RINGTONE, uriString)
-                        resolver.update(contactUri, values, null, null).toLong()
+                    if (cursor.moveToFirst()) {
+                        do {
+                            // Get the contact lookup Uri
+                            val contactId = cursor.getLong(0)
+                            val lookupKey = cursor.getString(1)
+                            val contactUri = ContactsContract.Contacts.getLookupUri(contactId, lookupKey)
+                            val uriString = uri.toString()
+                            values.put(ContactsContract.Contacts.CUSTOM_RINGTONE, uriString)
+                            resolver.update(contactUri, values, null, null).toLong()
+                        } while (cursor.moveToNext())
+
                     }
                 } finally {
-                    data.close()
+                    if (!cursor.isClosed) cursor.close()
                 }
                 return true
             }

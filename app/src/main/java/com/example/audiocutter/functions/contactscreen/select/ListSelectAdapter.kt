@@ -28,7 +28,6 @@ interface SelectAudioScreenCallback {
 }
 
 class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback) : ListAdapter<SelectItemView, ListSelectAdapter.ViewHolder>(SelectAudioDiffCallBack()) {
-
     private val TAG = "giangtd"
     private var listAudios = ArrayList<SelectItemView>()
     private var simpleDateFormat = SimpleDateFormat("mm:ss")

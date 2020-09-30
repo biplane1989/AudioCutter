@@ -59,7 +59,7 @@ object Utils {
     }
 
     // lay uri cua ringtone mac dinh
-    fun getCurrentSound(context: Context): Uri? {
+    fun getUriRingtoneDefault(context: Context): Uri? {
         var ringtone_uri = RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE)
         if (ringtone_uri == null) {
             // if ringtone_uri is null get Default Ringtone

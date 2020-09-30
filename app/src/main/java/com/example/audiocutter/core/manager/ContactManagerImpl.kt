@@ -34,20 +34,20 @@ object ContactManagerImpl : ContactManager {
         val _listContact: ArrayList<ContactItem> = ArrayList()
 
         val projecttion = arrayOf(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Phone.PHOTO_URI, ContactsContract.CommonDataKinds.Phone.CUSTOM_RINGTONE)
-        val phones: Cursor = mContext.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projecttion, null, null, null)!!
-        val nameIndex = phones.getColumnIndex(projecttion[0])
-        val numberIndex = phones.getColumnIndex(projecttion[1])
-        val photoIndex = phones.getColumnIndex(projecttion[2])
-        val ringtoneIndex = phones.getColumnIndex(projecttion[3])
-        phones.moveToFirst()
-        if (phones != null) {
-            try {
-                while (phones.moveToNext()) {
-                    val name = phones.getString(nameIndex)
-                    val number = phones.getString(numberIndex)
-                    val photoUri = phones.getString(photoIndex)
-                    val ringtone = phones.getString(ringtoneIndex)
-                    Log.d(TAG, "getListData: $name - $number - $photoUri - $ringtone")
+        val cursor: Cursor = mContext.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projecttion, null, null, null)!!
+        val nameIndex = cursor.getColumnIndex(projecttion[0])
+        val numberIndex = cursor.getColumnIndex(projecttion[1])
+        val photoIndex = cursor.getColumnIndex(projecttion[2])
+        val ringtoneIndex = cursor.getColumnIndex(projecttion[3])
+        try {
+            if (cursor.moveToFirst()) {
+
+                do {
+                    val name = cursor.getString(nameIndex)
+                    val number = cursor.getString(numberIndex)
+                    val photoUri = cursor.getString(photoIndex)
+                    val ringtone = cursor.getString(ringtoneIndex)
+//                    Log.d(TAG, "getListData: $name - $number - $photoUri - $ringtone")
 
                     if (ringtone != null) {
                         _listContact.add(ContactItem(name, number, photoUri, ringtone))
@@ -56,10 +56,11 @@ object ContactManagerImpl : ContactManager {
                         _listContact.add(ContactItem(name, number, photoUri, null))
 
                     }
-                }
-            } finally {
-                phones.close()
+                } while (cursor.moveToNext())
+
             }
+        } finally {
+            if (!cursor.isClosed) cursor.close()
         }
         contactLiveData.postValue(_listContact)
         contactLiveData
