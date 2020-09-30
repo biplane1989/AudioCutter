@@ -72,7 +72,7 @@ class MixAdapter(val mContext: Context) :
                     holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }
             }
-            when (itemAudioFile.isChecked) {
+            when (itemAudioFile.isCheckChooseItem) {
                 true -> holder.ivChecked.setImageResource(R.drawable.ic_mixer_checkdone)
                 false -> holder.ivChecked.setImageResource(R.drawable.ic_mixer_noncheck)
             }
@@ -126,7 +126,7 @@ class MixAdapter(val mContext: Context) :
                     ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }
             }
-            when (itemAudioFile.isChecked) {
+            when (itemAudioFile.isCheckChooseItem) {
                 true -> ivChecked.setImageResource(R.drawable.ic_mixer_checkdone)
                 false -> ivChecked.setImageResource(R.drawable.ic_mixer_noncheck)
             }
@@ -138,8 +138,8 @@ class MixAdapter(val mContext: Context) :
             val item = getItem(adapterPosition)
             when (p0.id) {
                 R.id.iv_controller_audio_recent -> controllerAudio()
-                R.id.ln_menu_recent -> mCallBack.chooseItemAudio(adapterPosition, item.isChecked)
-                R.id.ln_item_audio_recent_screen -> mCallBack.chooseItemAudio(adapterPosition, item.isChecked)
+                R.id.ln_menu_recent -> mCallBack.chooseItemAudio(adapterPosition, item.isCheckChooseItem)
+                R.id.ln_item_audio_recent_screen -> mCallBack.chooseItemAudio(adapterPosition, item.isCheckChooseItem)
             }
         }
 

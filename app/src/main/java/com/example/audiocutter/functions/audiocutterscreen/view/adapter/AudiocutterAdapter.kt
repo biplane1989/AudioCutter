@@ -1,7 +1,9 @@
 package com.example.audiocutter.functions.audiocutterscreen.view.adapter
 
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
-import com.example.audiocutter.functions.audiocutterscreen.widget.SeekBarCustom
+import com.example.audiocutter.functions.audiocutterscreen.widget.ProgressView
 import kotlin.math.floor
 
 class AudiocutterAdapter(val mContext: Context) :
@@ -73,19 +75,20 @@ class AudiocutterAdapter(val mContext: Context) :
                     holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }
             }
+            holder.pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration)
         }
     }
 
     inner class AudiocutterHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
         View.OnClickListener {
 
-        val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)
+        val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)!!
         val tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_audio)
         val tvSizeAudio = itemView.findViewById<TextView>(R.id.tv_size_audio)
         val tvBitrateAudio = itemView.findViewById<TextView>(R.id.tv_bitrate_audio)
         val lnChild = itemView.findViewById<LinearLayout>(R.id.ln_item_audio_cutter_screen)
         val lnMenu = itemView.findViewById<LinearLayout>(R.id.ln_menu)
-        val sbAudio = itemView.findViewById<SeekBarCustom>(R.id.sb_audio_cutter_screen)
+        val pgAudio = itemView.findViewById<ProgressView>(R.id.pg_audio_cutter_screen)
 
         init {
             ivController.setOnClickListener(this)
@@ -93,8 +96,10 @@ class AudiocutterAdapter(val mContext: Context) :
             lnChild.setOnClickListener(this)
         }
 
+        @SuppressLint("SetTextI18n")
         fun bind() {
             val itemAudioFile = getItem(position)
+            Log.d("TAG", "bind: ${itemAudioFile.isCheckDistance}    state ${itemAudioFile.state}")
             tvBitrateAudio.text = "${itemAudioFile.audioFile.bitRate}Kbs/s"
 
             tvNameAudio.text = itemAudioFile.audioFile.fileName
@@ -111,20 +116,23 @@ class AudiocutterAdapter(val mContext: Context) :
 
             when (itemAudioFile.state) {
                 PlayerState.PLAYING -> {
-                    sbAudio.resetView()
-                    sbAudio.visibility = View.VISIBLE
+                    pgAudio.visibility = View.VISIBLE
                     ivController.setImageResource(R.drawable.ic_audiocutter_pause)
-                    sbAudio.updateSB(itemAudioFile.currentPos, itemAudioFile.duration)
                 }
                 PlayerState.PAUSE -> {
                     ivController.setImageResource(R.drawable.ic_audiocutter_play)
-                    sbAudio.updateSB(itemAudioFile.currentPos, itemAudioFile.duration)
                 }
                 PlayerState.IDLE -> {
-                    sbAudio.visibility = View.GONE
+                    pgAudio.updatePG(0, 0)
+                    pgAudio.visibility = View.GONE
+                    pgAudio.resetView()
                     ivController.setImageResource(R.drawable.ic_audiocutter_play)
-                    sbAudio.updateSB(itemAudioFile.currentPos, itemAudioFile.duration)
                 }
+            }
+
+            when (itemAudioFile.isCheckDistance) {
+                true -> pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration)
+                false -> pgAudio.resetView()
             }
         }
 

@@ -8,6 +8,8 @@ import android.database.ContentObserver
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaExtractor
+import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
@@ -79,7 +81,6 @@ object AudioFileManagerImpl : AudioFileManager {
         projection = arrayOf(
             MediaStore.Audio.Media.DATA,
             MediaStore.Audio.Media.DISPLAY_NAME,
-            MediaStore.Audio.Media.DURATION,
             MediaStore.Audio.Media._ID,
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media.ALBUM,
@@ -96,12 +97,11 @@ object AudioFileManagerImpl : AudioFileManager {
             cursor?.let {
                 val clData = cursor.getColumnIndex(projection[0])
                 val clName = cursor.getColumnIndex(projection[1])
-                val clDuration = cursor.getColumnIndex(projection[2])
-                val clID = cursor.getColumnIndex(projection[3])
-                val clTitle = cursor.getColumnIndex(projection[4])
-                val clAlbum = cursor.getColumnIndex(projection[5])
-                val clArtist = cursor.getColumnIndex(projection[6])
-                val clDateAdded = cursor.getColumnIndex(projection[7])
+                val clID = cursor.getColumnIndex(projection[2])
+                val clTitle = cursor.getColumnIndex(projection[3])
+                val clAlbum = cursor.getColumnIndex(projection[4])
+                val clArtist = cursor.getColumnIndex(projection[5])
+                val clDateAdded = cursor.getColumnIndex(projection[6])
 
 
                 cursor.moveToFirst()
@@ -114,7 +114,6 @@ object AudioFileManagerImpl : AudioFileManager {
                     } else {
                         name = preName
                     }
-                    val duration = cursor.getString(clDuration)
                     val id = cursor.getString(clID)
                     val bitmap =
                         getBitmapByPath(data)
@@ -132,6 +131,9 @@ object AudioFileManagerImpl : AudioFileManager {
                     }
 
                     val file = File(data)
+                    val bitRate = getBitRateByPath(file)
+                    val duration = getDurationByPath(file)
+
                     val uri = getUriFromFile(id, resolver, file)
                     Log.d(
                         "TAG",
@@ -140,14 +142,14 @@ object AudioFileManagerImpl : AudioFileManager {
                                 " \n URI $uri \n title :$title \n" +
                                 " album : $album   \n" + " artist  $artist  \n" +
                                 " date: $date \n" + " genre $genre  \n " +
-                                "MimeType $mimeType \n filePAth Ab ${file.absolutePath} \n parent${file.parent} "
+                                "MimeType $mimeType \n filePAth Ab ${file.absolutePath} \n parent${file.parent}  \n BitRate $bitRate "
                     )
                     if (file.exists()) {
                         if (bitmap != null) {
                             listData.add(
                                 AudioFile(
                                     file = file, fileName = name.trim(),
-                                    size = file.length(), bitRate = 128,
+                                    size = file.length(), bitRate = bitRate,
                                     time = duration.toLong(), uri = uri,
                                     bitmap = bitmap, title = title,
                                     alBum = album, artist = artist,
@@ -183,6 +185,19 @@ object AudioFileManagerImpl : AudioFileManager {
         }
 
         return listData
+    }
+
+    private fun getBitRateByPath(file: File): Int {
+        val mex = MediaExtractor()
+        try {
+            mex.setDataSource(file.absolutePath)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        val mf = mex.getTrackFormat(0)
+        return mf.getInteger(MediaFormat.KEY_BIT_RATE)
+
     }
 
     override suspend fun findAllAudioFiles(): LiveData<List<AudioFile>> {

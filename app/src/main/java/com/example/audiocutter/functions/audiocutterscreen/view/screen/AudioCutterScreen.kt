@@ -27,7 +27,6 @@ import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDoneDialo
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import com.example.audiocutter.functions.audiocutterscreen.objs.TypeAudioSetAs
 import com.example.audiocutter.functions.audiocutterscreen.view.adapter.AudiocutterAdapter
-import com.example.audiocutter.functions.audiocutterscreen.widget.SeekBarCustom
 
 
 class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,

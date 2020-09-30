@@ -109,20 +109,20 @@ class MixModel : BaseViewModel() {
         var count = 0
         if (!rs) {
             itemAudio = mListAudio[pos].copy()
-            itemAudio.isChecked = true
+            itemAudio.isCheckChooseItem = true
             mListAudio[pos] = itemAudio
         } else {
             itemAudio = mListAudio[pos].copy()
-            itemAudio.isChecked = false
+            itemAudio.isCheckChooseItem = false
             mListAudio[pos] = itemAudio
         }
 
         for (item in mListAudio) {
-            if (item.isChecked) {
+            if (item.isCheckChooseItem) {
                 count++
                 Log.d(TAG, "changeItemAudioFile: $count")
-                if (count > 2 && itemAudio.isChecked) {
-                    itemAudio.isChecked = false
+                if (count > 2 && itemAudio.isCheckChooseItem) {
+                    itemAudio.isCheckChooseItem = false
                     mListAudio[pos] = itemAudio
                     isChooseItem = true
                 } else if (count < 2) {
@@ -136,7 +136,7 @@ class MixModel : BaseViewModel() {
     fun checkList(): Int {
         var count = 0
         for (item in mListAudio) {
-            if (item.isChecked) {
+            if (item.isCheckChooseItem) {
                 count++
             }
         }
@@ -146,7 +146,7 @@ class MixModel : BaseViewModel() {
     fun getListItemChoose(): List<AudioCutterView> {
         var listAudio = mutableListOf<AudioCutterView>()
         for (item in mListAudio) {
-            if (item.isChecked) {
+            if (item.isCheckChooseItem) {
                 listAudio.add(item)
             }
         }

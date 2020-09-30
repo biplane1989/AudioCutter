@@ -2,11 +2,11 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="80dp">
-    <com.example.audiocutter.functions.audiocutterscreen.widget.SeekBarCustom
+    <com.example.audiocutter.functions.audiocutterscreen.widget.ProgressView
         android:layout_width="match_parent"
-        android:id="@+id/sb_audio_cutter_screen"
+        android:id="@+id/pg_audio_cutter_screen"
         android:visibility="gone"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:id="@+id/ln_item_audio_cutter_screen"
