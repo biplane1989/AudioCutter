@@ -72,10 +72,11 @@ class AudiocutterAdapter(val mContext: Context) :
                     holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }
                 PlayerState.IDLE -> {
+                    holder.pgAudio.resetView()
                     holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }
             }
-            holder.pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration)
+
         }
     }
 
@@ -114,6 +115,11 @@ class AudiocutterAdapter(val mContext: Context) :
                 tvSizeAudio.text = "$size Kb"
             }
 
+            when (itemAudioFile.isCheckDistance) {
+                true -> pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration)
+                false -> pgAudio.resetView()
+            }
+
             when (itemAudioFile.state) {
                 PlayerState.PLAYING -> {
                     pgAudio.visibility = View.VISIBLE
@@ -130,10 +136,6 @@ class AudiocutterAdapter(val mContext: Context) :
                 }
             }
 
-            when (itemAudioFile.isCheckDistance) {
-                true -> pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration)
-                false -> pgAudio.resetView()
-            }
         }
 
 

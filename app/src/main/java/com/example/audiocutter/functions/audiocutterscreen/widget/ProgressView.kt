@@ -57,11 +57,10 @@ class ProgressView : View {
     }
 
     fun resetView() {
-        Log.d(TAG, "bind: change reset progress")
         currentLineX = 0f
-        prevPos = 0
-        nextPos = 0
-        pendingPos = 0
+        prevPos = 0L
+        nextPos = 0L
+        pendingPos = 0L
         invalidate()
     }
 
@@ -79,7 +78,7 @@ class ProgressView : View {
     }
 
     private fun moveProcess() {
-        var speed = (width * 1f / duration).toDouble()
+        val speed = (width * 1f / duration).toDouble()
         val endPos = Utils.convertValue(
             0.0,
             duration.toDouble(),

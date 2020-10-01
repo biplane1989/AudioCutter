@@ -36,15 +36,17 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         this.appContext = appContext
         mPlayer = MediaPlayer()
         audioManager = this.appContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        mPlayer.setOnCompletionListener {
-            Log.d("sesm", "setOnCompletionListener")
+        mPlayer.setOnCompletionListener(listener)
+    }
 
-            if (playInfoData.playerState != PlayerState.IDLE) {
-                playInfoData.playerState = PlayerState.IDLE
-                notifyPlayerDataChanged()
-            }
+    private val listener = MediaPlayer.OnCompletionListener {
+        if (playInfoData.playerState != PlayerState.IDLE) {
+            Log.d("1111", "setOnCompletionListener  ${playInfoData.playerState}")
+            playInfoData.playerState = PlayerState.IDLE
+            notifyPlayerDataChanged()
         }
     }
+
 
     private fun notifyPlayerDataChanged() {
 
@@ -98,7 +100,7 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
     private fun prepare(audioFile: AudioFile) {
         playInfoData.playerState = PlayerState.PREPARING
-        mPlayer = MediaPlayer().apply {
+        mPlayer.apply {
             setOnPreparedListener(this@AudioPlayerImpl)
             setDataSource(appContext, audioFile.uri!!)
             prepareAsync()
