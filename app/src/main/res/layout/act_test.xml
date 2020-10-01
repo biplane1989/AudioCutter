@@ -5,5 +5,7 @@
     android:gravity="center"
     android:id="@+id/ln_main"
     android:orientation="vertical">
-
+<com.example.audiocutter.functions.audiocutterscreen.widget.WaveAudio
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/>
 </LinearLayout>

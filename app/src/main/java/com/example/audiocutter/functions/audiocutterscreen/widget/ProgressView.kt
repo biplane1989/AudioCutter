@@ -74,7 +74,6 @@ class ProgressView : View {
                 moveProcess()
             }
         }
-
     }
 
     private fun moveProcess() {
