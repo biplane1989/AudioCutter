@@ -1,5 +1,6 @@
 package com.example.audiocutter.activities
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.FragmentTransaction
 import com.example.audiocutter.R
@@ -34,6 +35,10 @@ class MainActivity : BaseActivity(), ListContactScreen.mainCallBack {
         transaction.replace(R.id.fl_home, listContactScreen)
         transaction.addToBackStack(null)
         transaction.commit()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
 }

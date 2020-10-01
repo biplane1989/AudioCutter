@@ -59,4 +59,5 @@
     <string name="list_contact_select_title">Select</string>
     <string name="list_contact_notification_no_contact">No Contact</string>
     <string name="list_contact_notification_no_result">No Result</string>
+    <string name="list_contact_title">Contacts</string>
 </resources>

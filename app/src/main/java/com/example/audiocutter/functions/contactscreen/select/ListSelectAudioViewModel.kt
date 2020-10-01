@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.contactscreen.select
 
 import android.content.Context
+import android.net.Uri
 import android.os.Environment
 import android.text.TextUtils
 import android.util.Log
@@ -20,10 +21,7 @@ class ListSelectAudioViewModel : BaseViewModel() {
     val TAG = "giangtd"
 
     suspend fun getData(): LiveData<List<SelectItemView>> {
-        val listAudioFiles: LiveData<List<AudioFile>>
-        listAudioFiles = ManagerFactory.getAudioFileManager().findAllAudioFiles()
-
-        return Transformations.map(listAudioFiles) { items ->
+        return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) { items ->
             // lan dau tien lay du lieu
             if (mListAudioFileView.size == 0) {
                 items.forEach {
@@ -120,8 +118,6 @@ class ListSelectAudioViewModel : BaseViewModel() {
 
     // chuyen trang thai play nhac
     fun playAudio(position: Int) {
-
-        Log.d(TAG, "playAudio: ")
         runOnBackground {
             ManagerFactory.getAudioPlayer().play(mListAudioFileView.get(position).audioFile)
         }
@@ -212,6 +208,14 @@ class ListSelectAudioViewModel : BaseViewModel() {
                         .setRingToneWithContactNumber(audio.audioFile, phoneNumber)
                 }
             }
+        }
+        return false
+    }
+
+    fun setRingtoneWithUri(phoneNumber: String, uri: Uri): Boolean {
+        if (phoneNumber != "" && uri != null) {
+            return ManagerFactory.getRingtoneManager()
+                .setRingToneWithContactNumberAndUri(uri, phoneNumber)
         }
         return false
     }

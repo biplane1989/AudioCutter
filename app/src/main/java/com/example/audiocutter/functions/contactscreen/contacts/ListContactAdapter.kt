@@ -42,9 +42,9 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
     }
 
     override fun submitList(list: List<ContactItemView>?) {
-        if(list != null){
+        if (list != null) {
             super.submitList(ArrayList(list))
-        }else{
+        } else {
             super.submitList(null)
         }
 
@@ -80,7 +80,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 val ringtone = payloads.firstOrNull() as String
                 val contactItem = getItem(position)
 
-                if (ringtone != null) {
+               /* if (ringtone != null) {
                     itemViewHolder.tvRingtoneDefault.visibility = View.GONE
                     itemViewHolder.cvDefault.visibility = View.GONE
                     itemViewHolder.tvRingtone.visibility = View.VISIBLE
@@ -95,7 +95,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                     val contactInfomation = Utils.getPlayList(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
                         .toString())
                     itemViewHolder.tvRingtoneDefault.text = contactInfomation.title
-                }
+                }*/
             }
         }
     }
@@ -116,7 +116,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
             if (avatar != null) {
                 ivAvatar.setImageBitmap(avatar)
             }
-            if (contentItem.contactItem.ringtone != null) {
+           /* if (contentItem.contactItem.ringtone != null) {
 
                 tvRingtoneDefault.visibility = View.GONE
                 cvDefault.visibility = View.GONE
@@ -132,7 +132,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 val contactInfomation = Utils.getPlayList(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
                     .toString())
                 tvRingtoneDefault.text = contactInfomation.title
-            }
+            }*/
 
             clItemContact.setOnClickListener(this)
 

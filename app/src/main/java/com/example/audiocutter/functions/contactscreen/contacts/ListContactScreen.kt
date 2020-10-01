@@ -48,10 +48,9 @@ class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCal
     // observer data
     val listContactObserver = Observer<List<ContactItemView>> { listContact ->
         if (listContact == null) {
-            Log.d(TAG, ": list null")
         } else {
             runOnUI {
-                if (listContact.size <= 0) {
+                if (listContact.isEmpty()) {
                     cl_no_contact.visibility = View.VISIBLE
                     cl_contact.visibility = View.GONE
                 } else {
@@ -60,7 +59,6 @@ class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCal
                     listContactAdapter.submitList(ArrayList(listContact))
                 }
             }
-            Log.d(TAG, ": list not null")
         }
 
     }
@@ -75,7 +73,6 @@ class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCal
         currentView = inflater.inflate(R.layout.list_contact_screen, container, false)
         ContactManagerImpl.registerContentObserVerDeleted()
         listContact?.observe(this.viewLifecycleOwner, listContactObserver)
-        Log.d(TAG, "onCreateView: list is null : " + listContact)
         return currentView
     }
 
@@ -135,11 +132,18 @@ class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCal
     }
 
     override fun itemOnClick(phoneNumber: String, uri: String) {
+        hideKeyboard()
         callBack.item(phoneNumber, uri)
     }
 
     interface mainCallBack {
         fun item(phone: String, uri: String)
+    }
+
+
+    override fun onPostDestroy() {
+        super.onPostDestroy()
+        hideKeyboard()
     }
 
     override fun onClick(view: View?) {
@@ -162,23 +166,17 @@ class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCal
     }
 
     private fun hideKeyboard() {
-        val view = activity?.currentFocus
-        if (view != null) {
-            val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
-        }
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
     private fun showKeyboard() {
-        val view = activity?.currentFocus
-        if (view != null) {
-            val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
-        }
+        edt_search.requestFocus()
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
 
     // xin quyen
-
     @SuppressLint("WrongConstant")
     private fun requestPermission() {
         val permission: Boolean

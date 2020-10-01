@@ -120,7 +120,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
             if (selectItemView.isExpanded) {
                 llPlayMusic.visibility = View.VISIBLE
-                llItem.setBackgroundResource(R.drawable.my_studio_item_bg)
+                llItem.setBackgroundResource(R.drawable.list_contact_select_item_bg)
             } else {
                 llPlayMusic.visibility = View.GONE
                 llItem.setBackgroundColor(Color.WHITE)

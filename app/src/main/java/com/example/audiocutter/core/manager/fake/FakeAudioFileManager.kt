@@ -63,8 +63,8 @@ class FakeAudioFileManager : AudioFileManager {
     }
 
     override suspend fun findAllAudioFiles(): LiveData<List<AudioFile>> {
-//        return audioFileLiveData
-        return AudioFileManagerImpl.findAllAudioFiles()
+        return audioFileLiveData
+//        return AudioFileManagerImpl.findAllAudioFiles()
     }
 
     override fun buildAudioFile(filePath: String): AudioFile {

@@ -1,19 +1,19 @@
 package com.example.audiocutter.functions.contactscreen.select
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,6 +32,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     var isLoading = false   // trang thai load cua progressbar
     var currentView: View? = null
     val REQ_CODE_PICK_SOUNDFILE = 1989
+    private var listSelectAudio: LiveData<List<SelectItemView>>? = null
 
     companion object {
         val TAG = "ListSelectAudioScreen"
@@ -51,24 +52,33 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
     // observer data
     val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
-        if (listAudio.size <= 0) {
-            cl_select.visibility = View.GONE
-            cl_bottom.visibility = View.GONE
-            cl_no_audio.visibility = View.VISIBLE
-        } else {
-            runOnUI {
-                cl_select.visibility = View.VISIBLE
-                cl_bottom.visibility = View.VISIBLE
-                cl_no_audio.visibility = View.GONE
-                mListSelectAdapter.submitList(ArrayList(listAudio))
+        Log.d(TAG, "list audio size : " + listAudio.size)
 
-                val fileName = requireArguments().getString(BUNDLE_NAME_KEY_FILE_NAME)
+        for (item in listAudio) {
+            Log.d(TAG, "old uri : name: "+ item.audioFile.fileName+ "uri:  " + item.audioFile.uri)
+        }
+        if (listAudio != null) {
+            if (listAudio.isEmpty()) {
+                cl_select.visibility = View.GONE
+                cl_bottom.visibility = View.GONE
+                cl_no_audio.visibility = View.VISIBLE
+            } else {
+                runOnUI {
+                    cl_select.visibility = View.VISIBLE
+                    cl_bottom.visibility = View.VISIBLE
+                    cl_no_audio.visibility = View.GONE
+                    mListSelectAdapter.submitList(ArrayList(listAudio))
 
-                if (fileName != null) {
-                    mListSelectAdapter.submitList(mListSelectAudioViewModel.setSelectRingtone(fileName))
-                    rv_list_select_audio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))
+                    val fileName = requireArguments().getString(BUNDLE_NAME_KEY_FILE_NAME)
+
+                    if (fileName != null) {
+                        mListSelectAdapter.submitList(mListSelectAudioViewModel.setSelectRingtone(fileName))
+                        rv_list_select_audio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))
+                    }
                 }
             }
+        } else {
+            Log.d(TAG, "audio: is null")
         }
 
     }
@@ -78,7 +88,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         if (mListSelectAudioViewModel.isPlayingStatus) {
             mListSelectAdapter.submitList(mListSelectAudioViewModel.updatePlayerInfo(it))
         }
-
     }
 
     fun init() {
@@ -89,6 +98,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         currentView = inflater.inflate(R.layout.list_contact_select_screen, container, false)
+        listSelectAudio?.observe(this.viewLifecycleOwner, listAudioObserver)
         return currentView
     }
 
@@ -101,8 +111,8 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
         isLoading = true
         runOnUI {
-            val listSelectViewLiveData = mListSelectAudioViewModel.getData() // get data from funtion newIntance
-            listSelectViewLiveData.observe(this as LifecycleOwner, listAudioObserver)
+            listSelectAudio = mListSelectAudioViewModel.getData() // get data from funtion newIntance
+            listSelectAudio?.observe(this.viewLifecycleOwner, listAudioObserver)
             isLoading = false
             currentView?.findViewById<ProgressBar>(R.id.pb_select)?.visibility = View.GONE    // tai day hamonCreateView da chay xong r do runOnUI
 
@@ -203,27 +213,40 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             }
             R.id.iv_file -> {
                 val intent = Intent(Intent.ACTION_GET_CONTENT)
+//                intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
                 intent.type = "audio/mpeg"
-                startActivityForResult(intent, REQ_CODE_PICK_SOUNDFILE)
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                startActivityForResult(Intent.createChooser(intent, "Select a File to Upload"), REQ_CODE_PICK_SOUNDFILE)
+
             }
         }
     }
 
-    private fun hideKeyboard() {
-        val view = activity?.currentFocus
-        if (view != null) {
-            val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        if (requestCode == REQ_CODE_PICK_SOUNDFILE && resultCode == Activity.RESULT_OK && intent != null) {
+            val uri = intent.data
+            Log.d(TAG, "onActivityResult: uri hong: " + uri!!.path)
+            uri?.let {
+                if (mListSelectAudioViewModel.setRingtoneWithUri(requireArguments().getString(BUNDLE_NAME_KEY_PHONE_NUMBER)
+                        .toString(), uri)) {
+                    Toast.makeText(context, "Set Ringtone Success !", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Set Ringtone Failure !", Toast.LENGTH_SHORT).show()
+                }
+            }
+
         }
     }
 
+    private fun hideKeyboard() {
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
+    }
+
     private fun showKeyboard() {
-        val view = activity?.currentFocus
-        if (view != null) {
-            edt_search.requestFocus()
-            val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
-        }
+        edt_search.requestFocus()
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
 
 }

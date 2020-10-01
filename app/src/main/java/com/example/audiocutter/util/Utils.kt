@@ -5,10 +5,13 @@ import android.database.Cursor
 import android.graphics.Bitmap
 import android.media.RingtoneManager
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import com.example.audiocutter.functions.contactscreen.contacts.ContactInfomation
 import java.text.Normalizer
 import java.util.regex.Pattern
+
 
 object Utils {
 
@@ -22,23 +25,48 @@ object Utils {
     // lay ten bai hat theo uri
     fun getPlayList(context: Context, uri: String): ContactInfomation {
         var contactInfomation = ContactInfomation("", "")
-        var audioTitle = ""
-        var fileName = ""
-        val proj = arrayOf(MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DISPLAY_NAME)
-        val audioCursor: Cursor? = context.contentResolver.query(Uri.parse(uri), proj, null, null, null)
-        try {
-            if (audioCursor != null) {
-                if (audioCursor.moveToFirst()) {
-                    audioTitle = audioCursor.getString(0)
-                    fileName = audioCursor.getString(1)
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+            var audioTitle = ""
+            var fileName = ""
+            val proj = arrayOf(MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DISPLAY_NAME)
+            val audioCursor: Cursor? = context.contentResolver.query(Uri.parse(uri), proj, null, null, null)
+            try {
+                if (audioCursor != null) {
+                    if (audioCursor.moveToFirst()) {
+                        audioTitle = audioCursor.getString(0)
+                        fileName = audioCursor.getString(1)
 
-                    contactInfomation = ContactInfomation(audioTitle, fileName)
+                        contactInfomation = ContactInfomation(audioTitle, fileName)
+                    }
+                }
+            } finally {
+                audioCursor?.close()
+            }
+            return contactInfomation
+        } else {
+            var result: String? = null
+            val newUri = Uri.parse(uri)
+
+            if (newUri.getScheme().equals("content")) {
+                val cursor: Cursor? = context.contentResolver.query(newUri, null, null, null, null)
+                try {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                    }
+                } finally {
+                    cursor!!.close()
                 }
             }
-        } finally {
-            audioCursor?.close()
+            if (result == null) {
+                result = newUri.getPath()
+                val cut: Int? = result?.lastIndexOf('/')
+                if (cut != -1) {
+                    result = cut?.plus(1)?.let { result!!.substring(it) }
+                }
+            }
+            contactInfomation = result?.let { ContactInfomation(result, it) }!!
+            return contactInfomation
         }
-        return contactInfomation
     }
 
     // lay path bai hat theo uri

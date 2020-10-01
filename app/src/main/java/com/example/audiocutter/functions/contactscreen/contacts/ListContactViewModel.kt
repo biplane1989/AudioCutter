@@ -25,19 +25,12 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
         val listContactItem: LiveData<List<ContactItem>> = ManagerFactory.getContactManager()
             .getListContact()
 
-        Log.d(TAG, "getData: listContactItem : " + listContactItem.value?.size)
         return Transformations.map(listContactItem) { contacts ->
             if (mListContactItemView.size == 0) {
                 val newListContact = ArrayList<ContactItemView>()
 
                 for (item in setListDefaultRingtone(contacts)) {
-//                    if (checkRingtoneDefault(item.ringtone.toString())) {
-//                        val newItem = item.copy()
-//                        newItem.ringtone = null
                     newListContact.add(ContactItemView("", item))
-//                    } else {
-//                        newListContact.add(ContactItemView("", item))
-//                    }
                 }
 
                 mListContactItemView = getHeaderListLatter(newListContact)
