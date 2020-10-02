@@ -53,7 +53,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     var listTmp: MutableList<AudioCutterView> = mutableListOf()
     var isCheckList = true
 
-    val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
+    private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
         listTmp = listMusic.toMutableList()
         audioCutterAdapter.submitList(ArrayList(listMusic))
     }

@@ -441,9 +441,7 @@ object AudioFileManagerImpl : AudioFileManager {
         if (itemFile != null) {
             val mediaMetadataRetriever = MediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
-            val duration =
-                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!
-            return duration
+            return mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!
         }
         return ""
     }
@@ -452,7 +450,7 @@ object AudioFileManagerImpl : AudioFileManager {
 
         val folder = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DATA)
-        val cursor: Cursor = mContext.getContentResolver().query(
+        val cursor: Cursor = mContext.contentResolver.query(
             folder,
             projection,
             MediaStore.Audio.Media.DATA + "=?",

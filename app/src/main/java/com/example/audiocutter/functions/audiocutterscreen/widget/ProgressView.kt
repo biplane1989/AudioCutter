@@ -61,7 +61,7 @@ class ProgressView : View {
         prevPos = 0L
         nextPos = 0L
         pendingPos = 0L
-        invalidate()
+        requestLayout()
     }
 
     fun updatePG(currentPos: Long, duration: Long) {
@@ -105,7 +105,7 @@ class ProgressView : View {
             animator!!.addUpdateListener {
                 val start = (it.animatedValue as Float)
                 currentLineX = start
-                invalidate()
+                requestLayout()
             }
             animator!!.addListener(object : Animator.AnimatorListener {
                 override fun onAnimationEnd(p0: Animator?) {
