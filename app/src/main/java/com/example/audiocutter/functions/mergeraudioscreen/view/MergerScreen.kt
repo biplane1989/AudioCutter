@@ -229,7 +229,11 @@ class MergerScreen : BaseFragment(), View.OnClickListener, MergerAdapter.AudioMe
         when (v.id) {
             R.id.iv_mer_screen_search -> searchAudiofile()
             R.id.iv_mer_screen_back_edt -> previousStatus()
-            R.id.iv_mer_screen_close -> clearText()
+            R.id.iv_mer_screen_close -> {
+                if (!edtSearch.text.toString().isEmpty()) {
+                    edtSearch.setText("")
+                }
+            }
             R.id.rlt_next_mer -> handleAudiofile()
         }
     }
@@ -237,16 +241,10 @@ class MergerScreen : BaseFragment(), View.OnClickListener, MergerAdapter.AudioMe
     private fun handleAudiofile() {
         val listItemHandle = audioMerModel.getListItemChoose()
 
-
         /**place handle listItem choose*/
 
     }
 
-    private fun clearText() {
-        if (!edtSearch.text.toString().isEmpty()) {
-            edtSearch.setText("")
-        }
-    }
 
     private fun previousStatus() {
         edtSearch.setText("")
