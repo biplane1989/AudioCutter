@@ -277,33 +277,33 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
 
     private fun updateAllFile() {
-        runOnUI {
-            try {
-                if (isCheckList) {
-                    ManagerFactory.getAudioPlayer().stop()
-                    audioCutterModel.getAllFileByType().observe(this, Observer {
-                        listTmp.clear()
-                        listTmp.addAll(it.toMutableList())
-                        audioCutterAdapter.submitList(listTmp)
-                        isCheckList = false
-                    })
-                } else {
-                    audioCutterModel.getAllAudioFile().observe(this, Observer {
-                        listTmp.clear()
-                        listTmp.addAll(it.toMutableList())
-                        audioCutterAdapter.submitList(listTmp)
-                        isCheckList = true
-                    })
-                }
-                if (currentPos != -1) {
-                    ManagerFactory.getAudioPlayer().stop()
-                }
-                Log.d(TAG, "updateAllFile: check $isCheckList    listSize ${listTmp.size}")
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-        }
+//        runOnUI {
+//            try {
+//                if (isCheckList) {
+//                    ManagerFactory.getAudioPlayer().stop()
+//                    audioCutterModel.getAllFileByType().observe(this, Observer {
+//                        listTmp.clear()
+//                        listTmp.addAll(it.toMutableList())
+//                        audioCutterAdapter.submitList(listTmp)
+//                        isCheckList = false
+//                    })
+//                } else {
+//                    audioCutterModel.getAllAudioFile().observe(this, Observer {
+//                        listTmp.clear()
+//                        listTmp.addAll(it.toMutableList())
+//                        audioCutterAdapter.submitList(listTmp)
+//                        isCheckList = true
+//                    })
+//                }
+//                if (currentPos != -1) {
+//                    ManagerFactory.getAudioPlayer().stop()
+//                }
+//                Log.d(TAG, "updateAllFile: check $isCheckList    listSize ${listTmp.size}")
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//
+//        }
     }
 
     override fun onDestroyView() {

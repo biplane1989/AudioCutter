@@ -81,8 +81,7 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                     }
                     playInfoData.currentAudio = audioFile
                     mPlayer.reset()
-//                    val ins = FileInputStream(audioFile.file)
-//                    mPlayer.setDataSource(ins.fd)
+
                     prepare(audioFile)
                     isStopped = false;
                 }
@@ -253,14 +252,6 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                         changed = true
                     }
                 }
-                /**edit afternoon 30-9-2020*/
-                if (currentPosition >= playInfoData.duration && playInfoData.playerState != PlayerState.IDLE) {
-                    playInfoData.playerState = PlayerState.IDLE
-                    currentPosition = 0
-                    playInfoData.position = currentPosition
-                    mPlayer.stop()
-                }
-                /***/
 
                 if (playInfoData.position != currentPosition && playInfoData.playerState == PlayerState.PLAYING) {
                     changed = true

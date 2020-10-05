@@ -15,7 +15,7 @@
         android:background="?attr/selectableItemBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/d_16">
+      android:paddingLeft="@dimen/d_16">
 
         <ImageView
 
@@ -26,11 +26,12 @@
             android:src="@drawable/ic_audiocutter_play" />
 
         <LinearLayout
+            android:gravity="right"
             android:layout_width="0dp"
             android:layout_height="45dp"
             android:layout_weight="1"
             android:orientation="horizontal"
-            android:paddingHorizontal="@dimen/d_16">
+            android:paddingLeft="@dimen/d_16">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -86,16 +87,13 @@
                 </TableRow>
             </LinearLayout>
 
-            <com.example.audiocutter.functions.audiocutterscreen.widget.BarVisualizer xmlns:custom="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/bar_visualizer"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+            <com.example.audiocutter.functions.audiocutterscreen.widget.WaveAudio
+                android:layout_width="24dp"
+                android:id="@+id/wave_audio_cutter"
+                android:layout_height="24dp"
                 android:layout_gravity="center"
-                custom:avColor="@color/colorYelowDark"
-                custom:avDensity="0.5"
-                custom:avSpeed="normal"
-                custom:avType="outline"
-                custom:avWidth="4dp" />
+                android:visibility="invisible" />
+
 
         </LinearLayout>
 

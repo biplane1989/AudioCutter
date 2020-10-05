@@ -15,6 +15,7 @@ import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import com.example.audiocutter.functions.audiocutterscreen.widget.ProgressView
+import com.example.audiocutter.functions.audiocutterscreen.widget.WaveAudio
 import kotlin.math.floor
 
 class AudiocutterAdapter(val mContext: Context) :
@@ -90,6 +91,7 @@ class AudiocutterAdapter(val mContext: Context) :
         val lnChild = itemView.findViewById<LinearLayout>(R.id.ln_item_audio_cutter_screen)
         val lnMenu = itemView.findViewById<LinearLayout>(R.id.ln_menu)
         val pgAudio = itemView.findViewById<ProgressView>(R.id.pg_audio_cutter_screen)
+        val waveView = itemView.findViewById<WaveAudio>(R.id.wave_audio_cutter)
 
         init {
             ivController.setOnClickListener(this)
@@ -116,21 +118,30 @@ class AudiocutterAdapter(val mContext: Context) :
             }
 
             when (itemAudioFile.isCheckDistance) {
-                true -> pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration)
-                false -> pgAudio.resetView()
+                true -> {
+//                    waveView.resumeAnimation()
+                    pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration)
+                }
+                false -> {
+//                    waveView.pauseAnimation()
+                    pgAudio.resetView()
+                }
             }
 
             when (itemAudioFile.state) {
+
                 PlayerState.PLAYING -> {
                     pgAudio.visibility = View.VISIBLE
+                    waveView.visibility = View.VISIBLE
                     ivController.setImageResource(R.drawable.ic_audiocutter_pause)
                 }
                 PlayerState.PAUSE -> {
+                    waveView.visibility = View.INVISIBLE
                     ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }
                 PlayerState.IDLE -> {
-                    pgAudio.updatePG(0, 0)
                     pgAudio.visibility = View.GONE
+                    waveView.visibility = View.INVISIBLE
                     pgAudio.resetView()
                     ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }

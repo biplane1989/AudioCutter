@@ -67,7 +67,7 @@ class AudioCutterModel : BaseViewModel() {
     fun updateMediaInfo(playerInfo: PlayerInfo): List<AudioCutterView> {
         Log.d(TAG, "updateMediaInfo: ${playerInfo.playerState}")
         if (playerInfo.currentAudio != null) {
-            if (!currentAudioPlaying.absoluteFile.equals(playerInfo.currentAudio!!.file.absoluteFile)) {
+            if (currentAudioPlaying.absoluteFile != playerInfo.currentAudio!!.file.absoluteFile) {
 
                 val oldPos = getAudioFilePos(currentAudioPlaying)
                 val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
@@ -112,7 +112,7 @@ class AudioCutterModel : BaseViewModel() {
     private fun getAudioFilePos(file: File): Int {
         var i = 0
         while (i < mListAudio.size) {
-            if (mListAudio.get(i).audioFile.file.equals(file)) {
+            if (mListAudio[i].audioFile.file == file) {
                 return i
             }
             i++
