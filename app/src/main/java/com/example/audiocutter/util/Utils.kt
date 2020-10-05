@@ -60,5 +60,14 @@ object Utils {
         val result = Rect()
         paint.getTextBounds(str, 0, str.length, result)
         return result.width().toFloat()
-    }
+
+    fun convertValue(
+        min1: Double,
+        max1: Double,
+        min2: Double,
+        max2: Double,
+        value: Double
+    ): Double {
+        return ((value - min1) * ((max2 - min2) / (max1 - min1)) + min2)
+    }}
 }

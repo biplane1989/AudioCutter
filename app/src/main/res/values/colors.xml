@@ -10,6 +10,9 @@
     <color name="colorAlpha">#00FFFFFF</color>
     <color name="main_screen_title_text_color">#2E3041</color>
     <color name="main_screen_item_text_color">#FFFFFF</color>
+    <color name="colorYelow">#FFCB59</color>
+    <color name="colorYelowDark">#FDAA74</color>
+    <color name="colorYelowAlpha">#4BFFD18D</color>
     <!--fragment cut audio-->
     <color name="fragment_cutter_text_title_color">#2E3041</color>
     <color name="fragment_cutter_text_time_color">#707489</color>

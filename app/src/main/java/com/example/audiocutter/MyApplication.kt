@@ -13,5 +13,4 @@ class MyApplication : Application() {
         ManagerFactory.init(applicationContext)
         PermissionManager.start(applicationContext)
     }
-
 }

@@ -21,13 +21,6 @@ class MainActivity : BaseActivity() {
 
     override fun onPostCreate() {
         super.onPostCreate()
-//        val outputAudioManagerScreen = OutputAudioManagerScreen.newInstance(false)
-        val outputAudioManagerScreen = OutputAudioManagerScreen()
-
-        val fragmentManager = supportFragmentManager
-        val transaction: FragmentTransaction = fragmentManager.beginTransaction()
-        transaction.replace(R.id.fl_home, outputAudioManagerScreen)
-        transaction.commit()
     }
 
 }
