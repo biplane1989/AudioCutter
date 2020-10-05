@@ -212,7 +212,7 @@ class ListSelectAudioViewModel : BaseViewModel() {
         return false
     }
 
-    fun setRingtoneWithUri(phoneNumber: String, uri: Uri): Boolean {
+    fun setRingtoneWithUri(phoneNumber: String, uri: String): Boolean {
         if (phoneNumber != "" && uri != null) {
             return ManagerFactory.getRingtoneManager()
                 .setRingToneWithContactNumberAndUri(uri, phoneNumber)

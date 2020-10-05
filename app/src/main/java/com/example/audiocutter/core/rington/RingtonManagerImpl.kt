@@ -85,11 +85,14 @@ object RingtonManagerImpl : RingtonManager {
         return false
     }
 
-    override fun setRingToneWithContactNumberAndUri(uri: Uri, contactNumber: String): Boolean {
+    override fun setRingToneWithContactNumberAndUri(path: String, contactNumber: String): Boolean {
+
         val values = ContentValues()
         val resolver: ContentResolver = mContext.getContentResolver()
-//        val uri = getOrNew(audioFile.file.absolutePath, IS_RINGTONE)
+        val uri = getOrNew(path, IS_RINGTONE)
         if (uri != null) {
+
+            Log.d("giangtd", "uri ringtone: " + uri)
             val lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, contactNumber)
             val projection = arrayOf(ContactsContract.Contacts._ID, ContactsContract.Contacts.LOOKUP_KEY)
             val cursor: Cursor? = mContext.getContentResolver()

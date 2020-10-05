@@ -80,13 +80,14 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 val ringtone = payloads.firstOrNull() as String
                 val contactItem = getItem(position)
 
-               /* if (ringtone != null) {
+                if (contactItem.contactItem.ringtone != null) {
                     itemViewHolder.tvRingtoneDefault.visibility = View.GONE
                     itemViewHolder.cvDefault.visibility = View.GONE
                     itemViewHolder.tvRingtone.visibility = View.VISIBLE
 
                     val contactInfomation = Utils.getPlayList(mContext!!, contactItem.contactItem.ringtone!!)   // get name song by uri
                     itemViewHolder.tvRingtone.text = contactInfomation.title
+
                 } else {
                     itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
                     itemViewHolder.cvDefault.visibility = View.VISIBLE
@@ -95,7 +96,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                     val contactInfomation = Utils.getPlayList(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
                         .toString())
                     itemViewHolder.tvRingtoneDefault.text = contactInfomation.title
-                }*/
+                }
             }
         }
     }
@@ -116,7 +117,8 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
             if (avatar != null) {
                 ivAvatar.setImageBitmap(avatar)
             }
-           /* if (contentItem.contactItem.ringtone != null) {
+
+            if (contentItem.contactItem.ringtone != null) {
 
                 tvRingtoneDefault.visibility = View.GONE
                 cvDefault.visibility = View.GONE
@@ -132,7 +134,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 val contactInfomation = Utils.getPlayList(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
                     .toString())
                 tvRingtoneDefault.text = contactInfomation.title
-            }*/
+            }
 
             clItemContact.setOnClickListener(this)
 
@@ -141,6 +143,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
         override fun onClick(view: View?) {
             when (view?.id) {
                 R.id.cl_item_contact -> {
+//                    val contactInfomation = ContactInfomation("", "")
                     val contactInfomation: ContactInfomation
                     if (getItem(adapterPosition).contactItem.ringtone != null) {
                         contactInfomation = Utils.getPlayList(mContext!!, getItem(adapterPosition).contactItem.ringtone!!)

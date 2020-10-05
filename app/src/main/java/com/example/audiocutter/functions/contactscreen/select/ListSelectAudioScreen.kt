@@ -1,9 +1,16 @@
 package com.example.audiocutter.functions.contactscreen.select
 
 import android.app.Activity
+import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.DocumentsContract
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -13,6 +20,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -21,7 +29,10 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
+import com.example.audiocutter.util.FileUtils
 import kotlinx.android.synthetic.main.list_contact_select_screen.*
+import java.io.File
+import java.net.URISyntaxException
 
 
 class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.OnClickListener {
@@ -52,11 +63,11 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
     // observer data
     val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
-        Log.d(TAG, "list audio size : " + listAudio.size)
-
-        for (item in listAudio) {
-            Log.d(TAG, "old uri : name: "+ item.audioFile.fileName+ "uri:  " + item.audioFile.uri)
-        }
+//        Log.d(TAG, "list audio size : " + listAudio.size)
+//
+//        for (item in listAudio) {
+//            Log.d(TAG, "old uri : name: " + item.audioFile.fileName + "uri:  " + item.audioFile.uri)
+//        }
         if (listAudio != null) {
             if (listAudio.isEmpty()) {
                 cl_select.visibility = View.GONE
@@ -213,22 +224,53 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             }
             R.id.iv_file -> {
                 val intent = Intent(Intent.ACTION_GET_CONTENT)
-//                intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
-                intent.type = "audio/mpeg"
+                intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                intent.type = "audio/*"
+//                intent.type = "audio/mp3"
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                startActivityForResult(Intent.createChooser(intent, "Select a File to Upload"), REQ_CODE_PICK_SOUNDFILE)
+                startActivityForResult(Intent.createChooser(intent, "Select a File "), REQ_CODE_PICK_SOUNDFILE)
 
             }
         }
     }
 
+    @Throws(URISyntaxException::class)
+    fun getPath(context: Context, uri: Uri): String? {
+        if ("content".equals(uri.scheme, ignoreCase = true)) {
+            val projection = arrayOf("_data")
+            var cursor: Cursor? = null
+            try {
+                cursor = context.contentResolver.query(uri, projection, null, null, null)
+                if (cursor != null) {
+                    val column_index: Int = cursor.getColumnIndexOrThrow("_data")
+                    if (cursor.moveToFirst()) {
+                        return cursor.getString(column_index)
+                    }
+                }
+
+            } catch (e: Exception) {
+                // Eat it
+            } finally {
+                cursor?.close()
+            }
+        } else if ("file".equals(uri.scheme, ignoreCase = true)) {
+            return uri.path
+        }
+        return null
+    }
+
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         if (requestCode == REQ_CODE_PICK_SOUNDFILE && resultCode == Activity.RESULT_OK && intent != null) {
-            val uri = intent.data
-            Log.d(TAG, "onActivityResult: uri hong: " + uri!!.path)
-            uri?.let {
+
+            val path = FileUtils.getPath(requireContext(), intent.data!!)
+
+            Log.d(TAG, "onActivityResult: file isexit: " + File(path).exists())
+            Log.d(TAG, "onActivityResult: " + path)
+
+            path?.let {
                 if (mListSelectAudioViewModel.setRingtoneWithUri(requireArguments().getString(BUNDLE_NAME_KEY_PHONE_NUMBER)
-                        .toString(), uri)) {
+                        .toString(), path)) {
                     Toast.makeText(context, "Set Ringtone Success !", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(context, "Set Ringtone Failure !", Toast.LENGTH_SHORT).show()
@@ -248,5 +290,4 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
-
 }

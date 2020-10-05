@@ -47,8 +47,7 @@ class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCal
 
     // observer data
     val listContactObserver = Observer<List<ContactItemView>> { listContact ->
-        if (listContact == null) {
-        } else {
+        if (listContact != null) {
             runOnUI {
                 if (listContact.isEmpty()) {
                     cl_no_contact.visibility = View.VISIBLE

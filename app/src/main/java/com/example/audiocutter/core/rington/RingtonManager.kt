@@ -14,5 +14,5 @@ interface RingtonManager {
 
     fun setRingToneWithContactNumber(audioFile: AudioFile, contactNumber: String): Boolean
 
-    fun setRingToneWithContactNumberAndUri(uri: Uri, contactNumber: String): Boolean
+    fun setRingToneWithContactNumberAndUri(path: String, contactNumber: String): Boolean
 }

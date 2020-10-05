@@ -12,6 +12,8 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
 
+
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -22,15 +24,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-<!--        <provider-->
-<!--            android:name="androidx.core.content.FileProvider"-->
-<!--            android:authorities="au.com.example.AppA.fileprovider"-->
-<!--            android:exported="false"-->
-<!--            android:grantUriPermissions="true" >-->
-<!--            <meta-data-->
-<!--                android:name="android.support.FILE_PROVIDER_PATHS"-->
-<!--                android:resource="@xml/filepaths" />-->
-<!--        </provider>-->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.audiocutter.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
 
         <activity android:name=".activities.MainActivity">
             <intent-filter>

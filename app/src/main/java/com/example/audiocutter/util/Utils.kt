@@ -26,21 +26,24 @@ object Utils {
     fun getPlayList(context: Context, uri: String): ContactInfomation {
         var contactInfomation = ContactInfomation("", "")
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-            var audioTitle = ""
-            var fileName = ""
-            val proj = arrayOf(MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DISPLAY_NAME)
-            val audioCursor: Cursor? = context.contentResolver.query(Uri.parse(uri), proj, null, null, null)
-            try {
-                if (audioCursor != null) {
-                    if (audioCursor.moveToFirst()) {
-                        audioTitle = audioCursor.getString(0)
-                        fileName = audioCursor.getString(1)
+            if (uri != null) {
+                var audioTitle = ""
+                var fileName = ""
 
-                        contactInfomation = ContactInfomation(audioTitle, fileName)
+                val proj = arrayOf(MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DISPLAY_NAME)
+                val audioCursor: Cursor? = context.contentResolver.query(Uri.parse(uri), proj, null, null, null)
+                try {
+                    if (audioCursor != null) {
+                        if (audioCursor.moveToFirst()) {
+                            audioTitle = audioCursor.getString(0)
+                            fileName = audioCursor.getString(1)
+
+                            contactInfomation = ContactInfomation(audioTitle, fileName)
+                        }
                     }
+                } finally {
+                    audioCursor?.close()
                 }
-            } finally {
-                audioCursor?.close()
             }
             return contactInfomation
         } else {
