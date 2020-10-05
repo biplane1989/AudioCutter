@@ -14,6 +14,8 @@ import androidx.dynamicanimation.animation.FloatValueHolder
 import com.example.audiocutter.R
 import com.example.audiocutter.ui.fragment_cut.WaveformLoader.Companion.get
 import com.example.audiocutter.util.Utils
+import kotlin.math.abs
+import kotlin.math.sqrt
 
 class WaveformEditView : View {
     private var widthView = 0
@@ -69,6 +71,7 @@ class WaveformEditView : View {
     private var upperTimeRange: Long = 0
     private var lastTimeRangeIndex = -1
     private var a = 0
+    private var scaleDefault = 0f
     private lateinit var paintLineSpace: Paint
 
     constructor(context: Context) : super(context) {
@@ -164,7 +167,7 @@ class WaveformEditView : View {
                     if (db != null) {
                         var i = 0
                         while (i < db.size) {
-                            var value: Double = if (chanelCount == 2) {
+                            val value: Double = if (chanelCount == 2) {
                                 (db[i] + db[i + 1]) / 2.0
                             } else {
                                 db[i]
@@ -240,9 +243,13 @@ class WaveformEditView : View {
 
     private fun initDimensions() {
         maxWaveHeight = heightView - 4 * (timeMarkPaint!!.textSize + timeMarkTextMargin).toDouble()
-        cursorLeftRect!![0f, heightView - cursorSize, cursorSize] = heightView.toFloat()
-        cursorRightRect!![widthView - cursorSize, heightView - cursorSize, widthView.toFloat()] =
-            heightView.toFloat()
+        cursorLeftRect!![0f, Utils.dpToPx(context, 32f), cursorSize] =
+            cursorSize + Utils.dpToPx(context, 32f)
+        cursorRightRect!![widthView - cursorSize, heightView - cursorSize - Utils.dpToPx(
+            context,
+            32f
+        ), widthView.toFloat()] =
+            heightView.toFloat() - Utils.dpToPx(context, 32f)
         selectRect!![cursorLeftRect!!.left, (heightView / 2 - maxWaveHeight / 2).toFloat(), cursorRightRect!!.right] =
             heightView - cursorSize / 2
         playLineRect!![-cursorSize / 2, (heightView / 2 - maxWaveHeight / 2).toFloat(), cursorSize / 2] =
@@ -268,7 +275,9 @@ class WaveformEditView : View {
             drawSelectRect(canvas)
             drawPlayLine(canvas)
             drawSelectCursors(canvas)
-            Log.e(TAG, "onDraw: $scale")
+            if (scaleDefault == 0f) {
+                scaleDefault = scale
+            }
         }
     }
 
@@ -288,10 +297,10 @@ class WaveformEditView : View {
     }
 
     fun zoomInt() {
-        if (scale > 0f) {
+        if (scale > scaleDefault) {
             scale = (scale - 0.1).toFloat()
-            if (scale <= 0.023118418) {
-                scale = 0.023118418f
+            if (scale <= scaleDefault) {
+                scale = scaleDefault
                 translate = 0f
             }
             updateCursors()
@@ -317,10 +326,10 @@ class WaveformEditView : View {
         if (trackDurationMs > 0 && timeRange > 0) {
             var startX =
                 (translate / (waveformWidth * scale) * trackDurationMs - timeRange).toLong()
-            startX = startX - startX % timeRange
+            startX -= startX % timeRange
             var stopX =
                 ((widthView + translate) / (waveformWidth * scale) * trackDurationMs + timeRange).toLong()
-            stopX = stopX - stopX % timeRange
+            stopX -= stopX % timeRange
             var i = startX
             a = 0
             while (i < stopX) {
@@ -356,7 +365,7 @@ class WaveformEditView : View {
         endIndex = Math.min(endIndex, waveformData.size)
         val step = (endIndex - startIndex).toFloat() / widthView.toFloat()
         if (step > 1) {
-            var max = 0.0
+            var max: Double
             var k: Int
             var l: Int
             for (index in 0 until widthView) {
@@ -373,8 +382,8 @@ class WaveformEditView : View {
                 }
                 if (max > 0) {
                     val lineHeight = calculatorLineHeight(max)
-                    val startY = heightView / 2f + lineHeight / 2f
-                    val stopY = heightView / 2f - lineHeight / 2f
+                    val startY = (heightView / 2f + lineHeight / 2f)
+                    val stopY = (heightView / 2f - lineHeight / 2f)
                     waveformPaint!!.strokeWidth = 1f
                     canvas.drawLine(
                         index.toFloat(),
@@ -395,8 +404,8 @@ class WaveformEditView : View {
                 val lineHeight = calculatorLineHeight(value)
                 val centerX =
                     index * (waveformLineWidth + waveformLineSpace) + waveformLineWidth / 2f
-                val startY = heightView / 2f + lineHeight / 2f
-                val stopY = heightView / 2f - lineHeight / 2f
+                val startY = (heightView / 2f + lineHeight / 2f)
+                val stopY = (heightView / 2f - lineHeight / 2f)
                 waveformPaint!!.strokeWidth = waveformLineWidth.toFloat()
                 canvas.drawLine(centerX, startY, centerX, stopY, waveformPaint!!)
             }
@@ -428,12 +437,17 @@ class WaveformEditView : View {
 
     private fun drawSelectRect(canvas: Canvas) {
 //        canvas.drawRect(selectRect!!, selectRectPaint!!)
-        leftRect!!.set(0f, selectRect!!.top, selectRect!!.left, selectRect!!.bottom)
+        leftRect!!.set(
+            0f,
+            selectRect!!.top,
+            selectRect!!.left,
+            selectRect!!.bottom - cursorSize / 2f
+        )
         rightRect!!.set(
             selectRect!!.right,
             selectRect!!.top,
             measuredWidth.toFloat(),
-            selectRect!!.bottom
+            selectRect!!.bottom - cursorSize / 2f
         )
         canvas.drawRect(leftRect!!, selectRectPaint!!)
         canvas.drawRect(rightRect!!, selectRectPaint!!)
@@ -461,14 +475,14 @@ class WaveformEditView : View {
             playLineRect!!.centerX(),
             playLineRect!!.top,
             playLineRect!!.centerX(),
-            playLineRect!!.bottom,
+            playLineRect!!.bottom - cursorSize / 2f,
             playLinePaint!!
         )
         canvas.drawLine(
             playLineRect!!.centerX(),
             playLineRect!!.top,
             playLineRect!!.centerX(),
-            playLineRect!!.bottom,
+            playLineRect!!.bottom - cursorSize / 2f,
             playLinePaint!!
         )
     }
@@ -522,16 +536,12 @@ class WaveformEditView : View {
                 invalidate()
                 return true
             } else {
-                Log.e(TAG, "onTouchEvent3: $touchCount")
                 if (selecting) {
-                    Log.e(TAG, "onTouchEvent4: $touchCount")
                     changeSelectRange(event)
                 } else if (movingPlayLine) {
-                    Log.e(TAG, "onTouchEvent5: $touchCount")
                     movePlayLine(event)
                 } else {
                     if (translateStart >= 0) {
-                        Log.e(TAG, "onTouchEvent6: $touchCount")
                         val distance = startX - event.x
                         val tempTranslate = translateStart + distance
                         correctTranslate(tempTranslate)
@@ -570,16 +580,25 @@ class WaveformEditView : View {
     private fun changeSelectRange(event: MotionEvent) {
         if (selectingCursor == 1) {
             if (event.x - cursorSize / 2 >= 0 && event.x + cursorSize / 2 <= cursorRightRect!!.right) {
-                cursorLeftRect!![event.x - cursorSize / 2, heightView - cursorSize, event.x + cursorSize / 2] =
-                    heightView.toFloat()
+                cursorLeftRect!![event.x - cursorSize / 2, +Utils.dpToPx(
+                    context,
+                    32f
+                ), event.x + cursorSize / 2] =
+                    cursorSize + Utils.dpToPx(context, 32f)
                 cursorLeftPortion = (cursorLeftRect!!.left + translate) / scale / waveformWidth
                 updateStartTime()
                 invalidate()
             }
         } else if (selectingCursor == 2) {
             if (event.x + cursorSize / 2 <= widthView && event.x - cursorSize / 2 >= cursorLeftRect!!.left) {
-                cursorRightRect!![event.x - cursorSize / 2, heightView - cursorSize, event.x + cursorSize / 2] =
-                    heightView.toFloat()
+                cursorRightRect!![event.x - cursorSize / 2, heightView - cursorSize - Utils.dpToPx(
+                    context,
+                    32f
+                ), event.x + cursorSize / 2] =
+                    heightView.toFloat() - Utils.dpToPx(
+                        context,
+                        32f
+                    )
                 cursorRightPortion = (cursorRightRect!!.right + translate) / scale / waveformWidth
                 updateEndTime()
                 invalidate()
@@ -603,7 +622,7 @@ class WaveformEditView : View {
 
     private fun updateStartTime() {
         startTimeMs =
-            (Math.abs(cursorLeftRect!!.left + translate) / scale / waveformWidth * trackDurationMs).toLong()
+            (abs(cursorLeftRect!!.left + translate) / scale / waveformWidth * trackDurationMs).toLong()
         if (listener != null) {
             listener!!.onStartTimeChanged(startTimeMs)
         }
@@ -611,7 +630,7 @@ class WaveformEditView : View {
 
     private fun updateEndTime() {
         endTimeMs =
-            (Math.abs(cursorRightRect!!.right + translate) / scale / waveformWidth * trackDurationMs).toLong()
+            (abs(cursorRightRect!!.right + translate) / scale / waveformWidth * trackDurationMs).toLong()
         if (listener != null) {
             listener!!.onEndTimeChanged(endTimeMs)
         }
@@ -636,8 +655,8 @@ class WaveformEditView : View {
 
     private fun updateCursors() {
         val cursorLeftX = cursorLeftPortion * waveformWidth * scale - translate
-        cursorLeftRect!![cursorLeftX, cursorLeftRect!!.top, cursorLeftX + cursorSize] =
-            cursorLeftRect!!.bottom
+        cursorLeftRect!![cursorLeftX, +Utils.dpToPx(context, 32f), cursorLeftX + cursorSize] =
+            cursorSize + Utils.dpToPx(context, 32f)
         val cursorRightX = cursorRightPortion * waveformWidth * scale - translate
         cursorRightRect!![cursorRightX - cursorSize, cursorRightRect!!.top, cursorRightX] =
             cursorRightRect!!.bottom
@@ -651,7 +670,7 @@ class WaveformEditView : View {
     private fun distance(x0: Float, x1: Float, y0: Float, y1: Float): Float {
         val x = x0 - x1
         val y = y0 - y1
-        return Math.sqrt(x * x + y * y.toDouble()).toFloat()
+        return sqrt(x * x + y * y.toDouble()).toFloat()
     }
 
     private fun dp2px(dp: Float): Int {
@@ -674,7 +693,7 @@ class WaveformEditView : View {
         this.listener = listener
     }
 
-    fun cancelLoad() {
+    private fun cancelLoad() {
         get()!!.cancel()
     }
 

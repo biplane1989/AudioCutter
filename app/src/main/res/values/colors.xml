@@ -13,4 +13,8 @@
     <!--fragment cut audio-->
     <color name="fragment_cutter_text_title_color">#2E3041</color>
     <color name="fragment_cutter_text_time_color">#707489</color>
+    <color name="fragment_cutter_ripple_bg">#FFFFFF</color>
+    <color name="fragment_cutter_ripple_color">#E3E3E3</color>
+    <color name="fragment_cutter_play_bg_color">#FDAA74</color>
+    <color name="fragment_cutter_play_bg_press_color">#ABFDAA74</color>
 </resources>

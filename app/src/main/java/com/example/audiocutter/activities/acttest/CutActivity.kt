@@ -12,7 +12,7 @@ import java.io.File
 class CutActivity : BaseActivity() {
     private val PATH_FOLDER: String =
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            .plus("/Anh Đợi Em Này_Thanh Hưng.mp3")
+            .plus("/sample1.aac")
 
     private operator fun File.plus(separator: String): String {
         return this.absolutePath + separator
