@@ -13,7 +13,7 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.coroutines.*
 
-object AudioPlayerImpl : AudioPlayer {
+object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     val TAG = AudioPlayerImpl::class.java.name
 
 
@@ -24,8 +24,8 @@ object AudioPlayerImpl : AudioPlayer {
 
 
     private var _mPlayInfo = MutableLiveData<PlayerInfo>()
-    val playInfoData = PlayerInfo(null, 0, PlayerState.IDLE, 0, 0)
-    val mPlayInfo: LiveData<PlayerInfo>
+    private val playInfoData = PlayerInfo(null, 0, PlayerState.IDLE, 0, 0)
+    private val mPlayInfo: LiveData<PlayerInfo>
         get() = _mPlayInfo
 
 
@@ -36,15 +36,17 @@ object AudioPlayerImpl : AudioPlayer {
         this.appContext = appContext
         mPlayer = MediaPlayer()
         audioManager = this.appContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        mPlayer.setOnCompletionListener {
-            Log.d("sesm", "setOnCompletionListener")
+        mPlayer.setOnCompletionListener(listener)
+    }
 
-            if (playInfoData.playerState != PlayerState.IDLE) {
-                playInfoData.playerState = PlayerState.IDLE
-                notifyPlayerDataChanged()
-            }
+    private val listener = MediaPlayer.OnCompletionListener {
+        if (playInfoData.playerState != PlayerState.IDLE) {
+            Log.d("1111", "setOnCompletionListener  ${playInfoData.playerState}")
+            playInfoData.playerState = PlayerState.IDLE
+            notifyPlayerDataChanged()
         }
     }
+
 
     private fun notifyPlayerDataChanged() {
 
@@ -52,8 +54,7 @@ object AudioPlayerImpl : AudioPlayer {
             "1111",
             "startTimerIfReady: path${playInfoData.currentAudio!!.fileName}   state ${playInfoData.playerState}  duration ${playInfoData.duration}   position ${playInfoData.position}"
         )
-
-        val copy = PlayerInfo(
+        val playInfoCopy = PlayerInfo(
             playInfoData.currentAudio,
             playInfoData.position,
             playInfoData.playerState,
@@ -61,16 +62,15 @@ object AudioPlayerImpl : AudioPlayer {
             playInfoData.volume
         )
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            _mPlayInfo.value = copy
+            _mPlayInfo.value = playInfoCopy
         } else {
-            mainScope.launch { _mPlayInfo.value = copy }
+            mainScope.launch { _mPlayInfo.value = playInfoCopy }
         }
     }
 
     override suspend fun play(audioFile: AudioFile): Boolean {
         try {
             withContext(Dispatchers.IO) {
-                synchronized(mPlayer) {
                     stop()
                     if (playInfoData.playerState != PlayerState.IDLE) {
                         playInfoData.playerState = PlayerState.IDLE
@@ -83,15 +83,11 @@ object AudioPlayerImpl : AudioPlayer {
                     mPlayer.reset()
 //                    val ins = FileInputStream(audioFile.file)
 //                    mPlayer.setDataSource(ins.fd)
-                    mPlayer.setDataSource(appContext, audioFile.uri!!)
-                    mPlayer.prepare()
-                    mPlayer.start()
+                    prepare(audioFile)
                     isStopped = false;
-
                 }
                 startTimerIfReady()
 
-            }
             return true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -101,6 +97,25 @@ object AudioPlayerImpl : AudioPlayer {
         }
 
     }
+
+    private fun prepare(audioFile: AudioFile) {
+        playInfoData.playerState = PlayerState.PREPARING
+        mPlayer.apply {
+            setOnPreparedListener(this@AudioPlayerImpl)
+            setDataSource(appContext, audioFile.uri!!)
+            prepareAsync()
+        }
+    }
+
+    override fun onPrepared(player: MediaPlayer?) {
+        playInfoData.position = 0
+        playInfoData.duration = player?.duration!!
+
+        player.start()
+        playInfoData.playerState = PlayerState.PLAYING
+        notifyPlayerDataChanged()
+    }
+
 
     override suspend fun play(audioFile: AudioFile, currentPosition: Int) {
         /* try {
@@ -201,44 +216,55 @@ object AudioPlayerImpl : AudioPlayer {
         mainScope.launch {
             while (mainScope.isActive) {
                 var changed = false
-
                 delay(500)
-                synchronized(mPlayer) {
-                    playInfoData.duration = mPlayer.duration
-                    var currentPosition = mPlayer.currentPosition
-                    if (currentPosition >= mPlayer.duration) {
-                        currentPosition = 0
-                        playInfoData.position = currentPosition
-                        mPlayer.stop()
+                playInfoData.duration = mPlayer.duration
+                var currentPosition = mPlayer.currentPosition
+                if (currentPosition >= mPlayer.duration) {
+                    currentPosition = 0
+                    playInfoData.position = currentPosition
+                    mPlayer.stop()
 
-                        if (playInfoData.playerState != PlayerState.IDLE) {
-                            playInfoData.playerState = PlayerState.IDLE
-                            changed = false
-                        }
-                    }
-
-                    if (mPlayer.isPlaying) {
-                        if (playInfoData.playerState != PlayerState.PLAYING) {
-                            playInfoData.playerState = PlayerState.PLAYING
-                            changed = true
-                        }
-                    } else {
-                        if (playInfoData.playerState == PlayerState.PLAYING) {
-                            if (isStopped) {
-                                playInfoData.playerState = PlayerState.IDLE
-                                currentPosition = 0
-                                playInfoData.position = currentPosition
-                            } else {
-                                playInfoData.playerState = PlayerState.PAUSE
-                            }
-                            changed = true
-                        }
-                    }
-
-                    if (playInfoData.position != currentPosition && playInfoData.playerState == PlayerState.PLAYING) {
+                    if (playInfoData.playerState != PlayerState.IDLE) {
+                        playInfoData.playerState = PlayerState.IDLE
+                        Log.d("nmcode", "startTimerIfReady11: ${playInfoData.playerState}")
                         changed = true
-                        playInfoData.position = currentPosition
                     }
+                }
+
+                if (playInfoData.playerState == PlayerState.PREPARING) {
+                    changed = false
+                }
+
+
+                if (mPlayer.isPlaying) {
+                    if (playInfoData.playerState != PlayerState.PLAYING) {
+                        playInfoData.playerState = PlayerState.PLAYING
+                        changed = true
+                    }
+                } else {
+                    if (playInfoData.playerState == PlayerState.PLAYING) {
+                        if (isStopped) {
+                            playInfoData.playerState = PlayerState.IDLE
+                            currentPosition = 0
+                            playInfoData.position = currentPosition
+                        } else {
+                            playInfoData.playerState = PlayerState.PAUSE
+                        }
+                        changed = true
+                    }
+                }
+                /**edit afternoon 30-9-2020*/
+                if (currentPosition >= playInfoData.duration && playInfoData.playerState != PlayerState.IDLE) {
+                    playInfoData.playerState = PlayerState.IDLE
+                    currentPosition = 0
+                    playInfoData.position = currentPosition
+                    mPlayer.stop()
+                }
+                /***/
+
+                if (playInfoData.position != currentPosition && playInfoData.playerState == PlayerState.PLAYING) {
+                    changed = true
+                    playInfoData.position = currentPosition
                 }
                 if (changed) {
                     notifyPlayerDataChanged()
@@ -251,5 +277,6 @@ object AudioPlayerImpl : AudioPlayer {
     override fun getPlayerInfo(): LiveData<PlayerInfo> {
         return mPlayInfo
     }
+
 
 }

@@ -20,7 +20,7 @@ class InfoDialog : BaseDialog() {
         fun newInstance(audioFile: AudioFile): InfoDialog {
             val dialog = InfoDialog()
             val bundle = Bundle()
-            bundle.putSerializable(BUNDLE_NAME_KEY, audioFile)
+//            bundle.putSerializable(BUNDLE_NAME_KEY, audioFile)
             dialog.arguments = bundle
 
             this.audioFile = audioFile

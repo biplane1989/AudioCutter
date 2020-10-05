@@ -1,44 +1,52 @@
 package com.example.audiocutter.activities.acttest
 
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
 import com.example.audiocutter.R
-import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
-import com.example.audiocutter.objects.AudioFile
-import java.io.File
+import com.example.audiocutter.base.BaseActivity
+import com.example.audiocutter.functions.audiocutterscreen.widget.BarVisualizer
+import com.example.audiocutter.functions.audiocutterscreen.widget.WaveAudio
+import kotlinx.android.synthetic.main.act_test.*
 
-class TestAct : AppCompatActivity(), View.OnClickListener {
-    lateinit var delete: Button
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+class TestAct() : BaseActivity(), View.OnClickListener {
+    //    lateinit var audioCutterScreen: AudioCutterScreen
+    lateinit var waveAudio: WaveAudio
+
+    private lateinit var mVisualizer: BarVisualizer
+
+
+    override fun createView(savedInstanceState: Bundle?) {
         setContentView(R.layout.act_test)
         initViews()
     }
 
+
     private fun initViews() {
-        delete = findViewById(R.id.bt_delete)
-        delete.setOnClickListener(this)
+        waveAudio = findViewById(R.id.wave_audio)
+//        mVisualizer = findViewById(R.id.bar)
+
+        bt_start.setOnClickListener(this)
+        bt_pause.setOnClickListener(this)
+        bt_resume.setOnClickListener(this)
+
+//        audioCutterScreen = AudioCutterScreen()
+//        recentAddedScreen = MixerAudioScreen()
+//        supportFragmentManager.beginTransaction().replace(R.id.ln_main, recentAddedScreen).commit()
+//        supportFragmentManager.beginTransaction().replace(R.id.ln_main, audioCutterScreen).commit()
     }
 
-    override fun onClick(v: View) {
-        if (v.id == R.id.bt_delete) {
-            val audioFile = AudioFile(
-                File("/storage/emulated/0/VoiceRecorder/Recording_16.m4a"),
-                "dd",
-                100,
-                128,
-                0, Uri.parse("content://media/external/audio/media/414")
-            )
 
-           /* val rs = AudioFileManagerImpl.deleteFile(audioFile, )*/
+    private fun stopPlayingAudio() {
+        mVisualizer.release()
+    }
 
-            /*Log.d("TAG", "onClick: $rs")*/
+    override fun onClick(p0: View) {
+        when (p0.id) {
+            R.id.bt_start -> waveAudio.startAnimator()
+            R.id.bt_pause -> waveAudio.pauseAnimator()
+            R.id.bt_resume -> waveAudio.resumeAnimator()
         }
     }
 
-
 }
+

@@ -32,11 +32,14 @@ object ManagerFactory {
     fun getContactManager(): ContactManager {
         return mContactManager
     }
-    fun getAudioPlayer() : AudioPlayer {
+
+    fun getAudioPlayer(): AudioPlayer {
         return AudioPlayerImpl
     }
 
-
+    fun getAudioFileManagerImpl(): AudioFileManagerImpl {
+        return AudioFileManagerImpl
+    }
 
 
 }

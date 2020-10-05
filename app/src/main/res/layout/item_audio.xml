@@ -1,71 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:paddingHorizontal="@dimen/d_16">
-
-    <ImageView
-        android:id="@+id/iv_controller_audio"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:background="@drawable/ic_audiocutter_play" />
+    android:layout_height="80dp">
+    <com.example.audiocutter.functions.audiocutterscreen.widget.ProgressView
+        android:layout_width="match_parent"
+        android:id="@+id/pg_audio_cutter_screen"
+        android:visibility="gone"
+        android:layout_height="match_parent" />
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="45dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
+        android:id="@+id/ln_item_audio_cutter_screen"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingHorizontal="@dimen/d_16">
 
-        <TextView
-            android:id="@+id/tv_name_audio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:ellipsize="marquee"
-            android:focusable="true"
-            android:fontFamily="@font/sanfranciscodisplay_bold"
-            android:text="Audio Name"
-            android:textColor="@color/colorBlack"
-            android:textSize="@dimen/d_18"
-            android:textStyle="bold"
-            android:singleLine="true" />
+        <ImageView
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:id="@+id/iv_controller_audio"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="?attr/selectableItemBackground"
+            android:src="@drawable/ic_audiocutter_play" />
 
-            <TextView
-                android:gravity="bottom"
-                android:id="@+id/tv_size_audio"
-                android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/d_16">
+
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginRight="@dimen/d_5"
-                android:fontFamily="@font/sanfranciscodisplay_regular"
-                android:text="2.1 MB"
-                android:textSize="@dimen/d_13" />
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-            <View
-                android:layout_width="0.5dp"
-                android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
-                android:background="@color/colorGray" />
 
-            <TextView
-                android:gravity="bottom"
-                android:id="@+id/tv_bitrate_audio"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:fontFamily="@font/sanfranciscodisplay_regular"
-                android:layout_marginLeft="@dimen/d_5"
-                android:text="128kb/s"
-                android:textSize="@dimen/d_13" />
-        </TableRow>
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/tv_name_audio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:fontFamily="@font/sanfranciscodisplay_bold"
+                    android:singleLine="true"
+                    android:text="Audio Name"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/d_18"
+                    android:textStyle="bold" />
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/tv_size_audio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="@dimen/d_5"
+                        android:fontFamily="@font/sanfranciscodisplay_regular"
+                        android:gravity="bottom"
+                        android:text="2.1 MB"
+                        android:textSize="@dimen/d_13" />
+
+                    <View
+                        android:layout_width="0.5dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="8dp"
+                        android:background="@color/colorgray" />
+
+                    <TextView
+                        android:id="@+id/tv_bitrate_audio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="@dimen/d_5"
+                        android:fontFamily="@font/sanfranciscodisplay_regular"
+                        android:gravity="bottom"
+                        android:text="128kb/s"
+                        android:textSize="@dimen/d_13" />
+                </TableRow>
+            </LinearLayout>
+
+            <com.example.audiocutter.functions.audiocutterscreen.widget.BarVisualizer xmlns:custom="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/bar_visualizer"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center"
+                custom:avColor="@color/colorYelowDark"
+                custom:avDensity="0.5"
+                custom:avSpeed="normal"
+                custom:avType="outline"
+                custom:avWidth="4dp" />
+
+        </LinearLayout>
 
     <LinearLayout
         android:id="@+id/ln_menu"
@@ -74,13 +106,13 @@
         android:gravity="center">
 
         <ImageView
-
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_width="@dimen/d_16"
             android:layout_height="@dimen/d_16"
-            android:src="@drawable/ic_audiocutter_popupmenu"
-            app:tint="@color/colorGray" />
+            android:src="@drawable/ic_audiocutter_popupmenu" />
 
     </LinearLayout>
 
 
-</LinearLayout>
+    </LinearLayout>
+</FrameLayout>

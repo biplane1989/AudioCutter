@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import com.example.core.core.BitRate
 import java.io.File
-import java.io.Serializable
 
 data class AudioFile(
     var file: File,
@@ -20,27 +19,27 @@ data class AudioFile(
     var dateAdded: String? = "",
     var genre: String? = "",
     var mimeType: String? = ""
-) : Serializable {
+)  {
+    constructor() : this(
+    File(""),
+    "",
+    0,
+    BitRate._128kb.value,
+    0,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+)
     override fun equals(other: Any?): Boolean {
         if (other is AudioFile) {
             return file.absolutePath == other.file.absolutePath
         }
         return super.equals(other)
     }
-
-    constructor() : this(
-        File(""),
-        "",
-        0,
-        BitRate._128kb.value,
-        0,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-    )
 }
+
