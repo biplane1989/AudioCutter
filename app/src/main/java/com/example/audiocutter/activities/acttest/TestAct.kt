@@ -1,18 +1,14 @@
 package com.example.audiocutter.activities.acttest
 
 import android.os.Bundle
-import android.view.View
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
-import com.example.audiocutter.functions.audiocutterscreen.view.screen.AudioCutterScreen
-import com.example.audiocutter.functions.audiocutterscreen.widget.BarVisualizer
-import com.example.audiocutter.functions.audiocutterscreen.widget.WaveAudio
-
-import kotlinx.android.synthetic.main.act_test.*
+import com.example.audiocutter.functions.mergeraudioscreen.view.MergerScreen
 
 class TestAct() : BaseActivity() {
-        lateinit var audioCutterScreen: AudioCutterScreen
-
+    //    lateinit var audioCutterScreen: AudioCutterScreen
+//    lateinit var mixScreen: MixerAudioScreen
+    lateinit var merScreen: MergerScreen
 
 
     override fun createView(savedInstanceState: Bundle?) {
@@ -23,10 +19,13 @@ class TestAct() : BaseActivity() {
 
     private fun initViews() {
 
-        audioCutterScreen = AudioCutterScreen()
-//        recentAddedScreen = MixerAudioScreen()
-//        supportFragmentManager.beginTransaction().replace(R.id.ln_main, recentAddedScreen).commit()
-        supportFragmentManager.beginTransaction().replace(R.id.ln_main, audioCutterScreen).commit()
+//        audioCutterScreen = AudioCutterScreen()
+//        mixScreen = MixerAudioScreen()
+        merScreen = MergerScreen()
+//        supportFragmentManager.beginTransaction().replace(R.id.ln_main, mixScreen).commit()
+//        supportFragmentManager.beginTransaction().replace(R.id.ln_main, audioCutterScreen).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.ln_main, merScreen).commit()
+
     }
 
 

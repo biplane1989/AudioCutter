@@ -1,6 +1,7 @@
-package com.example.audiocutter.functions.MixAudioScreen.adapter
+package com.example.audiocutter.functions.mergeraudioscreen.adapter
 
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -14,15 +15,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
+import com.example.audiocutter.functions.audiocutterscreen.widget.ProgressView
+import com.example.audiocutter.functions.audiocutterscreen.widget.WaveAudio
 
-class MixAdapter(val mContext: Context) :
-    ListAdapter<AudioCutterView, MixAdapter.RecentHolder>(Audiodiff()) {
-    lateinit var mCallBack: AudioMixerListener
+class MergerAdapter(val mContext: Context) : ListAdapter<AudioCutterView, MergerAdapter.MergerHolder>(MergerDiff()) {
+    lateinit var mCallBack: AudioMergeListener
     val SIZE_MB = 1024 * 1024
     var listAudios = mutableListOf<AudioCutterView>()
 
 
-    fun setAudioCutterListtener(event: AudioMixerListener) {
+    fun setAudioListener(event: AudioMergeListener) {
         mCallBack = event
     }
 
@@ -38,29 +40,27 @@ class MixAdapter(val mContext: Context) :
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecentHolder {
-        val view = LayoutInflater.from(mContext).inflate(R.layout.item_audio_mixer, parent, false)
-        return RecentHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MergerHolder {
+        val view = LayoutInflater.from(mContext).inflate(R.layout.item_audio_merger, parent, false)
+        return MergerHolder(view)
     }
 
 
-    override fun onBindViewHolder(holder: RecentHolder, position: Int) {
+    override fun onBindViewHolder(holder: MergerHolder, position: Int) {
         holder.bind()
 
     }
 
 
-    override fun onBindViewHolder(
-        holder: RecentHolder,
-        position: Int,
-        payloads: MutableList<Any>
-    ) {
+    override fun onBindViewHolder(holder: MergerHolder, position: Int, payloads: MutableList<Any>) {
         super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
         } else {
             val itemAudioFile = getItem(position)
 //            val audioCutterView = payloads.firstOrNull() as AudioCutterView
+
+
             when (itemAudioFile.state) {
                 PlayerState.PLAYING -> {
                     holder.ivController.setImageResource(R.drawable.ic_audiocutter_pause)
@@ -73,23 +73,25 @@ class MixAdapter(val mContext: Context) :
                 }
             }
             when (itemAudioFile.isCheckChooseItem) {
-                true -> holder.ivChecked.setImageResource(R.drawable.ic_mixer_checkdone)
-                false -> holder.ivChecked.setImageResource(R.drawable.ic_mixer_noncheck)
+                true -> holder.ivChecked.setImageResource(R.drawable.ic_checkdone)
+                false -> holder.ivChecked.setImageResource(R.drawable.ic_noncheck)
             }
         }
     }
 
-    inner class RecentHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
-        View.OnClickListener {
+    inner class MergerHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-        val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio_recent)
-        val ivChecked = itemView.findViewById<ImageView>(R.id.iv_recent_check)
-        val tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_audio_recent)
-        val tvSizeAudio = itemView.findViewById<TextView>(R.id.tv_size_audio_recent)
-        val tvBitrateAudio = itemView.findViewById<TextView>(R.id.tv_bitrate_audio_recent)
-        val lnItem = itemView.findViewById<LinearLayout>(R.id.ln_item_audio_recent_screen)
+        val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio_merger)
+        val ivChecked = itemView.findViewById<ImageView>(R.id.iv_merger_check)
+        val tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_audio_merger)
+        val tvSizeAudio = itemView.findViewById<TextView>(R.id.tv_size_audio_merger)
+        val tvBitrateAudio = itemView.findViewById<TextView>(R.id.tv_bitrate_audio_merger)
+        val lnItem = itemView.findViewById<LinearLayout>(R.id.ln_item_audio_merger_screen)
 
-        val lnMenu = itemView.findViewById<LinearLayout>(R.id.ln_menu_recent)
+        val lnMenu = itemView.findViewById<LinearLayout>(R.id.ln_menu_merger)
+
+        val pgAudio = itemView.findViewById<ProgressView>(R.id.pg_audio_merger_screen)
+        val waveView = itemView.findViewById<WaveAudio>(R.id.wave_audio_merger)
 
         init {
             ivController.setOnClickListener(this)
@@ -97,6 +99,7 @@ class MixAdapter(val mContext: Context) :
             lnItem.setOnClickListener(this)
         }
 
+        @SuppressLint("SetTextI18n")
         fun bind() {
             val itemAudioFile = getItem(position)
             tvBitrateAudio.text = "${itemAudioFile.audioFile.bitRate}Kbs/s"
@@ -113,22 +116,37 @@ class MixAdapter(val mContext: Context) :
                 tvSizeAudio.text = "$size Kb"
             }
 
+            when (itemAudioFile.isCheckDistance) {
+                true -> {
+                    pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration)
+                }
+                false -> {
+                    pgAudio.resetView()
+                }
+            }
+
             when (itemAudioFile.state) {
+
                 PlayerState.PLAYING -> {
+                    pgAudio.visibility = View.VISIBLE
+                    waveView.visibility = View.VISIBLE
                     ivController.setImageResource(R.drawable.ic_audiocutter_pause)
-                    return
                 }
                 PlayerState.PAUSE -> {
+                    waveView.visibility = View.INVISIBLE
                     ivController.setImageResource(R.drawable.ic_audiocutter_play)
-                    return
                 }
                 PlayerState.IDLE -> {
+                    pgAudio.visibility = View.GONE
+                    waveView.visibility = View.INVISIBLE
+                    pgAudio.resetView()
                     ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }
             }
+
             when (itemAudioFile.isCheckChooseItem) {
-                true -> ivChecked.setImageResource(R.drawable.ic_mixer_checkdone)
-                false -> ivChecked.setImageResource(R.drawable.ic_mixer_noncheck)
+                true -> ivChecked.setImageResource(R.drawable.ic_checkdone)
+                false -> ivChecked.setImageResource(R.drawable.ic_noncheck)
             }
 
         }
@@ -137,12 +155,11 @@ class MixAdapter(val mContext: Context) :
         override fun onClick(p0: View) {
             val item = getItem(adapterPosition)
             when (p0.id) {
-                R.id.iv_controller_audio_recent -> controllerAudio()
-                R.id.ln_menu_recent -> mCallBack.chooseItemAudio(adapterPosition, item.isCheckChooseItem)
-                R.id.ln_item_audio_recent_screen -> mCallBack.chooseItemAudio(adapterPosition, item.isCheckChooseItem)
+                R.id.iv_controller_audio_merger -> controllerAudio()
+                R.id.ln_menu_merger -> mCallBack.chooseItemAudio(adapterPosition, item.isCheckChooseItem)
+                R.id.ln_item_audio_merger_screen -> mCallBack.chooseItemAudio(adapterPosition, item.isCheckChooseItem)
             }
         }
-
 
 
         private fun controllerAudio() {
@@ -166,7 +183,7 @@ class MixAdapter(val mContext: Context) :
 
     }
 
-    interface AudioMixerListener {
+    interface AudioMergeListener {
 
         fun play(pos: Int)
         fun pause(pos: Int)
@@ -175,7 +192,7 @@ class MixAdapter(val mContext: Context) :
     }
 }
 
-class Audiodiff : DiffUtil.ItemCallback<AudioCutterView>() {
+class MergerDiff : DiffUtil.ItemCallback<AudioCutterView>() {
     override fun areItemsTheSame(oldItem: AudioCutterView, newItem: AudioCutterView): Boolean {
         return oldItem.audioFile.fileName == oldItem.audioFile.fileName
     }

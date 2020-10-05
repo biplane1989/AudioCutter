@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp">
+
+    <com.example.audiocutter.functions.audiocutterscreen.widget.ProgressView
+        android:id="@+id/pg_audio_merger_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/ln_item_audio_merger_screen"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+
+            android:id="@+id/iv_controller_audio_merger"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="?attr/selectableItemBackground"
+            android:src="@drawable/ic_audiocutter_play" />
+        <LinearLayout
+            android:gravity="right"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingLeft="@dimen/d_16">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:id="@+id/tv_name_audio_merger"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:fontFamily="@font/sanfranciscodisplay_bold"
+                    android:singleLine="true"
+                    android:text="Audio Name"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/d_18"
+                    android:textStyle="bold" />
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/tv_size_audio_merger"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="@dimen/d_5"
+                        android:fontFamily="@font/sanfranciscodisplay_regular"
+                        android:gravity="bottom"
+                        android:text="2.1 MB"
+                        android:textSize="@dimen/d_13" />
+
+                    <View
+                        android:layout_width="0.5dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="8dp"
+                        android:background="@color/colorgray" />
+
+                    <TextView
+                        android:id="@+id/tv_bitrate_audio_merger"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="@dimen/d_5"
+                        android:fontFamily="@font/sanfranciscodisplay_regular"
+                        android:gravity="bottom"
+                        android:text="128kb/s"
+                        android:textSize="@dimen/d_13" />
+                </TableRow>
+
+            </LinearLayout>
+
+            <com.example.audiocutter.functions.audiocutterscreen.widget.WaveAudio
+                android:layout_width="24dp"
+                android:id="@+id/wave_audio_merger"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:visibility="invisible" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ln_menu_merger"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/iv_merger_check"
+                android:layout_width="@dimen/d_20"
+                android:layout_height="@dimen/d_20"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_noncheck" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+</FrameLayout>

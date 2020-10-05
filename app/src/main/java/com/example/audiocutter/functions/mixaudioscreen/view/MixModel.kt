@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.MixAudioScreen.view
+package com.example.audiocutter.functions.mixaudioscreen.view
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -41,6 +41,7 @@ class MixModel : BaseViewModel() {
     }
 
 
+
     fun updateMediaInfo(playerInfo: PlayerInfo): List<AudioCutterView> {
         Log.d(TAG, "updateMediaInfo: ${playerInfo.playerState}")
         if (playerInfo.currentAudio != null) {
@@ -49,16 +50,21 @@ class MixModel : BaseViewModel() {
                 val oldPos = getAudioFilePos(currentAudioPlaying)
                 val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
                 if (oldPos != -1) {
-                    updateState(oldPos, PlayerState.IDLE)
+                    val audioFile = mListAudio[oldPos].copy()
+                    audioFile.state = PlayerState.IDLE
+                    audioFile.isCheckDistance = false
+                    audioFile.currentPos = playerInfo.position.toLong()
+                    audioFile.duration = playerInfo.duration.toLong()
+                    mListAudio[oldPos] = audioFile
                 }
                 if (newPos != -1) {
-                    updateState(newPos, playerInfo.playerState)
+                    updateState(newPos, playerInfo, true)
                 }
             } else {
                 val atPos = getAudioFilePos(currentAudioPlaying)
                 if (atPos != -1) {
                     Log.d(TAG, "updateMediaInfo: atPOs   ${mListAudio.get(atPos).state}")
-                    updateState(atPos, playerInfo.playerState)
+                    updateState(atPos, playerInfo, true)
                 }
             }
             currentAudioPlaying = playerInfo.currentAudio!!.file
@@ -69,11 +75,15 @@ class MixModel : BaseViewModel() {
 
 
 
-    private fun updateState(pos: Int, state: PlayerState) {
+    private fun updateState(pos: Int, playerInfo: PlayerInfo, rs: Boolean) {
         val audioFile = mListAudio[pos].copy()
-        audioFile.state = state
+        audioFile.state = playerInfo.playerState
+        audioFile.isCheckDistance = rs
+        audioFile.currentPos = playerInfo.position.toLong()
+        audioFile.duration = playerInfo.duration.toLong()
         mListAudio[pos] = audioFile
     }
+
 
     private fun getAudioFilePos(file: File): Int {
         var i = 0
