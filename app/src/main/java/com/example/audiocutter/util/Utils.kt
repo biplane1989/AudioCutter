@@ -3,6 +3,7 @@ package com.example.audiocutter.util
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Rect
+import android.util.Log
 import android.util.TypedValue
 
 object Utils {
@@ -32,7 +33,8 @@ object Utils {
         val seconds = time / 1000
         val minutes = seconds / 60
         val oddSeconds = seconds - minutes * 60
-        val oddMSeconds = time - (minutes * 60 + oddSeconds) * 1000
+        val oddMSeconds = (time - (minutes * 60 + oddSeconds) * 1000) / 100
+        Log.e("TAG", "oddSeconds: ${oddSeconds}: oddMSeconds: $oddMSeconds")
         return minutes.toString() + ":" + (if (oddSeconds > 9) oddSeconds else "0$oddSeconds") + "." + oddMSeconds
     }
 
@@ -53,7 +55,7 @@ object Utils {
         return minutes.toString() + ":" + ((if (oddSeconds > 9) oddSeconds else "0$oddSeconds").toString() + if (oddMsTrimmed != 0L) ".$oddMsTrimmed" else "")
     }
 
-    fun getWidthText(str: String, context: Context): Float {
+    fun getWidthText(str: String = "00:00:00", context: Context): Float {
         val paint = Paint()
         paint.textSize =
             spToPx(context, 12f)

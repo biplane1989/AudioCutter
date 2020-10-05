@@ -2,11 +2,10 @@ package com.example.audiocutter.activities.acttest
 
 import android.os.Bundle
 import android.os.Environment
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
-import com.example.audiocutter.functions.fragmentCutterScreen.AudioCutFragment
+import com.example.audiocutter.functions.fragmentcutterscreen.AudioCutFragment
 import java.io.File
 
 class CutActivity : BaseActivity() {

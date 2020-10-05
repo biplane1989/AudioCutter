@@ -282,34 +282,30 @@ class WaveformEditView : View {
     }
 
     fun zoomOut() {
-        if (scale < 1f) {
-            scale = (scale + 0.1).toFloat()
-            if (scale >= 1f) {
-                scale = 1f
-            }
-        }
-        updateCursors()
-        updateStartTime()
-        updateEndTime()
-        updateDividerTimeRange()
-        lastScale = scale
-        invalidate()
+        updateScacle(scale + 0.1f)
     }
 
     fun zoomInt() {
-        if (scale > scaleDefault) {
-            scale = (scale - 0.1).toFloat()
-            if (scale <= scaleDefault) {
-                scale = scaleDefault
-                translate = 0f
-            }
+        updateScacle(scale - 0.1f)
+    }
+
+    fun updateScacle(tmpScale: Float) {
+        if (tmpScale > 1f) {
+            scale = 1f
+            correctTranslate(translate)
+        } else if (tmpScale < minScale) {
+            scale = minScale
+            translate = 0f
             updateCursors()
-            updateStartTime()
-            updateEndTime()
-            updateDividerTimeRange()
-            lastScale = scale
-            invalidate()
+        } else {
+            scale = tmpScale
+            correctTranslate(translate)
         }
+        updateDividerTimeRange()
+        updateCursors()
+        updateStartTime()
+        updateEndTime()
+        invalidate()
     }
 
     private fun drawCenterLine(canvas: Canvas) {
@@ -335,7 +331,7 @@ class WaveformEditView : View {
             while (i < stopX) {
                 val x = i * 1f / trackDurationMs * waveformWidth * scale - translate
                 timeMarkPaint!!.alpha =
-                    if (i % upperTimeRange / 1000 == 0L) 255 else Math.abs(timeMarkNewAlpha)
+                    if (i % upperTimeRange / 1000 == 0L) 255 else abs(timeMarkNewAlpha)
                 if (x >= 0) {
                     val fl = Utils.getWidthText(Utils.longMsToString(i), context) / 2
                     canvas.drawText(
@@ -575,6 +571,10 @@ class WaveformEditView : View {
     private fun checkMovingPlayLine(event: MotionEvent): Boolean {
         movingPlayLine = playLineRect!!.contains(event.x, event.y)
         return movingPlayLine
+    }
+
+    fun getTimeEnd(): Long {
+        return (cursorLeftPortion * trackDurationMs).toLong()
     }
 
     private fun changeSelectRange(event: MotionEvent) {

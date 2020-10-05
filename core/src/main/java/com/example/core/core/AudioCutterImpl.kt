@@ -139,7 +139,7 @@ class AudioCutterImpl : AudioCutter {
                 if (audioFile1.time - audioFile2.time >= 0) audioFile2.time else audioFile1.time
             }
 
-            var requestCode = FFmpeg.execute(
+            val requestCode = FFmpeg.execute(
                 String.format(
                     Locale.ENGLISH,
                     CMD_MIX_AUDIO,
