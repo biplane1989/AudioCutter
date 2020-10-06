@@ -16,7 +16,6 @@ import android.util.Log
 import android.widget.Toast
 import java.io.File
 import java.io.FileOutputStream
-import java.lang.reflect.Method
 
 
 object FileUtils {
@@ -48,7 +47,7 @@ object FileUtils {
                 val docId = DocumentsContract.getDocumentId(uri)
                 val split = docId.split(":".toRegex()).toTypedArray()
                 val type = split[0]
-                val fullPath = getPathFromExtSD(split)
+                val fullPath = getPathFromExtSD(context, split)
                 return if (fullPath !== "") {
                     fullPath
                 } else {
@@ -161,12 +160,12 @@ object FileUtils {
      *
      * @param pathData The storage type and the relative path
      */
-    private fun getPathFromExtSD(pathData: Array<String>): String {
+    private fun getPathFromExtSD(context: Context, pathData: Array<String>): String {
         val type = pathData[0]
         val relativePath = "/" + pathData[1]
 //        val relativePath = pathData[1]
         var fullPath = ""
-        fullPath = "/storage/" + type + relativePath
+//        fullPath = "/storage/" + type + relativePath
 
         // on my Sony devices (4.4.4 & 5.1.1), `type` is a dynamic string
         // something like "71F8-2C0A", some kind of unique id per storage
@@ -187,28 +186,29 @@ object FileUtils {
         //
         // instead, for each possible path, check if file exists
         // we'll start with secondary storage as this could be our (physically) removable sd card
-           /*   fullPath = System.getenv("SECONDARY_STORAGE") + relativePath
-              if (fileExists(fullPath)) {
-                  Log.d(TAG, "fullPath : " + fileExists(fullPath))
-                  return fullPath
-              }
+        /*   fullPath = System.getenv("SECONDARY_STORAGE") + relativePath
+           if (fileExists(fullPath)) {
+               Log.d(TAG, "fullPath : " + fileExists(fullPath))
+               return fullPath
+           }
 
 
 
-              fullPath = System.getenv("EXTERNAL_STORAGE") + relativePath
-              if (fileExists(fullPath)) {
-                  Log.d(TAG, "fullPath : " + fileExists(fullPath))
-                  return fullPath
-              }
+           fullPath = System.getenv("EXTERNAL_STORAGE") + relativePath
+           if (fileExists(fullPath)) {
+               Log.d(TAG, "fullPath : " + fileExists(fullPath))
+               return fullPath
+           }
 
-              return fullPath*/
+           return fullPath*/
 
 //        File(fullPath).listFiles().forEach {
 //            Log.d("giangtd", "file: ${it.absolutePath}")
 //        }
 
-        val sdcardPath = "/storage/3736-6635/"
-
+//        val sdcardPath = "/storage/3736-6635/"
+        val sdcardPath = getStoragePath(context, true)
+        fullPath = sdcardPath + relativePath
 //        val sdcardPath = SDPath()
 //        fullPath = sdcardPath + relativePath
 
@@ -227,149 +227,176 @@ object FileUtils {
         return fullPath
     }
 
-
-    fun SDPath(): String? {
-        var sdcardpath = ""
-
-        //Datas
-        if (File("/data/sdext4/").exists() && File("/data/sdext4/").canRead()) {
-            sdcardpath = "/data/sdext4/"
-        }
-        if (File("/data/sdext3/").exists() && File("/data/sdext3/").canRead()) {
-            sdcardpath = "/data/sdext3/"
-        }
-        if (File("/data/sdext2/").exists() && File("/data/sdext2/").canRead()) {
-            sdcardpath = "/data/sdext2/"
-        }
-        if (File("/data/sdext1/").exists() && File("/data/sdext1/").canRead()) {
-            sdcardpath = "/data/sdext1/"
-        }
-        if (File("/data/sdext/").exists() && File("/data/sdext/").canRead()) {
-            sdcardpath = "/data/sdext/"
-        }
-
-        //MNTS
-        if (File("mnt/sdcard/external_sd/").exists() && File("mnt/sdcard/external_sd/").canRead()) {
-            sdcardpath = "mnt/sdcard/external_sd/"
-        }
-        if (File("mnt/extsdcard/").exists() && File("mnt/extsdcard/").canRead()) {
-            sdcardpath = "mnt/extsdcard/"
-        }
-        if (File("mnt/external_sd/").exists() && File("mnt/external_sd/").canRead()) {
-            sdcardpath = "mnt/external_sd/"
-        }
-        if (File("mnt/emmc/").exists() && File("mnt/emmc/").canRead()) {
-            sdcardpath = "mnt/emmc/"
-        }
-        if (File("mnt/sdcard0/").exists() && File("mnt/sdcard0/").canRead()) {
-            sdcardpath = "mnt/sdcard0/"
-        }
-        if (File("mnt/sdcard1/").exists() && File("mnt/sdcard1/").canRead()) {
-            sdcardpath = "mnt/sdcard1/"
-        }
-        if (File("mnt/sdcard/").exists() && File("mnt/sdcard/").canRead()) {
-            sdcardpath = "mnt/sdcard/"
-        }
-
-        //Storages
-        if (File("/storage/removable/sdcard1/").exists() && File("/storage/removable/sdcard1/").canRead()) {
-            sdcardpath = "/storage/removable/sdcard1/"
-        }
-        if (File("/storage/external_SD/").exists() && File("/storage/external_SD/").canRead()) {
-            sdcardpath = "/storage/external_SD/"
-        }
-        if (File("/storage/ext_sd/").exists() && File("/storage/ext_sd/").canRead()) {
-            sdcardpath = "/storage/ext_sd/"
-        }
-        if (File("/storage/sdcard1/").exists() && File("/storage/sdcard1/").canRead()) {
-            sdcardpath = "/storage/sdcard1/"
-        }
-        if (File("/storage/sdcard0/").exists() && File("/storage/sdcard0/").canRead()) {
-            sdcardpath = "/storage/sdcard0/"
-        }
-        if (File("/storage/sdcard/").exists() && File("/storage/sdcard/").canRead()) {
-            sdcardpath = "/storage/sdcard/"
-        }
-        if (sdcardpath.contentEquals("")) {
-            sdcardpath = Environment.getExternalStorageDirectory().absolutePath
-        }
-        Log.v("SDFinder", "Path: $sdcardpath")
-        return sdcardpath
-    }
-
-
-    private fun getDriveFilePath(uri: Uri, context: Context): String {
-        val contentResolver = context.contentResolver
-        val returnCursor = contentResolver.query(uri, null, null, null, null)
-
-        // Get the column indexes of the data in the Cursor,
-        // move to the first row in the Cursor, get the data,
-        // and display it.
-        val nameIndex = returnCursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-        val sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE)
-        returnCursor.moveToFirst()
-        val name = returnCursor.getString(nameIndex)
-        val size = java.lang.Long.toString(returnCursor.getLong(sizeIndex))
-        val file = File(context.cacheDir, name)
+    // get path for sd card
+    fun getStoragePath(mContext: Context, isExternal: Boolean): String? {
+        var path: String? = ""
+        val mStorageManager = mContext.getSystemService(Context.STORAGE_SERVICE) as StorageManager
+        var storageVolumeClazz: Class<*>? = null
         try {
-            val inputStream = context.contentResolver.openInputStream(uri)
-            val outputStream = FileOutputStream(file)
-            var read = 0
-            val maxBufferSize = 1 * 1024 * 1024
-            val bytesAvailable = inputStream!!.available()
-
-            // int bufferSize = 1024;
-            val bufferSize = Math.min(bytesAvailable, maxBufferSize)
-            val buffers = ByteArray(bufferSize)
-            while (inputStream.read(buffers).also { read = it } != -1) {
-                outputStream.write(buffers, 0, read)
+            storageVolumeClazz = Class.forName("android.os.storage.StorageVolume")
+            val getVolumeList = mStorageManager.javaClass.getMethod("getVolumeList")
+            val getPath = storageVolumeClazz.getMethod("getPath")
+            val isRemovable = storageVolumeClazz.getMethod("isRemovable")
+            val result = getVolumeList.invoke(mStorageManager)
+            val length: Int = java.lang.reflect.Array.getLength(result)
+            for (i in 0 until length) {
+                val storageVolumeElement: Any = java.lang.reflect.Array.get(result, i)
+                val paths = getPath.invoke(storageVolumeElement) as String
+                val removable = isRemovable.invoke(storageVolumeElement) as Boolean
+                if (removable == isExternal) {
+                    path = paths
+                }
             }
-            Log.e("File Size", "Size " + file.length())
-            inputStream.close()
-            outputStream.close()
-            Log.e("File Path", "Path " + file.path)
-            Log.e("File Size", "Size " + file.length())
-        } catch (e: Exception) {
-            Log.e(LOG_TAG, e.message!!)
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            return path
         }
-        return file.path
+        return path
     }
 
-    private fun getMediaFilePathForN(uri: Uri, context: Context): String {
-        val returnCursor = context.contentResolver.query(uri, null, null, null, null)
 
-        // Get the column indexes of the data in the Cursor,
-        // move to the first row in the Cursor, get the data,
-        // and display it.
-        val nameIndex = returnCursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-        val sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE)
-        returnCursor.moveToFirst()
-        val name = returnCursor.getString(nameIndex)
-        val size = java.lang.Long.toString(returnCursor.getLong(sizeIndex))
-        val file = File(context.filesDir, name)
-        try {
-            val inputStream = context.contentResolver.openInputStream(uri)
-            val outputStream = FileOutputStream(file)
-            var read = 0
-            val maxBufferSize = 1 * 1024 * 1024
-            val bytesAvailable = inputStream!!.available()
+    /* fun SDPath(): String? {
+         var sdcardpath = ""
 
-            //int bufferSize = 1024;
-            val bufferSize = Math.min(bytesAvailable, maxBufferSize)
-            val buffers = ByteArray(bufferSize)
-            while (inputStream.read(buffers).also { read = it } != -1) {
-                outputStream.write(buffers, 0, read)
-            }
-            Log.e("File Size", "Size " + file.length())
-            inputStream.close()
-            outputStream.close()
-            Log.e("File Path", "Path " + file.path)
-            Log.e("File Size", "Size " + file.length())
-        } catch (e: Exception) {
-            Log.e(LOG_TAG, e.message!!)
-        }
-        return file.path
-    }
+         //Datas
+         if (File("/data/sdext4/").exists() && File("/data/sdext4/").canRead()) {
+             sdcardpath = "/data/sdext4/"
+         }
+         if (File("/data/sdext3/").exists() && File("/data/sdext3/").canRead()) {
+             sdcardpath = "/data/sdext3/"
+         }
+         if (File("/data/sdext2/").exists() && File("/data/sdext2/").canRead()) {
+             sdcardpath = "/data/sdext2/"
+         }
+         if (File("/data/sdext1/").exists() && File("/data/sdext1/").canRead()) {
+             sdcardpath = "/data/sdext1/"
+         }
+         if (File("/data/sdext/").exists() && File("/data/sdext/").canRead()) {
+             sdcardpath = "/data/sdext/"
+         }
+
+         //MNTS
+         if (File("mnt/sdcard/external_sd/").exists() && File("mnt/sdcard/external_sd/").canRead()) {
+             sdcardpath = "mnt/sdcard/external_sd/"
+         }
+         if (File("mnt/extsdcard/").exists() && File("mnt/extsdcard/").canRead()) {
+             sdcardpath = "mnt/extsdcard/"
+         }
+         if (File("mnt/external_sd/").exists() && File("mnt/external_sd/").canRead()) {
+             sdcardpath = "mnt/external_sd/"
+         }
+         if (File("mnt/emmc/").exists() && File("mnt/emmc/").canRead()) {
+             sdcardpath = "mnt/emmc/"
+         }
+         if (File("mnt/sdcard0/").exists() && File("mnt/sdcard0/").canRead()) {
+             sdcardpath = "mnt/sdcard0/"
+         }
+         if (File("mnt/sdcard1/").exists() && File("mnt/sdcard1/").canRead()) {
+             sdcardpath = "mnt/sdcard1/"
+         }
+         if (File("mnt/sdcard/").exists() && File("mnt/sdcard/").canRead()) {
+             sdcardpath = "mnt/sdcard/"
+         }
+
+         //Storages
+         if (File("/storage/removable/sdcard1/").exists() && File("/storage/removable/sdcard1/").canRead()) {
+             sdcardpath = "/storage/removable/sdcard1/"
+         }
+         if (File("/storage/external_SD/").exists() && File("/storage/external_SD/").canRead()) {
+             sdcardpath = "/storage/external_SD/"
+         }
+         if (File("/storage/ext_sd/").exists() && File("/storage/ext_sd/").canRead()) {
+             sdcardpath = "/storage/ext_sd/"
+         }
+         if (File("/storage/sdcard1/").exists() && File("/storage/sdcard1/").canRead()) {
+             sdcardpath = "/storage/sdcard1/"
+         }
+         if (File("/storage/sdcard0/").exists() && File("/storage/sdcard0/").canRead()) {
+             sdcardpath = "/storage/sdcard0/"
+         }
+         if (File("/storage/sdcard/").exists() && File("/storage/sdcard/").canRead()) {
+             sdcardpath = "/storage/sdcard/"
+         }
+         if (sdcardpath.contentEquals("")) {
+             sdcardpath = Environment.getExternalStorageDirectory().absolutePath
+         }
+         Log.v("SDFinder", "Path: $sdcardpath")
+         return sdcardpath
+     }*/
+
+
+    /*  private fun getDriveFilePath(uri: Uri, context: Context): String {
+          val contentResolver = context.contentResolver
+          val returnCursor = contentResolver.query(uri, null, null, null, null)
+
+          // Get the column indexes of the data in the Cursor,
+          // move to the first row in the Cursor, get the data,
+          // and display it.
+          val nameIndex = returnCursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+          val sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE)
+          returnCursor.moveToFirst()
+          val name = returnCursor.getString(nameIndex)
+          val size = java.lang.Long.toString(returnCursor.getLong(sizeIndex))
+          val file = File(context.cacheDir, name)
+          try {
+              val inputStream = context.contentResolver.openInputStream(uri)
+              val outputStream = FileOutputStream(file)
+              var read = 0
+              val maxBufferSize = 1 * 1024 * 1024
+              val bytesAvailable = inputStream!!.available()
+
+              // int bufferSize = 1024;
+              val bufferSize = Math.min(bytesAvailable, maxBufferSize)
+              val buffers = ByteArray(bufferSize)
+              while (inputStream.read(buffers).also { read = it } != -1) {
+                  outputStream.write(buffers, 0, read)
+              }
+              Log.e("File Size", "Size " + file.length())
+              inputStream.close()
+              outputStream.close()
+              Log.e("File Path", "Path " + file.path)
+              Log.e("File Size", "Size " + file.length())
+          } catch (e: Exception) {
+              Log.e(LOG_TAG, e.message!!)
+          }
+          return file.path
+      }*/
+
+    /* private fun getMediaFilePathForN(uri: Uri, context: Context): String {
+         val returnCursor = context.contentResolver.query(uri, null, null, null, null)
+
+         // Get the column indexes of the data in the Cursor,
+         // move to the first row in the Cursor, get the data,
+         // and display it.
+         val nameIndex = returnCursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+         val sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE)
+         returnCursor.moveToFirst()
+         val name = returnCursor.getString(nameIndex)
+         val size = java.lang.Long.toString(returnCursor.getLong(sizeIndex))
+         val file = File(context.filesDir, name)
+         try {
+             val inputStream = context.contentResolver.openInputStream(uri)
+             val outputStream = FileOutputStream(file)
+             var read = 0
+             val maxBufferSize = 1 * 1024 * 1024
+             val bytesAvailable = inputStream!!.available()
+
+             //int bufferSize = 1024;
+             val bufferSize = Math.min(bytesAvailable, maxBufferSize)
+             val buffers = ByteArray(bufferSize)
+             while (inputStream.read(buffers).also { read = it } != -1) {
+                 outputStream.write(buffers, 0, read)
+             }
+             Log.e("File Size", "Size " + file.length())
+             inputStream.close()
+             outputStream.close()
+             Log.e("File Path", "Path " + file.path)
+             Log.e("File Size", "Size " + file.length())
+         } catch (e: Exception) {
+             Log.e(LOG_TAG, e.message!!)
+         }
+         return file.path
+     }*/
 
     private fun getDataColumn(context: Context, uri: Uri?, selection: String?, selectionArgs: Array<String>?): String? {
         var cursor: Cursor? = null
