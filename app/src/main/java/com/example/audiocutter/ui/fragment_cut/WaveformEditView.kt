@@ -71,7 +71,7 @@ class WaveformEditView : View {
     private var upperTimeRange: Long = 0
     private var lastTimeRangeIndex = -1
     private var a = 0
-    private var scaleDefault = 0f
+    private var mEndTime = 0L
     private lateinit var paintLineSpace: Paint
 
     constructor(context: Context) : super(context) {
@@ -152,6 +152,8 @@ class WaveformEditView : View {
 
     fun setDataSource(path: String) {
         val duration = getDuration(path)
+        if (listener != null)
+            listener!!.onCountAudioSelected(duration, true)
         trackDurationMs = duration
         invalidate()
         if (duration > WaveformLoader.PERIOD_IN_FRAMES) {
@@ -224,6 +226,7 @@ class WaveformEditView : View {
             mediaMetadataRetriever.setDataSource(path)
             val durationStr =
                 mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+            mediaMetadataRetriever.release()
             durationStr!!.toLong()
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
@@ -275,8 +278,10 @@ class WaveformEditView : View {
             drawSelectRect(canvas)
             drawPlayLine(canvas)
             drawSelectCursors(canvas)
-            if (scaleDefault == 0f) {
-                scaleDefault = scale
+            if (mEndTime == 0L) {
+                endTimeMs =
+                    (abs(cursorRightRect!!.right + translate) / scale / waveformWidth * trackDurationMs).toLong()
+                mEndTime = endTimeMs
             }
         }
     }
@@ -510,19 +515,16 @@ class WaveformEditView : View {
                 }
             }
             MotionEvent.ACTION_MOVE -> if (touchCount >= 2) {
-                Log.e(TAG, "onTouchEvent0: $touchCount")
                 val centerPointX = (event.getX(0) + event.getX(1)) / 2f
                 val centerPointWaveformX = (centerPointX + translate) / scale
                 val distanceEnd =
                     distance(event.getX(0), event.getX(1), event.getY(0), event.getY(1))
                 val tmpScale = Math.min(1f, distanceEnd / distanceStart * scaleStart)
                 if (tmpScale < minScale) {
-                    Log.e(TAG, "onTouchEvent1: $touchCount")
                     scale = minScale
                     translate = 0f
                     updateCursors()
                 } else {
-                    Log.e(TAG, "onTouchEvent2: $touchCount")
                     scale = tmpScale
                     val tempTranslate = centerPointWaveformX * scale - centerPointX
                     correctTranslate(tempTranslate)
@@ -571,10 +573,6 @@ class WaveformEditView : View {
     private fun checkMovingPlayLine(event: MotionEvent): Boolean {
         movingPlayLine = playLineRect!!.contains(event.x, event.y)
         return movingPlayLine
-    }
-
-    fun getTimeEnd(): Long {
-        return (cursorLeftPortion * trackDurationMs).toLong()
     }
 
     private fun changeSelectRange(event: MotionEvent) {
@@ -626,6 +624,8 @@ class WaveformEditView : View {
         if (listener != null) {
             listener!!.onStartTimeChanged(startTimeMs)
         }
+        if (listener != null)
+            listener!!.onCountAudioSelected(endTimeMs - startTimeMs, false)
     }
 
     private fun updateEndTime() {
@@ -634,6 +634,8 @@ class WaveformEditView : View {
         if (listener != null) {
             listener!!.onEndTimeChanged(endTimeMs)
         }
+        if (listener != null)
+            listener!!.onCountAudioSelected(endTimeMs - startTimeMs, false)
     }
 
     private fun calculatorLineHeight(value: Double): Float {
@@ -649,8 +651,8 @@ class WaveformEditView : View {
             tempTranslate
         }
         updateCursors()
-        updateStartTime()
         updateEndTime()
+        updateStartTime()
     }
 
     private fun updateCursors() {
@@ -677,16 +679,38 @@ class WaveformEditView : View {
         return (resources.displayMetrics.density * dp + 0.5f).toInt()
     }
 
-    fun setStartTimeMs(startTimeMs: Int) {
-        this.startTimeMs = startTimeMs.toLong()
-        cursorLeftPortion = startTimeMs * 1f / trackDurationMs
-        updateCursors()
+    fun getTimeStart(): Long {
+        return startTimeMs
     }
 
-    fun setEndTimeMs(endTimeMs: Int) {
-        this.endTimeMs = endTimeMs.toLong()
-        cursorRightPortion = endTimeMs * 1f / trackDurationMs
-        updateCursors()
+    fun getTimeEnd(): Long {
+        return endTimeMs
+    }
+
+    fun setStartTimeMs(startTimeMs: Long) {
+        if (startTimeMs >= 0 && startTimeMs <= getTimeEnd() - 500) {
+            this.startTimeMs = startTimeMs
+            cursorLeftPortion = startTimeMs * 1f / trackDurationMs
+            updateCursors()
+            invalidate()
+            if (listener != null) {
+                listener!!.onStartTimeChanged(startTimeMs)
+                listener!!.onPlayPositionChanged((endTimeMs - startTimeMs).toInt())
+            }
+        }
+    }
+
+    fun setEndTimeMs(endTimeMs: Long) {
+        if (endTimeMs <= mEndTime && endTimeMs >= getTimeStart() + 500) {
+            this.endTimeMs = endTimeMs
+            cursorRightPortion = endTimeMs * 1f / trackDurationMs
+            updateCursors()
+            invalidate()
+            if (listener != null) {
+                listener!!.onEndTimeChanged(this.endTimeMs)
+                listener!!.onPlayPositionChanged((this.endTimeMs - startTimeMs).toInt())
+            }
+        }
     }
 
     fun setListener(listener: WaveformEditListener?) {
@@ -776,6 +800,7 @@ class WaveformEditView : View {
         fun onStartTimeChanged(startTimeMs: Long)
         fun onEndTimeChanged(endTimeMs: Long)
         fun onPlayPositionChanged(positionMs: Int)
+        fun onCountAudioSelected(positionMs: Long, isFirstTime: Boolean)
     }
 
     companion object {

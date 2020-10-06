@@ -5,7 +5,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF"
+        android:background="@color/fragment_cutter_bg_color"
         tools:context=".functions.fragmentcutterscreen.AudioCutFragment">
 
         <RelativeLayout
@@ -106,7 +106,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="@font/sanfrancisco_medium"
-                    android:text="00:10.4"
+                    android:text="0:00.0"
                     android:textColor="@color/fragment_cutter_text_time_color"
                     android:textSize="14sp" />
 
@@ -142,7 +142,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="@font/sanfrancisco_medium"
-                    android:text="00:10.4"
+                    android:text="0:00.0"
                     android:textColor="@color/fragment_cutter_text_time_color"
                     android:textSize="14sp" />
 

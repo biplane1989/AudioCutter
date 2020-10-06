@@ -34,7 +34,6 @@ object Utils {
         val minutes = seconds / 60
         val oddSeconds = seconds - minutes * 60
         val oddMSeconds = (time - (minutes * 60 + oddSeconds) * 1000) / 100
-        Log.e("TAG", "oddSeconds: ${oddSeconds}: oddMSeconds: $oddMSeconds")
         return minutes.toString() + ":" + (if (oddSeconds > 9) oddSeconds else "0$oddSeconds") + "." + oddMSeconds
     }
 
