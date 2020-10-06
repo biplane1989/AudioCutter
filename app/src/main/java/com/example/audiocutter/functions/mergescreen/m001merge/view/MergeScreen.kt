@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.mergeraudioscreen.view
+package com.example.audiocutter.functions.mergescreen.m001merge.view
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -20,13 +20,14 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
-import com.example.audiocutter.functions.mergeraudioscreen.adapter.MergerAdapter
+import com.example.audiocutter.functions.mergescreen.event.OnActionCallback
+import com.example.audiocutter.functions.mergescreen.m001merge.adapter.MergeAdapter
 
-class MergerScreen : BaseFragment(), View.OnClickListener, MergerAdapter.AudioMergeListener {
+class MergeScreen : BaseFragment(), View.OnClickListener, MergeAdapter.AudioMergeListener {
     private lateinit var mView: View
     private lateinit var rvAudioMer: RecyclerView
-    private lateinit var audioMerAdapter: MergerAdapter
-    private lateinit var audioMerModel: MergerModel
+    private lateinit var audioMerAdapter: MergeAdapter
+    private lateinit var audioMerModel: MergeModel
     lateinit var ivFile: ImageView
     lateinit var ivSearch: ImageView
     lateinit var ivBack: ImageView
@@ -46,7 +47,7 @@ class MergerScreen : BaseFragment(), View.OnClickListener, MergerAdapter.AudioMe
     lateinit var rltNextMerParent: RelativeLayout
 
     var listTmp: MutableList<AudioCutterView> = mutableListOf()
-    var isChangeList = true
+    lateinit var mCallback: OnActionCallback
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
         listTmp = listMusic.toMutableList()
@@ -58,16 +59,24 @@ class MergerScreen : BaseFragment(), View.OnClickListener, MergerAdapter.AudioMe
         audioMerAdapter.submitList(audioMerModel.updateMediaInfo(it))
     }
 
+    fun setOnCalBack(event: OnActionCallback) {
+        mCallback = event
+    }
+
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioMerAdapter = MergerAdapter(requireContext())
-        audioMerModel = ViewModelProvider(this).get(MergerModel::class.java)
+        audioMerAdapter = MergeAdapter(requireContext())
+        audioMerModel = ViewModelProvider(this).get(MergeModel::class.java)
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mView = inflater.inflate(R.layout.merger_audio_screen, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        mView = inflater.inflate(R.layout.merge_screen, container, false)
         AudioFileManagerImpl.registerContentObserVerDeleted()
         initViews()
         checkEdtSearchAudio()
@@ -87,16 +96,13 @@ class MergerScreen : BaseFragment(), View.OnClickListener, MergerAdapter.AudioMe
     private fun checkEdtSearchAudio() {
         edtSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 searchAudioByName(edtSearch.text.toString())
             }
-
             override fun afterTextChanged(p0: Editable?) {
             }
-
         })
     }
 
@@ -122,6 +128,7 @@ class MergerScreen : BaseFragment(), View.OnClickListener, MergerAdapter.AudioMe
     private fun initViews() {
 
         rltNextMer = mView.findViewById(R.id.rlt_next_mer)
+        rltNextMer.isEnabled = false
         rltNextMerParent = mView.findViewById(R.id.rlt_next_mer_parent)
         ivNextMer = mView.findViewById(R.id.iv_next_mer)
         tvNextMer = mView.findViewById(R.id.tv_next_mer)
@@ -157,6 +164,7 @@ class MergerScreen : BaseFragment(), View.OnClickListener, MergerAdapter.AudioMe
         ivBackEdt.visibility = status
         ivClose.visibility = status
         edtSearch.visibility = status
+        val a = LinearLayoutManager.HORIZONTAL
     }
 
     private fun hideOrShowView(status: Int) {
@@ -239,10 +247,9 @@ class MergerScreen : BaseFragment(), View.OnClickListener, MergerAdapter.AudioMe
     }
 
     private fun handleAudiofile() {
+        ManagerFactory.getAudioPlayer().stop()
         val listItemHandle = audioMerModel.getListItemChoose()
-
-        /**place handle listItem choose*/
-
+        mCallback.sendAndReceiveData(listItemHandle)
     }
 
 
@@ -262,7 +269,6 @@ class MergerScreen : BaseFragment(), View.OnClickListener, MergerAdapter.AudioMe
         hideOrShowEditText(View.VISIBLE)
         hideOrShowView(View.GONE)
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

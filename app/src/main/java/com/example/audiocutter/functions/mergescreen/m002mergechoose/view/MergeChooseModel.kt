@@ -1,8 +1,7 @@
-package com.example.audiocutter.functions.mergeraudioscreen.view
+package com.example.audiocutter.functions.mergescreen.m002mergechoose.view
+
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
@@ -10,21 +9,10 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import java.io.File
 
-class MergerModel : BaseViewModel() {
-    private val TAG = MergerModel::class.java.name
+class MergeChooseModel : BaseViewModel() {
+    private val TAG = MergeChooseModel::class.java.name
     private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
-
-
-    suspend fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
-        return Transformations.map(ManagerFactory.getAudioFileManagerImpl().findAllAudioFiles()) { listAudioFiles ->
-            mListAudio.clear()
-            listAudioFiles.forEach {
-                mListAudio.add(AudioCutterView(it))
-            }
-            mListAudio
-        }
-    }
 
 
     fun updateMediaInfo(playerInfo: PlayerInfo): List<AudioCutterView> {
@@ -80,60 +68,13 @@ class MergerModel : BaseViewModel() {
         return -1
     }
 
-    fun searchAudio(listTmp: MutableList<AudioCutterView>, yourTextSearch: String): ArrayList<AudioCutterView> {
-        mListAudio.clear()
-        listTmp.forEach {
-            val rs = it.audioFile.fileName.toLowerCase().contains(yourTextSearch.toLowerCase())
-            if (rs) {
-                mListAudio.add(it)
-            }
-        }
-        return mListAudio
-    }
-
-    fun getListsearch(): ArrayList<AudioCutterView> {
-        return mListAudio
-    }
-
-    fun chooseItemAudioFile(pos: Int, rs: Boolean): List<AudioCutterView>? {
-        val itemAudio: AudioCutterView
-        if (!rs) {
-            itemAudio = mListAudio[pos].copy()
-            itemAudio.isCheckChooseItem = true
-            mListAudio[pos] = itemAudio
-        } else {
-            itemAudio = mListAudio[pos].copy()
-            itemAudio.isCheckChooseItem = false
-            mListAudio[pos] = itemAudio
-        }
-
-        return mListAudio
-    }
-
-    fun checkList(): Int {
-        var count = 0
-        for (item in mListAudio) {
-            if (item.isCheckChooseItem) {
-                count++
-            }
-        }
-        return count
-    }
-
-    fun getListItemChoose(): List<AudioCutterView> {
-        var listAudio = mutableListOf<AudioCutterView>()
-        for (item in mListAudio) {
-            if (item.isCheckChooseItem) {
-                listAudio.add(item)
-            }
-        }
-        return listAudio
-    }
-
     suspend fun play(pos: Int) {
         val audioItem = mListAudio[pos]
         ManagerFactory.getAudioPlayer().play(audioItem.audioFile)
+    }
 
+    fun getListAudio(): List<AudioCutterView> {
+        return mListAudio
     }
 
     fun pause() {
@@ -142,6 +83,24 @@ class MergerModel : BaseViewModel() {
 
     fun resume() {
         ManagerFactory.getAudioPlayer().resume()
+    }
+
+    fun initListFileAudio(listData: List<AudioCutterView>) {
+        mListAudio.clear()
+        mListAudio.addAll(listData)
+    }
+
+    fun removeItemAudio(pos: Int): List<AudioCutterView> {
+        val atPosDelete = mListAudio[pos]
+        mListAudio.remove(atPosDelete)
+        return mListAudio
+    }
+
+    fun moveItemAudio(prePos: Int, nextPos: Int): List<AudioCutterView> {
+        val preItem = mListAudio[prePos].copy()
+        mListAudio.remove(preItem)
+        mListAudio.add(nextPos, preItem)
+        return mListAudio
     }
 
 }

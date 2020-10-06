@@ -1,7 +1,10 @@
 package com.example.audiocutter.util
 
+import android.app.Activity
 import android.content.Context
 import android.util.TypedValue
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 
 object Utils {
 
@@ -23,4 +26,6 @@ object Utils {
             context.resources.displayMetrics
         )
     }
+
+
 }

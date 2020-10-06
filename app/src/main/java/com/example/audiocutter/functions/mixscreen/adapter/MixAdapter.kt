@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.mixaudioscreen.adapter
+package com.example.audiocutter.functions.mixscreen.adapter
 
 
 import android.content.Context

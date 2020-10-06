@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.mixaudioscreen.view
+package com.example.audiocutter.functions.mixscreen.view
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -22,7 +22,7 @@ import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import com.example.audiocutter.functions.audiocutterscreen.view.screen.AudioCutterScreen
-import com.example.audiocutter.functions.mixaudioscreen.adapter.MixAdapter
+import com.example.audiocutter.functions.mixscreen.adapter.MixAdapter
 
 class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioMixerListener {
 

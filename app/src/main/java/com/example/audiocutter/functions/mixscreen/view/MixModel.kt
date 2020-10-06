@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.mixaudioscreen.view
+package com.example.audiocutter.functions.mixscreen.view
 
 import android.util.Log
 import androidx.lifecycle.LiveData

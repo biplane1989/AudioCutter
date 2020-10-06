@@ -1,7 +1,5 @@
 package com.example.audiocutter.functions.audiocutterscreen.objs
 
-import android.os.Parcel
-import android.os.Parcelable
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.objects.AudioFile
 

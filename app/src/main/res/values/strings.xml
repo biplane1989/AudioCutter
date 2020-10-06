@@ -9,6 +9,7 @@
     <string name="main_screen_my_studio_text">My Studio</string>
     <string name="main_screen_flash_call_text">Flash Call</string>
     <string name="ToastExceed">You can select only 2 item</string>
+    <string name="file_merged">file to be merged</string>
 
 
     <!-- TODO: Remove or change this placeholder text -->

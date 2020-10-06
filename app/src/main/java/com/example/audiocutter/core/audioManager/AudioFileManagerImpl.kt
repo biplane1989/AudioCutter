@@ -66,7 +66,7 @@ object AudioFileManagerImpl : AudioFileManager {
     val listAllAudioByType: LiveData<List<AudioFile>>
         get() = _listAllAudioByType
 
-    val audioFileObserver = AudioFileObserver(Handler())
+    private val audioFileObserver = AudioFileObserver(Handler())
 
     fun init(context: Context) {
         mContext = context

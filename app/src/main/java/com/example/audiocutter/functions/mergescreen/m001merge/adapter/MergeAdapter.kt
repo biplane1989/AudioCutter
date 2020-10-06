@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.mergeraudioscreen.adapter
+package com.example.audiocutter.functions.mergescreen.m001merge.adapter
 
 
 import android.annotation.SuppressLint
@@ -18,7 +18,9 @@ import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import com.example.audiocutter.functions.audiocutterscreen.widget.ProgressView
 import com.example.audiocutter.functions.audiocutterscreen.widget.WaveAudio
 
-class MergerAdapter(val mContext: Context) : ListAdapter<AudioCutterView, MergerAdapter.MergerHolder>(MergerDiff()) {
+class MergeAdapter(val mContext: Context) : ListAdapter<AudioCutterView, MergeAdapter.MergeHolder>(
+    MergerDiff()
+) {
     lateinit var mCallBack: AudioMergeListener
     val SIZE_MB = 1024 * 1024
     var listAudios = mutableListOf<AudioCutterView>()
@@ -40,19 +42,19 @@ class MergerAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Merger
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MergerHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MergeHolder {
         val view = LayoutInflater.from(mContext).inflate(R.layout.item_audio_merger, parent, false)
-        return MergerHolder(view)
+        return MergeHolder(view)
     }
 
 
-    override fun onBindViewHolder(holder: MergerHolder, position: Int) {
+    override fun onBindViewHolder(holder: MergeHolder, position: Int) {
         holder.bind()
 
     }
 
 
-    override fun onBindViewHolder(holder: MergerHolder, position: Int, payloads: MutableList<Any>) {
+    override fun onBindViewHolder(holder: MergeHolder, position: Int, payloads: MutableList<Any>) {
         super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
@@ -79,7 +81,8 @@ class MergerAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Merger
         }
     }
 
-    inner class MergerHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class MergeHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener {
 
         val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio_merger)
         val ivChecked = itemView.findViewById<ImageView>(R.id.iv_merger_check)
@@ -101,7 +104,7 @@ class MergerAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Merger
 
         @SuppressLint("SetTextI18n")
         fun bind() {
-            val itemAudioFile = getItem(position)
+            val itemAudioFile = getItem(adapterPosition)
             tvBitrateAudio.text = "${itemAudioFile.audioFile.bitRate}Kbs/s"
 
             tvNameAudio.text = itemAudioFile.audioFile.fileName
@@ -163,7 +166,7 @@ class MergerAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Merger
 
 
         private fun controllerAudio() {
-            val itemAudio = listAudios.get(adapterPosition)
+            val itemAudio = listAudios[adapterPosition]
             if (adapterPosition == -1) {
                 return
             }
@@ -192,17 +195,4 @@ class MergerAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Merger
     }
 }
 
-class MergerDiff : DiffUtil.ItemCallback<AudioCutterView>() {
-    override fun areItemsTheSame(oldItem: AudioCutterView, newItem: AudioCutterView): Boolean {
-        return oldItem.audioFile.fileName == oldItem.audioFile.fileName
-    }
 
-    override fun areContentsTheSame(oldItem: AudioCutterView, newItem: AudioCutterView): Boolean {
-        return oldItem == newItem
-    }
-
-    override fun getChangePayload(oldItem: AudioCutterView, newItem: AudioCutterView): Any? {
-        return newItem.state
-    }
-
-}

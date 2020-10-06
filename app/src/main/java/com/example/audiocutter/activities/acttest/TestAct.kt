@@ -3,28 +3,47 @@ package com.example.audiocutter.activities.acttest
 import android.os.Bundle
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
-import com.example.audiocutter.functions.mergeraudioscreen.view.MergerScreen
+import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
+import com.example.audiocutter.functions.mergescreen.event.OnActionCallback
+import com.example.audiocutter.functions.mergescreen.m001merge.view.MergeScreen
+import com.example.audiocutter.functions.mergescreen.m002mergechoose.view.MergeChooseScreen
 
-class TestAct() : BaseActivity() {
+class TestAct() : BaseActivity(), OnActionCallback {
     //    lateinit var audioCutterScreen: AudioCutterScreen
-//    lateinit var mixScreen: MixerAudioScreen
-    lateinit var merScreen: MergerScreen
+    lateinit var merChoose: MergeChooseScreen
+    lateinit var merScreen: MergeScreen
 
 
     override fun createView(savedInstanceState: Bundle?) {
         setContentView(R.layout.act_test)
         initViews()
+
     }
 
 
     private fun initViews() {
 
-//        audioCutterScreen = AudioCutterScreen()
-//        mixScreen = MixerAudioScreen()
-        merScreen = MergerScreen()
-//        supportFragmentManager.beginTransaction().replace(R.id.ln_main, mixScreen).commit()
-//        supportFragmentManager.beginTransaction().replace(R.id.ln_main, audioCutterScreen).commit()
-        supportFragmentManager.beginTransaction().replace(R.id.ln_main, merScreen).commit()
+        merChoose = MergeChooseScreen()
+        merScreen = MergeScreen()
+        merScreen.setOnCalBack(this)
+        merChoose.setOnCalBack(this)
+        supportFragmentManager.beginTransaction().add(R.id.ln_main, merChoose)
+            .add(R.id.ln_main, merScreen).commit()
+        showMergeScr()
+
+    }
+
+    private fun showMergeScr() {
+        supportFragmentManager.beginTransaction().show(merScreen).hide(merChoose).commit()
+    }
+
+    override fun sendAndReceiveData(listData: List<AudioCutterView>) {
+        merChoose.receiveData(listData)
+        supportFragmentManager.beginTransaction().show(merChoose).hide(merScreen).commit()
+    }
+
+    override fun backFrg() {
+        supportFragmentManager.beginTransaction().show(merScreen).hide(merChoose).commit()
 
     }
 
