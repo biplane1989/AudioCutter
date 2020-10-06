@@ -1,16 +1,11 @@
 package com.example.audiocutter.functions.contactscreen.select
 
 import android.app.Activity
-import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.DocumentsContract
-import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -20,7 +15,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -32,7 +26,6 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.util.FileUtils
 import kotlinx.android.synthetic.main.list_contact_select_screen.*
 import java.io.File
-import java.net.URISyntaxException
 
 
 class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.OnClickListener {
@@ -223,7 +216,16 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
                 }
             }
             R.id.iv_file -> {
-                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                val intent: Intent
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                }/* else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                    intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                    intent.putExtra("android.content.extra.SHOW_ADVANCED", true)
+                } */
+                else {
+                    intent = Intent(Intent.ACTION_GET_CONTENT)
+                }
                 intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                 intent.type = "audio/*"
 //                intent.type = "audio/mp3"
@@ -234,39 +236,19 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         }
     }
 
-    @Throws(URISyntaxException::class)
-    fun getPath(context: Context, uri: Uri): String? {
-        if ("content".equals(uri.scheme, ignoreCase = true)) {
-            val projection = arrayOf("_data")
-            var cursor: Cursor? = null
-            try {
-                cursor = context.contentResolver.query(uri, projection, null, null, null)
-                if (cursor != null) {
-                    val column_index: Int = cursor.getColumnIndexOrThrow("_data")
-                    if (cursor.moveToFirst()) {
-                        return cursor.getString(column_index)
-                    }
-                }
-
-            } catch (e: Exception) {
-                // Eat it
-            } finally {
-                cursor?.close()
-            }
-        } else if ("file".equals(uri.scheme, ignoreCase = true)) {
-            return uri.path
-        }
-        return null
-    }
-
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    //    @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         if (requestCode == REQ_CODE_PICK_SOUNDFILE && resultCode == Activity.RESULT_OK && intent != null) {
 
             val path = FileUtils.getPath(requireContext(), intent.data!!)
 
-            Log.d(TAG, "onActivityResult: file isexit: " + File(path).exists())
-            Log.d(TAG, "onActivityResult: " + path)
+//            Log.d(TAG, "onActivityResult: Uri: " + intent.data)
+//            Log.d(TAG, "onActivityResult: file isexit: " + File(path).exists())
+//            Log.d(TAG, "onActivityResult: " + path)
+
+//            val treeUri: Uri = intent.data!!
+//            val takeFlags: Int = intent.data.getFlags() and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+//            getContentResolver().takePersistableUriPermission(treeUri, takeFlags)
 
             path?.let {
                 if (mListSelectAudioViewModel.setRingtoneWithUri(requireArguments().getString(BUNDLE_NAME_KEY_PHONE_NUMBER)
