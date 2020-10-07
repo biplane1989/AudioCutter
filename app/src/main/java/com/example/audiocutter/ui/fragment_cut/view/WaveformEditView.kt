@@ -1,4 +1,4 @@
-package com.example.audiocutter.ui.fragment_cut
+package com.example.audiocutter.ui.fragment_cut.view
 
 import android.content.Context
 import android.graphics.*
@@ -12,7 +12,7 @@ import android.view.View
 import androidx.dynamicanimation.animation.FlingAnimation
 import androidx.dynamicanimation.animation.FloatValueHolder
 import com.example.audiocutter.R
-import com.example.audiocutter.ui.fragment_cut.WaveformLoader.Companion.get
+import com.example.audiocutter.ui.fragment_cut.view.WaveformLoader.Companion.get
 import com.example.audiocutter.util.Utils
 import kotlin.math.abs
 import kotlin.math.sqrt
@@ -152,8 +152,10 @@ class WaveformEditView : View {
 
     fun setDataSource(path: String) {
         val duration = getDuration(path)
-        if (listener != null)
+        if (listener != null) {
             listener!!.onCountAudioSelected(duration, true)
+            listener!!.onPlayPositionChanged(playPositionMs.toInt())
+        }
         trackDurationMs = duration
         invalidate()
         if (duration > WaveformLoader.PERIOD_IN_FRAMES) {
@@ -616,6 +618,7 @@ class WaveformEditView : View {
         if (listener != null) {
             listener!!.onPlayPositionChanged(playPositionMs.toInt())
         }
+
     }
 
     private fun updateStartTime() {
@@ -695,7 +698,7 @@ class WaveformEditView : View {
             invalidate()
             if (listener != null) {
                 listener!!.onStartTimeChanged(startTimeMs)
-                listener!!.onPlayPositionChanged((endTimeMs - startTimeMs).toInt())
+                listener!!.onCountAudioSelected(endTimeMs - startTimeMs, false)
             }
         }
     }
@@ -708,7 +711,7 @@ class WaveformEditView : View {
             invalidate()
             if (listener != null) {
                 listener!!.onEndTimeChanged(this.endTimeMs)
-                listener!!.onPlayPositionChanged((this.endTimeMs - startTimeMs).toInt())
+                listener!!.onCountAudioSelected(this.endTimeMs - startTimeMs, false)
             }
         }
     }
@@ -727,16 +730,15 @@ class WaveformEditView : View {
     }
 
     fun setPlayPositionMs(currentPositionMs: Int) {
-        if (!movingPlayLine && currentPositionMs > 0) {
+        if (currentPositionMs > 0) {
             playPositionMs = currentPositionMs.toLong()
             val x = playPositionMs * 1f / trackDurationMs * waveformWidth * scale - translate
             playLineRect!![x - cursorSize / 2, (heightView / 2 - maxWaveHeight / 2).toFloat(), x + cursorSize / 2] =
                 heightView - cursorSize / 2
             invalidate()
-            Log.d(
-                TAG,
-                "setPlayPositionMs: $playPositionMs   ===== $trackDurationMs ==== $x  ===  $translate"
-            )
+            if (listener != null) {
+                listener!!.onPlayPositionChanged(currentPositionMs)
+            }
         }
     }
 

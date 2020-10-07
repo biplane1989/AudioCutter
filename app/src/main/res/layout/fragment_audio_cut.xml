@@ -9,13 +9,13 @@
         tools:context=".functions.fragmentcutterscreen.AudioCutFragment">
 
         <RelativeLayout
-            android:id="@+id/fragment_cutter_title_rl"
+            android:id="@+id/title_rl"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_alignParentTop="true">
 
             <ImageView
-                android:id="@+id/fragment_cutter_close_iv"
+                android:id="@+id/close_iv"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="@drawable/ripple_item_view"
@@ -27,14 +27,14 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="5dp"
-                android:layout_toRightOf="@id/fragment_cutter_close_iv"
+                android:layout_toRightOf="@id/close_iv"
                 android:fontFamily="@font/sanfranciscodisplay_bold"
                 android:text="@string/AUDIO_CUTTER"
                 android:textColor="@color/fragment_cutter_text_title_color"
                 android:textSize="18dp" />
 
             <ImageView
-                android:id="@+id/fragment_cutter_tick_iv"
+                android:id="@+id/tick_iv"
                 android:layout_width="42dp"
                 android:layout_height="48dp"
                 android:layout_alignParentRight="true"
@@ -44,28 +44,28 @@
                 android:src="@drawable/fragment_cutter_tick_ic" />
 
             <ImageView
-                android:id="@+id/fragment_cutter_option_iv"
+                android:id="@+id/option_iv"
                 android:layout_width="42dp"
                 android:layout_height="48dp"
-                android:layout_toLeftOf="@id/fragment_cutter_tick_iv"
+                android:layout_toLeftOf="@id/tick_iv"
                 android:background="@drawable/ripple_item_view"
                 android:scaleType="center"
                 android:src="@drawable/fragment_cutter_custom_ic" />
         </RelativeLayout>
 
-        <com.example.audiocutter.ui.fragment_cut.WaveformEditView
-            android:layout_above="@id/fragment_cutter_ads_view"
-            android:id="@+id/fragment_cutter_wave_edit_view"
+        <com.example.audiocutter.ui.fragment_cut.view.WaveformEditView
+            android:layout_above="@id/ads_view"
+            android:id="@+id/wave_edit_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="10dp"
-            android:layout_below="@id/fragment_cutter_title_rl" />
+            android:layout_below="@id/title_rl" />
 
         <TextView
-            android:id="@+id/fragment_cutter_time_audio_tv"
+            android:id="@+id/time_audio_tv"
             android:layout_width="match_parent"
             android:layout_height="38dp"
-            android:layout_above="@id/fragment_cutter_ads_view"
+            android:layout_above="@id/ads_view"
             android:fontFamily="@font/sanfrancisco_medium"
             android:gravity="center"
             android:text="05:23.9"
@@ -73,14 +73,14 @@
             android:textSize="14sp" />
 
         <View
-            android:id="@+id/fragment_cutter_ads_view"
+            android:id="@+id/ads_view"
             android:layout_width="match_parent"
             android:layout_height="76dp"
-            android:layout_above="@id/fragment_cutter_group_controller_rl"
+            android:layout_above="@id/group_controller_rl"
             android:background="#4DFCB674" />
 
         <RelativeLayout
-            android:id="@+id/fragment_cutter_group_controller_rl"
+            android:id="@+id/group_controller_rl"
             android:layout_width="match_parent"
             android:layout_height="120dp"
             android:layout_alignParentBottom="true">
@@ -93,7 +93,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/fragment_cutter_reduction_start_time_iv"
+                    android:id="@+id/reduction_start_time_iv"
                     android:background="@drawable/ripple_item_view"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
@@ -101,7 +101,7 @@
                     android:src="@drawable/fragment_cutter_reduced_time_ic" />
 
                 <TextView
-                    android:id="@+id/fragment_cutter_start_time_tv"
+                    android:id="@+id/start_time_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -111,7 +111,7 @@
                     android:textSize="14sp" />
 
                 <ImageView
-                    android:id="@+id/fragment_cutter_increase_start_time_iv"
+                    android:id="@+id/increase_start_time_iv"
                     android:background="@drawable/ripple_item_view"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
@@ -120,7 +120,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/fragment_cutter_group_end_time_ll"
+                android:id="@+id/group_end_time_ll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -129,7 +129,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/fragment_cutter_reduction_end_time_iv"
+                    android:id="@+id/reduction_end_time_iv"
                     android:background="@drawable/ripple_item_view"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
@@ -137,7 +137,7 @@
                     android:src="@drawable/fragment_cutter_reduced_time_ic" />
 
                 <TextView
-                    android:id="@+id/fragment_cutter_end_time_tv"
+                    android:id="@+id/end_time_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -147,7 +147,7 @@
                     android:textSize="14sp" />
 
                 <ImageView
-                    android:id="@+id/fragment_cutter_increase_end_time_iv"
+                    android:id="@+id/increase_end_time_iv"
                     android:background="@drawable/ripple_item_view"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
@@ -156,14 +156,15 @@
             </LinearLayout>
 
             <RelativeLayout
+                android:layout_below="@id/group_end_time_ll"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/fragment_cutter_group_end_time_ll"
+                android:layout_marginBottom="16dp"
                 android:layout_marginTop="4dp"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/fragment_cutter_zoom_in_iv"
+                    android:id="@+id/zoom_in_iv"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_centerVertical="true"
@@ -175,12 +176,12 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_toLeftOf="@id/play_controller_play_rl"
-                    android:layout_toRightOf="@id/fragment_cutter_zoom_in_iv"
+                    android:layout_toLeftOf="@id/play_rl"
+                    android:layout_toRightOf="@id/zoom_in_iv"
                     android:gravity="center">
 
                     <ImageView
-                        android:id="@+id/fragment_cutter_pre_iv"
+                        android:id="@+id/pre_iv"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_gravity="center"
@@ -191,13 +192,13 @@
 
 
                 <RelativeLayout
-                    android:id="@+id/play_controller_play_rl"
+                    android:id="@+id/play_rl"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true">
 
                     <ImageView
-                        android:id="@+id/fragment_cutter_play_iv"
+                        android:id="@+id/play_iv"
                         android:layout_width="56dp"
                         android:layout_height="56dp"
                         android:layout_centerHorizontal="true"
@@ -209,12 +210,12 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_toLeftOf="@id/fragment_cutter_zoom_out_iv"
-                    android:layout_toRightOf="@id/play_controller_play_rl"
+                    android:layout_toLeftOf="@id/zoom_out_iv"
+                    android:layout_toRightOf="@id/play_rl"
                     android:gravity="center">
 
                     <ImageView
-                        android:id="@+id/fragment_cutter_zoom_next_iv"
+                        android:id="@+id/next_iv"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_gravity="center"
@@ -225,7 +226,7 @@
 
 
                 <ImageView
-                    android:id="@+id/fragment_cutter_zoom_out_iv"
+                    android:id="@+id/zoom_out_iv"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_alignParentRight="true"

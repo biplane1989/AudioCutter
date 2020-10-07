@@ -1,26 +1,35 @@
-package com.example.audiocutter.functions.fragmentcutterscreen
+package com.example.audiocutter.functions.screen
 
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
+import com.example.audiocutter.core.audioplayer.AudioPlayerImpl
+import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.FragmentAudioCutBinding
-import com.example.audiocutter.ui.fragment_cut.WaveformEditView
+import com.example.audiocutter.ui.fragment_cut.view.WaveformEditView
 import com.example.audiocutter.util.Utils
 
 class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
     View.OnClickListener, View.OnLongClickListener {
     private lateinit var pathAudio: String
+    private var playPos = 0
+    private var startPos = 0L
+    private var endPos = 0L
+
+    private var audioImpl = AudioPlayerImpl
     private val mHandler: Handler = Handler(Looper.getMainLooper())
     private var runnable = Runnable {}
+
+    private lateinit var mEditView: WaveformEditView
 
     private lateinit var fragmentCutBinding: FragmentAudioCutBinding
 
@@ -44,7 +53,9 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
     }
 
     private fun initView() {
-        fragmentCutBinding.fragmentCutterWaveEditView.apply {
+        mEditView = fragmentCutBinding.waveEditView
+
+        fragmentCutBinding.waveEditView.apply {
             setListener(this@AudioCutFragment)
             setDataSource(pathAudio)
         }
@@ -53,23 +64,35 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
         layoutParams1.gravity = Gravity.CENTER
-        fragmentCutBinding.fragmentCutterStartTimeTv.apply { layoutParams = layoutParams1 }
+        fragmentCutBinding.startTimeTv.apply { layoutParams = layoutParams1 }
+        fragmentCutBinding.endTimeTv.apply { layoutParams = layoutParams1 }
+
+        audioImpl.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
+    }
+
+    private fun observerAudio(): Observer<PlayerInfo> {
+        return Observer {
+
+        }
     }
 
     private fun setClick() {
-        fragmentCutBinding.fragmentCutterOptionIv.setOnClickListener(this)
-        fragmentCutBinding.fragmentCutterTickIv.setOnClickListener(this)
-        fragmentCutBinding.fragmentCutterIncreaseStartTimeIv.setOnClickListener(this)
-        fragmentCutBinding.fragmentCutterReductionStartTimeIv.setOnClickListener(this)
-        fragmentCutBinding.fragmentCutterIncreaseEndTimeIv.setOnClickListener(this)
-        fragmentCutBinding.fragmentCutterReductionEndTimeIv.setOnClickListener(this)
-        fragmentCutBinding.fragmentCutterZoomOutIv.setOnClickListener(this)
-        fragmentCutBinding.fragmentCutterZoomInIv.setOnClickListener(this)
+        fragmentCutBinding.optionIv.setOnClickListener(this)
+        fragmentCutBinding.tickIv.setOnClickListener(this)
+        fragmentCutBinding.increaseStartTimeIv.setOnClickListener(this)
+        fragmentCutBinding.reductionStartTimeIv.setOnClickListener(this)
+        fragmentCutBinding.increaseEndTimeIv.setOnClickListener(this)
+        fragmentCutBinding.reductionEndTimeIv.setOnClickListener(this)
+        fragmentCutBinding.zoomOutIv.setOnClickListener(this)
+        fragmentCutBinding.zoomInIv.setOnClickListener(this)
+        fragmentCutBinding.preIv.setOnClickListener(this)
+        fragmentCutBinding.nextIv.setOnClickListener(this)
+        fragmentCutBinding.playRl.setOnClickListener(this)
 
-        fragmentCutBinding.fragmentCutterIncreaseStartTimeIv.setOnLongClickListener(this)
-        fragmentCutBinding.fragmentCutterReductionStartTimeIv.setOnLongClickListener(this)
-        fragmentCutBinding.fragmentCutterIncreaseEndTimeIv.setOnLongClickListener(this)
-        fragmentCutBinding.fragmentCutterReductionEndTimeIv.setOnLongClickListener(this)
+        fragmentCutBinding.increaseStartTimeIv.setOnLongClickListener(this)
+        fragmentCutBinding.reductionStartTimeIv.setOnLongClickListener(this)
+        fragmentCutBinding.increaseEndTimeIv.setOnLongClickListener(this)
+        fragmentCutBinding.reductionEndTimeIv.setOnLongClickListener(this)
 
     }
 
@@ -91,82 +114,111 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
     }
 
     override fun onStartTimeChanged(startTimeMs: Long) {
-        fragmentCutBinding.fragmentCutterStartTimeTv.text =
+        fragmentCutBinding.startTimeTv.text =
             Utils.longDurationMsToStringMs(startTimeMs)
+        startPos = startTimeMs
+        if (playPos <= startTimeMs) {
+            mEditView.setPlayPositionMs(startTimeMs.toInt())
+        }
     }
 
     override fun onEndTimeChanged(endTimeMs: Long) {
-        fragmentCutBinding.fragmentCutterEndTimeTv.text = Utils.longDurationMsToStringMs(endTimeMs)
+        fragmentCutBinding.endTimeTv.text = Utils.longDurationMsToStringMs(endTimeMs)
+        endPos = endTimeMs
+        if (playPos >= endPos) {
+            mEditView.setPlayPositionMs(endPos.toInt())
+        }
     }
 
     override fun onPlayPositionChanged(positionMs: Int) {
-        Log.e(TAG, "onPlayPositionChanged: $positionMs")
+        when {
+            positionMs in startPos..endPos -> {
+                playPos = positionMs
+            }
+            positionMs < startPos -> {
+                mEditView.setPlayPositionMs(startPos.toInt())
+            }
+            positionMs > endPos -> {
+                mEditView.setPlayPositionMs(endPos.toInt())
+            }
+        }
     }
 
     override fun onCountAudioSelected(positionMs: Long, isFirstTime: Boolean) {
         val longDurationMsToStringMs = Utils.longDurationMsToStringMs(positionMs)
-        fragmentCutBinding.fragmentCutterTimeAudioTv.text =
+        fragmentCutBinding.timeAudioTv.text =
             longDurationMsToStringMs
         if (isFirstTime)
-            fragmentCutBinding.fragmentCutterEndTimeTv.text = longDurationMsToStringMs
+            fragmentCutBinding.endTimeTv.text = longDurationMsToStringMs
     }
 
     override fun onClick(v: View?) {
         when (v) {
-            fragmentCutBinding.fragmentCutterCloseIv -> {
+            fragmentCutBinding.closeIv -> {
 
             }
-            fragmentCutBinding.fragmentCutterOptionIv -> {
+            fragmentCutBinding.optionIv -> {
 
             }
-            fragmentCutBinding.fragmentCutterTickIv -> {
+            fragmentCutBinding.tickIv -> {
 
             }
-            fragmentCutBinding.fragmentCutterIncreaseStartTimeIv -> {
+            fragmentCutBinding.increaseStartTimeIv -> {
+                mEditView.setStartTimeMs(mEditView.getTimeStart() + 100)
             }
-            fragmentCutBinding.fragmentCutterReductionStartTimeIv -> {
+            fragmentCutBinding.reductionStartTimeIv -> {
+                mEditView.setStartTimeMs(mEditView.getTimeStart() - 100)
             }
-            fragmentCutBinding.fragmentCutterIncreaseEndTimeIv -> {
+            fragmentCutBinding.increaseEndTimeIv -> {
+                mEditView.setEndTimeMs(mEditView.getTimeEnd() + 100)
             }
-            fragmentCutBinding.fragmentCutterReductionEndTimeIv -> {
+            fragmentCutBinding.reductionEndTimeIv -> {
+                mEditView.setEndTimeMs(mEditView.getTimeEnd() - 100)
             }
-            fragmentCutBinding.fragmentCutterZoomOutIv -> {
-                fragmentCutBinding.fragmentCutterWaveEditView.zoomOut()
+            fragmentCutBinding.zoomOutIv -> {
+                fragmentCutBinding.waveEditView.zoomOut()
             }
-            fragmentCutBinding.fragmentCutterZoomInIv -> {
-                fragmentCutBinding.fragmentCutterWaveEditView.zoomInt()
+            fragmentCutBinding.zoomInIv -> {
+                fragmentCutBinding.waveEditView.zoomInt()
+            }
+            fragmentCutBinding.preIv -> {
+            }
+            fragmentCutBinding.playRl -> {
+//                audioImpl.play(playPos, endPos)
+            }
+            fragmentCutBinding.nextIv -> {
             }
         }
     }
 
     override fun onLongClick(v: View?): Boolean {
         when (v) {
-            fragmentCutBinding.fragmentCutterIncreaseEndTimeIv -> {
+            fragmentCutBinding.increaseEndTimeIv -> {
                 updateTimeWaveView(
                     isIncrease = true,
                     isStart = false,
-                    view = fragmentCutBinding.fragmentCutterIncreaseEndTimeIv
+                    view = fragmentCutBinding.increaseEndTimeIv
                 )
             }
-            fragmentCutBinding.fragmentCutterIncreaseStartTimeIv -> {
+            fragmentCutBinding.increaseStartTimeIv -> {
                 updateTimeWaveView(
                     isIncrease = true,
                     isStart = true,
-                    view = fragmentCutBinding.fragmentCutterIncreaseStartTimeIv
+                    view = fragmentCutBinding.increaseStartTimeIv
                 )
             }
-            fragmentCutBinding.fragmentCutterReductionStartTimeIv -> {
+            fragmentCutBinding.reductionStartTimeIv -> {
                 updateTimeWaveView(
                     isIncrease = false,
                     isStart = true,
-                    view = fragmentCutBinding.fragmentCutterReductionStartTimeIv
+                    view = fragmentCutBinding.reductionStartTimeIv
                 )
             }
-            fragmentCutBinding.fragmentCutterReductionEndTimeIv -> {
+            fragmentCutBinding.reductionEndTimeIv -> {
                 updateTimeWaveView(
                     isIncrease = false,
                     isStart = false,
-                    view = fragmentCutBinding.fragmentCutterReductionEndTimeIv
+                    view = fragmentCutBinding.reductionEndTimeIv
                 )
             }
         }
@@ -176,7 +228,6 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
     //isIncrease -> true increase, false reduction
     //isStart -> true timeStart, false timeEnd
     private fun updateTimeWaveView(isIncrease: Boolean, isStart: Boolean, view: View) {
-        var mEditView = fragmentCutBinding.fragmentCutterWaveEditView
         mHandler.removeCallbacks(runnable)
         runnable = Runnable {
             if (!view.isPressed) return@Runnable

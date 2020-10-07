@@ -5,7 +5,7 @@ import android.os.Environment
 import androidx.fragment.app.FragmentTransaction
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
-import com.example.audiocutter.functions.fragmentcutterscreen.AudioCutFragment
+import com.example.audiocutter.functions.screen.AudioCutFragment
 import java.io.File
 
 class CutActivity : BaseActivity() {
