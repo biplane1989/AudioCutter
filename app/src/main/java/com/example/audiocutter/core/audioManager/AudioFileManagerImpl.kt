@@ -56,10 +56,15 @@ object AudioFileManagerImpl : AudioFileManager {
 
     fun init(context: Context) {
         mContext = context
+        CoroutineScope(Dispatchers.IO).launch {
+            preloadData()
+        }
     }
 
+    override fun findAllAudioFiles() = _listAllAudioFile
+
     @SuppressLint("RestrictedApi", "SimpleDateFormat")
-    override suspend fun findAllAudioFiles(): LiveData<List<AudioFile>> = withContext(Dispatchers.IO) {
+     suspend fun preloadData() = withContext(Dispatchers.IO) {
         var projection: Array<String>
         val resolver = mContext.contentResolver
         val listData = ArrayList<AudioFile>()
@@ -100,9 +105,9 @@ object AudioFileManagerImpl : AudioFileManager {
                     Log.d("TAG", "findAllAudioFiles: data :$data \n name : $name   \n ID  $id  \n duration: $duration \n sie ${file.length()}   \n URI $uri \n title :$title \n" + " album : $album   \n" + " artist  $artist  \n" + " date: $date \n" + " genre $genre  ")
                     if (file.exists()) {
                         if (bitmap != null) {
-                            listData.add(AudioFile(file = file, fileName = name, size = file.length(), bitRate = 128, time = duration.toLong(), uri = uri, bitmap = bitmap, title = title, alBum = album, artist = artist, dateAdded = date, genre = genre))
+                            listData.add(AudioFile(file = file, fileName = name ?: "", size = file.length() , bitRate = 128, time = duration?.toLong() ?: 0, uri = uri, bitmap = bitmap, title = title, alBum = album, artist = artist, dateAdded = date, genre = genre))
                         } else {
-                            listData.add(AudioFile(file = file, fileName = name, size = file.length(), bitRate = 128, time = duration.toLong(), uri = uri, bitmap = null, title = title, alBum = album, artist = artist, dateAdded = date, genre = genre))
+                            listData.add(AudioFile(file = file, fileName = name ?: "", size = file.length() , bitRate = 128, time = duration?.toLong() ?: 0, uri = uri, bitmap = null, title = title, alBum = album, artist = artist, dateAdded = date, genre = genre))
                         }
                     }
 
@@ -117,8 +122,6 @@ object AudioFileManagerImpl : AudioFileManager {
         } finally {
             cursor?.close()
         }
-
-        listAllAudioFile
     }
 
     override suspend fun deleteFile(listAudioFile: List<AudioFile>, typeFile: Folder): Boolean {

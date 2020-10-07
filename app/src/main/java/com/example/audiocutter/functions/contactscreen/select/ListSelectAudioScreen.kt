@@ -36,6 +36,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     var isLoading = false   // trang thai load cua progressbar
     var currentView: View? = null
     val REQ_CODE_PICK_SOUNDFILE = 1989
+    var positionSelect = -1
     private var listSelectAudio: LiveData<List<SelectItemView>>? = null
 
     companion object {
@@ -56,11 +57,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
     // observer data
     val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
-//        Log.d(TAG, "list audio size : " + listAudio.size)
-//
-//        for (item in listAudio) {
-//            Log.d(TAG, "old uri : name: " + item.audioFile.fileName + "uri:  " + item.audioFile.uri)
-//        }
+        Log.d(TAG, "list audio size : " + listAudio.size)
         if (listAudio != null) {
             if (listAudio.isEmpty()) {
                 cl_select.visibility = View.GONE
@@ -84,7 +81,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         } else {
             Log.d(TAG, "audio: is null")
         }
-
     }
 
     // observer playInfo mediaplayer
@@ -176,6 +172,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
     override fun stop(position: Int) {
         mListSelectAudioViewModel.stopAudio(position)
+
     }
 
     override fun seekTo(cusorPos: Int) {
@@ -183,10 +180,12 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     }
 
     override fun isShowPlayingAudio(positition: Int) {
+        positionSelect = positition
         mListSelectAdapter.submitList(mListSelectAudioViewModel.showPlayingAudio(positition))
     }
 
     override fun isSelect(position: Int) {
+
         mListSelectAdapter.submitList(mListSelectAudioViewModel.selectAudio(position))
     }
 
@@ -242,14 +241,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
             val path = FileUtils.getPath(requireContext(), intent.data!!)
 
-//            Log.d(TAG, "onActivityResult: Uri: " + intent.data)
-//            Log.d(TAG, "onActivityResult: file isexit: " + File(path).exists())
-//            Log.d(TAG, "onActivityResult: " + path)
-
-//            val treeUri: Uri = intent.data!!
-//            val takeFlags: Int = intent.data.getFlags() and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-//            getContentResolver().takePersistableUriPermission(treeUri, takeFlags)
-
             path?.let {
                 if (mListSelectAudioViewModel.setRingtoneWithUri(requireArguments().getString(BUNDLE_NAME_KEY_PHONE_NUMBER)
                         .toString(), path)) {
@@ -272,4 +263,13 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
+
+    override fun onPause() {
+        super.onPause()
+        if (positionSelect > -1) {
+            mListSelectAudioViewModel.stopAudio(positionSelect)
+        }
+    }
+
+
 }

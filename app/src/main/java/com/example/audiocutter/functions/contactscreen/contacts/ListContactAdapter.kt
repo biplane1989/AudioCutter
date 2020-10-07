@@ -86,7 +86,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                     itemViewHolder.tvRingtone.visibility = View.VISIBLE
 
                     val contactInfomation = Utils.getPlayList(mContext!!, contactItem.contactItem.ringtone!!)   // get name song by uri
-                    itemViewHolder.tvRingtone.text = contactInfomation.title
+                    itemViewHolder.tvRingtone.text = contactInfomation.title.toLowerCase()
 
                 } else {
                     itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
@@ -95,7 +95,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
 
                     val contactInfomation = Utils.getPlayList(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
                         .toString())
-                    itemViewHolder.tvRingtoneDefault.text = contactInfomation.title
+                    itemViewHolder.tvRingtoneDefault.text = contactInfomation.title.toLowerCase()
                 }
             }
         }
@@ -125,7 +125,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 tvRingtone.visibility = View.VISIBLE
 
                 val contactInfomation = Utils.getPlayList(mContext!!, contentItem.contactItem.ringtone!!)   // get name song by uri
-                tvRingtone.text = contactInfomation.title
+                tvRingtone.text = contactInfomation.title.toLowerCase()
             } else {
                 tvRingtoneDefault.visibility = View.VISIBLE
                 cvDefault.visibility = View.VISIBLE
@@ -133,7 +133,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
 
                 val contactInfomation = Utils.getPlayList(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
                     .toString())
-                tvRingtoneDefault.text = contactInfomation.title
+                tvRingtoneDefault.text = contactInfomation.title.toLowerCase()
             }
 
             clItemContact.setOnClickListener(this)
@@ -143,7 +143,6 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
         override fun onClick(view: View?) {
             when (view?.id) {
                 R.id.cl_item_contact -> {
-//                    val contactInfomation = ContactInfomation("", "")
                     val contactInfomation: ContactInfomation
                     if (getItem(adapterPosition).contactItem.ringtone != null) {
                         contactInfomation = Utils.getPlayList(mContext!!, getItem(adapterPosition).contactItem.ringtone!!)

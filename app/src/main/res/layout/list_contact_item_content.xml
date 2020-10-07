@@ -63,7 +63,7 @@
             android:layout_marginLeft="2dp"
             android:layout_marginRight="2dp"
             android:fontFamily="@font/sanfranciscodisplay_light"
-            android:text="Default"
+            android:text="@string/list_contact_item_default"
             android:textColor="#FFFFFF"
             android:textSize="12sp" />
     </androidx.cardview.widget.CardView>
@@ -76,7 +76,6 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:fontFamily="@font/sanfranciscodisplay_light"
-        android:hint="25 Minut"
         android:textColor="#9C9C9C"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@id/cv_default"

@@ -22,6 +22,7 @@ class ListSelectAudioViewModel : BaseViewModel() {
 
     suspend fun getData(): LiveData<List<SelectItemView>> {
         return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) { items ->
+            Log.d(TAG, "live data size: " + items.size)
             // lan dau tien lay du lieu
             if (mListAudioFileView.size == 0) {
                 items.forEach {
