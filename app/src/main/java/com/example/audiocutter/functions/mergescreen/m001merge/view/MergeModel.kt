@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.MixAudioScreen.view
+package com.example.audiocutter.functions.mergescreen.m001merge.view
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -10,28 +10,14 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import java.io.File
 
-class MixModel : BaseViewModel() {
-    private val TAG = MixModel::class.java.name
+class MergeModel : BaseViewModel() {
+    private val TAG = MergeModel::class.java.name
     private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
-    var isChooseItem = false
 
 
     suspend fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(ManagerFactory.getAudioFileManagerImpl().findAllAudioFiles()) { listAudioFiles ->
-            mListAudio.clear()
-            listAudioFiles.forEach {
-                mListAudio.add(AudioCutterView(it))
-            }
-            mListAudio
-        }
-    }
-
-
-
-
-    suspend fun getAllFileByType(): LiveData<List<AudioCutterView>> {
-        return Transformations.map(ManagerFactory.getAudioFileManagerImpl().getAllListByType()) { listAudioFiles ->
             mListAudio.clear()
             listAudioFiles.forEach {
                 mListAudio.add(AudioCutterView(it))
@@ -49,16 +35,21 @@ class MixModel : BaseViewModel() {
                 val oldPos = getAudioFilePos(currentAudioPlaying)
                 val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
                 if (oldPos != -1) {
-                    updateState(oldPos, PlayerState.IDLE)
+                    val audioFile = mListAudio[oldPos].copy()
+                    audioFile.state = PlayerState.IDLE
+                    audioFile.isCheckDistance = false
+                    audioFile.currentPos = playerInfo.posision.toLong()
+                    audioFile.duration = playerInfo.duration.toLong()
+                    mListAudio[oldPos] = audioFile
                 }
                 if (newPos != -1) {
-                    updateState(newPos, playerInfo.playerState)
+                    updateState(newPos, playerInfo, true)
                 }
             } else {
                 val atPos = getAudioFilePos(currentAudioPlaying)
                 if (atPos != -1) {
                     Log.d(TAG, "updateMediaInfo: atPOs   ${mListAudio.get(atPos).state}")
-                    updateState(atPos, playerInfo.playerState)
+                    updateState(atPos, playerInfo, true)
                 }
             }
             currentAudioPlaying = playerInfo.currentAudio!!.file
@@ -68,12 +59,15 @@ class MixModel : BaseViewModel() {
     }
 
 
-
-    private fun updateState(pos: Int, state: PlayerState) {
+    private fun updateState(pos: Int, playerInfo: PlayerInfo, rs: Boolean) {
         val audioFile = mListAudio[pos].copy()
-        audioFile.state = state
+        audioFile.state = playerInfo.playerState
+        audioFile.isCheckDistance = rs
+        audioFile.currentPos = playerInfo.posision.toLong()
+        audioFile.duration = playerInfo.duration.toLong()
         mListAudio[pos] = audioFile
     }
+
 
     private fun getAudioFilePos(file: File): Int {
         var i = 0
@@ -86,10 +80,7 @@ class MixModel : BaseViewModel() {
         return -1
     }
 
-    fun searchAudio(
-        listTmp: MutableList<AudioCutterView>,
-        yourTextSearch: String
-    ): ArrayList<AudioCutterView> {
+    fun searchAudio(listTmp: MutableList<AudioCutterView>, yourTextSearch: String): ArrayList<AudioCutterView> {
         mListAudio.clear()
         listTmp.forEach {
             val rs = it.audioFile.fileName.toLowerCase().contains(yourTextSearch.toLowerCase())
@@ -106,7 +97,6 @@ class MixModel : BaseViewModel() {
 
     fun chooseItemAudioFile(pos: Int, rs: Boolean): List<AudioCutterView>? {
         val itemAudio: AudioCutterView
-        var count = 0
         if (!rs) {
             itemAudio = mListAudio[pos].copy()
             itemAudio.isCheckChooseItem = true
@@ -117,19 +107,6 @@ class MixModel : BaseViewModel() {
             mListAudio[pos] = itemAudio
         }
 
-        for (item in mListAudio) {
-            if (item.isCheckChooseItem) {
-                count++
-                Log.d(TAG, "changeItemAudioFile: $count")
-                if (count > 2 && itemAudio.isCheckChooseItem) {
-                    itemAudio.isCheckChooseItem = false
-                    mListAudio[pos] = itemAudio
-                    isChooseItem = true
-                } else if (count < 2) {
-                    isChooseItem = false
-                }
-            }
-        }
         return mListAudio
     }
 
@@ -166,6 +143,5 @@ class MixModel : BaseViewModel() {
     fun resume() {
         ManagerFactory.getAudioPlayer().resume()
     }
-
 
 }
