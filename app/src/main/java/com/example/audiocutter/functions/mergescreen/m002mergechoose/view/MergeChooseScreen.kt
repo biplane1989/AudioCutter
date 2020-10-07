@@ -179,10 +179,10 @@ class MergeChooseScreen : BaseFragment(), MergeChooseAdapter.AudioMergeChooseLis
     }
 
     private fun showKeybroad() {
+
         val imm =
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
-
 
 }
