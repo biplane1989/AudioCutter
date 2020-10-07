@@ -1,6 +1,5 @@
 package com.example.core.core
 
-import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -24,11 +23,7 @@ class AudioCutterImpl : AudioCutter {
     private val CODEC_MP3 = "libmp3lame"
     private val CODEC_AAC = "aac"
 
-    private val PATH_DEFAUL_FOLDER = "${Environment.getExternalStorageDirectory()}/AudioCutter/"
-    private val PATH_CUT_FOLDER = "${PATH_DEFAUL_FOLDER}cutter"
-    private val PATH_MERGE_FOLDER = "${PATH_DEFAUL_FOLDER}merger"
-    private val PATH_MIXER_FOLDER = "${PATH_DEFAUL_FOLDER}mixer"
-    private val mainScope = MainScope()
+private val mainScope = MainScope()
     private val CMD_CUT_AUDIO_TIME =
         "-y -ss %d -i \'%s\' -c copy -t %d -b:a %dk -af \"volume='(between(t,0,%f)*(t/%d)+between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d)))*%f'\":eval=frame -c:a %s %s"
     private val CMD_CONCAT_AUDIO =
@@ -37,14 +32,6 @@ class AudioCutterImpl : AudioCutter {
         "-y -i \'%s\' -i \'%s\' -filter_complex \"[0:0]volume=%f[a];[1:0]volume=%f[b];[a][b]amix=inputs=2:duration=%s:dropout_transition=0[a]\" -map \"[a]\" -c:a %s -q:a 0 %s"
 
     init {
-        Utils.createFolder(
-            arrayOf(
-                PATH_DEFAUL_FOLDER,
-                PATH_CUT_FOLDER,
-                PATH_MERGE_FOLDER,
-                PATH_MIXER_FOLDER
-            )
-        )
         Config.setLogLevel(Level.AV_LOG_INFO)
         Config.enableStatisticsCallback {
             val percent = (it.time * 100) / timeVideo
@@ -67,7 +54,7 @@ class AudioCutterImpl : AudioCutter {
                 if (audioCutConfig.format == AudioFormat.MP3) AudioFormat.MP3.type else AudioFormat.ACC.type
             val codec = if (audioCutConfig.format == AudioFormat.MP3) CODEC_MP3 else CODEC_AAC
             val fileCutPath =
-                PATH_CUT_FOLDER.plus("/${audioCutConfig.fileName.plus(mimeType)}")
+                audioCutConfig.pathFolder.plus("/${audioCutConfig.fileName.plus(mimeType)}")
 
 
             val format = String.format(
@@ -132,7 +119,7 @@ class AudioCutterImpl : AudioCutter {
             val mimeType =
                 if (audioMixConfig.format == AudioFormat.MP3) AudioFormat.MP3.type else AudioFormat.ACC.type
             val codec = if (audioMixConfig.format == AudioFormat.MP3) CODEC_MP3 else CODEC_AAC
-            val filePath = PATH_MIXER_FOLDER.plus("/${fileName.plus(mimeType)}")
+            val filePath = audioMixConfig.pathFolder.plus("/${fileName.plus(mimeType)}")
             timeVideo = if (audioMixConfig.selector == MixSelector.LONGEST) {
                 if (audioFile1.time - audioFile2.time >= 0) audioFile1.time else audioFile2.time
             } else {
@@ -188,14 +175,14 @@ class AudioCutterImpl : AudioCutter {
     override suspend fun merge(
         listAudioFile: List<AudioCore>,
         fileName: String,
-        audioFormat: AudioFormat
+        audioFormat: AudioFormat, pathFolder: String
     ): AudioCore {
         withContext(Dispatchers.Default) {
             val mimeType =
                 if (audioFormat == AudioFormat.MP3) AudioFormat.MP3.type else AudioFormat.ACC.type
             val codec = if (audioFormat == AudioFormat.MP3) CODEC_MP3 else CODEC_AAC
             val sizeAudioFile = listAudioFile.size
-            val pathFileMerge = PATH_MERGE_FOLDER.plus("/${fileName.plus(mimeType)}")
+            val pathFileMerge = pathFolder.plus("/${fileName.plus(mimeType)}")
             val bitRateFile = 256
 
             var cmd_input = ""

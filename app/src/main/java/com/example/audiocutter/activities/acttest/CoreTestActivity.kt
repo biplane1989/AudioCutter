@@ -28,6 +28,12 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
     private lateinit var audioFile: AudioCore
     private var listAudio = ArrayList<AudioCore>()
 
+
+    private val PATH_DEFAUL_FOLDER = "${Environment.getExternalStorageDirectory()}/AudioCutter/"
+    private val PATH_CUT_FOLDER = "${PATH_DEFAUL_FOLDER}cutter"
+    private val PATH_MERGE_FOLDER = "${PATH_DEFAUL_FOLDER}merger"
+    private val PATH_MIXER_FOLDER = "${PATH_DEFAUL_FOLDER}mixer"
+
     companion object {
         private const val TAG = "CoreTestActivity"
     }
@@ -108,7 +114,7 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
                             Effect.AFTER_6_S,
                             Effect.AFTER_6_S,
                             BitRate._256kb,
-                            AudioFormat.ACC
+                            AudioFormat.ACC, PATH_CUT_FOLDER
                         )
                     )
                     Log.e(TAG, "cut: $audioFile ")
@@ -116,7 +122,12 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
             }
             test_concat_bt -> {
                 runOnUI {
-                    var audioFile = audioCutterImpl.merge(listAudio, "concatVideo", AudioFormat.ACC)
+                    var audioFile = audioCutterImpl.merge(
+                        listAudio,
+                        "concatVideo",
+                        AudioFormat.ACC,
+                        PATH_MERGE_FOLDER
+                    )
                     Log.e(TAG, "concat: $audioFile ")
                 }
             }
@@ -134,7 +145,7 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
                             "testMix",
                             MixSelector.LONGEST,
                             100,
-                            100, AudioFormat.ACC
+                            100, AudioFormat.ACC, PATH_MIXER_FOLDER
                         )
                     )
                 }
