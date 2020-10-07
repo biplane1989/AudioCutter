@@ -295,6 +295,7 @@ object AudioFileManagerImpl : AudioFileManager {
             fileAudio.name,
             fileAudio.length(),
             getBitRateByPath(fileAudio),
+//            128,
             duration.toLong(),
             uri
         )

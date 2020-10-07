@@ -12,6 +12,9 @@ class CutActivity : BaseActivity() {
     private val PATH_FOLDER: String =
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             .plus("/sample1.aac")
+    private val PATH_FOLDER1: String =
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            .plus("/Ed Sheeran - Shape Of You [Official].mp3")
 
     private operator fun File.plus(separator: String): String {
         return this.absolutePath + separator
@@ -22,7 +25,7 @@ class CutActivity : BaseActivity() {
 
         val ft: FragmentTransaction = supportFragmentManager.beginTransaction()
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-        val audioCutFragment = AudioCutFragment.newInstance(PATH_FOLDER)
+        val audioCutFragment = AudioCutFragment.newInstance(PATH_FOLDER1)
         ft.add(R.id.root_view, audioCutFragment)
             .addToBackStack(AudioCutFragment::class.java.simpleName).commit()
     }

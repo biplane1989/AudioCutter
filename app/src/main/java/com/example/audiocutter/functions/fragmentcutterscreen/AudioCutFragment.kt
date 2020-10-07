@@ -3,6 +3,7 @@ package com.example.audiocutter.functions.screen
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -12,20 +13,24 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.core.audioplayer.AudioPlayerImpl
+import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
+import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.FragmentAudioCutBinding
+import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.ui.fragment_cut.view.WaveformEditView
 import com.example.audiocutter.util.Utils
 
 class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
     View.OnClickListener, View.OnLongClickListener {
     private lateinit var pathAudio: String
+    private lateinit var audioFile: AudioFile
+    private var playerState = PlayerState.IDLE
+
     private var playPos = 0
     private var startPos = 0L
     private var endPos = 0L
 
-    private var audioImpl = AudioPlayerImpl
     private val mHandler: Handler = Handler(Looper.getMainLooper())
     private var runnable = Runnable {}
 
@@ -67,12 +72,30 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
         fragmentCutBinding.startTimeTv.apply { layoutParams = layoutParams1 }
         fragmentCutBinding.endTimeTv.apply { layoutParams = layoutParams1 }
 
-        audioImpl.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
+        ManagerFactory.getAudioPlayer().getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
     }
 
     private fun observerAudio(): Observer<PlayerInfo> {
         return Observer {
-
+            when (it.playerState) {
+                PlayerState.IDLE -> {
+                    fragmentCutBinding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
+                    playerState = PlayerState.IDLE
+                    Log.e(TAG, "observerAudio: IDLE")
+                }
+                PlayerState.PREPARING -> {
+                    Log.e(TAG, "observerAudio: PREPARING")
+                }
+                PlayerState.PLAYING -> {
+                    fragmentCutBinding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
+                    playerState = PlayerState.PLAYING
+                }
+                PlayerState.PAUSE -> {
+                    fragmentCutBinding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
+                    playerState = PlayerState.PAUSE
+                }
+            }
+            fragmentCutBinding.waveEditView.setPlayPositionMs(it.posision, false)
         }
     }
 
@@ -99,6 +122,7 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
 
     private fun getData() {
         pathAudio = requireArguments().getString(Utils.KEY_SEND_PATH, null)
+        audioFile = ManagerFactory.getAudioFileManagerImpl().buildAudioFile(pathAudio)
     }
 
     companion object {
@@ -118,7 +142,7 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
             Utils.longDurationMsToStringMs(startTimeMs)
         startPos = startTimeMs
         if (playPos <= startTimeMs) {
-            mEditView.setPlayPositionMs(startTimeMs.toInt())
+            mEditView.setPlayPositionMs(startTimeMs.toInt(), true)
         }
     }
 
@@ -126,20 +150,30 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
         fragmentCutBinding.endTimeTv.text = Utils.longDurationMsToStringMs(endTimeMs)
         endPos = endTimeMs
         if (playPos >= endPos) {
-            mEditView.setPlayPositionMs(endPos.toInt())
+            mEditView.setPlayPositionMs(endPos.toInt(), true)
         }
     }
 
-    override fun onPlayPositionChanged(positionMs: Int) {
+    override fun onPlayPositionChanged(positionMs: Int, isPress: Boolean) {
         when {
             positionMs in startPos..endPos -> {
-                playPos = positionMs
+                Log.e(TAG, "onPlayPositionChanged: $isPress")
+                if (isPress && playerState == PlayerState.PLAYING) {
+                    if (positionMs.toLong() == endPos) {
+                        ManagerFactory.getAudioPlayer().stop()
+                        playPos = startPos.toInt()
+                        mEditView.setPlayPositionMs(playPos, false)
+                    } else {
+                        ManagerFactory.getAudioPlayer().seek(positionMs)
+                        playPos = positionMs
+                    }
+                }
             }
             positionMs < startPos -> {
-                mEditView.setPlayPositionMs(startPos.toInt())
+                mEditView.setPlayPositionMs(startPos.toInt(), true)
             }
             positionMs > endPos -> {
-                mEditView.setPlayPositionMs(endPos.toInt())
+                mEditView.setPlayPositionMs(endPos.toInt(), true)
             }
         }
     }
@@ -182,11 +216,21 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
                 fragmentCutBinding.waveEditView.zoomInt()
             }
             fragmentCutBinding.preIv -> {
+
             }
             fragmentCutBinding.playRl -> {
-//                audioImpl.play(playPos, endPos)
+                runOnUI {
+                    if (playerState == PlayerState.PLAYING) {
+                        ManagerFactory.getAudioPlayer().pause()
+                    } else {
+                        if (playerState == PlayerState.IDLE)
+                            ManagerFactory.getAudioPlayer().play(audioFile, playPos)
+                        else ManagerFactory.getAudioPlayer().resume()
+                    }
+                }
             }
             fragmentCutBinding.nextIv -> {
+
             }
         }
     }

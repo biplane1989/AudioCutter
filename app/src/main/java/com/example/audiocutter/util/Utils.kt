@@ -3,14 +3,10 @@ package com.example.audiocutter.util
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Rect
-import android.util.Log
+import android.media.MediaPlayer
+import android.net.Uri
 import android.util.TypedValue
-
-import android.app.Activity
-import android.content.Context
-import android.util.TypedValue
-import android.view.View
-import android.view.inputmethod.InputMethodManager
+import java.io.File
 
 object Utils {
     val KEY_SEND_PATH = "key_send_path"
@@ -80,12 +76,20 @@ object Utils {
     }
 
 
-     fun convertDp2Px(dip: Int, context: Context): Float {
+    fun convertDp2Px(dip: Int, context: Context): Float {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             dip.toFloat(),
             context.resources.displayMetrics
         )
+    }
+
+    //test
+    fun getTimeAudio(file: File, context: Context): Long {
+        val mp: MediaPlayer = MediaPlayer.create(context, Uri.parse(file.absolutePath))
+        val duration = mp.duration
+        mp.release()
+        return duration.toLong()
     }
 
 

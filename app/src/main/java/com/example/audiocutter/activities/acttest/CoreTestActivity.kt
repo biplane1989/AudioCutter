@@ -11,6 +11,7 @@ import android.view.View
 import androidx.lifecycle.Observer
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
+import com.example.audiocutter.util.Utils.getTimeAudio
 import com.example.core.core.*
 import kotlinx.android.synthetic.main.activity_core_test.*
 import java.io.File
@@ -162,12 +163,6 @@ fun between(t: Int, start: Int, end: Int): Int {
         0
 }
 
-fun getTimeAudio(file: File, context: Context): Long {
-    val mp: MediaPlayer = MediaPlayer.create(context, Uri.parse(file.absolutePath))
-    val duration = mp.duration
-    mp.release()
-    return duration.toLong()
-}
 
 private operator fun File.plus(separator: String): Any {
     return this.absolutePath + separator

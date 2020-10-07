@@ -154,7 +154,8 @@ class WaveformEditView : View {
         val duration = getDuration(path)
         if (listener != null) {
             listener!!.onCountAudioSelected(duration, true)
-            listener!!.onPlayPositionChanged(playPositionMs.toInt())
+            listener!!.onPlayPositionChanged(playPositionMs.toInt(), false)
+            listener!!.onEndTimeChanged(duration)
         }
         trackDurationMs = duration
         invalidate()
@@ -616,7 +617,7 @@ class WaveformEditView : View {
             ((playLineRect!!.centerX() + translate) / scale / waveformWidth * trackDurationMs).toLong()
         invalidate()
         if (listener != null) {
-            listener!!.onPlayPositionChanged(playPositionMs.toInt())
+            listener!!.onPlayPositionChanged(playPositionMs.toInt(), true)
         }
 
     }
@@ -729,7 +730,7 @@ class WaveformEditView : View {
         cancelLoad()
     }
 
-    fun setPlayPositionMs(currentPositionMs: Int) {
+    fun setPlayPositionMs(currentPositionMs: Int, isPress: Boolean) {
         if (currentPositionMs > 0) {
             playPositionMs = currentPositionMs.toLong()
             val x = playPositionMs * 1f / trackDurationMs * waveformWidth * scale - translate
@@ -737,7 +738,7 @@ class WaveformEditView : View {
                 heightView - cursorSize / 2
             invalidate()
             if (listener != null) {
-                listener!!.onPlayPositionChanged(currentPositionMs)
+                listener!!.onPlayPositionChanged(currentPositionMs, isPress)
             }
         }
     }
@@ -801,7 +802,7 @@ class WaveformEditView : View {
     interface WaveformEditListener {
         fun onStartTimeChanged(startTimeMs: Long)
         fun onEndTimeChanged(endTimeMs: Long)
-        fun onPlayPositionChanged(positionMs: Int)
+        fun onPlayPositionChanged(positionMs: Int, isPress: Boolean)
         fun onCountAudioSelected(positionMs: Long, isFirstTime: Boolean)
     }
 
@@ -834,4 +835,5 @@ class WaveformEditView : View {
         private val DEFAULT_PLAY_LINE_COLOR = Color.parseColor("#D81B60")
         private val DEFAULT_LINE_SPACE_COLOR = Color.parseColor("#D8D8D8")
     }
+
 }
