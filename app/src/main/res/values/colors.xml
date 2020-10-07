@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorAccent">#000000</color>
     <color name="colorBlack">#000000</color>
     <color name="colorGray">#f6f6f6</color>
     <color name="colorgray">#8C8C8C</color>
@@ -13,6 +13,7 @@
     <color name="colorYelow">#FFCB59</color>
     <color name="colorYelowDark">#FDAA74</color>
     <color name="colorYelowAlpha">#4BFFD18D</color>
+    <color name="colorAlphaGray">#A7A7A7</color>
     <!--fragment cut audio-->
     <color name="fragment_cutter_text_title_color">#2E3041</color>
     <color name="fragment_cutter_text_time_color">#707489</color>

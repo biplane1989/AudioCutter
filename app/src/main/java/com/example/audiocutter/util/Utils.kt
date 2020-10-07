@@ -6,6 +6,12 @@ import android.graphics.Rect
 import android.util.Log
 import android.util.TypedValue
 
+import android.app.Activity
+import android.content.Context
+import android.util.TypedValue
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+
 object Utils {
     val KEY_SEND_PATH = "key_send_path"
 
@@ -72,4 +78,15 @@ object Utils {
     ): Double {
         return ((value - min1) * ((max2 - min2) / (max1 - min1)) + min2)
     }
+
+
+     fun convertDp2Px(dip: Int, context: Context): Float {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dip.toFloat(),
+            context.resources.displayMetrics
+        )
+    }
+
+
 }

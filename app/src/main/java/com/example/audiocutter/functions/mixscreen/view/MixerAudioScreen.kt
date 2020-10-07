@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.MixAudioScreen.view
+package com.example.audiocutter.functions.mixscreen.view
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -20,10 +20,9 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
-import com.example.audiocutter.functions.MixAudioScreen.adapter.MixAdapter
-import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDialog
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import com.example.audiocutter.functions.audiocutterscreen.view.screen.AudioCutterScreen
+import com.example.audiocutter.functions.mixscreen.adapter.MixAdapter
 
 class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioMixerListener {
 
@@ -32,7 +31,6 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     private lateinit var rvAudioMix: RecyclerView
     private lateinit var audioMixAdapter: MixAdapter
     private lateinit var audioMixModel: MixModel
-    lateinit var dialog: SetAsDialog
     lateinit var ivFile: ImageView
     lateinit var ivSearch: ImageView
     lateinit var ivBack: ImageView
@@ -54,7 +52,7 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     var listTmp: MutableList<AudioCutterView> = mutableListOf()
     var isChangeList = true
 
-    val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
+    private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
         listTmp = listMusic.toMutableList()
         audioMixAdapter.submitList(ArrayList(listMusic))
 
@@ -112,8 +110,8 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     }
 
     private fun searchAudioByName(yourTextSearch: String) {
-        setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_mixer_audio_disabled, false)
-        tvCountFile.text = "0 file"
+        setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_audio_disabled, false)
+        tvCountFile.text = getString(R.string.countFile)
         rvAudioMix.visibility = View.VISIBLE
         rltNextMixParent.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
@@ -222,12 +220,12 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         audioMixAdapter.submitList(audioMixModel.chooseItemAudioFile(pos, rs))
 
         if (audioMixModel.checkList() == 2) {
-            setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_mixer_audio_enabled, true)
+            setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
         } else {
-            setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_mixer_audio_disabled, false)
+            setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_audio_disabled, false)
         }
         if (audioMixModel.isChooseItem) {
-            showToast("You can select only 2 item")
+            showToast(getString(R.string.ToastExceed))
         }
         tvCountFile.text = "${audioMixModel.checkList()} file"
     }
@@ -243,7 +241,6 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.iv_audio_mixer_screen_file -> changeListFile()
             R.id.iv_mixer_screen_search -> searchAudiofile()
             R.id.iv_mixer_screen_back_edt -> previousStatus()
             R.id.iv_mixer_screen_close -> clearText()
@@ -254,9 +251,10 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     private fun handleAudiofile() {
         val listItemHandle = audioMixModel.getListItemChoose()
 
-//        listItemHandle.forEach {
-//            Log.d(TAG, "handleAudiofile: ${it.audioFile.fileName}")
-//        }
+        listItemHandle.forEach {
+            Log.d(TAG, "handleAudiofile: ${it.audioFile.fileName}")
+        }
+
 
         /**place handle listItem choose*/
 
@@ -286,38 +284,7 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     }
 
 
-    private fun changeListFile() {
 
-        setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_mixer_audio_disabled, false)
-        runOnUI {
-            try {
-                if (isChangeList) {
-                    tvCountFile.text = requireActivity().resources.getText(R.string.countFile)
-                    ManagerFactory.getAudioPlayer().stop()
-                    audioMixModel.getAllFileByType().observe(this, Observer {
-                        listTmp.clear()
-                        listTmp.addAll(it.toMutableList())
-                        audioMixAdapter.submitList(listTmp)
-                        isChangeList = false
-                    })
-                } else {
-                    tvCountFile.text = requireActivity().resources.getText(R.string.countFile)
-                    audioMixModel.getAllAudioFile().observe(this, Observer {
-                        listTmp.clear()
-                        listTmp.addAll(it.toMutableList())
-                        audioMixAdapter.submitList(listTmp)
-                        isChangeList = true
-                    })
-                }
-                if (currentPos != -1) {
-                    ManagerFactory.getAudioPlayer().stop()
-                }
-                Log.d(TAG, "updateAllFile: check $isChangeList    listSize ${listTmp.size}")
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
 
 
     override fun onDestroyView() {

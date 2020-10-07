@@ -1,13 +1,13 @@
-package com.example.audiocutter.functions.audiocutterscreen.view.adapter
+package com.example.audiocutter.functions.mixscreen.adapter
 
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -16,17 +16,15 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import com.example.audiocutter.functions.audiocutterscreen.widget.ProgressView
 import com.example.audiocutter.functions.audiocutterscreen.widget.WaveAudio
-import kotlin.math.floor
 
-class AudiocutterAdapter(val mContext: Context) :
-    ListAdapter<AudioCutterView, AudiocutterAdapter.AudiocutterHolder>(Audiodiff()) {
-    lateinit var mCallBack: AudioCutterListener
+class MixAdapter(val mContext: Context) :
+    ListAdapter<AudioCutterView, MixAdapter.RecentHolder>(Audiodiff()) {
+    lateinit var mCallBack: AudioMixerListener
     val SIZE_MB = 1024 * 1024
     var listAudios = mutableListOf<AudioCutterView>()
 
 
-
-    fun setAudioCutterListtener(event: AudioCutterListener) {
+    fun setAudioCutterListtener(event: AudioMixerListener) {
         mCallBack = event
     }
 
@@ -42,20 +40,20 @@ class AudiocutterAdapter(val mContext: Context) :
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AudiocutterHolder {
-        val view = LayoutInflater.from(mContext).inflate(R.layout.item_audio, parent, false)
-        return AudiocutterHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecentHolder {
+        val view = LayoutInflater.from(mContext).inflate(R.layout.item_audio_mixer, parent, false)
+        return RecentHolder(view)
     }
 
 
-    override fun onBindViewHolder(holder: AudiocutterHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecentHolder, position: Int) {
         holder.bind()
 
     }
 
 
     override fun onBindViewHolder(
-        holder: AudiocutterHolder,
+        holder: RecentHolder,
         position: Int,
         payloads: MutableList<Any>
     ) {
@@ -65,6 +63,8 @@ class AudiocutterAdapter(val mContext: Context) :
         } else {
             val itemAudioFile = getItem(position)
 //            val audioCutterView = payloads.firstOrNull() as AudioCutterView
+
+
             when (itemAudioFile.state) {
                 PlayerState.PLAYING -> {
                     holder.ivController.setImageResource(R.drawable.ic_audiocutter_pause)
@@ -73,47 +73,50 @@ class AudiocutterAdapter(val mContext: Context) :
                     holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }
                 PlayerState.IDLE -> {
-                    holder.pgAudio.resetView()
                     holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }
             }
-
+            when (itemAudioFile.isCheckChooseItem) {
+                true -> holder.ivChecked.setImageResource(R.drawable.ic_checkdone)
+                false -> holder.ivChecked.setImageResource(R.drawable.ic_noncheck)
+            }
         }
     }
 
-    inner class AudiocutterHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+    inner class RecentHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
         View.OnClickListener {
 
-        val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)!!
-        val tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_audio)
-        val tvSizeAudio = itemView.findViewById<TextView>(R.id.tv_size_audio)
-        val tvBitrateAudio = itemView.findViewById<TextView>(R.id.tv_bitrate_audio)
-        val lnChild = itemView.findViewById<LinearLayout>(R.id.ln_item_audio_cutter_screen)
-        val lnMenu = itemView.findViewById<LinearLayout>(R.id.ln_menu)
-        val pgAudio = itemView.findViewById<ProgressView>(R.id.pg_audio_cutter_screen)
-        val waveView = itemView.findViewById<WaveAudio>(R.id.wave_audio_cutter)
+        val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio_recent)
+        val ivChecked = itemView.findViewById<ImageView>(R.id.iv_recent_check)
+        val tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_audio_recent)
+        val tvSizeAudio = itemView.findViewById<TextView>(R.id.tv_size_audio_recent)
+        val tvBitrateAudio = itemView.findViewById<TextView>(R.id.tv_bitrate_audio_recent)
+        val lnItem = itemView.findViewById<LinearLayout>(R.id.ln_item_audio_mixer_screen)
+
+        val lnMenu = itemView.findViewById<LinearLayout>(R.id.ln_menu_recent)
+
+        val pgAudio = itemView.findViewById<ProgressView>(R.id.pg_audio_mixer_screen)
+        val waveView = itemView.findViewById<WaveAudio>(R.id.wave_audio_mixer)
 
         init {
             ivController.setOnClickListener(this)
             lnMenu.setOnClickListener(this)
-            lnChild.setOnClickListener(this)
+            lnItem.setOnClickListener(this)
         }
 
-        @SuppressLint("SetTextI18n")
         fun bind() {
             val itemAudioFile = getItem(position)
-            Log.d("TAG", "bind: ${itemAudioFile.isCheckDistance}    state ${itemAudioFile.state}")
             tvBitrateAudio.text = "${itemAudioFile.audioFile.bitRate}Kbs/s"
 
             tvNameAudio.text = itemAudioFile.audioFile.fileName
             var size = (itemAudioFile.audioFile.size.toDouble() / SIZE_MB)
 
             if (size >= 1) {
-                size = floor(size * 10) / 10
+                size = Math.floor(size * 10) / 10
                 tvSizeAudio.text = "$size Mb"
             } else {
                 size = (itemAudioFile.audioFile.size.toDouble() / 1024)
-                size = floor(size * 10) / 10
+                size = Math.floor(size * 10) / 10
                 tvSizeAudio.text = "$size Kb"
             }
 
@@ -145,21 +148,27 @@ class AudiocutterAdapter(val mContext: Context) :
                 }
             }
 
+            when (itemAudioFile.isCheckChooseItem) {
+                true -> ivChecked.setImageResource(R.drawable.ic_checkdone)
+                false -> ivChecked.setImageResource(R.drawable.ic_noncheck)
+            }
+
         }
 
 
         override fun onClick(p0: View) {
-            val itemAudio = getItem(adapterPosition)
+            val item = getItem(adapterPosition)
             when (p0.id) {
-                R.id.iv_controller_audio -> controllerAudio()
-                R.id.ln_item_audio_cutter_screen -> controllerAudio()
-                R.id.ln_menu -> showPopupMenu(itemAudio)
+                R.id.iv_controller_audio_recent -> controllerAudio()
+                R.id.ln_menu_recent -> mCallBack.chooseItemAudio(adapterPosition, item.isCheckChooseItem)
+                R.id.ln_item_audio_mixer_screen -> mCallBack.chooseItemAudio(adapterPosition, item.isCheckChooseItem)
             }
         }
 
 
+
         private fun controllerAudio() {
-            val itemAudio = listAudios[adapterPosition]
+            val itemAudio = listAudios.get(adapterPosition)
             if (adapterPosition == -1) {
                 return
             }
@@ -177,42 +186,14 @@ class AudiocutterAdapter(val mContext: Context) :
         }
 
 
-        private fun showPopupMenu(itemAudio: AudioCutterView) {
-            val popupMenu = PopupMenu(mContext, lnMenu)
-            popupMenu.menuInflater.inflate(R.menu.menu_item_audio, popupMenu.menu)
-            popupMenu.setOnMenuItemClickListener {
-
-                when (it.itemId) {
-                    R.id.menu_cut -> {
-                        Toast.makeText(mContext, "cut", Toast.LENGTH_SHORT).show()
-                    }
-                    R.id.menu_play
-                    -> {
-                        controllerAudio()
-                    }
-                    R.id.menu_contacts
-                    -> {
-                        Toast.makeText(mContext, "contacts", Toast.LENGTH_SHORT).show()
-                    }
-                    R.id.menu_setas
-                    -> {
-                        mCallBack.showDialogSetAs(itemAudio)
-                    }
-                }
-                false
-            }
-            popupMenu.show()
-
-        }
     }
 
-    interface AudioCutterListener {
+    interface AudioMixerListener {
 
         fun play(pos: Int)
         fun pause(pos: Int)
         fun resume(pos: Int)
-        fun showDialogSetAs(itemAudio: AudioCutterView) {
-        }
+        fun chooseItemAudio(pos: Int, rs: Boolean)
     }
 }
 

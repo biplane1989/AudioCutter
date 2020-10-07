@@ -34,7 +34,7 @@ import kotlin.collections.ArrayList
 
 object AudioFileManagerImpl : AudioFileManager {
 
-
+    val SUB_PATH = "${Environment.getExternalStorageDirectory()}/AudioCutter"
     private var uri: Uri = Uri.parse("")
     private val SIZE_KB: Long = 1024L
     private val SIZE_MB = SIZE_KB * SIZE_KB
@@ -66,7 +66,7 @@ object AudioFileManagerImpl : AudioFileManager {
     val listAllAudioByType: LiveData<List<AudioFile>>
         get() = _listAllAudioByType
 
-    val audioFileObserver = AudioFileObserver(Handler())
+    private val audioFileObserver = AudioFileObserver(Handler())
 
     fun init(context: Context) {
         mContext = context
@@ -75,10 +75,9 @@ object AudioFileManagerImpl : AudioFileManager {
 
 
     private fun ScanAllFile(): List<AudioFile> {
-        var projection: Array<String>
         val resolver = mContext.contentResolver
         val listData = ArrayList<AudioFile>()
-        projection = arrayOf(
+        var projection = arrayOf(
             MediaStore.Audio.Media.DATA,
             MediaStore.Audio.Media.DISPLAY_NAME,
             MediaStore.Audio.Media._ID,
@@ -248,7 +247,7 @@ object AudioFileManagerImpl : AudioFileManager {
     }
 
 
-    fun getBitmapByPath(path: String?): Bitmap? {
+    private fun getBitmapByPath(path: String?): Bitmap? {
         path?.let {
             val mMediaMeta = MediaMetadataRetriever()
             val buff: ByteArray?
@@ -268,7 +267,7 @@ object AudioFileManagerImpl : AudioFileManager {
     }
 
     private fun getUriFromFile(id: String, resolver: ContentResolver, file: File): Uri? {
-        var uri =
+        val uri =
             Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString() + File.separator + id)
         if (uri != null) {
             return uri
@@ -295,7 +294,7 @@ object AudioFileManagerImpl : AudioFileManager {
             fileAudio,
             fileAudio.name,
             fileAudio.length(),
-            128,
+            getBitRateByPath(fileAudio),
             duration.toLong(),
             uri
         )
@@ -346,7 +345,7 @@ object AudioFileManagerImpl : AudioFileManager {
 
             } else
                 if (availableSize + currentSize < totalSize) {
-                    val SUB_PATH = "${Environment.getExternalStorageDirectory()}/AudioCutter"
+
                     val pathParent: String
                     try {
                         when (typeFile) {
