@@ -30,7 +30,8 @@ data class AudioCutConfig(
     val inEffect: Effect = Effect.OFF,
     val outEffect: Effect = Effect.OFF,
     val bitRate: BitRate = BitRate._128kb,
-    val format: AudioFormat = AudioFormat.MP3
+    val format: AudioFormat = AudioFormat.MP3,
+    val pathFolder: String
 )
 
 data class AudioMixConfig(
@@ -38,7 +39,8 @@ data class AudioMixConfig(
     val selector: MixSelector = MixSelector.LONGEST,
     val volumePercent1: Int = 100,
     val volumePercent2: Int = 100,
-    val format: AudioFormat = AudioFormat.MP3
+    val format: AudioFormat = AudioFormat.MP3,
+    val pathFolder: String
 )
 
 data class OutputAudioInfo(val audioFile: AudioCore, var percent: Int)
@@ -48,7 +50,7 @@ interface AudioCutter {
     suspend fun merge(
         listAudioFile: List<AudioCore>,
         fileName: String,
-        audioFormat: AudioFormat
+        audioFormat: AudioFormat, pathFolder: String
     ): AudioCore
 
     suspend fun mix(

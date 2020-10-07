@@ -90,7 +90,7 @@ class FakeAudioCutter : AudioCutter {
     override suspend fun merge(
         listAudioFile: List<AudioCore>,
         fileName: String,
-        audioFormat: AudioFormat
+        audioFormat: AudioFormat, pathFolder: String
     ): AudioCore {
         TODO("Not yet implemented")
     }
