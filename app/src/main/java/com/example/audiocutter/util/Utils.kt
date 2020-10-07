@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.util.TypedValue
 import com.example.audiocutter.functions.contactscreen.contacts.ContactInfomation
 import java.text.Normalizer
 import java.util.regex.Pattern
@@ -99,4 +100,25 @@ object Utils {
         }
         return null
     }
+
+    fun convertValue(
+        min1: Double,
+        max1: Double,
+        min2: Double,
+        max2: Double,
+        value: Double
+    ): Double {
+        return ((value - min1) * ((max2 - min2) / (max1 - min1)) + min2)
+    }
+
+
+    fun convertDp2Px(dip: Int, context: Context): Float {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dip.toFloat(),
+            context.resources.displayMetrics
+        )
+    }
+
+
 }

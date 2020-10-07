@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/d_16">
+
+    <RelativeLayout
+        android:id="@+id/rlt_actionbar_mer"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/d_56"
+        android:background="?attr/selectableItemBackground">
+
+        <EditText
+            android:id="@+id/edt_mer_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_edt_audiocutter_screen"
+            android:focusableInTouchMode="true"
+            android:paddingStart="40dp"
+            android:singleLine="true"
+            android:visibility="gone">
+
+            <requestFocus />
+        </EditText>
+
+        <ImageView
+            android:id="@+id/iv_mer_screen_back"
+            android:layout_width="@dimen/d_30"
+            android:layout_height="@dimen/d_30"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_audiocutter_back" />
+
+
+        <ImageView
+            android:id="@+id/iv_mer_screen_back_edt"
+            android:layout_width="@dimen/d_30"
+            android:layout_height="@dimen/d_30"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_audiocutter_back" />
+
+        <TableRow
+            android:id="@+id/tb_name_mer"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="46dp"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_mer_screen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:text="Audio Merge"
+                android:textIsSelectable="true"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/d_18" />
+        </TableRow>
+
+
+        <ImageView
+            android:id="@+id/iv_mer_screen_search"
+            android:layout_width="@dimen/d_30"
+            android:layout_height="@dimen/d_30"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_audiocutter_search" />
+
+        <ImageView
+            android:id="@+id/iv_audio_mer_screen_file"
+            android:layout_width="@dimen/d_30"
+            android:layout_height="@dimen/d_30"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@id/iv_mer_screen_search"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_audiocutter_file" />
+
+        <ImageView
+            android:id="@+id/iv_mer_screen_close"
+            android:layout_width="@dimen/d_30"
+            android:layout_height="@dimen/d_30"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:padding="@dimen/d_5"
+            android:src="@drawable/ic_audiocutter_close"
+            android:visibility="gone" />
+
+
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_merge"
+        android:layout_below="@id/rlt_actionbar_mer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/rlt_next_mer_parent"
+        tools:listitem="@layout/item_audio_mixer" />
+
+
+    <TextView
+        android:id="@+id/tv_empty_list_mer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:fontFamily="@font/sanfranciscodisplay_regular"
+        android:layout_centerInParent="true"
+        android:text="No result."
+        android:textColor="@color/colorgray"
+        android:textSize="@dimen/d_18"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/rlt_next_mer_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/d_56"
+        android:gravity="center_vertical">
+
+
+        <TextView
+            android:id="@+id/tv_count_file_mer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/sanfranciscodisplay_bold"
+            android:text="@string/countFile"
+            android:textColor="@color/colorBlack"
+            android:textSize="14dp" />
+
+
+        <RelativeLayout
+            android:layout_width="90dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/rlt_next_mer"
+            android:background="@drawable/bg_next_audio_disabled">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_next_mer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sanfranciscodisplay_bold"
+                    android:text="Next"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/d_18"/>
+
+                <ImageView
+                    android:id="@+id/iv_next_mer"
+                    android:layout_width="24dp"
+                    android:layout_marginLeft="@dimen/d_10"
+                    android:layout_height="24dp"
+                    android:padding="@dimen/d_5"
+                    android:src="@drawable/ic_mixer_next"
+                    app:tint="@color/colorBlack" />
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

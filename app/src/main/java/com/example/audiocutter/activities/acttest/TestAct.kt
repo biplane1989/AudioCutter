@@ -1,44 +1,61 @@
 package com.example.audiocutter.activities.acttest
 
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
 import com.example.audiocutter.R
-import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
-import com.example.audiocutter.objects.AudioFile
-import java.io.File
+import com.example.audiocutter.base.BaseActivity
+import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
+import com.example.audiocutter.functions.mergescreen.event.OnActionCallback
+import com.example.audiocutter.functions.mergescreen.m001merge.view.MergeScreen
+import com.example.audiocutter.functions.mergescreen.m002mergechoose.view.MergeChooseScreen
 
-class TestAct : AppCompatActivity(), View.OnClickListener {
-    lateinit var delete: Button
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+class TestAct() : BaseActivity(), OnActionCallback {
+    //    lateinit var audioCutterScreen: AudioCutterScreen
+    lateinit var merChoose: MergeChooseScreen
+    lateinit var merScreen: MergeScreen
+
+
+    override fun createView(savedInstanceState: Bundle?) {
         setContentView(R.layout.act_test)
         initViews()
+
     }
+
 
     private fun initViews() {
-        delete = findViewById(R.id.bt_delete)
-        delete.setOnClickListener(this)
+
+        merChoose = MergeChooseScreen()
+        merScreen = MergeScreen()
+        merScreen.setOnCalBack(this)
+        merChoose.setOnCalBack(this)
+        supportFragmentManager.beginTransaction().add(R.id.ln_main, merChoose)
+            .add(R.id.ln_main, merScreen).commit()
+        showMergeScr()
+
     }
 
-    override fun onClick(v: View) {
-        if (v.id == R.id.bt_delete) {
-            val audioFile = AudioFile(
-                File("/storage/emulated/0/VoiceRecorder/Recording_16.m4a"),
-                "dd",
-                100,
-                128,
-                0, Uri.parse("content://media/external/audio/media/414")
-            )
-
-           /* val rs = AudioFileManagerImpl.deleteFile(audioFile, )*/
-
-            /*Log.d("TAG", "onClick: $rs")*/
-        }
+    private fun showMergeScr() {
+        supportFragmentManager.beginTransaction().show(merScreen).hide(merChoose).commit()
     }
 
+    override fun sendAndReceiveData(listData: List<AudioCutterView>) {
+        merChoose.receiveData(listData)
+        supportFragmentManager.beginTransaction().show(merChoose).hide(merScreen).commit()
+    }
+
+    override fun backFrg() {
+        supportFragmentManager.beginTransaction().show(merScreen).hide(merChoose).commit()
+
+    }
+
+
+
+//    override fun onClick(p0: View) {
+//        when (p0.id) {
+//            R.id.bt_start -> waveAudio.resumeAnimation()
+//            R.id.bt_pause -> waveAudio.pauseAnimation()
+//            R.id.bt_resume -> waveAudio.resumeAnimation()
+//        }
+//    }
 
 }
+

@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.audioManager.Folder
+import com.example.audiocutter.core.audioManager.StateFile
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.coroutines.MainScope
@@ -71,7 +72,7 @@ class FakeAudioFileManager : AudioFileManager {
         return AudioFile(File(filePath), "file_name1", 10000, 128)
     }
 
-    override fun saveFile(audioFile: AudioFile, typeFile: Folder): Boolean {
+    override suspend fun saveFile(audioFile: AudioFile, typeFile: Folder): StateFile {
         TODO()
     }
 
@@ -116,5 +117,9 @@ class FakeAudioFileManager : AudioFileManager {
 
         }
         return audioFileLiveData
+    }
+
+    override fun getDurationByPath(itemFile: File?): String {
+        return ""
     }
 }

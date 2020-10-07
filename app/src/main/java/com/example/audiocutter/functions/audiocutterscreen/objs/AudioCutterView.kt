@@ -5,14 +5,9 @@ import com.example.audiocutter.objects.AudioFile
 
 data class AudioCutterView(
     val audioFile: AudioFile,
-    var state: PlayerState = PlayerState.IDLE
-
-) {
-    override fun equals(obj: Any?): Boolean {
-        if (obj is AudioCutterView) {
-            return obj.audioFile.file.absolutePath == audioFile.file.absolutePath
-        }
-        return super.equals(obj)
-    }
-}
-
+    var state: PlayerState = PlayerState.IDLE,
+    var isCheckChooseItem: Boolean = false,
+    var duration: Long = 0L,
+    var currentPos: Long = 0L,
+    var isCheckDistance: Boolean = false
+)

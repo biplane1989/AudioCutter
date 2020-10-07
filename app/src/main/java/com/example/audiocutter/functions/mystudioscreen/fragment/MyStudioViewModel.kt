@@ -345,7 +345,7 @@ class MyStudioViewModel : BaseViewModel() {
             // update
             val itemLoadStatus = audioFileView.itemLoadStatus.copy()
             itemLoadStatus.duration = playerInfo.duration
-            itemLoadStatus.currPos = playerInfo.position
+            itemLoadStatus.currPos = playerInfo.posision
             itemLoadStatus.playerState = playerInfo.playerState
             audioFileView.itemLoadStatus = itemLoadStatus
 

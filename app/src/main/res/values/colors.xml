@@ -11,4 +11,8 @@
     <color name="main_screen_title_text_color">#2E3041</color>
     <color name="main_screen_item_text_color">#FFFFFF</color>
     <color name="progressbar_color">#FDAA74</color>
+    <color name="colorYelow">#FFCB59</color>
+    <color name="colorYelowDark">#FDAA74</color>
+    <color name="colorYelowAlpha">#4BFFD18D</color>
+    <color name="colorAlphaGray">#A7A7A7</color>
 </resources>
