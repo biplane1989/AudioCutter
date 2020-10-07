@@ -17,7 +17,7 @@ class MergeModel : BaseViewModel() {
 
 
     suspend fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
-        return Transformations.map(ManagerFactory.getAudioFileManagerImpl().findAllAudioFiles()) { listAudioFiles ->
+        return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) { listAudioFiles ->
             mListAudio.clear()
             listAudioFiles.forEach {
                 mListAudio.add(AudioCutterView(it))

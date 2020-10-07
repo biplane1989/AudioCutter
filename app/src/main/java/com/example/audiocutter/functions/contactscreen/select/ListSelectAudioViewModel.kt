@@ -181,7 +181,7 @@ class ListSelectAudioViewModel : BaseViewModel() {
             // update
             val itemLoadStatus = selectItemView.selectItemStatus.copy()
             itemLoadStatus.duration = playerInfo.duration
-            itemLoadStatus.currPos = playerInfo.position
+            itemLoadStatus.currPos = playerInfo.posision
             itemLoadStatus.playerState = playerInfo.playerState
             selectItemView.selectItemStatus = itemLoadStatus
 

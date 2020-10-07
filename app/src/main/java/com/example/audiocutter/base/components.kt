@@ -130,7 +130,6 @@ abstract class BaseAndroidViewModel(application: Application) : AndroidViewModel
     }
 }
 
-
 abstract class BaseFragment : Fragment() {
     protected val viewStateManager: ViewStateManager = ViewStateManagerImpl
     protected lateinit var baseActivity: BaseActivity;

@@ -225,7 +225,6 @@ object FileUtils {
         return path
     }
 
-
     private fun getDataColumn(context: Context, uri: Uri?, selection: String?, selectionArgs: Array<String>?): String? {
         var cursor: Cursor? = null
         val column = "_data"

@@ -199,7 +199,7 @@ object AudioFileManagerImpl : AudioFileManager {
 
     }
 
-    override suspend fun findAllAudioFiles(): LiveData<List<AudioFile>> {
+    override fun findAllAudioFiles(): LiveData<List<AudioFile>> {
         return listAllAudioFile
     }
 
@@ -473,7 +473,7 @@ object AudioFileManagerImpl : AudioFileManager {
     }
 
 
-    suspend fun getAllListByType()
+    override suspend fun getAllListByType()
             : LiveData<List<AudioFile>> {
         listAllByType.clear()
 

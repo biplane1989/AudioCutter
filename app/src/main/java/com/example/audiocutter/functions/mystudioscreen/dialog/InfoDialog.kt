@@ -19,7 +19,7 @@ class InfoDialog : BaseDialog() {
         fun newInstance(audioFile: AudioFile): InfoDialog {
             val dialog = InfoDialog()
             val bundle = Bundle()
-            bundle.putParcelable(BUNDLE_NAME_KEY, audioFile)
+            //bundle.putParcelable(BUNDLE_NAME_KEY, audioFile)
             dialog.arguments = bundle
             return dialog
         }
@@ -32,7 +32,7 @@ class InfoDialog : BaseDialog() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, R.style.DialogGray)
-        audioFile = requireArguments().getParcelable(BUNDLE_NAME_KEY)!!
+        //audioFile = requireArguments().getParcelable(BUNDLE_NAME_KEY)!!
 
     }
 

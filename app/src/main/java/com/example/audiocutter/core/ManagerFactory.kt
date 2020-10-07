@@ -26,7 +26,7 @@ object ManagerFactory {
         RingtonManagerImpl.init(appContext)
     }
 
-    fun getAudioFileManager(): AudioFileManager {
+    fun getAudioFileManager(): AudioFileManagerImpl {
 //        return mAudioFileManager
         return AudioFileManagerImpl
     }

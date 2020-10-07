@@ -34,6 +34,9 @@ class FakeAudioFileManager : AudioFileManager {
     )
     val file2 = File(Environment.getExternalStorageDirectory().toString() + "/Download/xaodong.mp3")
 
+    override suspend fun getAllListByType(): LiveData<List<AudioFile>> {
+        TODO("Not yet implemented")
+    }
 
     init {
 
@@ -63,7 +66,7 @@ class FakeAudioFileManager : AudioFileManager {
 //        }
     }
 
-    override fun findAllAudioFiles(): LiveData<List<AudioFile>> {
+    suspend override fun findAllAudioFiles(): LiveData<List<AudioFile>> {
         return audioFileLiveData
 //        return AudioFileManagerImpl.findAllAudioFiles()
     }
