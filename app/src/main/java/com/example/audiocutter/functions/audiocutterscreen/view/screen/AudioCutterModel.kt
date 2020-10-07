@@ -75,7 +75,7 @@ class AudioCutterModel : BaseViewModel() {
                     val audioFile = mListAudio[oldPos].copy()
                     audioFile.state = PlayerState.IDLE
                     audioFile.isCheckDistance = false
-                    audioFile.currentPos = playerInfo.position.toLong()
+                    audioFile.currentPos = playerInfo.posision.toLong()
                     audioFile.duration = playerInfo.duration.toLong()
                     mListAudio[oldPos] = audioFile
                 }
@@ -98,7 +98,7 @@ class AudioCutterModel : BaseViewModel() {
         val audioFile = mListAudio[pos].copy()
         audioFile.state = playerInfo.playerState
         audioFile.isCheckDistance = rs
-        audioFile.currentPos = playerInfo.position.toLong()
+        audioFile.currentPos = playerInfo.posision.toLong()
         audioFile.duration = playerInfo.duration.toLong()
         mListAudio[pos] = audioFile
 

@@ -12,7 +12,7 @@ enum class PlayerState(value: Int) {
 
 class PlayerInfo(
     var currentAudio: AudioFile?,
-    var position: Int,
+    var posision: Int,
     var playerState: PlayerState,
     var duration: Int,
     var volume: Int
@@ -20,8 +20,7 @@ class PlayerInfo(
 
 interface AudioPlayer {
     suspend fun play(audioFile: AudioFile): Boolean
-    suspend fun play(audioFile: AudioFile, currentPosition: Int)
-    suspend fun play(audioFile: AudioFile, startPosition: Int, endPosition: Int): Boolean
+    suspend fun play(audioFile: AudioFile, currentPosition: Int): Boolean
     fun pause()
     fun resume()
     fun stop()

@@ -13,4 +13,5 @@
     <color name="colorYelow">#FFCB59</color>
     <color name="colorYelowDark">#FDAA74</color>
     <color name="colorYelowAlpha">#4BFFD18D</color>
+    <color name="colorAlphaGray">#A7A7A7</color>
 </resources>
