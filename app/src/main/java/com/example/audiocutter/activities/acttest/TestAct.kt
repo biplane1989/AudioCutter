@@ -1,17 +1,18 @@
 package com.example.audiocutter.activities.acttest
 
 import android.os.Bundle
+import android.util.Log
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
-import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
-import com.example.audiocutter.functions.mergescreen.event.OnActionCallback
-import com.example.audiocutter.functions.mergescreen.m001merge.view.MergeScreen
-import com.example.audiocutter.functions.mergescreen.m002mergechoose.view.MergeChooseScreen
+import com.example.audiocutter.core.ManagerFactory
+import com.example.audiocutter.core.audioManager.Folder
+import com.example.audiocutter.functions.audiocutterscreen.view.screen.AudioCutterScreen
+import kotlinx.android.synthetic.main.act_test.*
+import java.io.File
 
-class TestAct() : BaseActivity(), OnActionCallback {
-    //    lateinit var audioCutterScreen: AudioCutterScreen
-    lateinit var merChoose: MergeChooseScreen
-    lateinit var merScreen: MergeScreen
+class TestAct : BaseActivity() {
+
+        lateinit var merChoose: AudioCutterScreen
 
 
     override fun createView(savedInstanceState: Bundle?) {
@@ -22,40 +23,23 @@ class TestAct() : BaseActivity(), OnActionCallback {
 
 
     private fun initViews() {
-
-        merChoose = MergeChooseScreen()
-        merScreen = MergeScreen()
-        merScreen.setOnCalBack(this)
-        merChoose.setOnCalBack(this)
-        supportFragmentManager.beginTransaction().add(R.id.ln_main, merChoose)
-            .add(R.id.ln_main, merScreen).commit()
-        showMergeScr()
-
-    }
-
-    private fun showMergeScr() {
-        supportFragmentManager.beginTransaction().show(merScreen).hide(merChoose).commit()
-    }
-
-    override fun sendAndReceiveData(listData: List<AudioCutterView>) {
-        merChoose.receiveData(listData)
-        supportFragmentManager.beginTransaction().show(merChoose).hide(merScreen).commit()
-    }
-
-    override fun backFrg() {
-        supportFragmentManager.beginTransaction().show(merScreen).hide(merChoose).commit()
-
-    }
-
-
-
-//    override fun onClick(p0: View) {
-//        when (p0.id) {
-//            R.id.bt_start -> waveAudio.resumeAnimation()
-//            R.id.bt_pause -> waveAudio.pauseAnimation()
-//            R.id.bt_resume -> waveAudio.resumeAnimation()
+//
+//            val file = File("/storage/emulated/0/Download/WeDon.m4a")
+//            bt_get.setOnClickListener {
+//                runOnUI {
+//                    val rs = ManagerFactory.getAudioFileManager().saveFile(
+//                    ManagerFactory.getAudioFileManager().buildAudioFile(filePath = file.absolutePath),
+//                    Folder.TYPE_CUTTER
+//                )
+//                    Log.d("checkCodeGetduration", "initViews: $rs")
+//                }
 //        }
-//    }
+        merChoose = AudioCutterScreen()
+
+        supportFragmentManager.beginTransaction().add(R.id.ln_main, merChoose).commit()
+
+
+    }
 
 }
 

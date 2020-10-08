@@ -4,13 +4,15 @@ import androidx.lifecycle.LiveData
 import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.audioManager.StateFile
 import com.example.audiocutter.objects.AudioFile
+import com.example.audiocutter.objects.AudioFileScans
 import java.io.File
 
 interface AudioFileManager {
-    suspend fun findAllAudioFiles(): LiveData<List<AudioFile>>
+    fun findAllAudioFiles(): LiveData<AudioFileScans>
     fun buildAudioFile(filePath: String): AudioFile
     suspend fun saveFile(audioFile: AudioFile, typeFile: Folder): StateFile
-    suspend fun deleteFile(listAudioFile: List<AudioFile>, typeFile: Folder): Boolean
-    suspend fun getListAudioFileByType(typeFile: Folder): LiveData<List<AudioFile>>
+    fun deleteFile(listAudioFile: List<AudioFile>, typeFile: Folder): Boolean
+    fun getListAudioFileByType(typeFile: Folder): LiveData<AudioFileScans>
     fun getDurationByPath(itemFile: File?): String
+    fun getBitRateByPath(itemFile: File?): Int
 }

@@ -63,7 +63,6 @@ class MergeChooseScreen : BaseFragment(), MergeChooseAdapter.AudioMergeChooseLis
         savedInstanceState: Bundle?
     ): View? {
         mView = inflater.inflate(R.layout.merge_choose_screen, container, false)
-        AudioFileManagerImpl.registerContentObserVerDeleted()
         initViews()
         return mView
     }

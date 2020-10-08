@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
+import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.rington.RingtonManagerImpl
 import com.example.audiocutter.functions.audiocutterscreen.dialog.SetAsDialog
@@ -41,6 +42,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     lateinit var audioCutterItem: AudioCutterView
     lateinit var ivFile: ImageView
     lateinit var ivSearch: ImageView
+    lateinit var ivListEmpty: ImageView
     lateinit var ivBack: ImageView
     lateinit var ivBackEdt: ImageView
     lateinit var tvAudioScreen: TextView
@@ -78,7 +80,6 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         savedInstanceState: Bundle?
     ): View? {
         mView = inflater.inflate(R.layout.audio_cutter_screen, container, false)
-        ManagerFactory.getAudioFileManagerImpl().registerContentObserVerDeleted()
         initViews()
         checkEdtSearchAudio()
         return mView
@@ -114,6 +115,8 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
         rvAudioCutter.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
+        ivListEmpty.visibility = View.GONE
+
         if (yourTextSearch.isEmpty()) {
             audioCutterAdapter.submitList(listTmp)
         }
@@ -123,6 +126,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         } else {
             rvAudioCutter.visibility = View.GONE
             tvEmptyList.visibility = View.VISIBLE
+            ivListEmpty.visibility = View.VISIBLE
         }
     }
 
@@ -131,6 +135,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
         ivFile = mView.findViewById(R.id.iv_audio_cutter_screen_file)
         ivBack = mView.findViewById(R.id.iv_cutter_screen_back)
+        ivListEmpty = mView.findViewById(R.id.iv_empty_list_cutter)
         ivBackEdt = mView.findViewById(R.id.iv_cutter_screen_back_edt)
         ivClose = mView.findViewById(R.id.iv_cutter_screen_close)
         ivSearch = mView.findViewById(R.id.iv_cutter_screen_search)
@@ -263,6 +268,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
     private fun previousStatus() {
         rvAudioCutter.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
+        ivListEmpty.visibility = View.GONE
         audioCutterAdapter.submitList(listTmp)
         hideKeyBroad()
         hideOrShowEditText(View.GONE)
@@ -277,6 +283,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
 
 
     private fun updateAllFile() {
+        ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_CUTTER)
 //        runOnUI {
 //            try {
 //                if (isCheckList) {

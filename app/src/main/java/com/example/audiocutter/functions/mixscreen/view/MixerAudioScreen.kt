@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
-import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import com.example.audiocutter.functions.audiocutterscreen.view.screen.AudioCutterScreen
@@ -32,6 +31,7 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     private lateinit var audioMixAdapter: MixAdapter
     private lateinit var audioMixModel: MixModel
     lateinit var ivFile: ImageView
+    lateinit var ivEmptyList: ImageView
     lateinit var ivSearch: ImageView
     lateinit var ivBack: ImageView
     lateinit var ivBackEdt: ImageView
@@ -76,7 +76,6 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         savedInstanceState: Bundle?
     ): View? {
         mView = inflater.inflate(R.layout.mixer_screen, container, false)
-        AudioFileManagerImpl.registerContentObserVerDeleted()
         initViews()
         checkEdtSearchAudio()
         return mView
@@ -115,6 +114,7 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         rvAudioMix.visibility = View.VISIBLE
         rltNextMixParent.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
+        ivEmptyList.visibility = View.GONE
         if (yourTextSearch.isEmpty()) {
             audioMixAdapter.submitList(listTmp)
         }
@@ -124,6 +124,7 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
             rvAudioMix.visibility = View.GONE
             rltNextMixParent.visibility = View.GONE
             tvEmptyList.visibility = View.VISIBLE
+            ivEmptyList.visibility = View.VISIBLE
         }
     }
 
@@ -137,6 +138,7 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         tvCountFile = mView.findViewById(R.id.tv_count_file)
 
         ivFile = mView.findViewById(R.id.iv_audio_mixer_screen_file)
+        ivEmptyList = mView.findViewById(R.id.iv_empty_list_mixer)
         ivBack = mView.findViewById(R.id.iv_mixer_screen_back)
         ivBackEdt = mView.findViewById(R.id.iv_mixer_screen_back_edt)
         ivClose = mView.findViewById(R.id.iv_mixer_screen_close)
@@ -271,6 +273,7 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         rvAudioMix.visibility = View.VISIBLE
         rltNextMixParent.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
+        ivEmptyList.visibility = View.GONE
         audioMixAdapter.submitList(listTmp)
         hideKeyBroad()
         hideOrShowEditText(View.GONE)

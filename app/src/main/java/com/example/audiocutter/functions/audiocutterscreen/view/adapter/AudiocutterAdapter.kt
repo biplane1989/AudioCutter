@@ -19,11 +19,10 @@ import com.example.audiocutter.functions.audiocutterscreen.widget.WaveAudio
 import kotlin.math.floor
 
 class AudiocutterAdapter(val mContext: Context) :
-    ListAdapter<AudioCutterView, AudiocutterAdapter.AudiocutterHolder>(Audiodiff()) {
+    ListAdapter<AudioCutterView, AudiocutterAdapter.AudiocutterHolder>(AudioDiff()) {
     lateinit var mCallBack: AudioCutterListener
     val SIZE_MB = 1024 * 1024
     var listAudios = mutableListOf<AudioCutterView>()
-
 
 
     fun setAudioCutterListtener(event: AudioCutterListener) {
@@ -31,7 +30,6 @@ class AudiocutterAdapter(val mContext: Context) :
     }
 
     override fun submitList(list: List<AudioCutterView>?) {
-
         if (list != null) {
             listAudios = ArrayList(list)
             super.submitList(listAudios)
@@ -103,7 +101,7 @@ class AudiocutterAdapter(val mContext: Context) :
         fun bind() {
             val itemAudioFile = getItem(position)
             Log.d("TAG", "bind: ${itemAudioFile.isCheckDistance}    state ${itemAudioFile.state}")
-            tvBitrateAudio.text = "${itemAudioFile.audioFile.bitRate}Kbs/s"
+              tvBitrateAudio.text ="${itemAudioFile.audioFile.bitRate}kbp/s"
 
             tvNameAudio.text = itemAudioFile.audioFile.fileName
             var size = (itemAudioFile.audioFile.size.toDouble() / SIZE_MB)
@@ -216,7 +214,7 @@ class AudiocutterAdapter(val mContext: Context) :
     }
 }
 
-class Audiodiff : DiffUtil.ItemCallback<AudioCutterView>() {
+class AudioDiff : DiffUtil.ItemCallback<AudioCutterView>() {
     override fun areItemsTheSame(oldItem: AudioCutterView, newItem: AudioCutterView): Boolean {
         return oldItem.audioFile.fileName == oldItem.audioFile.fileName
     }

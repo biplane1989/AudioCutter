@@ -9,9 +9,6 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import java.io.File
-import java.util.*
-import kotlin.Comparator
-import kotlin.collections.ArrayList
 
 class AudioCutterModel : BaseViewModel() {
     private val TAG = AudioCutterModel::class.java.name
@@ -24,26 +21,13 @@ class AudioCutterModel : BaseViewModel() {
                 .compareTo(m2!!.audioFile.fileName.substring(0, 1).toUpperCase())
         }
 
-    suspend fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
+    fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(
-            ManagerFactory.getAudioFileManagerImpl().findAllAudioFiles()
-        ) { listAudioFiles ->
+            ManagerFactory.getAudioFileManager().findAllAudioFiles()
+        ) {
             mListAudio.clear()
-            listAudioFiles.forEach {
+            it.listAudioFiles.forEach {
                 mListAudio.add(AudioCutterView(it))
-            }
-            mListAudio
-        }
-    }
-
-
-
-    suspend fun getAllFileByType(): LiveData<List<AudioCutterView>> {
-        return Transformations.map(ManagerFactory.getAudioFileManagerImpl().getAllListByType()) { listAudioFiles ->
-            mListAudio.clear()
-            listAudioFiles.forEach {
-                mListAudio.add(AudioCutterView(it))
-                Collections.sort(mListAudio, sortListByName)
             }
             mListAudio
         }

@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
-import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.functions.audiocutterscreen.objs.AudioCutterView
 import com.example.audiocutter.functions.mergescreen.event.OnActionCallback
@@ -35,6 +34,7 @@ class MergeScreen : BaseFragment(), View.OnClickListener, MergeAdapter.AudioMerg
     lateinit var tbName: TableRow
     lateinit var tvEmptyList: TextView
     lateinit var ivClose: ImageView
+    lateinit var ivEmptyList: ImageView
     lateinit var edtSearch: EditText
     var currentPos = -1
 
@@ -77,7 +77,6 @@ class MergeScreen : BaseFragment(), View.OnClickListener, MergeAdapter.AudioMerg
         savedInstanceState: Bundle?
     ): View? {
         mView = inflater.inflate(R.layout.merge_screen, container, false)
-        AudioFileManagerImpl.registerContentObserVerDeleted()
         initViews()
         checkEdtSearchAudio()
         return mView
@@ -112,6 +111,7 @@ class MergeScreen : BaseFragment(), View.OnClickListener, MergeAdapter.AudioMerg
         rvAudioMer.visibility = View.VISIBLE
         rltNextMerParent.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
+        ivEmptyList.visibility = View.GONE
         if (yourTextSearch.isEmpty()) {
             audioMerAdapter.submitList(listTmp)
         }
@@ -121,6 +121,7 @@ class MergeScreen : BaseFragment(), View.OnClickListener, MergeAdapter.AudioMerg
             rvAudioMer.visibility = View.GONE
             rltNextMerParent.visibility = View.GONE
             tvEmptyList.visibility = View.VISIBLE
+            ivEmptyList.visibility = View.VISIBLE
         }
     }
 
@@ -131,6 +132,7 @@ class MergeScreen : BaseFragment(), View.OnClickListener, MergeAdapter.AudioMerg
         rltNextMer.isEnabled = false
         rltNextMerParent = mView.findViewById(R.id.rlt_next_mer_parent)
         ivNextMer = mView.findViewById(R.id.iv_next_mer)
+        ivEmptyList = mView.findViewById(R.id.iv_empty_list_merge)
         tvNextMer = mView.findViewById(R.id.tv_next_mer)
         tvCountFile = mView.findViewById(R.id.tv_count_file_mer)
 
@@ -258,6 +260,7 @@ class MergeScreen : BaseFragment(), View.OnClickListener, MergeAdapter.AudioMerg
         rvAudioMer.visibility = View.VISIBLE
         rltNextMerParent.visibility = View.VISIBLE
         tvEmptyList.visibility = View.GONE
+        ivEmptyList.visibility = View.GONE
         audioMerAdapter.submitList(listTmp)
         hideKeyBroad()
         hideOrShowEditText(View.GONE)

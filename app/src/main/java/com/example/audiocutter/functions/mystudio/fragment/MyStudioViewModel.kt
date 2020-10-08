@@ -12,6 +12,7 @@ import com.example.audiocutter.functions.mystudio.AudioFileView
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.DeleteState
 import com.example.audiocutter.objects.AudioFile
+import com.example.audiocutter.objects.AudioFileScans
 
 class MyStudioViewModel : BaseViewModel() {
 
@@ -32,29 +33,32 @@ class MyStudioViewModel : BaseViewModel() {
     var isPlayingStatus = false
 
     suspend fun getData(typeAudio: Int): LiveData<List<AudioFileView>> {
-        val listAudioFiles: LiveData<List<AudioFile>>
+        val mAudioScaners: LiveData<AudioFileScans>
         when (typeAudio) {
             Constance.AUDIO_CUTTER -> {
-                listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_CUTTER)
+                mAudioScaners =
+                    ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_CUTTER)
             }
             Constance.AUDIO_MERGER -> {
-                listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_MERGER)
+                mAudioScaners =
+                    ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_MERGER)
             }
             else -> {
-                listAudioFiles = ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_MIXER)
+                mAudioScaners =
+                    ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_MIXER)
             }
         }
-        return Transformations.map(listAudioFiles) { items ->
+        return Transformations.map(mAudioScaners) {
             // lan dau tien lay du lieu
             if (mListAudioFileView.size == 0) {
-                items.forEach {
+                it.listAudioFiles.forEach {
                     mListAudioFileView.add(AudioFileView(it))
                 }
 
             } else { // khi thay doi du lieu update
                 // đồng bộ hóa list cũ và mới
                 val newListAudioFileView = ArrayList<AudioFileView>()
-                items.forEach {
+                it.listAudioFiles.forEach {
                     val audioFileView = getAudioFileView(it.file.absolutePath)
                     if (audioFileView != null) {
                         newListAudioFileView.add(audioFileView)

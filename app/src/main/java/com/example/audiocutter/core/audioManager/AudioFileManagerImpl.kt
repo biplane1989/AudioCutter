@@ -8,8 +8,6 @@ import android.database.ContentObserver
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.MediaExtractor
-import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
@@ -21,6 +19,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.objects.AudioFile
+import com.example.audiocutter.objects.AudioFileScans
+import com.example.audiocutter.objects.StateLoad
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,40 +41,26 @@ object AudioFileManagerImpl : AudioFileManager {
     private val SIZE_GB = SIZE_MB * SIZE_KB
     private val TAG = AudioFileManagerImpl::class.java.name
     lateinit var mContext: Context
-    val listAllByType = ArrayList<AudioFile>()
 
-    private var _listAllAudioFile = MutableLiveData<List<AudioFile>>()
-    val listAllAudioFile: LiveData<List<AudioFile>>
+    private var _listAllAudioFile = MutableLiveData<AudioFileScans>()
+    val listAllAudioFile: LiveData<AudioFileScans>
         get() = _listAllAudioFile
 
-    private var _listAudioMixer = MutableLiveData<List<AudioFile>>(ArrayList())
-    val listAudioMixer: LiveData<List<AudioFile>>
-        get() = _listAudioMixer
+    private var _listAudioByType = MutableLiveData<AudioFileScans>()
+    val listAudioByType: LiveData<AudioFileScans>
+        get() = _listAudioByType
 
-
-    private var _listAudioMeger = MutableLiveData<List<AudioFile>>(ArrayList())
-    val listAudioMeger: LiveData<List<AudioFile>>
-        get() = _listAudioMeger
-
-
-    private var _listAudioCutter = MutableLiveData<List<AudioFile>>(ArrayList())
-    val listAudioCutter: LiveData<List<AudioFile>>
-        get() = _listAudioCutter
-
-
-    private var _listAllAudioByType = MutableLiveData<List<AudioFile>>()
-    val listAllAudioByType: LiveData<List<AudioFile>>
-        get() = _listAllAudioByType
 
     private val audioFileObserver = AudioFileObserver(Handler())
-
+    private var listData = mutableListOf<AudioFile>()
     fun init(context: Context) {
         mContext = context
-        _listAllAudioFile.value = ScanAllFile()
+        listData = scanAllFile() as MutableList<AudioFile>
+        registerContentObserVerDeleted()
     }
 
 
-    private fun ScanAllFile(): List<AudioFile> {
+    private fun scanAllFile(): List<AudioFile> {
         val resolver = mContext.contentResolver
         val listData = ArrayList<AudioFile>()
         var projection = arrayOf(
@@ -86,6 +72,7 @@ object AudioFileManagerImpl : AudioFileManager {
             MediaStore.Audio.Media.ARTIST,
             MediaStore.Audio.Media.DATE_ADDED
         )
+
         val cursor =
             resolver.query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -107,7 +94,8 @@ object AudioFileManagerImpl : AudioFileManager {
                 while (!cursor.isAfterLast) {
                     var name: String
                     val data = cursor.getString(clData)
-                    val preName = cursor.getString(clName)
+                    val file = File(data)
+                    val preName = file.name
                     if (preName.contains(".")) {
                         name = preName.substring(0, preName.lastIndexOf("."))
                     } else {
@@ -119,7 +107,8 @@ object AudioFileManagerImpl : AudioFileManager {
                     val title = cursor.getString(clTitle)
                     val album = cursor.getString(clAlbum)
                     val artist = cursor.getString(clArtist)
-                    val mimeType = preName.substring(preName.lastIndexOf("."), preName.length)
+//                    val mimeType = preName.substring(preName.lastIndexOf("."), preName.length)
+                    val mimeType = "mp3"
 
                     //get time of currentDay by Longtime
                     val date = getDateByDateAdded(cursor.getLong(clDateAdded))
@@ -129,10 +118,11 @@ object AudioFileManagerImpl : AudioFileManager {
                             cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.GENRE))
                     }
 
-                    val file = File(data)
-                    val bitRate = getBitRateByPath(file)
-                    val duration = getDurationByPath(file)
 
+                    val bitRate = getBitRateByPath(file)
+//                    val bitRate = 128
+                    val duration = getDurationByPath(file)
+//                    val duration = 1000
                     val uri = getUriFromFile(id, resolver, file)
                     Log.d(
                         "TAG",
@@ -174,8 +164,8 @@ object AudioFileManagerImpl : AudioFileManager {
                     cursor.moveToNext()
                 }
             }
-            Log.d(TAG, "sizeListAllAudioFile: ${listData.size}")
-            _listAllAudioFile.postValue(listData)
+
+            _listAllAudioFile.postValue(AudioFileScans(listData, StateLoad.LOADING))
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -186,24 +176,44 @@ object AudioFileManagerImpl : AudioFileManager {
         return listData
     }
 
-    private fun getBitRateByPath(file: File): Int {
-        val mex = MediaExtractor()
-        try {
-            mex.setDataSource(file.absolutePath)
-        } catch (e: Exception) {
-            e.printStackTrace()
+//    override fun getBitRateByPath(file: File?): Int {
+//        val mex = MediaExtractor()
+//        try {
+//            mex.setDataSource(file!!.absolutePath)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//        val mf = mex.getTrackFormat(0)
+//        return mf.getInteger(MediaFormat.KEY_BIT_RATE)
+//    }
+
+    override fun getBitRateByPath(itemFile: File?): Int {
+        if (itemFile != null) {
+
+            val mediaMetadataRetriever = MediaMetadataRetriever()
+            mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
+            return (mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!).toInt()
         }
-
-        val mf = mex.getTrackFormat(0)
-        return mf.getInteger(MediaFormat.KEY_BIT_RATE)
-
+        return 0
     }
 
-    override suspend fun findAllAudioFiles(): LiveData<List<AudioFile>> {
+
+    override fun getDurationByPath(itemFile: File?): String {
+        if (itemFile != null) {
+
+            val mediaMetadataRetriever = MediaMetadataRetriever()
+            mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
+            return mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!
+        }
+        return ""
+    }
+
+
+    override fun findAllAudioFiles(): LiveData<AudioFileScans> {
         return listAllAudioFile
     }
 
-    override suspend fun deleteFile(listAudioFile: List<AudioFile>, typeFile: Folder): Boolean {
+    override fun deleteFile(listAudioFile: List<AudioFile>, typeFile: Folder): Boolean {
         var rs = false
         val resolver = mContext.contentResolver
         var rowDeleted: Int
@@ -218,19 +228,13 @@ object AudioFileManagerImpl : AudioFileManager {
                     }
                 }
             }
-            val listAudio = scanListAudioFileByType(typeFile)
-
-            when (typeFile) {
-                Folder.TYPE_CUTTER -> _listAudioCutter.postValue(listAudio)
-                Folder.TYPE_MIXER -> _listAudioMixer.postValue(listAudio)
-                Folder.TYPE_MERGER -> _listAudioMeger.postValue(listAudio)
-            }
         } catch (e: Exception) {
             e.printStackTrace()
             rs = false
         }
         return rs
     }
+
 
     @SuppressLint("SimpleDateFormat")
     private fun getDateByDateAdded(date: Long): String? {
@@ -260,7 +264,7 @@ object AudioFileManagerImpl : AudioFileManager {
                 bitmap = BitmapFactory.decodeByteArray(buff, 0, buff!!.size, bitmapfactory)
                 return bitmap
             } catch (e: Exception) {
-                e.printStackTrace()
+//                e.printStackTrace()
             }
         }
         return null
@@ -290,11 +294,13 @@ object AudioFileManagerImpl : AudioFileManager {
         val fileAudio = File(filePath)
         val uri = getUriByPath(fileAudio)
         val duration = getDurationByPath(fileAudio)
+//        val duration = 1000L
         return AudioFile(
             fileAudio,
             fileAudio.name,
             fileAudio.length(),
             getBitRateByPath(fileAudio),
+//            128,
             duration.toLong(),
             uri
         )
@@ -304,16 +310,15 @@ object AudioFileManagerImpl : AudioFileManager {
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             CoroutineScope(Dispatchers.IO).launch {
                 Log.d("TAG", "changeList: $uri")
-                val listAllAudio = ScanAllFile()
+                val listAllAudio = scanAllFile()
 //                Log.d(TAG, "changeList: ${listAllAudio.size}")
-                _listAllAudioFile.postValue(listAllAudio)
+                _listAllAudioFile.postValue(AudioFileScans(listAllAudio, StateLoad.LOADDONE))
             }
         }
     }
 
 
-
-    fun registerContentObserVerDeleted() {
+    private fun registerContentObserVerDeleted() {
         mContext.contentResolver.registerContentObserver(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
             true, audioFileObserver
@@ -348,10 +353,10 @@ object AudioFileManagerImpl : AudioFileManager {
 
                     val pathParent: String
                     try {
-                        when (typeFile) {
-                            Folder.TYPE_CUTTER -> pathParent = "$SUB_PATH/cutter"
-                            Folder.TYPE_MERGER -> pathParent = "$SUB_PATH/merger"
-                            Folder.TYPE_MIXER -> pathParent = "$SUB_PATH/mixer"
+                        pathParent = when (typeFile) {
+                            Folder.TYPE_CUTTER -> "$SUB_PATH/cutter"
+                            Folder.TYPE_MERGER -> "$SUB_PATH/merger"
+                            Folder.TYPE_MIXER -> "$SUB_PATH/mixer"
                         }
                         Log.d(TAG, "saveFileToExternal:pathParent $pathParent")
 
@@ -359,18 +364,10 @@ object AudioFileManagerImpl : AudioFileManager {
                         if (!dic.exists()) {
                             dic.mkdirs()
                         }
-                        withContext(Dispatchers.IO) {
                             val fileChild = File(pathParent, audioFile.fileName)
                             val fout = FileOutputStream(fileChild)
                             fout.write(audioFile.file.readBytes())
                             fout.close()
-                        }
-                        val listAudio = scanListAudioFileByType(typeFile)
-                        when (typeFile) {
-                            Folder.TYPE_CUTTER -> _listAudioCutter.postValue(listAudio)
-                            Folder.TYPE_MIXER -> _listAudioMixer.postValue(listAudio)
-                            Folder.TYPE_MERGER -> _listAudioMeger.postValue(listAudio)
-                        }
                         StateFile.STATE_SAVE_SUCCESS
                     } catch (e: IOException) {
                         e.printStackTrace()
@@ -382,68 +379,40 @@ object AudioFileManagerImpl : AudioFileManager {
                 }
         }
 
-    private suspend fun scanListAudioFileByType(typeFile: Folder): List<AudioFile> {
-        return withContext(Dispatchers.IO) {
-            val listData = ArrayList<AudioFile>()
-            val SUB_PATH = "${Environment.getExternalStorageDirectory()}/AudioCutter"
 
-            val pathParent: String
-            try {
-                when (typeFile) {
-                    Folder.TYPE_CUTTER -> pathParent = "$SUB_PATH/cutter"
-                    Folder.TYPE_MERGER -> pathParent = "$SUB_PATH/merger"
-                    Folder.TYPE_MIXER -> pathParent = "$SUB_PATH/mixer"
-                }
-                Log.d(TAG, "getListFileByType: $pathParent")
-                val file = File(pathParent)
-                val listFiles = file.listFiles()
-                listFiles?.let {
-
-                    for (itemFile in it) {
-                        val duration = getDurationByPath(itemFile)
-                        val uri = getUriByPath(itemFile)
-
-                        uri?.let {
-                            listData.add(
-                                AudioFile(
-                                    itemFile,
-                                    itemFile.name,
-                                    itemFile.length(),
-                                    128,
-                                    duration.toLong(),
-                                    uri = uri
-                                )
-                            )
-                        }
-                        Log.d(
-                            TAG,
-                            "getListFileByType :duration $duration   name  ${itemFile.name}   size  ${itemFile.length()}   URI $uri"
-                        )
-                    }
-                    _listAudioMixer.postValue(listData)
-
-                    Log.d("taih", "size: ${listData.size}")
-                }
-            } catch (e: Exception) {
-                Log.d(TAG, "exception: ${e.printStackTrace()}")
+    private fun scanListAudioFileByType(typeFile: Folder): List<AudioFile> {
+        listData = when (typeFile) {
+            Folder.TYPE_MIXER -> {
+                (getListByType(listData, "/AudioCutter/mixer/") as MutableList<AudioFile>)
             }
-            listData
+            Folder.TYPE_MERGER -> {
+                (getListByType(listData, "/AudioCutter/merger/") as MutableList<AudioFile>)
+            }
+            Folder.TYPE_CUTTER -> {
+                (getListByType(listData, "/AudioCutter/cutter/") as MutableList<AudioFile>)
+            }
         }
+        return listData
     }
 
-    override suspend fun getListAudioFileByType(typeFile: Folder): LiveData<List<AudioFile>> {
-        _listAudioMixer.value = scanListAudioFileByType(typeFile)
-        return listAudioMixer
+    private fun getListByType(listData: MutableList<AudioFile>, text: String): List<AudioFile> {
+        val listDataTmp = mutableListOf<AudioFile>()
+        listData.forEach {
+            if (it.file.toString().contains(text)) {
+                listDataTmp.add(it)
+            }
+        }
+        return listDataTmp
     }
 
-    override fun getDurationByPath(itemFile: File?): String {
-        if (itemFile != null) {
-            val mediaMetadataRetriever = MediaMetadataRetriever()
-            mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
-            return mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!
-        }
-        return ""
+    override fun getListAudioFileByType(typeFile: Folder): LiveData<AudioFileScans> {
+        listData = scanListAudioFileByType(typeFile) as MutableList<AudioFile>
+        _listAudioByType.postValue(
+            AudioFileScans(listData, StateLoad.LOADDONE)
+        )
+        return listAudioByType
     }
+
 
     private fun getUriByPath(itemFile: File): Uri? {
 
@@ -471,35 +440,5 @@ object AudioFileManagerImpl : AudioFileManager {
             cursor.close()
         }
     }
-
-
-    suspend fun getAllListByType()
-            : LiveData<List<AudioFile>> {
-        listAllByType.clear()
-
-        val listTypeCutter = scanListAudioFileByType(Folder.TYPE_CUTTER)
-        val listTypeMerger = scanListAudioFileByType(Folder.TYPE_MERGER)
-        val listTypeMixer = scanListAudioFileByType(Folder.TYPE_MIXER)
-
-
-        Log.d(TAG, "getAllListByType: ${listTypeCutter.size}")
-        Log.d(TAG, "getAllListByType: ${listTypeMerger.size}")
-        Log.d(TAG, "getAllListByType: ${listTypeMixer.size}")
-
-        listAllByType.addAll(listTypeCutter)
-        listAllByType.addAll(listTypeMerger)
-        listAllByType.addAll(listTypeMixer)
-
-        _listAllAudioByType.postValue(listAllByType)
-
-        Log.d(
-            TAG,
-            "getAllListByType: livedata ${_listAllAudioByType.value?.size}   listDatasize ${listAllByType.size}"
-        )
-        return listAllAudioByType
-
-    }
-
-
 }
 
