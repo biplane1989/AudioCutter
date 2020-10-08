@@ -14,6 +14,7 @@ import com.example.audiocutter.functions.mystudioscreen.Constance
 import com.example.audiocutter.functions.mystudioscreen.DeleteState
 import com.example.audiocutter.functions.mystudioscreen.MusicDiffCallBack
 import com.example.audiocutter.objects.AudioFile
+import com.example.audiocutter.util.Utils
 import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
 import java.text.SimpleDateFormat
 import kotlin.collections.ArrayList
@@ -174,6 +175,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     sbMusic.progress = 0
                 }
             }
+
 
             tvTotal.text = "/" + simpleDateFormat.format(audioFileView.itemLoadStatus.duration)
             sbMusic.max = audioFileView.itemLoadStatus.duration

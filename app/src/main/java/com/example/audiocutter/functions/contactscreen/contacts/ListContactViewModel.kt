@@ -20,23 +20,22 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
 
     private var mListContactItemView = ArrayList<ContactItemView>()
 
-    suspend fun getData(): LiveData<List<ContactItemView>> {
-//        val listContactItem: LiveData<List<ContactItem>> = ContactManagerImpl.getListContact()
-        val listContactItem: LiveData<List<ContactItem>> = ManagerFactory.getContactManager()
+    fun getData(): LiveData<List<ContactItemView>> {
+        val listContactItem: LiveData<GetContactResult> = ManagerFactory.getContactManager()
             .getListContact()
 
         return Transformations.map(listContactItem) { contacts ->
             if (mListContactItemView.size == 0) {
                 val newListContact = ArrayList<ContactItemView>()
 
-                for (item in setListDefaultRingtone(contacts)) {
+                for (item in setListDefaultRingtone(contacts.listContactItem)) {
                     newListContact.add(ContactItemView("", item))
                 }
 
                 mListContactItemView = getHeaderListLatter(newListContact)
             } else {
                 val newListContacItemView = ArrayList<ContactItemView>()
-                for (item in setListDefaultRingtone(contacts)) {
+                for (item in setListDefaultRingtone(contacts.listContactItem)) {
                     val contactItemView = getContactItemView(item.phoneNumber)
                     if (contactItemView != null) {
                         if (item.ringtone != contactItemView.contactItem.ringtone && contactItemView.isHeader == false) {
@@ -47,7 +46,6 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
                     } else {
                         newListContacItemView.add(ContactItemView("", item))
                     }
-
                 }
 
                 mListContactItemView.clear()

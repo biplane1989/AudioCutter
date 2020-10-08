@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.contactscreen.select
 
+import android.app.Application
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
@@ -7,27 +8,31 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.objects.AudioFile
+import com.example.audiocutter.util.Utils
 import java.io.File
 
-class ListSelectAudioViewModel : BaseViewModel() {
+class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(application) {
 
+    private val mContext = getApplication<Application>().applicationContext
     var isPlayingStatus = false
     private var mListAudioFileView = ArrayList<SelectItemView>()
     val TAG = "giangtd"
 
-    suspend fun getData(): LiveData<List<SelectItemView>> {
+    fun getData(): LiveData<List<SelectItemView>> {
         return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) { items ->
-            Log.d(TAG, "live data size: " + items.size)
+            Log.d("nmcode", "live data size: " + items.size)
             // lan dau tien lay du lieu
             if (mListAudioFileView.size == 0) {
                 items.forEach {
                     mListAudioFileView.add(SelectItemView(it))
                 }
+                mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
 
             } else { // khi thay doi du lieu update
                 // dong bo hoa du lieu list cu va moi
@@ -40,7 +45,8 @@ class ListSelectAudioViewModel : BaseViewModel() {
                         newListSelectItemView.add(SelectItemView(it))
                     }
                 }
-                mListAudioFileView = newListSelectItemView
+
+                mListAudioFileView = getRingtoneDefault(newListSelectItemView) as ArrayList<SelectItemView>
             }
             mListAudioFileView
         }
@@ -56,7 +62,7 @@ class ListSelectAudioViewModel : BaseViewModel() {
         return null
     }
 
-    fun setSelectRingtone(fileName: String): List<SelectItemView> {
+     fun setSelectRingtone(fileName: String): List<SelectItemView> {
         var index = 0
         for (item in mListAudioFileView) {
             if (TextUtils.equals(item.audioFile.fileName, fileName)) {
@@ -70,7 +76,7 @@ class ListSelectAudioViewModel : BaseViewModel() {
         return mListAudioFileView
     }
 
-    fun getIndexSelectRingtone(fileName: String): Int {
+     fun getIndexSelectRingtone(fileName: String): Int {
         var index = 0
         for (item in mListAudioFileView) {
             if (TextUtils.equals(item.audioFile.fileName, fileName)) {
@@ -81,6 +87,7 @@ class ListSelectAudioViewModel : BaseViewModel() {
         }
         return 0
     }
+
 
     fun showPlayingAudio(position: Int): List<SelectItemView> {
 
@@ -97,6 +104,12 @@ class ListSelectAudioViewModel : BaseViewModel() {
         }
         val selectItemView = mListAudioFileView.get(position).copy()
         selectItemView.isExpanded = !mListAudioFileView.get(position).isExpanded
+
+//        selectItemView.audioFile.time = 1000
+
+        ManagerFactory.getAudioFileManager()        // lay time total cho file audio
+            .getDurationByPath(mListAudioFileView[position].audioFile.file)
+
         mListAudioFileView.set(position, selectItemView)
         return mListAudioFileView
     }
@@ -117,9 +130,16 @@ class ListSelectAudioViewModel : BaseViewModel() {
         return mListAudioFileView
     }
 
+    private fun getRingtoneDefault(list: List<SelectItemView>): List<SelectItemView> {
+        for (item in list) {
+            item.isRingtoneDefault = Utils.checkRingtoneDefault(mContext, item.audioFile.uri.toString())
+        }
+        return list
+    }
+
     // chuyen trang thai play nhac
     fun playAudio(position: Int) {
-        runOnBackground {
+        runOnBackgroundThread {
             ManagerFactory.getAudioPlayer().play(mListAudioFileView.get(position).audioFile)
         }
 
@@ -129,13 +149,13 @@ class ListSelectAudioViewModel : BaseViewModel() {
 
     fun pauseAudio() {
 
-        runOnBackground {
+        runOnBackgroundThread {
             ManagerFactory.getAudioPlayer().pause()
         }
     }
 
     fun stopAudio(position: Int) {
-        runOnBackground {
+        runOnBackgroundThread {
             ManagerFactory.getAudioPlayer().stop()
         }
         val selectItemView = mListAudioFileView.get(position).copy()
@@ -148,13 +168,13 @@ class ListSelectAudioViewModel : BaseViewModel() {
 
     fun resumeAudio() {
 
-        runOnBackground {
+        runOnBackgroundThread {
             ManagerFactory.getAudioPlayer().resume()
         }
     }
 
     fun seekToAudio(cusorPos: Int) {
-        runOnBackground {
+        runOnBackgroundThread {
             ManagerFactory.getAudioPlayer().seek(cusorPos)
         }
     }
@@ -172,7 +192,7 @@ class ListSelectAudioViewModel : BaseViewModel() {
 
         if (selectedPosition == -1) {
             //audio bi nguoi dùng xóa
-            runOnBackground {
+            runOnBackgroundThread {
                 ManagerFactory.getAudioPlayer().stop()
             }
 

@@ -12,7 +12,7 @@ class AudioFile(
     val fileName: String,
     val size: Long,
     val bitRate: Int = 128,
-    val time: Long = 0,
+    var time: Long = 0,
     var uri: Uri? = null,
     val bitmap: Bitmap? = null,
     val title: String? = "",

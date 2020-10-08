@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.text.TextUtils
 import android.util.TypedValue
 import com.example.audiocutter.functions.contactscreen.contacts.ContactInfomation
 import java.text.Normalizer
@@ -23,7 +24,7 @@ object Utils {
     }
 
     // lay ten bai hat theo uri
-    fun getPlayList(context: Context, uri: String): ContactInfomation {
+    fun getNameByUri(context: Context, uri: String): ContactInfomation {
         var contactInfomation = ContactInfomation("", "")
         var result: String? = null
         val newUri = Uri.parse(uri)
@@ -89,6 +90,12 @@ object Utils {
         return null
     }
 
+    // check ringtone contact co phai la ringtone default khong?
+    fun checkRingtoneDefault(context: Context, uri: String): Boolean {
+        if (TextUtils.equals(uri, getUriRingtoneDefault(context).toString())) return true
+        return false
+    }
+
     // convert ky tu co dau sang khong dau
     fun covertToString(value: String?): String? {
         try {
@@ -101,23 +108,13 @@ object Utils {
         return null
     }
 
-    fun convertValue(
-        min1: Double,
-        max1: Double,
-        min2: Double,
-        max2: Double,
-        value: Double
-    ): Double {
+    fun convertValue(min1: Double, max1: Double, min2: Double, max2: Double, value: Double): Double {
         return ((value - min1) * ((max2 - min2) / (max1 - min1)) + min2)
     }
 
 
     fun convertDp2Px(dip: Int, context: Context): Float {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dip.toFloat(),
-            context.resources.displayMetrics
-        )
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip.toFloat(), context.resources.displayMetrics)
     }
 
 

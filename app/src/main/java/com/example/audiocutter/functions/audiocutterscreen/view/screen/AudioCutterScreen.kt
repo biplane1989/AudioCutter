@@ -78,7 +78,7 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         savedInstanceState: Bundle?
     ): View? {
         mView = inflater.inflate(R.layout.audio_cutter_screen, container, false)
-        ManagerFactory.getAudioFileManager().registerContentObserVerDeleted()
+//        ManagerFactory.getAudioFileManager().registerContentObserVerDeleted()
         initViews()
         checkEdtSearchAudio()
         return mView

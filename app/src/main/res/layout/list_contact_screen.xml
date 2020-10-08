@@ -78,7 +78,7 @@
             android:id="@+id/edt_search"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="#F6F6F6"
+            android:backgroundTint="#FFFFFF"
             android:hint="Search..."
             app:layout_constraintBottom_toBottomOf="@id/iv_search_close"
             app:layout_constraintEnd_toStartOf="@id/iv_clear"
@@ -98,6 +98,11 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F6F6F6" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_contact"

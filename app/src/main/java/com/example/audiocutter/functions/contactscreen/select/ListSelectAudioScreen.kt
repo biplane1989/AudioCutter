@@ -70,12 +70,12 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
                     cl_no_audio.visibility = View.GONE
                     mListSelectAdapter.submitList(ArrayList(listAudio))
 
-                    val fileName = requireArguments().getString(BUNDLE_NAME_KEY_FILE_NAME)
-
-                    if (fileName != null) {
-                        mListSelectAdapter.submitList(mListSelectAudioViewModel.setSelectRingtone(fileName))
-                        rv_list_select_audio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))
-                    }
+//                    val fileName = requireArguments().getString(BUNDLE_NAME_KEY_FILE_NAME)            // tam thoi comment
+//
+//                    if (fileName != null) {
+//                        mListSelectAdapter.submitList(mListSelectAudioViewModel.setSelectRingtone(fileName))
+//                        rv_list_select_audio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))
+//                    }
                 }
             }
         } else {
@@ -114,7 +114,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             listSelectAudio = mListSelectAudioViewModel.getData() // get data from funtion newIntance
             listSelectAudio?.observe(this.viewLifecycleOwner, listAudioObserver)
             isLoading = false
-            currentView?.findViewById<ProgressBar>(R.id.pb_select)?.visibility = View.GONE    // tai day hamonCreateView da chay xong r do runOnUI
+            currentView?.findViewById<ProgressBar>(R.id.pb_select)?.visibility = View.GONE    // tai day ham onCreateView da chay xong r do runOnUI
 
         }
     }

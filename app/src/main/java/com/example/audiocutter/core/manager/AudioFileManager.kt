@@ -14,4 +14,5 @@ interface AudioFileManager {
     suspend fun getAllListByType()
             : LiveData<List<AudioFile>>
     fun getDurationByPath(itemFile: File?): String
+    fun getBitRateByPath(file: File): Int
 }

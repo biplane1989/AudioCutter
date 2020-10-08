@@ -1,18 +1,21 @@
+/*
 package com.example.audiocutter.core.manager.fake
 
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.core.manager.ContactManager
+import com.example.audiocutter.functions.contactscreen.contacts.GetContactResult
 import com.example.audiocutter.objects.ContactItem
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class FakeContactManager : ContactManager {
-    private val contactLiveData = MutableLiveData<List<ContactItem>>()
+    private val contactLiveData = MutableLiveData<GetContactResult>()
 
-    init {
+  */
+/*  init {
         val contactItemList = ArrayList<ContactItem>()
         contactItemList.add(ContactItem("A", "1", "thumbnail 3", null))
         contactItemList.add(ContactItem("AAA", "2", "thumbnail 3", "@@@@"))
@@ -48,7 +51,9 @@ class FakeContactManager : ContactManager {
         }
     }
 
-    override suspend fun getListContact(): LiveData<List<ContactItem>> {
-        return contactLiveData
-    }
+//    override  fun getListContact(): LiveData<GetContactResult> {
+//        return contactLiveData
+//    }*//*
+
 }
+*/

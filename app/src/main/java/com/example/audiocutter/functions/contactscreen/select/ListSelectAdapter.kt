@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.contactscreen.select
 
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -55,6 +57,8 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             holder.tvTimeLife.text = simpleDateFormat.format(selectItemView.selectItemStatus.currPos)
             holder.sbMusic.progress = selectItemView.selectItemStatus.currPos
 
+            holder.tvTotal.text = "/" + selectItemView.audioFile.time.toString()
+
             when (newItem.selectItemStatus.playerState) {
                 PlayerState.PLAYING -> {
                     holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_pause)
@@ -65,7 +69,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 PlayerState.IDLE -> {
                     holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
                     holder.tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
-                    holder.tvTotal.text = Constance.TIME_TOTAL_DEFAULT
+//                    holder.tvTotal.text = Constance.TIME_TOTAL_DEFAULT
                     holder.sbMusic.progress = 0
                 }
             }
@@ -102,6 +106,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         val llAudioHeader: LinearLayout = itemView.findViewById(R.id.ll_audio_item_header)
         val llItem: LinearLayout = itemView.findViewById(R.id.ll_item)
         val ivSelect: ImageView = itemView.findViewById(R.id.iv_select)
+        val cvCarview: CardView = itemView.findViewById(R.id.cv_default)
 
         fun bind() {
             val selectItemView = getItem(adapterPosition)
@@ -132,6 +137,9 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 ivSelect.setImageResource(R.drawable.list_contact_unselect)
             }
 
+            if (selectItemView.isRingtoneDefault) {
+                cvCarview.visibility = View.VISIBLE
+            }
 
             when (selectItemView.selectItemStatus.playerState) {
                 PlayerState.PLAYING -> {
@@ -150,6 +158,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             }
 
             tvTotal.text = "/" + simpleDateFormat.format(selectItemView.selectItemStatus.duration)
+
             sbMusic.max = selectItemView.selectItemStatus.duration
             tvTimeLife.text = simpleDateFormat.format(selectItemView.selectItemStatus.currPos)
 
@@ -181,6 +190,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                     selectAudioScreenCallback.isSelect(adapterPosition)
                 }
                 R.id.iv_pause_play_music -> {
+
                     when (audioFileView.selectItemStatus.playerState) {
                         PlayerState.IDLE -> {
                             selectAudioScreenCallback.play(adapterPosition)

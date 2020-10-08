@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_default"
@@ -110,6 +109,12 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F6F6F6"
+        app:layout_constraintTop_toTopOf="@id/cl_select" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_select"

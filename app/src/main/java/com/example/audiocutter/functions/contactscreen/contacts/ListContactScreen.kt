@@ -29,11 +29,12 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.ContactManagerImpl
 import kotlinx.android.synthetic.main.list_contact_screen.*
+import kotlinx.coroutines.delay
 
 
-class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCallback, View.OnClickListener {
+class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListener {
 
-    val callBack = mainCallBack
+//    val callBack = mainCallBack
 
     // xin quyen
     val KEY = 1
@@ -47,6 +48,8 @@ class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCal
 
     // observer data
     val listContactObserver = Observer<List<ContactItemView>> { listContact ->
+//        Log.d(TAG, "listContactObserver: @@@@@@@@@@@@@@@@")
+//        Log.d(TAG, "ringtone : "+ listContact.get(0).contactItem.ringtone)
         if (listContact != null) {
             runOnUI {
                 if (listContact.isEmpty()) {
@@ -84,6 +87,7 @@ class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCal
         listContactAdapter = ListContactAdapter(context, this)
         isLoading = true
         runOnUI {
+
             listContact = mlistContactViewModel.getData() // get data from funtion newIntance
             listContact?.observe(this.viewLifecycleOwner, listContactObserver)
 
@@ -132,7 +136,7 @@ class ListContactScreen(mainCallBack: mainCallBack) : BaseFragment(), ContactCal
 
     override fun itemOnClick(phoneNumber: String, uri: String) {
         hideKeyboard()
-        callBack.item(phoneNumber, uri)
+//        callBack.item(phoneNumber, uri)
     }
 
     interface mainCallBack {

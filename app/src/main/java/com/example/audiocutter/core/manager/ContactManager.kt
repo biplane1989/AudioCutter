@@ -1,9 +1,8 @@
 package com.example.audiocutter.core.manager
 
-import android.content.Context
 import androidx.lifecycle.LiveData
-import com.example.audiocutter.objects.ContactItem
+import com.example.audiocutter.functions.contactscreen.contacts.GetContactResult
 
 interface ContactManager {
-    suspend fun getListContact(): LiveData<List<ContactItem>>
+    fun getListContact(): LiveData<GetContactResult>
 }

@@ -66,9 +66,9 @@ class FakeAudioFileManager : AudioFileManager {
 //        }
     }
 
-    suspend override fun findAllAudioFiles(): LiveData<List<AudioFile>> {
-        return audioFileLiveData
-//        return AudioFileManagerImpl.findAllAudioFiles()
+    override fun findAllAudioFiles(): LiveData<List<AudioFile>> {
+//        return audioFileLiveData
+        return AudioFileManagerImpl.findAllAudioFiles()
     }
 
     override fun buildAudioFile(filePath: String): AudioFile {
@@ -125,4 +125,7 @@ class FakeAudioFileManager : AudioFileManager {
     override fun getDurationByPath(itemFile: File?): String {
         return ""
     }
+
+    override fun getBitRateByPath(file: File): Int {
+        return 1 }
 }

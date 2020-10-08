@@ -3,18 +3,21 @@ package com.example.audiocutter.core.manager
 import android.content.Context
 import android.database.ContentObserver
 import android.database.Cursor
+import android.media.RingtoneManager
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.provider.ContactsContract
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.audiocutter.functions.contactscreen.contacts.GetContactResult
 import com.example.audiocutter.objects.ContactItem
 import kotlinx.coroutines.*
 
 object ContactManagerImpl : ContactManager {
 
-    private val contactLiveData = MutableLiveData<List<ContactItem>>()
-    var _listContact: ArrayList<ContactItem> = ArrayList()
+    private val contactLiveData = MutableLiveData<GetContactResult>()
+
     val TAG = "giangtd"
     lateinit var mContext: Context
     private var initialized = false
@@ -47,7 +50,8 @@ object ContactManagerImpl : ContactManager {
                         newListContact.add(ContactItem(name, number, photoUri, ringtone))
 
                     } else {
-                        newListContact.add(ContactItem(name, number, photoUri, null))
+                        val defaultRingtone = getUriRingtoneDefault(mContext)
+                        newListContact.add(ContactItem(name, number, photoUri, defaultRingtone))
 
                     }
                 } while (cursor.moveToNext())
@@ -59,25 +63,37 @@ object ContactManagerImpl : ContactManager {
         newListContact
     }
 
-    override suspend fun getListContact(): LiveData<List<ContactItem>> = withContext(Dispatchers.IO) {
-
-        if (!initialized) {
-            contactLiveData.postValue(scanContact())
+    // lay uri cua ringtone mac dinh
+    fun getUriRingtoneDefault(context: Context): String? {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+            return RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE)
+                .toString()
+        } else {
+            return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE).toString()
         }
-        contactLiveData
+    }
+
+    override fun getListContact(): LiveData<GetContactResult> {
+//        contactLiveData.postValue(GetContactResult(false, ArrayList()))
+        CoroutineScope(Dispatchers.Default).launch {
+            val listContact = scanContact()
+            contactLiveData.postValue(GetContactResult(true, listContact))
+        }
+
+        return contactLiveData
     }
 
     class ContactObserver(handler: Handler?) : ContentObserver(handler) {
         override fun onChange(selfChange: Boolean, uri: Uri?) {
-            mainScope.launch {
-                contactLiveData.postValue(scanContact())
+            CoroutineScope(Dispatchers.Default).launch {
+                contactLiveData.postValue(GetContactResult(true, scanContact()))
             }
-
         }
     }
 
     fun registerContentObserVerDeleted() {
         mContext.contentResolver.registerContentObserver(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, true, contactObserver)
+        mContext.contentResolver.registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, contactObserver)
     }
 
     fun unRegisterContentObserve() {
