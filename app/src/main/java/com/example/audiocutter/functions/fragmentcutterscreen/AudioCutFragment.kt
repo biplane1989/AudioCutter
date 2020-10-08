@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.screen
+package com.example.audiocutter.functions.fragmentcutterscreen
 
 import android.os.Bundle
 import android.os.Handler
@@ -18,14 +18,23 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.FragmentAudioCutBinding
 import com.example.audiocutter.objects.AudioFile
+import com.example.audiocutter.ui.fragment_cut.dialog.DialogAdvanced
+import com.example.audiocutter.ui.fragment_cut.dialog.OnDialogAdvanceListener
 import com.example.audiocutter.ui.fragment_cut.view.WaveformEditView
 import com.example.audiocutter.util.Utils
+import com.example.core.core.Effect
 
 class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
-    View.OnClickListener, View.OnLongClickListener {
+    View.OnClickListener, View.OnLongClickListener,
+    OnDialogAdvanceListener {
     private lateinit var pathAudio: String
     private lateinit var audioFile: AudioFile
     private var playerState = PlayerState.IDLE
+
+    private var fadeIn = Effect.OFF
+    private var fadeOut = Effect.OFF
+
+    private var maxVolume = 0
 
     private var playPos = 0
     private var startPos = 0L
@@ -123,6 +132,7 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
     private fun getData() {
         pathAudio = requireArguments().getString(Utils.KEY_SEND_PATH, null)
         audioFile = ManagerFactory.getAudioFileManagerImpl().buildAudioFile(pathAudio)
+        maxVolume = ManagerFactory.getAudioPlayer().getMaxVolume()
     }
 
     companion object {
@@ -141,7 +151,7 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
         fragmentCutBinding.startTimeTv.text =
             Utils.longDurationMsToStringMs(startTimeMs)
         startPos = startTimeMs
-        if (playPos <= startTimeMs) {
+        if (playPos < startTimeMs) {
             mEditView.setPlayPositionMs(startTimeMs.toInt(), true)
         }
     }
@@ -157,16 +167,21 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
     override fun onPlayPositionChanged(positionMs: Int, isPress: Boolean) {
         when {
             positionMs in startPos..endPos -> {
-                Log.e(TAG, "onPlayPositionChanged: $isPress")
                 if (isPress && playerState == PlayerState.PLAYING) {
                     if (positionMs.toLong() == endPos) {
                         ManagerFactory.getAudioPlayer().stop()
                         playPos = startPos.toInt()
-                        mEditView.setPlayPositionMs(playPos, false)
+                        mEditView.setPlayPositionMs(if (playPos == 0) 50 else playPos, false)
                     } else {
+                        Log.e(TAG, "onPlayPositionChanged:$maxVolume ")
                         ManagerFactory.getAudioPlayer().seek(positionMs)
                         playPos = positionMs
                     }
+                } else {
+                    if (playerState != PlayerState.PLAYING) {
+                        ManagerFactory.getAudioPlayer().seek(positionMs)
+                    }
+                    playPos = positionMs
                 }
             }
             positionMs < startPos -> {
@@ -192,22 +207,23 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
 
             }
             fragmentCutBinding.optionIv -> {
-
+                DialogAdvanced.showDialogAdvanced(requireContext(), this)
+                ManagerFactory.getAudioPlayer().pause()
             }
             fragmentCutBinding.tickIv -> {
 
             }
             fragmentCutBinding.increaseStartTimeIv -> {
-                mEditView.setStartTimeMs(mEditView.getTimeStart() + 100)
+                mEditView.setStartTimeMs(mEditView.getTimeStart() + Utils.TIME_CHANGE)
             }
             fragmentCutBinding.reductionStartTimeIv -> {
-                mEditView.setStartTimeMs(mEditView.getTimeStart() - 100)
+                mEditView.setStartTimeMs(mEditView.getTimeStart() - Utils.TIME_CHANGE)
             }
             fragmentCutBinding.increaseEndTimeIv -> {
-                mEditView.setEndTimeMs(mEditView.getTimeEnd() + 100)
+                mEditView.setEndTimeMs(mEditView.getTimeEnd() + Utils.TIME_CHANGE)
             }
             fragmentCutBinding.reductionEndTimeIv -> {
-                mEditView.setEndTimeMs(mEditView.getTimeEnd() - 100)
+                mEditView.setEndTimeMs(mEditView.getTimeEnd() - Utils.TIME_CHANGE)
             }
             fragmentCutBinding.zoomOutIv -> {
                 fragmentCutBinding.waveEditView.zoomOut()
@@ -216,7 +232,10 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
                 fragmentCutBinding.waveEditView.zoomInt()
             }
             fragmentCutBinding.preIv -> {
-
+                mEditView.setPlayPositionMs(
+                    if ((playPos - Utils.FIVE_SECOND) <= 0) 50 else playPos - Utils.FIVE_SECOND,
+                    true
+                )
             }
             fragmentCutBinding.playRl -> {
                 runOnUI {
@@ -230,7 +249,7 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
                 }
             }
             fragmentCutBinding.nextIv -> {
-
+                mEditView.setPlayPositionMs(playPos + Utils.FIVE_SECOND, true)
             }
         }
     }
@@ -283,6 +302,18 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
             mHandler.postDelayed(runnable, 50)
         }
         mHandler.post(runnable)
+    }
+
+    override fun onDialogOk(fadeIn: Effect, fadeOut: Effect) {
+        this.fadeIn = fadeIn
+        this.fadeOut = fadeOut
+        ManagerFactory.getAudioPlayer().seek(50)
+        ManagerFactory.getAudioPlayer().resume()
+    }
+
+    override fun onDisMissDialog() {
+        if (playerState == PlayerState.PAUSE)
+            ManagerFactory.getAudioPlayer().resume()
     }
 
 }

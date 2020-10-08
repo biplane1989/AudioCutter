@@ -20,6 +20,7 @@
     <string name="open_with">Open With</string>
     <string name="share">Share</string>
     <string name="rename">Rename</string>
+    <string name="dialog_advance_ok">OK</string>
     <string name="info">Info</string>
     <string name="delete">Delete</string>
     <string name="my_studio_dialog_info">Info</string>
@@ -58,4 +59,8 @@
     <string name="my_studio_notification_chose_item_delete">Please chose at least one item !</string>
     <string name="my_studio_delete_fail">Delete Fail !</string>
     <string name="countFile">0 file</string>
+
+    <string name="dialog_advanced_title">Advanced</string>
+    <string name="dialog_advanced_fade_in">Fade in</string>
+    <string name="dialog_advanced_fade_out">Fade out</string>
 </resources>

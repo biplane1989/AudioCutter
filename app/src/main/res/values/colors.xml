@@ -22,4 +22,10 @@
     <color name="fragment_cutter_play_bg_color">#FDAA74</color>
     <color name="fragment_cutter_play_bg_press_color">#ABFDAA74</color>
     <color name="fragment_cutter_bg_color">#FFFFFF</color>
+    <color name="dialog_bg_color">#FFFFFF</color>
+    <color name="dialog_advanced_title_color">#2E3041</color>
+    <color name="dialog_advanced_title_fade_color">#6E6E6E</color>
+    <color name="dialog_advanced_cancel_color">#BDBDBD</color>
+    <color name="dialog_advanced_ok_color">#FDAA74</color>
+    <color name="dialog_advanced_text_sniper_color">#2E3041</color>
 </resources>

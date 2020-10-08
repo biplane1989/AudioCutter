@@ -187,7 +187,7 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
     }
 
-    fun getMaxVolume(): Int {
+    override fun getMaxVolume():Int {
         return audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
     }
 

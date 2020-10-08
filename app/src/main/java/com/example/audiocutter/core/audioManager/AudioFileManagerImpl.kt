@@ -9,7 +9,6 @@ import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaExtractor
-import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
@@ -195,7 +194,8 @@ object AudioFileManagerImpl : AudioFileManager {
         }
 
         val mf = mex.getTrackFormat(0)
-        return mf.getInteger(MediaFormat.KEY_BIT_RATE)
+//        return mf.getInteger(MediaFormat.KEY_BIT_RATE)
+        return 128
 
     }
 

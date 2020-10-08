@@ -5,13 +5,13 @@ import android.os.Environment
 import androidx.fragment.app.FragmentTransaction
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
-import com.example.audiocutter.functions.screen.AudioCutFragment
+import com.example.audiocutter.functions.fragmentcutterscreen.AudioCutFragment
 import java.io.File
 
 class CutActivity : BaseActivity() {
     private val PATH_FOLDER: String =
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            .plus("/sample1.aac")
+            .plus("/WeDon.m4a")
     private val PATH_FOLDER1: String =
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             .plus("/Ed Sheeran - Shape Of You [Official].mp3")
