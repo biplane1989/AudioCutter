@@ -9,11 +9,14 @@ import androidx.lifecycle.Observer
 import com.example.audiocutter.R
 import com.example.audiocutter.util.PreferencesHelper
 
-interface ContactPermissionRequest : PermissionRequest, Observer<AppPermission> {
+interface ContactItemPermissionRequest : PermissionRequest, Observer<AppPermission> {
+
     fun isPermissionGranted(): Boolean {
-        return PermissionManager.getAppPermissionData()
-            .hasReadContactPermission() && PermissionManager.getAppPermissionData()
-            .hasWriteContactPermission()
+        val appPermission = PermissionManager.getAppPermissionData()
+        return appPermission.hasReadContactPermission() &&
+                appPermission.hasWriteContactPermission() &&
+                appPermission.hasWriteSettingPermission() &&
+                appPermission.hasReadContactPermission()
     }
 
     override fun requestPermission() {
@@ -24,12 +27,14 @@ interface ContactPermissionRequest : PermissionRequest, Observer<AppPermission> 
                     baseActivity,
                     arrayOf(
                         Manifest.permission.READ_CONTACTS,
-                        Manifest.permission.WRITE_CONTACTS
+                        Manifest.permission.WRITE_CONTACTS,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
                     )
                 )
             ) {
                 PreferencesHelper.putBoolean(
-                    this@ContactPermissionRequest::class.java.name + "goToPermissionSettingScreen",
+                    this@ContactItemPermissionRequest::class.java.name + "goToPermissionSettingScreen",
                     true
                 )
                 PendingCallFunction.guidePermissionToast?.cancel()
@@ -60,7 +65,9 @@ interface ContactPermissionRequest : PermissionRequest, Observer<AppPermission> 
                 PermissionUtil.requestPermission(
                     baseActivity, arrayOf(
                         Manifest.permission.READ_CONTACTS,
-                        Manifest.permission.WRITE_CONTACTS
+                        Manifest.permission.WRITE_CONTACTS,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
                     ), CONTACT_REQUEST_CODE
                 )
             }
@@ -71,12 +78,12 @@ interface ContactPermissionRequest : PermissionRequest, Observer<AppPermission> 
         if (isPermissionGranted()) {
 
             if (PreferencesHelper.getBoolean(
-                    this@ContactPermissionRequest::class.java.name + "goToPermissionSettingScreen",
+                    this@ContactItemPermissionRequest::class.java.name + "goToPermissionSettingScreen",
                     false
                 )
             ) {
                 PreferencesHelper.putBoolean(
-                    this@ContactPermissionRequest::class.java.name + "goToPermissionSettingScreen",
+                    this@ContactItemPermissionRequest::class.java.name + "goToPermissionSettingScreen",
                     false
                 )
                 getPermissionActivity()?.let {

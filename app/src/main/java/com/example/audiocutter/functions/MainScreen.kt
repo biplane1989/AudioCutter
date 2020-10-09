@@ -12,17 +12,13 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.databinding.MainScreenBinding
-import com.example.audiocutter.permissions.AppPermission
-import com.example.audiocutter.permissions.ContactPermissionRequest
-import com.example.audiocutter.permissions.PermissionManager
-import com.example.audiocutter.permissions.StoragePermissionRequest
-import kotlinx.android.synthetic.main.main_screen.*
+import com.example.audiocutter.permissions.*
 
 class MainScreen : BaseFragment(), View.OnClickListener {
     private val MP3_CUTTER_REQUESTING_PERMISSION = 1 shl 1
     private val AUDIO_MERGER_REQUESTING_PERMISSION = 1 shl 2
     private val AUDIO_MIXER_REQUESTING_PERMISSION = 1 shl 3
-    private val CONTACTS_REQUESTING_PERMISSION = 1 shl 4
+    private val CONTACTS_ITEM_REQUESTING_PERMISSION = 1 shl 4
     private val MY_STUDIO_REQUESTING_PERMISSION = 1 shl 5
     private val FLASH_CALL_REQUESTING_PERMISSION = 1 shl 6
     private lateinit var binding: MainScreenBinding
@@ -54,8 +50,7 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                     resetRequestingPermission()
                     onMyStudioItemClicked()
                 }
-
-                if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_REQUESTING_PERMISSION) != 0) {
+                if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
                     onContactsItemClicked()
                 }
@@ -129,7 +124,7 @@ class MainScreen : BaseFragment(), View.OnClickListener {
             Toast.makeText(requireContext(), "onContactsItemClicked", Toast.LENGTH_SHORT).show()
         } else {
             resetRequestingPermission()
-            pendingRequestingPermission = CONTACTS_REQUESTING_PERMISSION
+            pendingRequestingPermission = CONTACTS_ITEM_REQUESTING_PERMISSION
             contactPermissionRequest.requestPermission()
         }
     }
@@ -170,7 +165,17 @@ class MainScreen : BaseFragment(), View.OnClickListener {
             return lifecycle
         }
     }
-    private val contactPermissionRequest = object:ContactPermissionRequest{
+    private val contactPermissionRequest = object : ContactItemPermissionRequest {
+        override fun getPermissionActivity(): BaseActivity? {
+            return getBaseActivity()
+        }
+
+        override fun getLifeCycle(): Lifecycle {
+            return lifecycle
+        }
+    }
+
+    private val writeStoragePermissionRequest = object : WriteSettingPermissionRequest {
         override fun getPermissionActivity(): BaseActivity? {
             return getBaseActivity()
         }
@@ -183,6 +188,7 @@ class MainScreen : BaseFragment(), View.OnClickListener {
     init {
         storagePermissionRequest.init()
         contactPermissionRequest.init()
+        writeStoragePermissionRequest.init()
     }
 
 

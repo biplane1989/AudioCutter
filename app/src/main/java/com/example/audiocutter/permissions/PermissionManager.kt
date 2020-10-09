@@ -27,7 +27,8 @@ class AppPermission {
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_CONTACTS,
-                Manifest.permission.WRITE_CONTACTS
+                Manifest.permission.WRITE_CONTACTS,
+                Manifest.permission.WRITE_SETTINGS
 
             )
         )
@@ -88,6 +89,10 @@ class AppPermission {
 
     fun hasWriteContactPermission(): Boolean {
         return getPermissionInfo(Manifest.permission.WRITE_CONTACTS)?.granted ?: false
+    }
+
+    fun hasWriteSettingPermission(): Boolean {
+        return getPermissionInfo(Manifest.permission.WRITE_SETTINGS)?.granted ?: false
     }
     fun isPermissionChanged(context: Context): Boolean {
         for (permissionInfo in listPermissionInfos) {
