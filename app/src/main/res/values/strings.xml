@@ -65,4 +65,9 @@
     <string name="list_contact_title">Contacts</string>
     <string name="list_contact_item_default">Default</string>
     <string name="countFile">0 file</string>
+    <string name="storage_guide_permission_step_1">Step 1 : "Clicked Permissions"</string>
+    <string name="storage_guide_permission_step_2">Step 2 : "Turn On Storage"</string>
+
+    <string name="contact_guide_permission_step_1">Step 1 : "Clicked Permissions"</string>
+    <string name="contact_guide_permission_step_2">Step 2 : "Turn On Contact"</string>
 </resources>

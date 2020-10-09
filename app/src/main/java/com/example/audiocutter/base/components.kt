@@ -132,7 +132,6 @@ abstract class BaseAndroidViewModel(application: Application) : AndroidViewModel
 
 abstract class BaseFragment : Fragment() {
     protected val viewStateManager: ViewStateManager = ViewStateManagerImpl
-    protected lateinit var baseActivity: BaseActivity;
     private val mainScope = MainScope()
     private val fragmentChannelObserver = Observer<FragmentMeta> {
 
@@ -149,13 +148,17 @@ abstract class BaseFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        baseActivity = activity as BaseActivity
     }
 
     protected fun showToast(yourString: String) {
         Toast.makeText(context, yourString, Toast.LENGTH_SHORT).show()
     }
-
+    protected fun getBaseActivity(): BaseActivity? {
+        if (activity != null) {
+            return activity as BaseActivity
+        }
+        return null
+    }
     protected open fun onPostCreate(savedInstanceState: Bundle?) {
 
     }

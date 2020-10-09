@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.mystudioscreen
+package com.example.audiocutter.functions.mystudio
 
 import android.os.Bundle
 import android.util.Log
@@ -29,7 +29,7 @@ class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val myStudioAdapter = MyStudioViewPagerAdapter(baseActivity.supportFragmentManager)
+        val myStudioAdapter = MyStudioViewPagerAdapter(requireActivity().supportFragmentManager)
         view_pager.adapter = myStudioAdapter
 
         tab_layout.setupWithViewPager(view_pager)
