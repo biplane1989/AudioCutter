@@ -58,4 +58,6 @@
     <string name="my_studio_notification_chose_item_delete">Please chose at least one item !</string>
     <string name="my_studio_delete_fail">Delete Fail !</string>
     <string name="countFile">0 file</string>
+    <string name="storage_guide_permission_step_1">Step 1 : "Clicked Permissions"</string>
+    <string name="storage_guide_permission_step_2">Step 2 : "Turn On Storage"</string>
 </resources>

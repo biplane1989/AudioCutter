@@ -30,7 +30,7 @@ class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val myStudioAdapter = MyStudioViewPagerAdapter(baseActivity.supportFragmentManager)
+        val myStudioAdapter = MyStudioViewPagerAdapter(requireActivity().supportFragmentManager)
         view_pager.adapter = myStudioAdapter
 
         tab_layout.setupWithViewPager(view_pager)
@@ -38,18 +38,17 @@ class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
         tabPosition = tab_layout.selectedTabPosition
         tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
                 sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_STOP_MUSIC)
                 tabPosition = tab.position
 
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
-                Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
+
             }
 
             override fun onTabReselected(tab: TabLayout.Tab) {
-                Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
+
             }
         })
 

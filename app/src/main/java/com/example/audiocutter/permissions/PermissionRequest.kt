@@ -1,26 +1,47 @@
-package com.example.a0025antivirusapplockclean.permissions
+package com.example.audiocutter.permissions
+import android.widget.Toast
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.Observer
+import androidx.lifecycle.OnLifecycleEvent
 import com.example.audiocutter.base.BaseActivity
 
 typealias PendingPermissionAction = () -> Unit
 
-interface PermissionRequest {
-    val QUERY_APP_INFO_REQUEST_CODE: Int get() = 1
-    val CAMERA_REQUEST_CODE: Int get() = 2
-    val CALL_ASSISTANT_REQUEST_CODE: Int get() = 200
-    fun getPermissionActivity(): BaseActivity
-    fun requestPermission(pendingAction: () -> Unit)
+interface PermissionRequest : Observer<AppPermission> {
+    val STORAGE_REQUEST_CODE: Int get() = 1
+    fun getPermissionActivity(): BaseActivity?
+    fun getLifeCycle(): Lifecycle
+    fun requestPermission()
+    fun init() {
+
+        getLifeCycle().addObserver(object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+            private fun onCreated() {
+                PermissionManager.getAppPermission()
+                    .observeForever(this@PermissionRequest)
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+            private fun onResume() {
+                onViewResume()
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            private fun onDestroy() {
+                PermissionManager.getAppPermission()
+                    .removeObserver(this@PermissionRequest)
+            }
+        })
+    }
+
+    fun onViewResume() {
+        PendingCallFunction.guidePermissionToast?.cancel()
+        PendingCallFunction.guidePermissionToast = null
+    }
 }
 
-object PendingActionManager {
-    private val permissionRequestMap = HashMap<PermissionRequest, PendingPermissionAction>()
-    fun put(permissionRequest: PermissionRequest, pendingAction: PendingPermissionAction) {
-        permissionRequestMap.put(permissionRequest, pendingAction)
-    }
-    fun remove(permissionRequest: PermissionRequest) {
-        permissionRequestMap.remove(permissionRequest)
-    }
-    fun get(permissionRequest: PermissionRequest) : PendingPermissionAction?{
-        return permissionRequestMap.get(permissionRequest)
-    }
-
+object PendingCallFunction {
+    var guidePermissionToast: Toast? = null
 }
+

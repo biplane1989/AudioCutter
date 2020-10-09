@@ -18,7 +18,7 @@ object ManagerFactory {
 
     fun init(appContext: Context) {
         AudioPlayerImpl.init(appContext)
-        AudioFileManagerImpl.init(appContext)
+        //AudioFileManagerImpl.init(appContext)
     }
 
     fun getAudioFileManager(): AudioFileManager {
