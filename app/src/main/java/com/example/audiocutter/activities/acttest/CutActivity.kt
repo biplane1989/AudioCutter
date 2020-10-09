@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentTransaction
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.functions.fragmentcutterscreen.AudioCutFragment
+import com.google.android.material.slider.Slider
 import java.io.File
 
 class CutActivity : BaseActivity() {
@@ -15,6 +16,9 @@ class CutActivity : BaseActivity() {
     private val PATH_FOLDER1: String =
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             .plus("/Ed Sheeran - Shape Of You [Official].mp3")
+    private val PATH_FOLDER2: String =
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            .plus("/We Don_t Talk Anymore - Charlie Puth_ Se.m4a")
 
     private operator fun File.plus(separator: String): String {
         return this.absolutePath + separator
@@ -23,9 +27,10 @@ class CutActivity : BaseActivity() {
     override fun createView(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_cut)
 
+
         val ft: FragmentTransaction = supportFragmentManager.beginTransaction()
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-        val audioCutFragment = AudioCutFragment.newInstance(PATH_FOLDER1)
+        val audioCutFragment = AudioCutFragment.newInstance(PATH_FOLDER)
         ft.add(R.id.root_view, audioCutFragment)
             .addToBackStack(AudioCutFragment::class.java.simpleName).commit()
     }

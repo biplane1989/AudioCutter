@@ -187,17 +187,13 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
     }
 
-    override fun getMaxVolume():Int {
+    override fun getMaxVolume(): Int {
         return audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
     }
 
-
-    override fun setVolume(value: Int) {
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, value, 0)
-        playInfoData.volume = value
-        notifyPlayerDataChanged()
+    override fun setVolume(volume: Float) {
+        mPlayer.setVolume(volume, volume)
     }
-
 
     fun getTotalPos(): Int {
         return mPlayer.duration

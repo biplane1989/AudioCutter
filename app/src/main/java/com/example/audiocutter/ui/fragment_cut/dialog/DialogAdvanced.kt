@@ -7,6 +7,7 @@ import android.view.View
 import androidx.databinding.DataBindingUtil
 import com.example.audiocutter.R
 import com.example.audiocutter.databinding.DialogAdvancedBinding
+import com.example.audiocutter.util.PreferencesHelper
 import com.example.core.core.Effect
 
 class DialogAdvanced : Dialog, View.OnClickListener {
@@ -23,7 +24,10 @@ class DialogAdvanced : Dialog, View.OnClickListener {
     }
 
     private fun initData() {
-        var list = ArrayList<String>()
+        fadeInPos = PreferencesHelper.getInt(PreferencesHelper.FADE_IN_TIME, 0)
+        fadeOutPos = PreferencesHelper.getInt(PreferencesHelper.FADE_OUT_TIME, 0)
+
+        val list = ArrayList<String>()
         for (i in valuesEffect.indices) {
             if (i == 0) {
                 list.add(valuesEffect[i].name.upperFirstString())
@@ -34,14 +38,17 @@ class DialogAdvanced : Dialog, View.OnClickListener {
                 )
             }
         }
+
         advancedBinding.spinnerFadeIn.apply {
             setItems(list)
+            selectedIndex = fadeInPos
             setOnItemSelectedListener { view, position, id, item ->
                 fadeInPos = position
             }
         }
         advancedBinding.spinnerFadeOut.apply {
             setItems(list)
+            selectedIndex = fadeOutPos
             setOnItemSelectedListener { view, position, id, item ->
                 fadeOutPos = position
             }
@@ -74,6 +81,12 @@ class DialogAdvanced : Dialog, View.OnClickListener {
                 dismiss()
             }
             advancedBinding.okTv -> {
+                PreferencesHelper.putInt(
+                    PreferencesHelper.FADE_IN_TIME, fadeInPos
+                )
+                PreferencesHelper.putInt(
+                    PreferencesHelper.FADE_OUT_TIME, fadeOutPos
+                )
                 listener.onDialogOk(valuesEffect[fadeInPos], valuesEffect[fadeOutPos])
                 cancel()
             }
@@ -82,11 +95,13 @@ class DialogAdvanced : Dialog, View.OnClickListener {
 
     override fun dismiss() {
         super.dismiss()
-        listener.onDisMissDialog()
     }
 
     companion object {
-        fun showDialogAdvanced(context: Context, onDialogAdvanceListener: OnDialogAdvanceListener) {
+        fun showDialogAdvanced(
+            context: Context,
+            onDialogAdvanceListener: OnDialogAdvanceListener
+        ) {
             val dialog = DialogAdvanced(context)
             dialog.listener = onDialogAdvanceListener
             dialog.show()
@@ -96,6 +111,5 @@ class DialogAdvanced : Dialog, View.OnClickListener {
 
 interface OnDialogAdvanceListener {
     fun onDialogOk(fadeIn: Effect, fadeOut: Effect)
-    fun onDisMissDialog()
 }
 

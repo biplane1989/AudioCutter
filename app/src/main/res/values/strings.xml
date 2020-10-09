@@ -63,4 +63,10 @@
     <string name="dialog_advanced_title">Advanced</string>
     <string name="dialog_advanced_fade_in">Fade in</string>
     <string name="dialog_advanced_fade_out">Fade out</string>
+    <string name="dialog_convert_title">Convert</string>
+    <string name="dialog_convert_file_name">File Name</string>
+    <string name="dialog_convert_format">Format</string>
+    <string name="dialog_convert_bitrate">Bitrate</string>
+    <string name="dialog_convert_volume">Volume</string>
+    <string name="dialog_convert_ok">CONVERT</string>
 </resources>

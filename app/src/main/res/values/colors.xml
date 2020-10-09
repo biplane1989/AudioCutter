@@ -28,4 +28,5 @@
     <color name="dialog_advanced_cancel_color">#BDBDBD</color>
     <color name="dialog_advanced_ok_color">#FDAA74</color>
     <color name="dialog_advanced_text_sniper_color">#2E3041</color>
+    <color name="dialog_convert_seekbar_color">#FDAA74</color>
 </resources>

@@ -15,6 +15,7 @@ import kotlin.math.max
 
 object Utils {
     val KEY_SEND_PATH = "key_send_path"
+    val KEY_SEND_AUDIO = "key_send_audio"
     val FIVE_SECOND = 5000
     val TIME_CHANGE = 100
 

@@ -19,6 +19,7 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.FragmentAudioCutBinding
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.ui.fragment_cut.dialog.DialogAdvanced
+import com.example.audiocutter.ui.fragment_cut.dialog.DialogConvert
 import com.example.audiocutter.ui.fragment_cut.dialog.OnDialogAdvanceListener
 import com.example.audiocutter.ui.fragment_cut.view.WaveformEditView
 import com.example.audiocutter.util.Utils
@@ -34,8 +35,8 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
     private var fadeIn = Effect.OFF
     private var fadeOut = Effect.OFF
 
-    private var maxVolume = 0
-
+    private var ratioVolumeFadeIn = 0F
+    private var ratioVolumeFadeout = 0F
     private var playPos = 0
     private var startPos = 0L
     private var endPos = 0L
@@ -104,6 +105,20 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
                     playerState = PlayerState.PAUSE
                 }
             }
+
+            if (it.posision <= (fadeIn.time * 1000)) {
+                if (fadeIn != Effect.OFF) {
+                    ManagerFactory.getAudioPlayer()
+                        .setVolume((it.posision.toFloat() / 1000) * ratioVolumeFadeIn)
+                }
+            } else if (it.posision < endPos - fadeOut.time * 1000) {
+                ManagerFactory.getAudioPlayer().setVolume(1f)
+            } else if (it.posision >= endPos - (fadeOut.time * 1000)) {
+                if (fadeOut != Effect.OFF) {
+                    ManagerFactory.getAudioPlayer()
+                        .setVolume(((endPos.toFloat() - it.posision.toFloat()) / 1000) * ratioVolumeFadeout)
+                }
+            }
             fragmentCutBinding.waveEditView.setPlayPositionMs(it.posision, false)
         }
     }
@@ -132,7 +147,6 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
     private fun getData() {
         pathAudio = requireArguments().getString(Utils.KEY_SEND_PATH, null)
         audioFile = ManagerFactory.getAudioFileManagerImpl().buildAudioFile(pathAudio)
-        maxVolume = ManagerFactory.getAudioPlayer().getMaxVolume()
     }
 
     companion object {
@@ -173,7 +187,6 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
                         playPos = startPos.toInt()
                         mEditView.setPlayPositionMs(if (playPos == 0) 50 else playPos, false)
                     } else {
-                        Log.e(TAG, "onPlayPositionChanged:$maxVolume ")
                         ManagerFactory.getAudioPlayer().seek(positionMs)
                         playPos = positionMs
                     }
@@ -211,7 +224,7 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
                 ManagerFactory.getAudioPlayer().pause()
             }
             fragmentCutBinding.tickIv -> {
-
+                DialogConvert.showDialogConvert(childFragmentManager, audioFile)
             }
             fragmentCutBinding.increaseStartTimeIv -> {
                 mEditView.setStartTimeMs(mEditView.getTimeStart() + Utils.TIME_CHANGE)
@@ -309,11 +322,8 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
         this.fadeOut = fadeOut
         ManagerFactory.getAudioPlayer().seek(50)
         ManagerFactory.getAudioPlayer().resume()
-    }
-
-    override fun onDisMissDialog() {
-        if (playerState == PlayerState.PAUSE)
-            ManagerFactory.getAudioPlayer().resume()
+        ratioVolumeFadeIn = if (fadeIn != Effect.OFF) (1F / this.fadeIn.time) else 0F
+        ratioVolumeFadeout = if (fadeOut != Effect.OFF) (1F / this.fadeOut.time) else 0F
     }
 
 }

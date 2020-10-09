@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/bg_dialog">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/sanfranciscodisplay_bold"
+            android:gravity="center"
+            android:text="@string/dialog_convert_title"
+            android:textColor="@color/dialog_advanced_title_color"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="24dp"
+            android:fontFamily="@font/sanfranciscodisplay_medium"
+            android:gravity="center"
+            android:text="@string/dialog_convert_file_name"
+            android:textColor="@color/dialog_advanced_title_fade_color"
+            android:textSize="12dp" />
+
+        <EditText
+            android:id="@+id/name_edt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginRight="24dp"
+            android:fontFamily="@font/sanfranciscodisplay_medium"
+            android:singleLine="true"
+            android:textColor="@color/dialog_advanced_text_sniper_color"
+            android:textSize="16dp"
+            android:theme="@style/editTextTheme" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/sanfranciscodisplay_medium"
+            android:gravity="center"
+            android:text="@string/dialog_convert_format"
+            android:textColor="@color/dialog_advanced_title_fade_color"
+            android:textSize="12dp" />
+
+        <com.example.audiocutter.ui.fragment_cut.view.spinner.MaterialSpinner
+            android:id="@+id/spinner_format"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/sanfranciscodisplay_medium"
+            android:gravity="center"
+            android:text="@string/dialog_convert_bitrate"
+            android:textColor="@color/dialog_advanced_title_fade_color"
+            android:textSize="12dp" />
+
+        <com.example.audiocutter.ui.fragment_cut.view.spinner.MaterialSpinner
+            android:id="@+id/spinner_bitrate"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/sanfranciscodisplay_medium"
+            android:gravity="center"
+            android:text="@string/dialog_convert_volume"
+            android:textColor="@color/dialog_advanced_title_fade_color"
+            android:textSize="12dp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/seekbar"
+                app:labelBehavior="gone"
+                app:thumbColor="@color/dialog_convert_seekbar_color"
+                app:thumbRadius="8dp"
+                app:trackHeight="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_toLeftOf="@id/percent_tv"
+                android:theme="@style/themeSeekbar"
+                android:value="100"
+                android:valueFrom="0"
+                android:valueTo="300" />
+
+            <TextView
+                android:id="@+id/percent_tv"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="24dp"
+                android:fontFamily="@font/sanfranciscodisplay_medium"
+                android:gravity="right"
+                android:text="100%"
+                android:textColor="@color/dialog_advanced_title_fade_color"
+                android:textSize="12dp" />
+
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <TextView
+                android:id="@+id/cancel_tv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackground"
+                android:fontFamily="@font/sanfranciscodisplay_medium"
+                android:gravity="center"
+                android:text="@string/my_studio_dialog_btn_cancel"
+                android:textColor="@color/dialog_advanced_cancel_color"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/ok_tv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackground"
+                android:fontFamily="@font/sanfranciscodisplay_medium"
+                android:gravity="center"
+                android:text="@string/dialog_convert_ok"
+                android:textColor="@color/dialog_advanced_ok_color"
+                android:textSize="14dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
