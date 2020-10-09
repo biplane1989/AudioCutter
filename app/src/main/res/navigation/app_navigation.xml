@@ -7,6 +7,6 @@
     <fragment
         android:id="@+id/main_screen"
         android:name="com.example.audiocutter.functions.MainScreen"
-        tools:layout="@layout/main_screen"></fragment>
+        tools:layout="@layout/main_screen"/>
 
 </navigation>

@@ -9,9 +9,11 @@ import androidx.lifecycle.Observer
 import com.example.audiocutter.R
 import com.example.audiocutter.util.PreferencesHelper
 
-interface StoragePermissionRequest : PermissionRequest, Observer<AppPermission> {
+interface ContactPermissionRequest : PermissionRequest, Observer<AppPermission> {
     fun isPermissionGranted(): Boolean {
-        return PermissionManager.hasStoragePermission()
+        return PermissionManager.getAppPermissionData()
+            .hasReadContactPermission() && PermissionManager.getAppPermissionData()
+            .hasWriteContactPermission()
     }
 
     override fun requestPermission() {
@@ -21,13 +23,13 @@ interface StoragePermissionRequest : PermissionRequest, Observer<AppPermission> 
             if (PermissionUtil.clickedOnNeverAskAgain(
                     baseActivity,
                     arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        Manifest.permission.READ_CONTACTS,
+                        Manifest.permission.WRITE_CONTACTS
                     )
                 )
             ) {
                 PreferencesHelper.putBoolean(
-                    this@StoragePermissionRequest::class.java.name + "goToPermissionSettingScreen",
+                    this@ContactPermissionRequest::class.java.name + "goToPermissionSettingScreen",
                     true
                 )
                 PendingCallFunction.guidePermissionToast?.cancel()
@@ -44,22 +46,22 @@ interface StoragePermissionRequest : PermissionRequest, Observer<AppPermission> 
                 val inflater: LayoutInflater =
                     baseActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
                 PendingCallFunction.guidePermissionToast!!.view = inflater.inflate(
-                    R.layout.storage_guide_turn_on_permission_layout,
+                    R.layout.contact_guide_turn_on_permission_layout,
                     null
                 )
                 PendingCallFunction.guidePermissionToast!!.duration = Toast.LENGTH_LONG
                 PendingCallFunction.guidePermissionToast!!.show()
                 PermissionUtil.goToPermissionSettingScreen(
                     baseActivity,
-                    STORAGE_REQUEST_CODE
+                    CONTACT_REQUEST_CODE
                 )
 
             } else {
                 PermissionUtil.requestPermission(
                     baseActivity, arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ), STORAGE_REQUEST_CODE
+                        Manifest.permission.READ_CONTACTS,
+                        Manifest.permission.WRITE_CONTACTS
+                    ), CONTACT_REQUEST_CODE
                 )
             }
         }
@@ -69,20 +71,20 @@ interface StoragePermissionRequest : PermissionRequest, Observer<AppPermission> 
         if (isPermissionGranted()) {
 
             if (PreferencesHelper.getBoolean(
-                    this@StoragePermissionRequest::class.java.name + "goToPermissionSettingScreen",
+                    this@ContactPermissionRequest::class.java.name + "goToPermissionSettingScreen",
                     false
                 )
             ) {
                 PreferencesHelper.putBoolean(
-                    this@StoragePermissionRequest::class.java.name + "goToPermissionSettingScreen",
+                    this@ContactPermissionRequest::class.java.name + "goToPermissionSettingScreen",
                     false
                 )
                 getPermissionActivity()?.let {
                     PermissionUtil.goToPermissionSettingScreen(
                         it,
-                        STORAGE_REQUEST_CODE
+                        CONTACT_REQUEST_CODE
                     )
-                    it.finishActivity(STORAGE_REQUEST_CODE)
+                    it.finishActivity(CONTACT_REQUEST_CODE)
                 }
             }
         }

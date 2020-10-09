@@ -10,6 +10,7 @@ typealias PendingPermissionAction = () -> Unit
 
 interface PermissionRequest : Observer<AppPermission> {
     val STORAGE_REQUEST_CODE: Int get() = 1
+    val CONTACT_REQUEST_CODE: Int get() = 2
     fun getPermissionActivity(): BaseActivity?
     fun getLifeCycle(): Lifecycle
     fun requestPermission()
