@@ -8,11 +8,15 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.provider.ContactsContract
+import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.functions.contactscreen.contacts.GetContactResult
 import com.example.audiocutter.objects.ContactItem
 import kotlinx.coroutines.*
+import kotlin.math.log
 
 object ContactManagerImpl : ContactManager {
 
@@ -21,6 +25,7 @@ object ContactManagerImpl : ContactManager {
     val TAG = "giangtd"
     lateinit var mContext: Context
     private var initialized = false
+    var oldRingtoneDefault = ""
     val contactObserver = ContactObserver(Handler())
     val mainScope = MainScope()
     fun init(context: Context) {
@@ -37,26 +42,57 @@ object ContactManagerImpl : ContactManager {
         val photoIndex = cursor.getColumnIndex(projecttion[2])
         val ringtoneIndex = cursor.getColumnIndex(projecttion[3])
         try {
-            if (cursor.moveToFirst()) {
+            val defaultRingtone = getUriRingtoneDefault(mContext)
+            defaultRingtone?.let {
+                if (cursor.moveToFirst()) {
+                    do {
+                        val name = cursor.getString(nameIndex)
+                        val number = cursor.getString(numberIndex)
+                        val photoUri = cursor.getString(photoIndex)
+                        val ringtone = cursor.getString(ringtoneIndex)
 
-                do {
-                    val name = cursor.getString(nameIndex)
-                    val number = cursor.getString(numberIndex)
-                    val photoUri = cursor.getString(photoIndex)
-                    val ringtone = cursor.getString(ringtoneIndex)
-//                    Log.d(TAG, "getListData: $name - $number - $photoUri - $ringtone")
 
-                    if (ringtone != null) {
-                        newListContact.add(ContactItem(name, number, photoUri, ringtone))
-
-                    } else {
-                        val defaultRingtone = getUriRingtoneDefault(mContext)
-                        newListContact.add(ContactItem(name, number, photoUri, defaultRingtone))
-
-                    }
-                } while (cursor.moveToNext())
-
+                        if (TextUtils.equals(oldRingtoneDefault, defaultRingtone)) {
+                            if (ringtone != null) {
+                                if (TextUtils.equals(ringtone, defaultRingtone)) {
+                                    newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true))
+                                    Log.d(TAG, "scanContact: 1")
+                                } else {
+                                    newListContact.add(ContactItem(name, number, photoUri, ringtone, false))
+                                    Log.d(TAG, "scanContact: 2")
+                                }
+                            } else {
+                                newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true))
+                                Log.d(TAG, "scanContact: 3")
+                            }
+                        } else {
+                            if (ringtone != null) {
+                                if (TextUtils.equals(ringtone, oldRingtoneDefault)) {
+                                    newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true))
+                                    // set nhac chuong
+                                    Log.d(TAG, "scanContact: 4 " + ringtone + " number : " + number)
+                                    Log.d(TAG, "scanContact: is fail: " + ManagerFactory.getRingtoneManager()
+                                        .setRingtoneDefault(defaultRingtone, number))
+                                } else {
+                                    if (TextUtils.equals(ringtone, defaultRingtone)) {
+                                        newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true))
+                                        Log.d(TAG, "scanContact: 5 " + ringtone)
+                                    } else {
+                                        newListContact.add(ContactItem(name, number, photoUri, ringtone, false))
+                                        Log.d(TAG, "scanContact: 6 " + ringtone)
+                                    }
+                                }
+                            } else {
+                                newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true))
+                                Log.d(TAG, "scanContact: 7 " + ringtone)
+                            }
+                        }
+                    } while (cursor.moveToNext())
+                }
+                oldRingtoneDefault = defaultRingtone
+                Log.d(TAG, "oldRingtoneDefault: " + oldRingtoneDefault)
             }
+
         } finally {
             if (!cursor.isClosed) cursor.close()
         }

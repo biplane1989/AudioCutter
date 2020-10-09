@@ -80,7 +80,8 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 val ringtone = payloads.firstOrNull() as String
                 val contactItem = getItem(position)
 
-                if (contactItem.contactItem.ringtone != null) {
+//                if (contactItem.contactItem.ringtone != null) {
+                if (!contactItem.contactItem.isRingtoneDefault) {
                     itemViewHolder.tvRingtoneDefault.visibility = View.GONE
                     itemViewHolder.cvDefault.visibility = View.GONE
                     itemViewHolder.tvRingtone.visibility = View.VISIBLE
@@ -93,9 +94,12 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                     itemViewHolder.cvDefault.visibility = View.VISIBLE
                     itemViewHolder.tvRingtone.visibility = View.GONE
 
-                    val contactInfomation = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
-                        .toString())
-                    itemViewHolder.tvRingtoneDefault.text = contactInfomation.title.toLowerCase()
+                    if (Utils.getUriRingtoneDefault(mContext!!) != null) {
+                        val contactInfomation = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
+                            .toString())
+                        itemViewHolder.tvRingtoneDefault.text = contactInfomation.title.toLowerCase()
+                    }
+
                 }
             }
         }
@@ -118,7 +122,8 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 ivAvatar.setImageBitmap(avatar)
             }
 
-            if (contentItem.contactItem.ringtone != null) {
+//            if (contentItem.contactItem.ringtone != null) {
+            if (!contentItem.contactItem.isRingtoneDefault) {
 
                 tvRingtoneDefault.visibility = View.GONE
                 cvDefault.visibility = View.GONE
@@ -131,13 +136,14 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 cvDefault.visibility = View.VISIBLE
                 tvRingtone.visibility = View.GONE
 
-                val contactInfomation = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
-                    .toString())
-                tvRingtoneDefault.text = contactInfomation.title.toLowerCase()
+                if (Utils.getUriRingtoneDefault(mContext!!) != null) {
+                    val contactInfomation = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
+                        .toString())
+                    tvRingtoneDefault.text = contactInfomation.title.toLowerCase()
+                }
             }
 
             clItemContact.setOnClickListener(this)
-
         }
 
         override fun onClick(view: View?) {

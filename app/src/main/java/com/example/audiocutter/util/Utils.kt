@@ -70,11 +70,16 @@ object Utils {
     // lay uri cua ringtone mac dinh
     fun getUriRingtoneDefault(context: Context): String? {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-            return RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE)
-                .toString()
+            if (RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE) != null) {
+                return RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE)
+                    .toString()
+            }
         } else {
-            return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE).toString()
+            if (RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE) != null) {
+                return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE).toString()
+            }
         }
+        return null
     }
 
     // lay bitmap theo path

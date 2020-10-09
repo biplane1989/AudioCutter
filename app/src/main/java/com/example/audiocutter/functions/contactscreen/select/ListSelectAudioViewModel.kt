@@ -33,6 +33,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
                     mListAudioFileView.add(SelectItemView(it))
                 }
                 mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
+//                mListAudioFileView
 
             } else { // khi thay doi du lieu update
                 // dong bo hoa du lieu list cu va moi
@@ -47,6 +48,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
                 }
 
                 mListAudioFileView = getRingtoneDefault(newListSelectItemView) as ArrayList<SelectItemView>
+//                mListAudioFileView
             }
             mListAudioFileView
         }
@@ -62,7 +64,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         return null
     }
 
-     fun setSelectRingtone(fileName: String): List<SelectItemView> {
+    fun setSelectRingtone(fileName: String): List<SelectItemView> {
         var index = 0
         for (item in mListAudioFileView) {
             if (TextUtils.equals(item.audioFile.fileName, fileName)) {
@@ -76,7 +78,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         return mListAudioFileView
     }
 
-     fun getIndexSelectRingtone(fileName: String): Int {
+    fun getIndexSelectRingtone(fileName: String): Int {
         var index = 0
         for (item in mListAudioFileView) {
             if (TextUtils.equals(item.audioFile.fileName, fileName)) {

@@ -121,6 +121,41 @@ object RingtonManagerImpl : RingtonManager {
         return false
     }
 
+    override fun setRingtoneDefault(uri: String, contactNumber: String): Boolean {
+
+        val values = ContentValues()
+        val resolver: ContentResolver = mContext.getContentResolver()
+        if (uri != null) {
+
+            Log.d("giangtd", "uri ringtone: " + uri)
+            val lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, contactNumber)
+            val projection = arrayOf(ContactsContract.Contacts._ID, ContactsContract.Contacts.LOOKUP_KEY)
+            val cursor: Cursor? = mContext.getContentResolver()
+                .query(lookupUri, projection, null, null, null)
+
+            if (cursor != null) {
+                try {
+                    if (cursor.moveToFirst()) {
+                        do {
+                            // Get the contact lookup Uri
+                            val contactId = cursor.getLong(0)
+                            val lookupKey = cursor.getString(1)
+                            val contactUri = ContactsContract.Contacts.getLookupUri(contactId, lookupKey)
+                            val uriString = uri.toString()
+                            values.put(ContactsContract.Contacts.CUSTOM_RINGTONE, uriString)
+                            resolver.update(contactUri, values, null, null).toLong()
+                        } while (cursor.moveToNext())
+
+                    }
+                } finally {
+                    if (!cursor.isClosed) cursor.close()
+                }
+                return true
+            }
+        }
+        return false
+    }
+
     fun getUriFromFile(filePath: String): Uri? {
         val folder = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DATA)
