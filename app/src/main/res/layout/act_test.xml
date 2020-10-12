@@ -6,6 +6,12 @@
     android:id="@+id/ln_main"
     android:orientation="vertical">
 
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="btcheck"
+        android:id="@+id/bt_check"/>
+
 
 
 </LinearLayout>

@@ -17,7 +17,7 @@ class MixModel : BaseViewModel() {
     var isChooseItem = false
 
 
-    suspend fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
+     fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
             mListAudio.clear()
             it.listAudioFiles.forEach {

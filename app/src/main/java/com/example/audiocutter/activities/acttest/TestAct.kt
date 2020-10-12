@@ -5,13 +5,11 @@ import android.util.Log
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.core.ManagerFactory
-import com.example.audiocutter.core.audioManager.Folder
-import com.example.audiocutter.functions.audiocutterscreen.view.screen.AudioCutterScreen
 import kotlinx.android.synthetic.main.act_test.*
 
 class TestAct : BaseActivity() {
 
-        lateinit var merChoose: AudioCutterScreen
+//        lateinit var merChoose: AudioCutterScreen
 
 
     override fun createView(savedInstanceState: Bundle?) {
@@ -22,33 +20,23 @@ class TestAct : BaseActivity() {
 
 
     private fun initViews() {
-//        val path =
-//            "/storage/emulated/0/AudioCutter/mixer/daylabaimix - Copy.mp3"
-//
-//        bt_check.setOnClickListener {
-//            runOnUI {
-//              val rs =  ManagerFactory.getAudioFileManager().saveFile(
-//                    ManagerFactory.getAudioFileManager().buildAudioFile(path),
-//                    Folder.TYPE_MERGER
-//                )
-//                Log.d("TAG", "initViews: $rs")
-//            }
+        val path =
+            "/storage/emulated/0/AudioCutter/merger/daylabaimix - Copy.mp3"
 
+        bt_check.setOnClickListener {
+            val x = ManagerFactory.getAudioFileManager().buildAudioFile(path)
+            Log.d(
+                "TAG",
+                "checkFileBuild: data :${x.file.absolutePath} \n name : ${x.fileName}    \n" +
+                        " duration: ${x.time} \n size ${x.size}  " +
+                        " \n URI ${x.uri} \n bitmap :${x.bitmap} \n" +
+                        " title : ${x.title}   \n" + " album  ${x.alBum}  \n" +
+                        " artist: ${x.artist} \n" + " genre ${x.genre}  \n date ${x.dateAdded}   \n type  ${x.mimeType}"
+            )
+        }
+//        merChoose = AudioCutterScreen()
 
-
-//            val file = File("/storage/emulated/0/Download/WeDon.m4a")
-//            bt_get.setOnClickListener {
-//                runOnUI {
-//                    val rs = ManagerFactory.getAudioFileManager().saveFile(
-//                    ManagerFactory.getAudioFileManager().buildAudioFile(filePath = file.absolutePath),
-//                    Folder.TYPE_CUTTER
-//                )
-//                    Log.d("checkCodeGetduration", "initViews: $rs")
-//                }
-//        }
-        merChoose = AudioCutterScreen()
-
-        supportFragmentManager.beginTransaction().add(R.id.ln_main, merChoose).commit()
+//        supportFragmentManager.beginTransaction().add(R.id.ln_main, merChoose).commit()
 
 
     }

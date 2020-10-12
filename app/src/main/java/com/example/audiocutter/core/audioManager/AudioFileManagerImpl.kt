@@ -28,6 +28,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -92,6 +93,7 @@ object AudioFileManagerImpl : AudioFileManager {
 
                 cursor.moveToFirst()
                 while (!cursor.isAfterLast) {
+                    var mimeType: String = ""
                     var name: String
                     val data = cursor.getString(clData)
                     val file = File(data)
@@ -107,13 +109,9 @@ object AudioFileManagerImpl : AudioFileManager {
                     val title = cursor.getString(clTitle)
                     val album = cursor.getString(clAlbum)
                     val artist = cursor.getString(clArtist)
-//                    val title = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_TITLE)
-//                    val artist = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_ARTIST)
-
-                    val mimeType = preName.substring(preName.lastIndexOf("."), preName.length)
-//                    val mimeType = "mp3"
-
-                    //get time of currentDay by Longtime
+                    if (preName.contains(".")) {
+                        mimeType = preName.substring(preName.lastIndexOf("."), preName.length)
+                    }
                     val date = getDateByDateAdded(cursor.getLong(clDateAdded))
                     var genre: String? = "Unknown"
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -170,7 +168,7 @@ object AudioFileManagerImpl : AudioFileManager {
                 }
             }
 
-            _listAllAudioFile.postValue(AudioFileScans(listData, StateLoad.LOADING))
+            _listAllAudioFile.postValue(AudioFileScans(listData, StateLoad.LOADDONE))
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -183,12 +181,26 @@ object AudioFileManagerImpl : AudioFileManager {
 
 
     override fun getInfoAudioFile(itemFile: File?, type: Int): String? {
-        if (itemFile != null) {
-            val mediaMetadataRetriever = MediaMetadataRetriever()
-            mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
-            return mediaMetadataRetriever.extractMetadata(type)!!
+        try {
+            if (itemFile != null) {
+                val mediaMetadataRetriever = MediaMetadataRetriever()
+                mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
+                return mediaMetadataRetriever.extractMetadata(type)!!
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         return ""
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    override fun getdateCreatFile(file: File?): String? {
+        var lastDate: String = ""
+        if (file != null) {
+            val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+            lastDate = simpleDateFormat.format(Date(file.lastModified()))
+        }
+        return lastDate
     }
 
 
@@ -275,8 +287,13 @@ object AudioFileManagerImpl : AudioFileManager {
 
     override fun buildAudioFile(filePath: String): AudioFile {
         val fileAudio = File(filePath)
+        var mimeType = ""
+        val abSolutePath = fileAudio.absolutePath.toString()
         val uri = getUriByPath(fileAudio)
         val duration = getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_DURATION)
+        if (abSolutePath.contains(".")) {
+            mimeType = abSolutePath.substring(abSolutePath.lastIndexOf("."), abSolutePath.length)
+        }
         return AudioFile(
             fileAudio,
             fileAudio.name,
@@ -284,7 +301,12 @@ object AudioFileManagerImpl : AudioFileManager {
             getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_BITRATE)!!.toInt(),
             duration!!.toLong(),
             uri,
-            getBitmapByPath(filePath)
+            getBitmapByPath(filePath),
+            getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_TITLE),
+            getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_ALBUM),
+            getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_ARTIST),
+            getdateCreatFile(fileAudio),
+            getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_GENRE), mimeType
         )
     }
 
