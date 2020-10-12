@@ -8,7 +8,6 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.functions.audiocutterscreen.view.screen.AudioCutterScreen
 import kotlinx.android.synthetic.main.act_test.*
-import java.io.File
 
 class TestAct : BaseActivity() {
 
@@ -23,7 +22,20 @@ class TestAct : BaseActivity() {
 
 
     private fun initViews() {
+//        val path =
+//            "/storage/emulated/0/AudioCutter/mixer/daylabaimix - Copy.mp3"
 //
+//        bt_check.setOnClickListener {
+//            runOnUI {
+//              val rs =  ManagerFactory.getAudioFileManager().saveFile(
+//                    ManagerFactory.getAudioFileManager().buildAudioFile(path),
+//                    Folder.TYPE_MERGER
+//                )
+//                Log.d("TAG", "initViews: $rs")
+//            }
+
+
+
 //            val file = File("/storage/emulated/0/Download/WeDon.m4a")
 //            bt_get.setOnClickListener {
 //                runOnUI {

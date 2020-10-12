@@ -107,8 +107,11 @@ object AudioFileManagerImpl : AudioFileManager {
                     val title = cursor.getString(clTitle)
                     val album = cursor.getString(clAlbum)
                     val artist = cursor.getString(clArtist)
-//                    val mimeType = preName.substring(preName.lastIndexOf("."), preName.length)
-                    val mimeType = "mp3"
+//                    val title = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_TITLE)
+//                    val artist = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_ARTIST)
+
+                    val mimeType = preName.substring(preName.lastIndexOf("."), preName.length)
+//                    val mimeType = "mp3"
 
                     //get time of currentDay by Longtime
                     val date = getDateByDateAdded(cursor.getLong(clDateAdded))
@@ -119,9 +122,11 @@ object AudioFileManagerImpl : AudioFileManager {
                     }
 
 
-                    val bitRate = getBitRateByPath(file)
+                    val bitRate =
+                        getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_BITRATE)
 //                    val bitRate = 128
-                    val duration = getDurationByPath(file)
+                    val duration =
+                        getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_DURATION)
 //                    val duration = 1000
                     val uri = getUriFromFile(id, resolver, file)
                     Log.d(
@@ -131,15 +136,15 @@ object AudioFileManagerImpl : AudioFileManager {
                                 " \n URI $uri \n title :$title \n" +
                                 " album : $album   \n" + " artist  $artist  \n" +
                                 " date: $date \n" + " genre $genre  \n " +
-                                "MimeType $mimeType \n filePAth Ab ${file.absolutePath} \n parent${file.parent}  \n BitRate $bitRate "
+                                "MimeType $mimeType \n filePAth  ${file.absolutePath} \n parent${file.parent}  \n BitRate $bitRate "
                     )
                     if (file.exists()) {
                         if (bitmap != null) {
                             listData.add(
                                 AudioFile(
                                     file = file, fileName = name.trim(),
-                                    size = file.length(), bitRate = bitRate,
-                                    time = duration.toLong(), uri = uri,
+                                    size = file.length(), bitRate = bitRate!!.toInt(),
+                                    time = duration!!.toLong(), uri = uri,
                                     bitmap = bitmap, title = title,
                                     alBum = album, artist = artist,
                                     dateAdded = date, genre = genre,
@@ -151,7 +156,7 @@ object AudioFileManagerImpl : AudioFileManager {
                                 AudioFile(
                                     file = file, fileName = name,
                                     size = file.length(), bitRate = 128,
-                                    time = duration.toLong(), uri = uri,
+                                    time = duration!!.toLong(), uri = uri,
                                     bitmap = null, title = title, alBum = album,
                                     artist = artist, dateAdded = date, genre = genre,
                                     mimeType = mimeType
@@ -176,34 +181,12 @@ object AudioFileManagerImpl : AudioFileManager {
         return listData
     }
 
-//    override fun getBitRateByPath(file: File?): Int {
-//        val mex = MediaExtractor()
-//        try {
-//            mex.setDataSource(file!!.absolutePath)
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//        val mf = mex.getTrackFormat(0)
-//        return mf.getInteger(MediaFormat.KEY_BIT_RATE)
-//    }
 
-    override fun getBitRateByPath(itemFile: File?): Int {
+    override fun getInfoAudioFile(itemFile: File?, type: Int): String? {
         if (itemFile != null) {
-
             val mediaMetadataRetriever = MediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
-            return (mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!).toInt()
-        }
-        return 0
-    }
-
-
-    override fun getDurationByPath(itemFile: File?): String {
-        if (itemFile != null) {
-
-            val mediaMetadataRetriever = MediaMetadataRetriever()
-            mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
-            return mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!
+            return mediaMetadataRetriever.extractMetadata(type)!!
         }
         return ""
     }
@@ -293,16 +276,15 @@ object AudioFileManagerImpl : AudioFileManager {
     override fun buildAudioFile(filePath: String): AudioFile {
         val fileAudio = File(filePath)
         val uri = getUriByPath(fileAudio)
-        val duration = getDurationByPath(fileAudio)
-//        val duration = 1000L
+        val duration = getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_DURATION)
         return AudioFile(
             fileAudio,
             fileAudio.name,
             fileAudio.length(),
-            getBitRateByPath(fileAudio),
-//            128,
-            duration.toLong(),
-            uri
+            getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_BITRATE)!!.toInt(),
+            duration!!.toLong(),
+            uri,
+            getBitmapByPath(filePath)
         )
     }
 
@@ -345,7 +327,7 @@ object AudioFileManagerImpl : AudioFileManager {
                 TAG,
                 "infoCapacity: total $totalSize  available  \n $availableSize \n  freesize $freeSize   \n filesize $currentSize"
             )
-            if (!audioFile.file.isFile || !audioFile.file.isDirectory) {
+            if (!audioFile.file.isFile) {
                 StateFile.STATE_FILE_NOT_FOUND
 
             } else

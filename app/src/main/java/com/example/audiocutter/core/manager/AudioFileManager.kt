@@ -13,6 +13,6 @@ interface AudioFileManager {
     suspend fun saveFile(audioFile: AudioFile, typeFile: Folder): StateFile
     fun deleteFile(listAudioFile: List<AudioFile>, typeFile: Folder): Boolean
     fun getListAudioFileByType(typeFile: Folder): LiveData<AudioFileScans>
-    fun getDurationByPath(itemFile: File?): String
-    fun getBitRateByPath(itemFile: File?): Int
+    fun getInfoAudioFile(itemFile: File?, type: Int): String?
+
 }
