@@ -10,13 +10,13 @@ import com.example.audiocutter.databinding.ActivityMainBinding
 
 class MainActivity : BaseActivity() {
     lateinit var binding: ActivityMainBinding
+
+    override fun onPostCreate() {
+        super.onPostCreate()
+        viewStateManager.initState(ViewStateScreen.HOME_SCREEN)
+    }
     override fun createView(savedInstanceState: Bundle?) {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-        viewStateManager.initState(ViewStateScreen.HOME_SCREEN)
     }
 
 }

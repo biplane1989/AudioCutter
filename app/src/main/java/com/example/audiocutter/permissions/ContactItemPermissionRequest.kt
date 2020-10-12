@@ -15,8 +15,7 @@ interface ContactItemPermissionRequest : PermissionRequest, Observer<AppPermissi
         val appPermission = PermissionManager.getAppPermissionData()
         return appPermission.hasReadContactPermission() &&
                 appPermission.hasWriteContactPermission() &&
-                appPermission.hasWriteSettingPermission() &&
-                appPermission.hasReadContactPermission()
+                appPermission.hasStoragePermission()
     }
 
     override fun requestPermission() {

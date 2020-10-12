@@ -7,9 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
+import androidx.navigation.fragment.findNavController
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.channel.FragmentMeta
+import com.example.audiocutter.databinding.MyStudioScreenBinding
 import com.example.audiocutter.functions.mystudioscreen.dialog.DeleteDialog
 import com.example.audiocutter.functions.mystudioscreen.dialog.DeleteDialogListener
 import com.example.audiocutter.functions.mystudioscreen.fragment.MyStudioFragment
@@ -17,14 +20,19 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.my_studio_screen.*
 
 
-class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
-
+class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickListener {
+    private lateinit var binding: MyStudioScreenBinding
     val TAG = "giangtd"
     var isDeleteClicked = true
     var tabPosition = -1
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.my_studio_screen, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_screen, container, false)
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -35,7 +43,7 @@ class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
         tab_layout.setupWithViewPager(view_pager)
 
         tabPosition = tab_layout.selectedTabPosition
-        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
 //                Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
                 sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_STOP_MUSIC)
@@ -51,35 +59,47 @@ class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
 //                Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
             }
         })
+        binding.backButton.setOnClickListener(this)
+        binding.ivExtends.setOnClickListener(this)
+        binding.ivClose.setOnClickListener(this)
+        binding.ivDelete.setOnClickListener(this)
+    }
 
-        iv_extends.setOnClickListener(View.OnClickListener {
-            cl_default.visibility = View.GONE
-            cl_delete.visibility = View.VISIBLE
+    override fun onClick(view: View) {
+        when (view) {
+            binding.ivDelete -> {
+                sendFragmentAction(
+                    MyStudioFragment::class.java.name,
+                    Constance.ACTION_CHECK_DELETE,
+                    tabPosition
+                )
+            }
+            binding.ivClose -> {
+                cl_default.visibility = View.VISIBLE
+                cl_delete.visibility = View.GONE
 
-            cl_default.isEnabled
+                // enable viewpayger swip
+                view_pager.setPagingEnabled(true)
+                setEnabledTablayout(false)
 
-            // disable viewpayger swip
-            view_pager.setPagingEnabled(false)
-            setEnabledTablayout(true)
+                sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_HIDE)
+            }
+            binding.ivExtends -> {
+                cl_default.visibility = View.GONE
+                cl_delete.visibility = View.VISIBLE
 
-            sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_UNCHECK)
-        })
+                cl_default.isEnabled
 
-        iv_close.setOnClickListener(View.OnClickListener {
-            cl_default.visibility = View.VISIBLE
-            cl_delete.visibility = View.GONE
+                // disable viewpayger swip
+                view_pager.setPagingEnabled(false)
+                setEnabledTablayout(true)
 
-            // enable viewpayger swip
-            view_pager.setPagingEnabled(true)
-            setEnabledTablayout(false)
-
-            sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_HIDE)
-        })
-
-
-        iv_delete.setOnClickListener(View.OnClickListener {
-            sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_CHECK_DELETE, tabPosition)
-        })
+                sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_UNCHECK)
+            }
+            binding.backButton -> {
+               requireActivity().onBackPressed()
+            }
+        }
     }
 
     // enable thanh tiêu đề của tablayout
@@ -101,7 +121,11 @@ class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
                         isDeleteClicked = false
                     }
                 } else {
-                    Toast.makeText(context, getString(R.string.my_studio_notification_chose_item_delete), Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        context,
+                        getString(R.string.my_studio_notification_chose_item_delete),
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 }
             }
@@ -113,7 +137,11 @@ class OutputAudioManagerScreen : BaseFragment(), DeleteDialogListener {
     override fun onDeleteClick() {
         Log.d(TAG, "onDeleteClick: ")
         isDeleteClicked = true
-        sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_DELETE_ALL, tabPosition)
+        sendFragmentAction(
+            MyStudioFragment::class.java.name,
+            Constance.ACTION_DELETE_ALL,
+            tabPosition
+        )
     }
 
     override fun onCancel() {

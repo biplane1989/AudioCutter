@@ -1,11 +1,12 @@
 package com.example.audiocutter.functions.contactscreen.contacts
 
-import android.app.Application
+import android.content.Context
 import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseAndroidViewModel
+import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.objects.ContactItem
 import com.example.audiocutter.util.Utils
@@ -13,11 +14,9 @@ import java.util.*
 import kotlin.Comparator
 import kotlin.collections.ArrayList
 
-class ListContactViewModel(application: Application) : BaseAndroidViewModel(application) {
+class ListContactViewModel : BaseViewModel() {
 
     val TAG = "giangtd"
-    private val mContext = getApplication<Application>().applicationContext
-
     private var mListContactItemView = ArrayList<ContactItemView>()
 
     fun getData(): LiveData<List<ContactItemView>> {
@@ -72,17 +71,26 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
 
         if (contactList.size > 0) {
             for (item in contactList) {     // add them 1 truong headerContact -> conver contactItem.name co dau thanh khong dau
-                newListContact.add(ContactItemView(Utils.covertToString(item.contactItem.name)
-                    .toString(), item.contactItem, false))
+                newListContact.add(
+                    ContactItemView(
+                        Utils.covertToString(item.contactItem.name)
+                            .toString(), item.contactItem, false
+                    )
+                )
             }
 
 
-            Collections.sort(newListContact, Comparator<ContactItemView> { user1, user2 ->  // sap xep list theo headerContact
-                java.lang.String.valueOf(user1.contactHeader.get(0)).toUpperCase()
-                    .compareTo(java.lang.String.valueOf(user2.contactHeader.get(0)).toUpperCase())
-            })
+            Collections.sort(
+                newListContact,
+                Comparator<ContactItemView> { user1, user2 ->  // sap xep list theo headerContact
+                    java.lang.String.valueOf(user1.contactHeader.get(0)).toUpperCase()
+                        .compareTo(
+                            java.lang.String.valueOf(user2.contactHeader.get(0)).toUpperCase()
+                        )
+                })
 
-            val firstContact = newListContact.get(0).contactHeader  // neu co cac ky tu dac biet thi them 1 header = "#"
+            val firstContact =
+                newListContact.get(0).contactHeader  // neu co cac ky tu dac biet thi them 1 header = "#"
             if (!firstContact[0].isLetter()) {
                 listContact.add(ContactItemView("#", ContactItem("", "", null, null), true))
             }
@@ -112,16 +120,19 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
     }
 
     // check ringtone contact co phai la ringtone default khong?
-    fun checkRingtoneDefault(uri: String): Boolean {
-        if (TextUtils.equals(uri, Utils.getUriRingtoneDefault(mContext).toString())) return true
+    fun checkRingtoneDefault(context: Context, uri: String): Boolean {
+        if (TextUtils.equals(uri, Utils.getUriRingtoneDefault(context).toString())) return true
         return false
     }
 
     // set lai ringtone mac dinh cho list contact
-    fun setListDefaultRingtone(listContact: List<ContactItem>): List<ContactItem> {
+    fun setListDefaultRingtone(
+        context: Context,
+        listContact: List<ContactItem>
+    ): List<ContactItem> {
         val newListContact = ArrayList<ContactItem>()
         for (item in listContact) {
-            if (checkRingtoneDefault(item.ringtone.toString())) {
+            if (checkRingtoneDefault(context, item.ringtone.toString())) {
                 val newItem = item.copy()
                 newItem.ringtone = null
                 newListContact.add(newItem)

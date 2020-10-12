@@ -19,12 +19,11 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.functions.mystudioscreen.AudioFileView
 import com.example.audiocutter.functions.mystudioscreen.Constance
-import com.example.audiocutter.functions.mystudioscreen.OutputAudioManagerScreen
+import com.example.audiocutter.functions.mystudioscreen.MyAudioManagerScreen
 import com.example.audiocutter.functions.mystudioscreen.ShareFragment
 import com.example.audiocutter.functions.mystudioscreen.dialog.*
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_fragment.*
-import kotlinx.coroutines.delay
 
 
 class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener {
@@ -292,9 +291,9 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
 
             Constance.ACTION_CHECK_DELETE -> {
                 if (!myStudioViewModel.isChecked()) {
-                    sendFragmentAction(OutputAudioManagerScreen::class.java.name, Constance.ACTION_CHECK_DELETE, false)
+                    sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_CHECK_DELETE, false)
                 } else {
-                    sendFragmentAction(OutputAudioManagerScreen::class.java.name, Constance.ACTION_CHECK_DELETE, true)
+                    sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_CHECK_DELETE, true)
                 }
             }
         }

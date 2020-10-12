@@ -1,12 +1,15 @@
 package com.example.audiocutter.base
 
 import android.app.Application
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -140,25 +143,28 @@ abstract class BaseFragment : Fragment() {
         }
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        //requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+    }
+
     final override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FragmentChannel.getFragmentMeta().observe(this, fragmentChannelObserver)
         onPostCreate(savedInstanceState)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-    }
-
     protected fun showToast(yourString: String) {
         Toast.makeText(context, yourString, Toast.LENGTH_SHORT).show()
     }
+
     protected fun getBaseActivity(): BaseActivity? {
         if (activity != null) {
             return activity as BaseActivity
         }
         return null
     }
+
     protected open fun onPostCreate(savedInstanceState: Bundle?) {
 
     }
@@ -169,7 +175,7 @@ abstract class BaseFragment : Fragment() {
         }
     }
 
-    protected fun sendFragmentAction(fragmentName:String, action: String, data: Any? = null) {
+    protected fun sendFragmentAction(fragmentName: String, action: String, data: Any? = null) {
         FragmentChannel.sendAction(FragmentMeta(fragmentName, action, data))
     }
 
@@ -187,6 +193,14 @@ abstract class BaseFragment : Fragment() {
     protected open fun onReceivedAction(fragmentMeta: FragmentMeta) {
 
     }
+
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            isEnabled = false
+            Log.d("taih", "BaseFragment handleOnBackPressed")
+        }
+    }
+
 }
 
 

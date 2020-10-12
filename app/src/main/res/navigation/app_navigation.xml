@@ -7,6 +7,42 @@
     <fragment
         android:id="@+id/main_screen"
         android:name="com.example.audiocutter.functions.MainScreen"
-        tools:layout="@layout/main_screen"/>
+        tools:layout="@layout/main_screen">
+        <action
+            android:id="@+id/go_to_list_contact_screen"
+            app:destination="@+id/list_contact_screen" />
+        <action
+            android:id="@+id/go_to_my_audio_screen"
+            app:destination="@id/my_audio_screen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/list_contact_screen"
+        android:name="com.example.audiocutter.functions.contactscreen.contacts.ListContactScreen"
+        tools:layout="@layout/list_contact_screen">
+        <action
+            android:id="@+id/go_to_list_select_audio_screen"
+            app:destination="@+id/list_select_audio_screen" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/list_select_audio_screen"
+        android:name="com.example.audiocutter.functions.contactscreen.select.ListSelectAudioScreen"
+        tools:layout="@layout/list_contact_select_screen">
+        <argument
+            android:name="phoneNumber"
+            app:argType="string" />
+        <argument
+            android:name="uri"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/my_audio_screen"
+        android:name="com.example.audiocutter.functions.mystudioscreen.MyAudioManagerScreen"
+        tools:layout="@layout/my_studio_screen" />
 
 </navigation>
