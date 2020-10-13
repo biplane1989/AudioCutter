@@ -55,10 +55,12 @@ class DialogAdvanced : Dialog, View.OnClickListener {
         }
     }
 
+
     private fun String.upperFirstString(): String {
         val string = this.toLowerCase()
+        val endString = this.substring(1, this.length).toLowerCase()
         var string1 = string.substring(0, 1).toUpperCase()
-        return string1.plus(string.substring(1, string.length))
+        return string1.plus(endString)
     }
 
     private fun initView(context: Context) {

@@ -10,10 +10,11 @@ import com.example.audiocutter.core.manager.fake.FakeAudioCutter
 import com.example.audiocutter.core.manager.fake.FakeAudioFileManager
 import com.example.audiocutter.core.manager.fake.FakeContactManager
 import com.example.core.core.AudioCutter
+import com.example.core.core.AudioCutterImpl
 
 object ManagerFactory {
     private val mAudioFileManager: AudioFileManager = FakeAudioFileManager()
-    private val mAudioCutter: AudioCutter = FakeAudioCutter()
+    private val mAudioCutter: AudioCutter = AudioCutterImpl()
     private val mContactManager: ContactManager = FakeContactManager()
 
     fun init(appContext: Context) {

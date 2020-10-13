@@ -23,13 +23,19 @@ class AudioCutterImpl : AudioCutter {
     private val CODEC_MP3 = "libmp3lame"
     private val CODEC_AAC = "aac"
 
-private val mainScope = MainScope()
+    private val mainScope = MainScope()
     private val CMD_CUT_AUDIO_TIME =
-        "-y -ss %d -i \'%s\' -c copy -t %d -b:a %dk -af \"volume='(between(t,0,%f)*(t/%d)+between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d)))*%f'\":eval=frame -c:a %s %s"
+        "-y -ss %f -i \'%s\' -c copy -t %f -b:a %dk -af \"volume='(between(t,0,%f)*(t/%d)+between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d)))*%f'\":eval=frame -c:a %s \"%s\""
+    private val CMD_CUT_AUDIO_FADE_IN_OFF =
+        "-y -ss %f -i \'%s\' -c copy -t %f -b:a %dk -af \"volume='(between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d)))*%f'\":eval=frame -c:a %s \"%s\""
+    private val CMD_CUT_AUDIO_TIME_FADE_OUT_OFF =
+        "-y -ss %f -i \'%s\' -c copy -t %f -b:a %dk -af \"volume='(between(t,0,%f)*(t/%d)+between(t,%d,%f))*%f'\":eval=frame -c:a %s \"%s\""
+    private val CMD_CUT_AUDIO_TIME_FADE_OFF =
+        "-y -ss %f -i \'%s\' -c copy -t %f -b:a %dk -af \"volume='(1*%f)'\":eval=frame -c:a %s \"%s\""
     private val CMD_CONCAT_AUDIO =
-        "-y %s -filter_complex \"concat=n=%d:v=0:a=1[a]\" -map \"[a]\" -c:a %s -b:a %dk %s"
+        "-y %s -filter_complex \"concat=n=%d:v=0:a=1[a]\" -map \"[a]\" -c:a %s -b:a %dk \"%s\""
     private val CMD_MIX_AUDIO =
-        "-y -i \'%s\' -i \'%s\' -filter_complex \"[0:0]volume=%f[a];[1:0]volume=%f[b];[a][b]amix=inputs=2:duration=%s:dropout_transition=0[a]\" -map \"[a]\" -c:a %s -q:a 0 %s"
+        "-y -i \'%s\' -i \'%s\' -filter_complex \"[0:0]volume=%f[a];[1:0]volume=%f[b];[a][b]amix=inputs=2:duration=%s:dropout_transition=0[a]\" -map \"[a]\" -c:a %s -q:a 0 \"%s\""
 
     init {
         Config.setLogLevel(Level.AV_LOG_INFO)
@@ -57,26 +63,7 @@ private val mainScope = MainScope()
                 audioCutConfig.pathFolder.plus("/${audioCutConfig.fileName.plus(mimeType)}")
 
 
-            val format = String.format(
-                Locale.ENGLISH,
-                CMD_CUT_AUDIO_TIME,
-                audioCutConfig.startPosition,
-                audioFile.file.absolutePath,
-                audioCutConfig.endPosition,
-                audioCutConfig.bitRate.value,
-                if (audioCutConfig.inEffect.time == 0) 0f else (audioCutConfig.inEffect.time - 0.0001).toFloat(),
-                audioCutConfig.inEffect.time,
-                audioCutConfig.inEffect.time,
-                ((audioCutConfig.endPosition - audioCutConfig.outEffect.time) - 0.0001).toFloat(),
-                audioCutConfig.endPosition - audioCutConfig.outEffect.time,
-                audioCutConfig.endPosition,
-                audioCutConfig.endPosition,
-                audioCutConfig.endPosition,
-                (audioCutConfig.endPosition - audioCutConfig.outEffect.time),
-                (audioCutConfig.volumePercent / 100).toFloat(),
-                codec,
-                fileCutPath
-            )
+            val format = getStringFormat(audioCutConfig, audioFile, codec, fileCutPath)
             Log.e(TAG, format)
             val returnCode = FFmpeg.execute(
                 format
@@ -109,6 +96,83 @@ private val mainScope = MainScope()
 
 
         return audioFileCore
+    }
+
+    private fun getStringFormat(
+        audioCutConfig: AudioCutConfig,
+        audioFile: AudioCore,
+        codec: String,
+        fileCutPath: String
+    ): String {
+        if (audioCutConfig.inEffect != Effect.OFF && audioCutConfig.outEffect != Effect.OFF) {
+            return String.format(
+                Locale.ENGLISH,
+                CMD_CUT_AUDIO_TIME,
+                audioCutConfig.startPosition,
+                audioFile.file.absolutePath,
+                audioCutConfig.endPosition,
+                audioCutConfig.bitRate.value,
+                if (audioCutConfig.inEffect.time == 0) 0f else (audioCutConfig.inEffect.time - 0.0001).toFloat(),
+                audioCutConfig.inEffect.time,
+                audioCutConfig.inEffect.time,
+                ((audioCutConfig.endPosition.toInt() - audioCutConfig.outEffect.time) - 0.0001).toFloat(),
+                audioCutConfig.endPosition.toInt() - audioCutConfig.outEffect.time,
+                audioCutConfig.endPosition.toInt(),
+                audioCutConfig.endPosition.toInt(),
+                audioCutConfig.endPosition.toInt(),
+                (audioCutConfig.endPosition.toInt() - audioCutConfig.outEffect.time),
+                (audioCutConfig.volumePercent / 100).toFloat(),
+                codec,
+                fileCutPath
+            )
+        } else if (audioCutConfig.inEffect == Effect.OFF && audioCutConfig.outEffect == Effect.OFF) {
+            return String.format(
+                Locale.ENGLISH,
+                CMD_CUT_AUDIO_TIME_FADE_OFF,
+                audioCutConfig.startPosition,
+                audioFile.file.absolutePath,
+                audioCutConfig.endPosition,
+                audioCutConfig.bitRate.value,
+                (audioCutConfig.volumePercent / 100).toFloat(),
+                codec,
+                fileCutPath
+            )
+        } else if (audioCutConfig.inEffect == Effect.OFF) {
+            return String.format(
+                Locale.ENGLISH,
+                CMD_CUT_AUDIO_FADE_IN_OFF,
+                audioCutConfig.startPosition,
+                audioFile.file.absolutePath,
+                audioCutConfig.endPosition,
+                audioCutConfig.bitRate.value,
+                0,
+                ((audioCutConfig.endPosition.toInt() - audioCutConfig.outEffect.time) - 0.0001).toFloat(),
+                audioCutConfig.endPosition.toInt() - audioCutConfig.outEffect.time,
+                audioCutConfig.endPosition.toInt(),
+                audioCutConfig.endPosition.toInt(),
+                audioCutConfig.endPosition.toInt(),
+                (audioCutConfig.endPosition.toInt() - audioCutConfig.outEffect.time),
+                (audioCutConfig.volumePercent / 100).toFloat(),
+                codec,
+                fileCutPath
+            )
+        } else {
+            return String.format(
+                Locale.ENGLISH,
+                CMD_CUT_AUDIO_TIME_FADE_OUT_OFF,
+                audioCutConfig.startPosition,
+                audioFile.file.absolutePath,
+                audioCutConfig.endPosition,
+                audioCutConfig.bitRate.value,
+                if (audioCutConfig.inEffect.time == 0) 0f else (audioCutConfig.inEffect.time - 0.0001).toFloat(),
+                audioCutConfig.inEffect.time,
+                audioCutConfig.inEffect.time,
+                audioCutConfig.endPosition,
+                (audioCutConfig.volumePercent / 100).toFloat(),
+                codec,
+                fileCutPath
+            )
+        }
     }
 
     override suspend fun mix(

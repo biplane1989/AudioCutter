@@ -1,17 +1,12 @@
 package com.example.audiocutter.util
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
 import android.net.Uri
-import android.os.Build
 import android.util.TypedValue
-import android.view.View
 import java.io.File
-import kotlin.math.max
 
 object Utils {
     val KEY_SEND_PATH = "key_send_path"

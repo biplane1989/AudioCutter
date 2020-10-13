@@ -22,12 +22,15 @@ import com.example.audiocutter.ui.fragment_cut.dialog.DialogAdvanced
 import com.example.audiocutter.ui.fragment_cut.dialog.DialogConvert
 import com.example.audiocutter.ui.fragment_cut.dialog.OnDialogAdvanceListener
 import com.example.audiocutter.ui.fragment_cut.view.WaveformEditView
+import com.example.audiocutter.util.PreferencesHelper
 import com.example.audiocutter.util.Utils
+import com.example.core.core.AudioCore
+import com.example.core.core.AudioCutConfig
 import com.example.core.core.Effect
 
 class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
     View.OnClickListener, View.OnLongClickListener,
-    OnDialogAdvanceListener {
+    OnDialogAdvanceListener, DialogConvert.OnDialogConvertListener {
     private lateinit var pathAudio: String
     private lateinit var audioFile: AudioFile
     private var playerState = PlayerState.IDLE
@@ -65,6 +68,17 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
         super.onViewCreated(view, savedInstanceState)
         setClick()
         initView()
+        initSharePre()
+    }
+
+    private fun initSharePre() {
+        var fadeInPos = PreferencesHelper.getInt(PreferencesHelper.FADE_IN_TIME, 0)
+        var fadeOutPos = PreferencesHelper.getInt(PreferencesHelper.FADE_OUT_TIME, 0)
+
+        fadeIn = Effect.values()[fadeInPos]
+        fadeOut = Effect.values()[fadeOutPos]
+
+        ratioVolume()
     }
 
     private fun initView() {
@@ -224,7 +238,7 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
                 ManagerFactory.getAudioPlayer().pause()
             }
             fragmentCutBinding.tickIv -> {
-                DialogConvert.showDialogConvert(childFragmentManager, audioFile)
+                DialogConvert.showDialogConvert(childFragmentManager, this, audioFile)
             }
             fragmentCutBinding.increaseStartTimeIv -> {
                 mEditView.setStartTimeMs(mEditView.getTimeStart() + Utils.TIME_CHANGE)
@@ -322,8 +336,33 @@ class AudioCutFragment : BaseFragment(), WaveformEditView.WaveformEditListener,
         this.fadeOut = fadeOut
         ManagerFactory.getAudioPlayer().seek(50)
         ManagerFactory.getAudioPlayer().resume()
+        ratioVolume()
+    }
+
+    private fun ratioVolume() {
         ratioVolumeFadeIn = if (fadeIn != Effect.OFF) (1F / this.fadeIn.time) else 0F
         ratioVolumeFadeout = if (fadeOut != Effect.OFF) (1F / this.fadeOut.time) else 0F
+    }
+
+    override fun onAcceptConvert(audioFile: AudioFile, audioCutConfig: AudioCutConfig) {
+        var audioConfig = audioCutConfig
+        audioConfig.inEffect = fadeIn
+        audioConfig.outEffect = fadeOut
+        audioConfig.startPosition = startPos.toFloat() / 1000
+        audioConfig.endPosition = (endPos.toFloat() / 1000) - audioConfig.startPosition
+        Log.e(TAG, "onAcceptConvert: ")
+        runOnUI {
+            ManagerFactory.getAudioCutter().cut(
+                AudioCore(
+                    audioFile.file,
+                    audioFile.fileName,
+                    audioFile.size,
+                    audioFile.bitRate,
+                    audioFile.time,
+                    audioFile.mimeType
+                ), audioCutConfig
+            )
+        }
     }
 
 }

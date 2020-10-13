@@ -1,8 +1,5 @@
 package com.example.audiocutter.activities.acttest
 
-import android.content.Context
-import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Environment.DIRECTORY_DOWNLOADS
@@ -30,12 +27,11 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
     private var listAudio = ArrayList<AudioCore>()
 
 
-    private val PATH_DEFAUL_FOLDER = "${Environment.getExternalStorageDirectory()}/AudioCutter/"
-    private val PATH_CUT_FOLDER = "${PATH_DEFAUL_FOLDER}cutter"
-    private val PATH_MERGE_FOLDER = "${PATH_DEFAUL_FOLDER}merger"
-    private val PATH_MIXER_FOLDER = "${PATH_DEFAUL_FOLDER}mixer"
-
     companion object {
+        val PATH_DEFAUL_FOLDER = "${Environment.getExternalStorageDirectory()}/AudioCutter/"
+        val PATH_CUT_FOLDER = "${PATH_DEFAUL_FOLDER}cutter"
+        val PATH_MERGE_FOLDER = "${PATH_DEFAUL_FOLDER}merger"
+        val PATH_MIXER_FOLDER = "${PATH_DEFAUL_FOLDER}mixer"
         private const val TAG = "CoreTestActivity"
     }
 
@@ -46,6 +42,7 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
         var file1 = File(path.plus("/Tướng Quân.flac"))
         var file2 = File(path.plus("/sample1.aac"))
         var file3 = File(path.plus("/file_example_WAV_1MG.wav"))
+        var file4 = File(path.plus("/WeDon.m4a"))
         test_cut_bt.setOnClickListener(this)
         test_concat_bt.setOnClickListener(this)
         test_cancel.setOnClickListener(this)
@@ -94,10 +91,18 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
             128,
             getTimeAudio(file3, this), ".wav"
         )
+        var item4 = AudioCore(
+            file4,
+            "WeDon",
+            file4.length(),
+            128,
+            getTimeAudio(file4, this), ".m4a"
+        )
         listAudio.add(item)
         listAudio.add(item1)
         listAudio.add(item2)
         listAudio.add(item3)
+        listAudio.add(item4)
 
     }
 
@@ -106,16 +111,16 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
             test_cut_bt -> {
                 runOnUI {
                     audioFile = audioCutterImpl.cut(
-                        listAudio[0],
+                        listAudio[4],
                         AudioCutConfig(
-                            20,
-                            60,
+                            20.2f,
+                            20.5f,
                             300,
-                            "testCut1",
-                            Effect.AFTER_6_S,
-                            Effect.AFTER_6_S,
-                            BitRate._256kb,
-                            AudioFormat.ACC, PATH_CUT_FOLDER
+                            "testCut2",
+                            Effect.AFTER_3_S,
+                            Effect.AFTER_1_S,
+                            BitRate._128kb,
+                            AudioFormat.MP3, PATH_CUT_FOLDER
                         )
                     )
                     Log.e(TAG, "cut: $audioFile ")

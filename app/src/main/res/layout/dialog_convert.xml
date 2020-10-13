@@ -109,7 +109,6 @@
                 android:layout_marginLeft="15dp"
                 android:layout_toLeftOf="@id/percent_tv"
                 android:theme="@style/themeSeekbar"
-                android:value="100"
                 android:valueFrom="0"
                 android:valueTo="300" />
 
@@ -136,7 +135,7 @@
             android:weightSum="2">
 
             <TextView
-                android:id="@+id/cancel_tv"
+                android:id="@+id/dialog_convert_cancel_tv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -148,7 +147,7 @@
                 android:textSize="14dp" />
 
             <TextView
-                android:id="@+id/ok_tv"
+                android:id="@+id/dialog_convert_ok_tv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
