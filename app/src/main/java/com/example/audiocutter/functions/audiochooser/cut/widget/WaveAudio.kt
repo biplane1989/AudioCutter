@@ -21,7 +21,6 @@ class WaveAudio @JvmOverloads constructor(
     private var mHeightView = 0
     private var spaceDraw = 0
     private var animation1 = ValueAnimator()
-    private var random = Random
     private var animation2 = ValueAnimator()
     private var animation3 = ValueAnimator()
     private var mCurrentPlayTime1 = 0L

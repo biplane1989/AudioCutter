@@ -350,6 +350,20 @@ object AudioFileManagerImpl : AudioFileManager {
         mContext.contentResolver.unregisterContentObserver(audioFileObserver)
     }
 
+    override fun getParentFile(typeFile: Folder): String {
+        var pathParent = ""
+        try {
+            pathParent = when (typeFile) {
+                Folder.TYPE_CUTTER -> "$SUB_PATH/cutter"
+                Folder.TYPE_MERGER -> "$SUB_PATH/merger"
+                Folder.TYPE_MIXER -> "$SUB_PATH/mixer"
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return pathParent
+    }
+
 
     override suspend fun saveFile(audioFile: AudioFile, typeFile: Folder): StateFile =
         withContext(Dispatchers.Main) {

@@ -7,36 +7,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.ImageView
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
+import com.example.audiocutter.databinding.MergePreviewScreenBinding
 import com.example.audiocutter.functions.audiochooser.cut.objs.AudioCutterView
-import com.example.audiocutter.functions.audiochooser.merge.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.merge.adapters.MergeChooseAdapter
 import com.example.audiocutter.functions.audiochooser.merge.dialogs.MergeDialog
+import com.example.audiocutter.functions.audiochooser.merge.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.merge.widget.MyItemTouchHelper
 import com.example.audiocutter.functions.audiochooser.merge.widget.WrapContentLinearLayoutManager
 
 class MergePreviewScreen : BaseFragment(), MergeChooseAdapter.AudioMergeChooseListener,
     View.OnClickListener, MergeDialog.MergeDialogListener {
     private val TAG = "manhqn"
-    private lateinit var mView: View
-    private lateinit var rvAudioMer: RecyclerView
+    private lateinit var binding: MergePreviewScreenBinding
     private lateinit var audioMerAdapter: MergeChooseAdapter
     private lateinit var audioMerModel: MergePreviewModel
-    private lateinit var ivBack: ImageView
     var currentPos = -1
     private lateinit var mCallback: OnActionCallback
-    private lateinit var ivAddFile: ImageView
-    private lateinit var btMerge: Button
+
     private lateinit var mergeDialog: MergeDialog
 
 
@@ -64,9 +60,9 @@ class MergePreviewScreen : BaseFragment(), MergeChooseAdapter.AudioMergeChooseLi
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mView = inflater.inflate(R.layout.merge_preview_screen, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.merge_preview_screen, container, false)
         initViews()
-        return mView
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -81,14 +77,12 @@ class MergePreviewScreen : BaseFragment(), MergeChooseAdapter.AudioMergeChooseLi
                 requireContext()
             )
         mergeDialog.setOnCallBack(this)
-        ivAddFile = mView.findViewById(R.id.iv_addfile_merge)
-        ivBack = mView.findViewById(R.id.iv_mer_screen_back)
-        btMerge = mView.findViewById(R.id.bt_merge_audio)
-        btMerge.setOnClickListener(this)
-        ivBack.setOnClickListener(this)
+
+        binding.btMergeAudio.setOnClickListener(this)
+        binding.ivMerScreenBack.setOnClickListener(this)
         audioMerAdapter.setOnCallBack(this)
-        ivAddFile.setOnClickListener(this)
-        rvAudioMer = mView.findViewById(R.id.rv_merge_choose)
+        binding.ivAddfileMerge.setOnClickListener(this)
+
 
 
     }
@@ -99,10 +93,10 @@ class MergePreviewScreen : BaseFragment(), MergeChooseAdapter.AudioMergeChooseLi
         val callBack = MyItemTouchHelper(audioMerAdapter)
         val itemTouchHelper = ItemTouchHelper(callBack)
         audioMerAdapter.setTouchHelper(itemTouchHelper)
-        rvAudioMer.adapter = audioMerAdapter
-        itemTouchHelper.attachToRecyclerView(rvAudioMer)
-        rvAudioMer.setHasFixedSize(true)
-        rvAudioMer.layoutManager =
+        binding.rvMergeChoose.adapter = audioMerAdapter
+        itemTouchHelper.attachToRecyclerView(binding.rvMergeChoose)
+        binding.rvMergeChoose.setHasFixedSize(true)
+        binding.rvMergeChoose.layoutManager =
             WrapContentLinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
     }

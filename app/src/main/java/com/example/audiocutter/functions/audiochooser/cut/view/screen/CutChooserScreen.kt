@@ -9,19 +9,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.PlayerInfo
+import com.example.audiocutter.databinding.CutChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.cut.dialog.SetAsDialog
 import com.example.audiocutter.functions.audiochooser.cut.dialog.SetAsDoneDialog
 import com.example.audiocutter.functions.audiochooser.cut.objs.AudioCutterView
@@ -32,22 +30,14 @@ import com.example.audiocutter.functions.audiochooser.cut.view.adapter.Audiocutt
 class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
     SetAsDialog.setAsListener, View.OnClickListener {
     val TAG = CutChooserScreen::class.java.name
-    private lateinit var mView: View
-    private lateinit var rvAudioCutter: RecyclerView
+    private lateinit var binding: CutChooserScreenBinding
+
     private lateinit var audioCutterAdapter: AudiocutterAdapter
     private lateinit var audioCutterModel: AudioCutterModel
     lateinit var dialog: SetAsDialog
     lateinit var dialogDone: SetAsDoneDialog
     lateinit var audioCutterItem: AudioCutterView
-    lateinit var ivFile: ImageView
-    lateinit var ivSearch: ImageView
-    lateinit var ivListEmpty: ImageView
-    lateinit var ivBack: ImageView
-    lateinit var ivBackEdt: ImageView
-    lateinit var tvAudioScreen: TextView
-    lateinit var tvEmptyList: TextView
-    lateinit var ivClose: ImageView
-    lateinit var edtSearch: EditText
+
     var currentPos = -1
 
 
@@ -76,10 +66,10 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mView = inflater.inflate(R.layout.cut_chooser_screen, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.cut_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
-        return mView
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -92,13 +82,13 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
     }
 
     private fun checkEdtSearchAudio() {
-        edtSearch.addTextChangedListener(object : TextWatcher {
+        binding.edtCutterSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                searchAudioByName(edtSearch.text.toString())
+                searchAudioByName(binding.edtCutterSearch.text.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -109,9 +99,9 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
 
     private fun searchAudioByName(yourTextSearch: String) {
 
-        rvAudioCutter.visibility = View.VISIBLE
-        tvEmptyList.visibility = View.GONE
-        ivListEmpty.visibility = View.GONE
+        binding.rvAudioCutter.visibility = View.VISIBLE
+        binding.tvEmptyListCutter.visibility = View.GONE
+        binding.ivEmptyListCutter.visibility = View.GONE
 
         if (yourTextSearch.isEmpty()) {
             audioCutterAdapter.submitList(listTmp)
@@ -120,47 +110,36 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
             audioCutterAdapter.submitList(audioCutterModel.getListsearch())
             Log.d(TAG, "seachAudioByName: ${audioCutterModel.getListsearch().size}")
         } else {
-            rvAudioCutter.visibility = View.GONE
-            tvEmptyList.visibility = View.VISIBLE
-            ivListEmpty.visibility = View.VISIBLE
+            binding.rvAudioCutter.visibility = View.GONE
+            binding.tvEmptyListCutter.visibility = View.VISIBLE
+            binding.ivEmptyListCutter.visibility = View.VISIBLE
         }
     }
 
 
     private fun initViews() {
 
-        ivFile = mView.findViewById(R.id.iv_audio_cutter_screen_file)
-        ivBack = mView.findViewById(R.id.iv_cutter_screen_back)
-        ivListEmpty = mView.findViewById(R.id.iv_empty_list_cutter)
-        ivBackEdt = mView.findViewById(R.id.iv_cutter_screen_back_edt)
-        ivClose = mView.findViewById(R.id.iv_cutter_screen_close)
-        ivSearch = mView.findViewById(R.id.iv_cutter_screen_search)
-        tvAudioScreen = mView.findViewById(R.id.tv_cutter_screen)
-        tvEmptyList = mView.findViewById(R.id.tv_empty_list_cutter)
-        edtSearch = mView.findViewById(R.id.edt_cutter_search)
-
-        ivFile.setOnClickListener(this)
-        ivSearch.setOnClickListener(this)
-        ivBackEdt.setOnClickListener(this)
-        ivClose.setOnClickListener(this)
+        binding.ivAudioCutterScreenFile.setOnClickListener(this)
+        binding.ivCutterScreenSearch.setOnClickListener(this)
+        binding.ivCutterScreenBackEdt.setOnClickListener(this)
+        binding.ivCutterScreenClose.setOnClickListener(this)
         dialog = SetAsDialog(requireContext())
         dialogDone = SetAsDoneDialog(requireContext())
 
         audioCutterAdapter.setAudioCutterListtener(this)
-        rvAudioCutter = mView.findViewById(R.id.rv_audio_cutter)
 
     }
 
     private fun hideOrShowEditText(status: Int) {
-        ivBackEdt.visibility = status
-        ivClose.visibility = status
-        edtSearch.visibility = status
+        binding.ivCutterScreenBackEdt.visibility = status
+        binding.ivCutterScreenClose.visibility = status
+        binding.edtCutterSearch.visibility = status
     }
 
     private fun hideOrShowView(status: Int) {
-        ivSearch.visibility = status
-        tvAudioScreen.visibility = status
-        ivFile.visibility = status
+        binding.ivCutterScreenSearch.visibility = status
+        binding.tvCutterScreen.visibility = status
+        binding.ivAudioCutterScreenFile.visibility = status
     }
 
 
@@ -182,9 +161,9 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
 
 
     private fun initLists() {
-        rvAudioCutter.adapter = audioCutterAdapter
-        rvAudioCutter.setHasFixedSize(true)
-        rvAudioCutter.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvAudioCutter.adapter = audioCutterAdapter
+        binding.rvAudioCutter.setHasFixedSize(true)
+        binding.rvAudioCutter.layoutManager = LinearLayoutManager(requireContext())
     }
 
 
@@ -250,15 +229,15 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
     }
 
     private fun clearText() {
-        if (edtSearch.text.toString().isNotEmpty()) {
-            edtSearch.setText("")
+        if (binding.edtCutterSearch.text.toString().isNotEmpty()) {
+            binding.edtCutterSearch.setText("")
         }
     }
 
     private fun previousStatus() {
-        rvAudioCutter.visibility = View.VISIBLE
-        tvEmptyList.visibility = View.GONE
-        ivListEmpty.visibility = View.GONE
+        binding.rvAudioCutter.visibility = View.VISIBLE
+        binding.tvEmptyListCutter.visibility = View.GONE
+        binding.ivEmptyListCutter.visibility = View.GONE
         audioCutterAdapter.submitList(listTmp)
         hideKeyBroad()
         hideOrShowEditText(View.GONE)
@@ -274,33 +253,7 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
 
     private fun updateAllFile() {
         ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_CUTTER)
-//        runOnUI {
-//            try {
-//                if (isCheckList) {
-//                    ManagerFactory.getAudioPlayer().stop()
-//                    audioCutterModel.getAllFileByType().observe(this, Observer {
-//                        listTmp.clear()
-//                        listTmp.addAll(it.toMutableList())
-//                        audioCutterAdapter.submitList(listTmp)
-//                        isCheckList = false
-//                    })
-//                } else {
-//                    audioCutterModel.getAllAudioFile().observe(this, Observer {
-//                        listTmp.clear()
-//                        listTmp.addAll(it.toMutableList())
-//                        audioCutterAdapter.submitList(listTmp)
-//                        isCheckList = true
-//                    })
-//                }
-//                if (currentPos != -1) {
-//                    ManagerFactory.getAudioPlayer().stop()
-//                }
-//                Log.d(TAG, "updateAllFile: check $isCheckList    listSize ${listTmp.size}")
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//
-//        }
+
     }
 
     override fun onDestroyView() {

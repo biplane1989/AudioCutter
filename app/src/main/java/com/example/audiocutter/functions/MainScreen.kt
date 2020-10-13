@@ -127,7 +127,7 @@ class MainScreen : BaseFragment(), View.OnClickListener {
     private fun onAudioMixerItemClicked() {
         if (storagePermissionRequest.isPermissionGranted()) {
             ManagerFactory.getAudioFileManager().init(requireContext())
-            viewStateManager.mainScreenOnMp3MergeItemClicked(this)
+            viewStateManager.mainScreenOnMp3MixItemClicked(this)
         } else {
             StoragePermissionDialog.newInstance {
                 resetRequestingPermission()
