@@ -68,10 +68,10 @@ object AudioFileManagerImpl : AudioFileManager {
             initialized = true
             mContext = context.applicationContext
             scanAllFile()
+            unRegisterContentObserve()
             registerContentObserVerDeleted()
         } else {
             initialized = false
-            unRegisterContentObserve()
         }
     }
 

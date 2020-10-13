@@ -23,7 +23,7 @@ import com.example.audiocutter.functions.audiochooser.cut.objs.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.cut.view.screen.CutChooserScreen
 import com.example.audiocutter.functions.audiochooser.mix.adapter.MixAdapter
 
-class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioMixerListener {
+class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioMixerListener {
 
     val TAG = CutChooserScreen::class.java.name
     private lateinit var mView: View
@@ -75,7 +75,7 @@ class MixerAudioScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mView = inflater.inflate(R.layout.mixer_screen, container, false)
+        mView = inflater.inflate(R.layout.mix_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
         return mView

@@ -34,6 +34,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/go_to_mix_chooser_screen"
+            app:destination="@id/mix_chooser_screen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/list_contact_screen"
@@ -83,5 +90,11 @@
         android:id="@+id/merge_preview_screen"
         android:name="com.example.audiocutter.functions.audiochooser.merge.screen.MergePreviewScreen"
         tools:layout="@layout/merge_preview_screen" />
+
+
+    <fragment
+        android:id="@+id/mix_chooser_screen"
+        android:name="com.example.audiocutter.functions.audiochooser.mix.screen.MixChooserScreen"
+        tools:layout="@layout/mix_chooser_screen" />
 
 </navigation>
