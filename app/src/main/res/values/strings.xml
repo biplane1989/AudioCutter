@@ -57,5 +57,21 @@
     <string name="ORANGE">ORANGE</string>
     <string name="my_studio_notification_chose_item_delete">Please chose at least one item !</string>
     <string name="my_studio_delete_fail">Delete Fail !</string>
+    <string name="list_contact_select_btn_save">SAVE</string>
+    <string name="list_contact_select_bottom_title">Select File</string>
+    <string name="list_contact_select_title">Select</string>
+    <string name="list_contact_notification_no_contact">No Contact</string>
+    <string name="list_contact_notification_no_result">No Result</string>
+    <string name="list_contact_title">Contacts</string>
+    <string name="list_contact_item_default">Default</string>
     <string name="countFile">0 file</string>
+    <string name="storage_guide_permission_step_1">Step 1 : "Clicked Permissions"</string>
+    <string name="storage_guide_permission_step_2">Step 2 : "Turn On Storage"</string>
+
+    <string name="contact_guide_permission_step_1">Step 1 : "Clicked Permissions"</string>
+    <string name="contact_guide_permission_step_2">Step 2 : "Turn On Contact"</string>
+    <string name="enable_write_setting_organizer_by_granting_access_to_audio_cutter">Enable write settings organizer by granting access to Audio Cutter.</string>
+    <string name="storage_permission_to_convert_files_please_allow_mp3_cutter_to_access_files_on_your_device">To convert files, please allow MP3 Cutter to access files on your device.</string>
+    <string name="storage_permission_allow">ALLOW</string>
+    <string name="contact_permission_to_set_ringtone_we_need_the_permission_to_access_your_contacts">To set ringtone, we need the permission to access your contacts.</string>
 </resources>

@@ -18,7 +18,9 @@ object ManagerFactory {
 
     fun init(appContext: Context) {
         AudioPlayerImpl.init(appContext)
-        AudioFileManagerImpl.init(appContext)
+        //AudioFileManagerImpl.init(appContext)
+        ContactManagerImpl.init(appContext)
+        RingtonManagerImpl.init(appContext)
     }
 
     fun getRingtonManager(): RingtonManagerImpl {
@@ -34,11 +36,16 @@ object ManagerFactory {
     }
 
     fun getContactManager(): ContactManager {
-        return mContactManager
+//        return mContactManager
+        return ContactManagerImpl
     }
 
     fun getAudioPlayer(): AudioPlayer {
         return AudioPlayerImpl
+    }
+
+    fun getRingtoneManager(): RingtonManager {
+        return RingtonManagerImpl
     }
 
 }

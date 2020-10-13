@@ -14,7 +14,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.a0025antivirusapplockclean.permissions.PermissionManager
 import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.util.PreferencesHelper
 

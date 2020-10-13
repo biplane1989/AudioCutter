@@ -8,7 +8,10 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.MediaStore
+import android.util.Log
+import com.example.audiocutter.core.manager.ContactManagerImpl
 import com.example.audiocutter.objects.AudioFile
+import com.example.audiocutter.objects.ContactItem
 import java.io.File
 
 object RingtonManagerImpl : RingtonManager {
@@ -16,56 +19,65 @@ object RingtonManagerImpl : RingtonManager {
     val IS_ALARM = 1
     val IS_NOTIFICATION = 2
     val IS_RINGTONE = 3
+    lateinit var mContext: Context
 
-    override fun setAlarmManager(context: Context, audioFile: AudioFile): Boolean {
-        val uri = getOrNew(context, audioFile.file.absolutePath, IS_ALARM)
+    fun init(context: Context) {
+        mContext = context
+    }
+
+    override fun setAlarmManager(audioFile: AudioFile): Boolean {
+        val uri = getOrNew(audioFile.file.absolutePath, IS_ALARM)
         if (uri != null) {
-            RingtoneManager.setActualDefaultRingtoneUri(context, RingtoneManager.TYPE_ALARM, uri)
+            RingtoneManager.setActualDefaultRingtoneUri(mContext, RingtoneManager.TYPE_ALARM, uri)
             return true
         }
         return false
     }
 
-    override fun setNotificationSound(context: Context, audioFile: AudioFile): Boolean {
-        val uri = getOrNew(context, audioFile.file.absolutePath, IS_NOTIFICATION)
+    override fun setNotificationSound(audioFile: AudioFile): Boolean {
+        val uri = getOrNew(audioFile.file.absolutePath, IS_NOTIFICATION)
         if (uri != null) {
-            RingtoneManager.setActualDefaultRingtoneUri(context, RingtoneManager.TYPE_NOTIFICATION, uri)
+            RingtoneManager.setActualDefaultRingtoneUri(mContext, RingtoneManager.TYPE_NOTIFICATION, uri)
             return true
         }
         return false
     }
 
-    override fun setRingTone(context: Context, audioFile: AudioFile): Boolean {
-        val uri = getOrNew(context, audioFile.file.absolutePath, IS_RINGTONE)
+    override fun setRingTone(audioFile: AudioFile): Boolean {
+        val uri = getOrNew(audioFile.file.absolutePath, IS_RINGTONE)
         if (uri != null) {
-            RingtoneManager.setActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE, uri)
+            RingtoneManager.setActualDefaultRingtoneUri(mContext, RingtoneManager.TYPE_RINGTONE, uri)
             return true
         }
         return false
     }
 
-    override fun setRingToneWithContactNumber(context: Context, audioFile: AudioFile, contactNumber: String): Boolean {
+    override fun setRingToneWithContactNumber(audioFile: AudioFile, contactNumber: String): Boolean {
         val values = ContentValues()
-        val resolver: ContentResolver = context.getContentResolver()
-        val uri = getOrNew(context, audioFile.file.absolutePath, IS_RINGTONE)
+        val resolver: ContentResolver = mContext.getContentResolver()
+        val uri = getOrNew(audioFile.file.absolutePath, IS_RINGTONE)
         if (uri != null) {
             val lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, contactNumber)
             val projection = arrayOf(ContactsContract.Contacts._ID, ContactsContract.Contacts.LOOKUP_KEY)
-            val data: Cursor? = context.getContentResolver()
+            val cursor: Cursor? = mContext.getContentResolver()
                 .query(lookupUri, projection, null, null, null)
-            if (data != null) {
+
+            if (cursor != null) {
                 try {
-                    if (data.moveToFirst()) {
-                        // Get the contact lookup Uri
-                        val contactId = data.getLong(0)
-                        val lookupKey = data.getString(1)
-                        val contactUri = ContactsContract.Contacts.getLookupUri(contactId, lookupKey)
-                        val uriString = uri.toString()
-                        values.put(ContactsContract.Contacts.CUSTOM_RINGTONE, uriString)
-                        resolver.update(contactUri, values, null, null).toLong()
+                    if (cursor.moveToFirst()) {
+                        do {
+                            // Get the contact lookup Uri
+                            val contactId = cursor.getLong(0)
+                            val lookupKey = cursor.getString(1)
+                            val contactUri = ContactsContract.Contacts.getLookupUri(contactId, lookupKey)
+                            val uriString = uri.toString()
+                            values.put(ContactsContract.Contacts.CUSTOM_RINGTONE, uriString)
+                            resolver.update(contactUri, values, null, null).toLong()
+                        } while (cursor.moveToNext())
+
                     }
                 } finally {
-                    data.close()
+                    if (!cursor.isClosed) cursor.close()
                 }
                 return true
             }
@@ -73,10 +85,81 @@ object RingtonManagerImpl : RingtonManager {
         return false
     }
 
-    fun getUriFromFile(context: Context, filePath: String): Uri? {
+    override fun setRingToneWithContactNumberAndUri(path: String, contactNumber: String): Boolean {
+
+        val values = ContentValues()
+        val resolver: ContentResolver = mContext.getContentResolver()
+        val uri = getOrNew(path, IS_RINGTONE)
+        if (uri != null) {
+
+            Log.d("giangtd", "uri ringtone: " + uri)
+            val lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, contactNumber)
+            val projection = arrayOf(ContactsContract.Contacts._ID, ContactsContract.Contacts.LOOKUP_KEY)
+            val cursor: Cursor? = mContext.getContentResolver()
+                .query(lookupUri, projection, null, null, null)
+
+            if (cursor != null) {
+                try {
+                    if (cursor.moveToFirst()) {
+                        do {
+                            // Get the contact lookup Uri
+                            val contactId = cursor.getLong(0)
+                            val lookupKey = cursor.getString(1)
+                            val contactUri = ContactsContract.Contacts.getLookupUri(contactId, lookupKey)
+                            val uriString = uri.toString()
+                            values.put(ContactsContract.Contacts.CUSTOM_RINGTONE, uriString)
+                            resolver.update(contactUri, values, null, null).toLong()
+                        } while (cursor.moveToNext())
+
+                    }
+                } finally {
+                    if (!cursor.isClosed) cursor.close()
+                }
+                return true
+            }
+        }
+        return false
+    }
+
+    override fun setRingtoneDefault(uri: String, contactNumber: String): Boolean {
+
+        val values = ContentValues()
+        val resolver: ContentResolver = mContext.getContentResolver()
+        if (uri != null) {
+
+            Log.d("giangtd", "uri ringtone: " + uri)
+            val lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, contactNumber)
+            val projection = arrayOf(ContactsContract.Contacts._ID, ContactsContract.Contacts.LOOKUP_KEY)
+            val cursor: Cursor? = mContext.getContentResolver()
+                .query(lookupUri, projection, null, null, null)
+
+            if (cursor != null) {
+                try {
+                    if (cursor.moveToFirst()) {
+                        do {
+                            // Get the contact lookup Uri
+                            val contactId = cursor.getLong(0)
+                            val lookupKey = cursor.getString(1)
+                            val contactUri = ContactsContract.Contacts.getLookupUri(contactId, lookupKey)
+                            val uriString = uri.toString()
+                            values.put(ContactsContract.Contacts.CUSTOM_RINGTONE, uriString)
+                            resolver.update(contactUri, values, null, null).toLong()
+                        } while (cursor.moveToNext())
+
+                    }
+                } finally {
+                    if (!cursor.isClosed) cursor.close()
+                }
+                return true
+            }
+        }
+        return false
+    }
+
+    fun getUriFromFile(filePath: String): Uri? {
         val folder = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DATA)
-        val cursor: Cursor? = context.getContentResolver()
+        val cursor: Cursor? = mContext.getContentResolver()
             .query(folder, projection, MediaStore.Audio.Media.DATA + "=?", arrayOf(filePath), null)
         if (cursor != null) {
             try {
@@ -90,11 +173,11 @@ object RingtonManagerImpl : RingtonManager {
         return null
     }
 
-    fun getOrNew(context: Context, filePath: String, typeRing: Int): Uri? {
-        val resolver: ContentResolver = context.getContentResolver()
+    fun getOrNew(filePath: String, typeRing: Int): Uri? {
+        val resolver: ContentResolver = mContext.getContentResolver()
         val file = File(filePath)
         if (file.exists()) {
-            val oldUri = getUriFromFile(context, filePath)
+            val oldUri = getUriFromFile(filePath)
             if (oldUri != null) {
                 return oldUri
             } else {
