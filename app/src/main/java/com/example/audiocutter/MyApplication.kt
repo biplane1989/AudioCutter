@@ -9,7 +9,8 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         PreferencesHelper.start(applicationContext)
-        ManagerFactory.init(applicationContext)
         PermissionManager.start(applicationContext)
+        ManagerFactory.init(applicationContext)
+
     }
 }

@@ -17,7 +17,23 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/go_to_cut_chooser_screen"
+            app:destination="@id/cut_chooser_screen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/go_to_merge_chooser_screen"
+            app:destination="@id/merge_chooser_screen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/list_contact_screen"
@@ -44,5 +60,28 @@
         android:id="@+id/my_audio_screen"
         android:name="com.example.audiocutter.functions.mystudioscreen.MyAudioManagerScreen"
         tools:layout="@layout/my_studio_screen" />
+
+    <fragment
+        android:id="@+id/cut_chooser_screen"
+        android:name="com.example.audiocutter.functions.audiochooser.cut.view.screen.CutChooserScreen"
+        tools:layout="@layout/cut_chooser_screen" />
+
+    <fragment
+        android:id="@+id/merge_chooser_screen"
+        android:name="com.example.audiocutter.functions.audiochooser.merge.screen.MergeChooserScreen"
+        tools:layout="@layout/merge_chooser_screen">
+        <action
+            android:id="@+id/go_to_preview_screen"
+            app:destination="@id/merge_preview_screen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/merge_preview_screen"
+        android:name="com.example.audiocutter.functions.audiochooser.merge.screen.MergePreviewScreen"
+        tools:layout="@layout/merge_preview_screen" />
 
 </navigation>

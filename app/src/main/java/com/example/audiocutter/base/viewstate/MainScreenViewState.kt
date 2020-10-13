@@ -15,6 +15,20 @@ interface MainScreenViewState {
         }
     }
 
+    fun mainScreenOnMp3CutItemClicked(baseFragment: BaseFragment) {
+        if (getViewStateMutable().getLastState() == ViewStateScreen.HOME_SCREEN) {
+            getViewStateMutable().pushViewState(ViewStateScreen.MP3_CUT_CHOOSER_SCREEN)
+            baseFragment.findNavController().navigate(R.id.go_to_cut_chooser_screen)
+        }
+    }
+    fun mainScreenOnMp3MergeItemClicked(baseFragment: BaseFragment) {
+        if (getViewStateMutable().getLastState() == ViewStateScreen.HOME_SCREEN) {
+            getViewStateMutable().pushViewState(ViewStateScreen.MP3_MERGE_CHOOSER_SCREEN)
+            baseFragment.findNavController().navigate(R.id.go_to_merge_chooser_screen)
+        }
+    }
+
+
     fun mainScreenOnMyAudioItemClicked(baseFragment: BaseFragment) {
         if (getViewStateMutable().getLastState() == ViewStateScreen.HOME_SCREEN) {
             getViewStateMutable().pushViewState(ViewStateScreen.MY_AUDIO_SCREEN)
