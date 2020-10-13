@@ -18,7 +18,7 @@ import java.util.*
 
 interface ContactCallback {
 
-    fun itemOnClick(phoneNumber: String, uri: String)
+    fun itemOnClick(phoneNumber: String, fileName: String)
 }
 
 class ListContactAdapter(context: Context?, var contactCallback: ContactCallback) : ListAdapter<ContactItemView, RecyclerView.ViewHolder>(ContactDiffCallBack()) {
@@ -86,8 +86,8 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                     itemViewHolder.cvDefault.visibility = View.GONE
                     itemViewHolder.tvRingtone.visibility = View.VISIBLE
 
-                    val contactInfomation = Utils.getNameByUri(mContext!!, contactItem.contactItem.ringtone!!)   // get name song by uri
-                    itemViewHolder.tvRingtone.text = contactInfomation.title.toLowerCase()
+                    val fileName = Utils.getNameByUri(mContext!!, contactItem.contactItem.ringtone!!)   // get name song by uri
+                    itemViewHolder.tvRingtone.text = fileName.toLowerCase()
 
                 } else {
                     itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
@@ -95,9 +95,9 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                     itemViewHolder.tvRingtone.visibility = View.GONE
 
                     if (Utils.getUriRingtoneDefault(mContext!!) != null) {
-                        val contactInfomation = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
+                        val fileName = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
                             .toString())
-                        itemViewHolder.tvRingtoneDefault.text = contactInfomation.title.toLowerCase()
+                        itemViewHolder.tvRingtoneDefault.text = fileName.toLowerCase()
                     }
 
                 }
@@ -129,17 +129,19 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 cvDefault.visibility = View.GONE
                 tvRingtone.visibility = View.VISIBLE
 
-                val contactInfomation = Utils.getNameByUri(mContext!!, contentItem.contactItem.ringtone!!)   // get name song by uri
-                tvRingtone.text = contactInfomation.title.toLowerCase()
+                val fileName = Utils.getNameByUri(mContext!!, contentItem.contactItem.ringtone!!)   // get name song by uri
+                tvRingtone.text = fileName.toLowerCase()
             } else {
                 tvRingtoneDefault.visibility = View.VISIBLE
                 cvDefault.visibility = View.VISIBLE
                 tvRingtone.visibility = View.GONE
 
                 if (Utils.getUriRingtoneDefault(mContext!!) != null) {
-                    val contactInfomation = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
+                    val fileName = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
                         .toString())
-                    tvRingtoneDefault.text = contactInfomation.title.toLowerCase()
+
+                    tvRingtoneDefault.text = fileName.toLowerCase()
+
                 }
             }
 
@@ -149,14 +151,14 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
         override fun onClick(view: View?) {
             when (view?.id) {
                 R.id.cl_item_contact -> {
-                    val contactInfomation: ContactInfomation
+                    val fileName: String
                     if (getItem(adapterPosition).contactItem.ringtone != null) {
-                        contactInfomation = Utils.getNameByUri(mContext!!, getItem(adapterPosition).contactItem.ringtone!!)
+                        fileName = Utils.getNameByUri(mContext!!, getItem(adapterPosition).contactItem.ringtone!!)
                     } else {
-                        contactInfomation = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
+                        fileName = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
                             .toString())
                     }
-                    contactCallback.itemOnClick(getItem(adapterPosition).contactItem.phoneNumber, contactInfomation.fileName)
+                    contactCallback.itemOnClick(getItem(adapterPosition).contactItem.phoneNumber, fileName)
                 }
             }
         }

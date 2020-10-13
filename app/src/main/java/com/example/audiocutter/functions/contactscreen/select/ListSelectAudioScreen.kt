@@ -27,6 +27,7 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.ListContactSelectScreenBinding
 import com.example.audiocutter.util.FileUtils
 import kotlinx.android.synthetic.main.list_contact_select_screen.*
+import kotlinx.coroutines.delay
 
 
 class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.OnClickListener {
@@ -51,17 +52,18 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
                 cl_no_audio.visibility = View.VISIBLE
             } else {
                 runOnUI {
+                    pb_select.visibility = View.GONE
                     cl_select.visibility = View.VISIBLE
                     cl_bottom.visibility = View.VISIBLE
                     cl_no_audio.visibility = View.GONE
                     mListSelectAdapter.submitList(ArrayList(listAudio))
 
-//                    val fileName = requireArguments().getString(BUNDLE_NAME_KEY_FILE_NAME)            // tam thoi comment
+                    val fileName = safeArg.uri            // tam thoi comment
 //
-//                    if (fileName != null) {
-//                        mListSelectAdapter.submitList(mListSelectAudioViewModel.setSelectRingtone(fileName))
-//                        rv_list_select_audio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))
-//                    }
+                    if (fileName != null) {
+                        mListSelectAdapter.submitList(mListSelectAudioViewModel.setSelectRingtone(fileName))
+                        rv_list_select_audio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))
+                    }
                 }
             }
         } else {
@@ -110,11 +112,12 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         super.onViewCreated(view, savedInstanceState)
         init()
 
-        iv_search.setOnClickListener(this)
-        iv_search_close.setOnClickListener(this)
-        iv_clear.setOnClickListener(this)
-        btn_save.setOnClickListener(this)
-        iv_file.setOnClickListener(this)
+        binding.ivSearch.setOnClickListener(this)
+        binding.ivSearchClose.setOnClickListener(this)
+        binding.ivClear.setOnClickListener(this)
+        binding.btnSave.setOnClickListener(this)
+        binding.ivFile.setOnClickListener(this)
+        binding.backButton.setOnClickListener(this)
 
         if (isLoading) {
             pb_select.visibility = View.VISIBLE
@@ -178,29 +181,30 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
 
     override fun onClick(view: View?) {
-        when (view?.id) {
-            R.id.iv_search -> {
+        when (view) {
+            binding.ivSearch -> {
                 showKeyboard()
                 cl_default.visibility = View.GONE
                 cl_search.visibility = View.VISIBLE
             }
-            R.id.iv_search_close -> {
+            binding.ivSearchClose -> {
                 cl_default.visibility = View.VISIBLE
                 cl_search.visibility = View.GONE
                 edt_search.text.clear()
                 hideKeyboard()
             }
-            R.id.iv_clear -> {
+            binding.ivClear -> {
                 edt_search.text.clear()
             }
-            R.id.btn_save -> {
+            binding.btnSave -> {
                 if (mListSelectAudioViewModel.setRingtone(safeArg.phoneNumber)) {
                     Toast.makeText(context, "Set Ringtone Success !", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(context, "Set Ringtone Failure !", Toast.LENGTH_SHORT).show()
                 }
+                requireActivity().onBackPressed()
             }
-            R.id.iv_file -> {
+            binding.ivFile -> {
                 val intent: Intent
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
@@ -218,6 +222,9 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
                 startActivityForResult(Intent.createChooser(intent, "Select a File "), REQ_CODE_PICK_SOUNDFILE)
 
             }
+            binding.backButton -> {
+                requireActivity().onBackPressed()
+            }
         }
     }
 
@@ -228,8 +235,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             val path = FileUtils.getPath(requireContext(), intent.data!!)
 
             path?.let {
-                if (mListSelectAudioViewModel.setRingtoneWithUri(requireArguments().getString(safeArg.phoneNumber)
-                        .toString(), path)) {
+                if (mListSelectAudioViewModel.setRingtoneWithUri(safeArg.phoneNumber, path)) {
                     Toast.makeText(context, "Set Ringtone Success !", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(context, "Set Ringtone Failure !", Toast.LENGTH_SHORT).show()
@@ -256,6 +262,4 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             mListSelectAudioViewModel.stopAudio(positionSelect)
         }
     }
-
-
 }

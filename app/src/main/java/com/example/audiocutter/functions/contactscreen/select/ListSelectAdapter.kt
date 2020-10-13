@@ -57,7 +57,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             holder.tvTimeLife.text = simpleDateFormat.format(selectItemView.selectItemStatus.currPos)
             holder.sbMusic.progress = selectItemView.selectItemStatus.currPos
 
-            holder.tvTotal.text = "/" + selectItemView.audioFile.time.toString()
+//            holder.tvTotal.text = "/" + selectItemView.audioFile.time.toString()
 
             when (newItem.selectItemStatus.playerState) {
                 PlayerState.PLAYING -> {
@@ -178,7 +178,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 override fun onStopTrackingTouch(p0: SeekBar?) {
                     selectAudioScreenCallback.seekTo(sbMusic.progress)
                 }
-
             })
         }
 
@@ -206,7 +205,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             }
         }
     }
-
 }
 
 class SelectAudioDiffCallBack : DiffUtil.ItemCallback<SelectItemView>() {

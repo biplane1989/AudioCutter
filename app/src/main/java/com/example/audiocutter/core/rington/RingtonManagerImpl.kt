@@ -75,6 +75,8 @@ object RingtonManagerImpl : RingtonManager {
                             resolver.update(contactUri, values, null, null).toLong()
                         } while (cursor.moveToNext())
 
+                    } else {
+                        return false
                     }
                 } finally {
                     if (!cursor.isClosed) cursor.close()
@@ -110,7 +112,8 @@ object RingtonManagerImpl : RingtonManager {
                             values.put(ContactsContract.Contacts.CUSTOM_RINGTONE, uriString)
                             resolver.update(contactUri, values, null, null).toLong()
                         } while (cursor.moveToNext())
-
+                    } else {
+                        return false
                     }
                 } finally {
                     if (!cursor.isClosed) cursor.close()
