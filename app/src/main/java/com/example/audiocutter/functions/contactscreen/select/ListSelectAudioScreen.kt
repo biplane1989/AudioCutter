@@ -83,13 +83,8 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         rv_list_select_audio.adapter = mListSelectAdapter
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.list_contact_select_screen, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.list_contact_select_screen, container, false)
         listSelectAudio?.observe(this.viewLifecycleOwner, listAudioObserver)
         return binding.root
     }
@@ -103,12 +98,10 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
         isLoading = true
         runOnUI {
-            listSelectAudio =
-                mListSelectAudioViewModel.getData() // get data from funtion newIntance
+            listSelectAudio = mListSelectAudioViewModel.getData() // get data from funtion newIntance
             listSelectAudio?.observe(this.viewLifecycleOwner, listAudioObserver)
             isLoading = false
-            currentView?.findViewById<ProgressBar>(R.id.pb_select)?.visibility =
-                View.GONE    // tai day ham onCreateView da chay xong r do runOnUI
+            currentView?.findViewById<ProgressBar>(R.id.pb_select)?.visibility = View.GONE    // tai day ham onCreateView da chay xong r do runOnUI
 
         }
     }
@@ -136,12 +129,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
 
-            override fun onTextChanged(
-                textChange: CharSequence,
-                start: Int,
-                before: Int,
-                count: Int
-            ) {
+            override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
                 if (mListSelectAudioViewModel.searchAudioFile(textChange.toString()).size <= 0) {
                     cl_select.visibility = View.GONE
                     cl_bottom.visibility = View.GONE
@@ -150,11 +138,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
                     cl_select.visibility = View.VISIBLE
                     cl_bottom.visibility = View.VISIBLE
                     cl_no_audio.visibility = View.GONE
-                    mListSelectAdapter.submitList(
-                        mListSelectAudioViewModel.searchAudioFile(
-                            textChange.toString()
-                        )
-                    )
+                    mListSelectAdapter.submitList(mListSelectAudioViewModel.searchAudioFile(textChange.toString()))
                 }
             }
         })
@@ -231,10 +215,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
                 intent.type = "audio/*"
 //                intent.type = "audio/mp3"
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                startActivityForResult(
-                    Intent.createChooser(intent, "Select a File "),
-                    REQ_CODE_PICK_SOUNDFILE
-                )
+                startActivityForResult(Intent.createChooser(intent, "Select a File "), REQ_CODE_PICK_SOUNDFILE)
 
             }
         }
@@ -247,11 +228,8 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             val path = FileUtils.getPath(requireContext(), intent.data!!)
 
             path?.let {
-                if (mListSelectAudioViewModel.setRingtoneWithUri(
-                        requireArguments().getString(safeArg.phoneNumber)
-                            .toString(), path
-                    )
-                ) {
+                if (mListSelectAudioViewModel.setRingtoneWithUri(requireArguments().getString(safeArg.phoneNumber)
+                        .toString(), path)) {
                     Toast.makeText(context, "Set Ringtone Success !", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(context, "Set Ringtone Failure !", Toast.LENGTH_SHORT).show()

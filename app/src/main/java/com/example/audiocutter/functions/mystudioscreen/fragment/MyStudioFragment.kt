@@ -26,7 +26,8 @@ import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_fragment.*
 
 
-class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener {
+class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener,
+    SetAsDialogListener, DeleteDialogListener {
 
     val TAG = "giangtd"
     lateinit var myStudioViewModel: MyStudioViewModel
@@ -39,14 +40,18 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
 
     // observer data
     val listAudioObserver = Observer<List<AudioFileView>> { listMusic ->
-        if (listMusic.size == 0) {
-            ll_no_finish_task.visibility = View.VISIBLE
-            cl_delete_all.visibility = View.GONE
-        } else {
-            ll_no_finish_task.visibility = View.GONE
+        if (listMusic != null) {
+            Log.d(TAG, "getdata: load data")
+            runOnUI {
+                if (listMusic.isEmpty()) {
+//                    ll_no_finish_task.visibility = View.VISIBLE
+                    cl_delete_all.visibility = View.GONE
+                } else {
+                    ll_no_finish_task.visibility = View.GONE
+                    audioCutterAdapter.submitList(ArrayList(listMusic))
+                }
+            }
         }
-        audioCutterAdapter.submitList(ArrayList(listMusic))
-
     }
 
     // observer playInfo mediaplayer
@@ -87,16 +92,23 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
 
         isLoading = true
         runOnUI {
-            val listAudioViewLiveData = myStudioViewModel.getData(typeAudio) // get data from funtion newIntance
+            val listAudioViewLiveData =
+                myStudioViewModel.getData(typeAudio) // get data from funtion newIntance
             listAudioViewLiveData.observe(this as LifecycleOwner, listAudioObserver)
             isLoading = false
 
-            currentView?.findViewById<ProgressBar>(R.id.pb_audio_cutter)?.visibility = View.GONE    // tai day hamonCreateView da chay xong r do runOnUI
+            currentView?.findViewById<ProgressBar>(R.id.pb_audio_cutter)?.visibility =
+                View.GONE    // tai day hamonCreateView da chay xong r do runOnUI
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        typeAudio = requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        typeAudio =
+            requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
         currentView = inflater.inflate(R.layout.my_studio_fragment, container, false)
         return currentView
     }
@@ -248,7 +260,11 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
     override fun onReceivedAction(fragmentMeta: FragmentMeta) {
         // nếu typeAudio không bằng data của fragment thoát
         // ap dung 2 kieu truyen du lieu. 1 qua newIntent fragment, 2. truyen qua call back sendFragment
-        if (fragmentMeta.action in arrayListOf(Constance.ACTION_CHECK_DELETE, Constance.ACTION_DELETE_ALL)) if (typeAudio != (fragmentMeta.data as Int)) {
+        if (fragmentMeta.action in arrayListOf(
+                Constance.ACTION_CHECK_DELETE,
+                Constance.ACTION_DELETE_ALL
+            )
+        ) if (typeAudio != (fragmentMeta.data as Int)) {
             return
         }
         when (fragmentMeta.action) {
@@ -271,16 +287,30 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
                 }
 
                 runOnUI {
-                    if (myStudioViewModel.deleteAllItemSelected(requireArguments().getInt(BUNDLE_NAME_KEY))) { // nếu delete thành công thì sẽ hiện dialog thành công
+                    if (myStudioViewModel.deleteAllItemSelected(
+                            requireArguments().getInt(
+                                BUNDLE_NAME_KEY
+                            )
+                        )
+                    ) { // nếu delete thành công thì sẽ hiện dialog thành công
                         val dialog = DeleteSuccessfullyDialog()
                         dialog.show(childFragmentManager, DeleteSuccessfullyDialog.TAG)
 
 
                     } else {
-                        Toast.makeText(context, getString(R.string.my_studio_delete_fail), Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            context,
+                            getString(R.string.my_studio_delete_fail),
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                     }
-                    Log.d(TAG, "onReceivedAction: " + myStudioViewModel.deleteAllItemSelected(requireArguments().getInt(BUNDLE_NAME_KEY)))
+                    Log.d(
+                        TAG,
+                        "onReceivedAction: " + myStudioViewModel.deleteAllItemSelected(
+                            requireArguments().getInt(BUNDLE_NAME_KEY)
+                        )
+                    )
                 }
             }
             Constance.ACTION_STOP_MUSIC -> {
@@ -291,9 +321,17 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
 
             Constance.ACTION_CHECK_DELETE -> {
                 if (!myStudioViewModel.isChecked()) {
-                    sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_CHECK_DELETE, false)
+                    sendFragmentAction(
+                        MyAudioManagerScreen::class.java.name,
+                        Constance.ACTION_CHECK_DELETE,
+                        false
+                    )
                 } else {
-                    sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_CHECK_DELETE, true)
+                    sendFragmentAction(
+                        MyAudioManagerScreen::class.java.name,
+                        Constance.ACTION_CHECK_DELETE,
+                        true
+                    )
                 }
             }
         }
