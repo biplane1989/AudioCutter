@@ -21,6 +21,7 @@ import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
+import com.example.audiocutter.permissions.PermissionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,6 +43,8 @@ object AudioFileManagerImpl : AudioFileManager {
     private val SIZE_GB = SIZE_MB * SIZE_KB
     private val TAG = AudioFileManagerImpl::class.java.name
     lateinit var mContext: Context
+    private var initialized = false
+
 
     private var _listAllAudioFile = MutableLiveData<AudioFileScans>()
     val listAllAudioFile: LiveData<AudioFileScans>
@@ -54,129 +57,145 @@ object AudioFileManagerImpl : AudioFileManager {
 
     private val audioFileObserver = AudioFileObserver(Handler())
     private var listData = mutableListOf<AudioFile>()
-    fun init(context: Context) {
-        mContext = context
-        listData = scanAllFile() as MutableList<AudioFile>
-        registerContentObserVerDeleted()
+    private var backgroundScope = CoroutineScope(Dispatchers.Default)
+
+    override fun init(context: Context) {
+
+        if (PermissionManager.hasStoragePermission()) {
+            if (initialized) {
+                return
+            }
+            initialized = true
+            mContext = context.applicationContext
+            scanAllFile()
+            registerContentObserVerDeleted()
+        } else {
+            initialized = false
+            unRegisterContentObserve()
+        }
     }
 
 
-    private fun scanAllFile(): List<AudioFile> {
-        val resolver = mContext.contentResolver
-        val listData = ArrayList<AudioFile>()
-        var projection = arrayOf(
-            MediaStore.Audio.Media.DATA,
-            MediaStore.Audio.Media.DISPLAY_NAME,
-            MediaStore.Audio.Media._ID,
-            MediaStore.Audio.Media.TITLE,
-            MediaStore.Audio.Media.ALBUM,
-            MediaStore.Audio.Media.ARTIST,
-            MediaStore.Audio.Media.DATE_ADDED
-        )
-
-        val cursor =
-            resolver.query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                projection, null,
-                null, null
+    private fun scanAllFile() {
+        backgroundScope.launch {
+            _listAllAudioFile.postValue(AudioFileScans(ArrayList(), StateLoad.LOADING))
+            val resolver = mContext.contentResolver
+            val listData = ArrayList<AudioFile>()
+            var projection = arrayOf(
+                MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media.DISPLAY_NAME,
+                MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.DATE_ADDED
             )
-        try {
-            cursor?.let {
-                val clData = cursor.getColumnIndex(projection[0])
-                val clName = cursor.getColumnIndex(projection[1])
-                val clID = cursor.getColumnIndex(projection[2])
-                val clTitle = cursor.getColumnIndex(projection[3])
-                val clAlbum = cursor.getColumnIndex(projection[4])
-                val clArtist = cursor.getColumnIndex(projection[5])
-                val clDateAdded = cursor.getColumnIndex(projection[6])
+
+            val cursor =
+                resolver.query(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    projection, null,
+                    null, null
+                )
+            try {
+                cursor?.let {
+                    val clData = cursor.getColumnIndex(projection[0])
+                    val clName = cursor.getColumnIndex(projection[1])
+                    val clID = cursor.getColumnIndex(projection[2])
+                    val clTitle = cursor.getColumnIndex(projection[3])
+                    val clAlbum = cursor.getColumnIndex(projection[4])
+                    val clArtist = cursor.getColumnIndex(projection[5])
+                    val clDateAdded = cursor.getColumnIndex(projection[6])
 
 
-                cursor.moveToFirst()
-                while (!cursor.isAfterLast) {
-                    var mimeType: String = ""
-                    var name: String
-                    val data = cursor.getString(clData)
-                    val file = File(data)
-                    val preName = file.name
-                    if (preName.contains(".")) {
-                        name = preName.substring(0, preName.lastIndexOf("."))
-                    } else {
-                        name = preName
-                    }
-                    val id = cursor.getString(clID)
-                    val bitmap =
-                        getBitmapByPath(data)
-                    val title = cursor.getString(clTitle)
-                    val album = cursor.getString(clAlbum)
-                    val artist = cursor.getString(clArtist)
-                    if (preName.contains(".")) {
-                        mimeType = preName.substring(preName.lastIndexOf("."), preName.length)
-                    }
-                    val date = getDateByDateAdded(cursor.getLong(clDateAdded))
-                    var genre: String? = "Unknown"
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        genre =
-                            cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.GENRE))
-                    }
-
-
-                    val bitRate =
-                        getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_BITRATE)
-//                    val bitRate = 128
-                    val duration =
-                        getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_DURATION)
-//                    val duration = 1000
-                    val uri = getUriFromFile(id, resolver, file)
-                    Log.d(
-                        "TAG",
-                        "findAllAudioFiles: data :$data \n name : $name   \n ID  $id  \n" +
-                                " duration: $duration \n sie ${file.length()}  " +
-                                " \n URI $uri \n title :$title \n" +
-                                " album : $album   \n" + " artist  $artist  \n" +
-                                " date: $date \n" + " genre $genre  \n " +
-                                "MimeType $mimeType \n filePAth  ${file.absolutePath} \n parent${file.parent}  \n BitRate $bitRate "
-                    )
-                    if (file.exists()) {
-                        if (bitmap != null) {
-                            listData.add(
-                                AudioFile(
-                                    file = file, fileName = name.trim(),
-                                    size = file.length(), bitRate = bitRate!!.toInt(),
-                                    time = duration!!.toLong(), uri = uri,
-                                    bitmap = bitmap, title = title,
-                                    alBum = album, artist = artist,
-                                    dateAdded = date, genre = genre,
-                                    mimeType = mimeType
-                                )
-                            )
+                    cursor.moveToFirst()
+                    while (!cursor.isAfterLast) {
+                        var mimeType: String = ""
+                        var name: String
+                        val data = cursor.getString(clData)
+                        val file = File(data)
+                        val preName = file.name
+                        if (preName.contains(".")) {
+                            name = preName.substring(0, preName.lastIndexOf("."))
                         } else {
-                            listData.add(
-                                AudioFile(
-                                    file = file, fileName = name,
-                                    size = file.length(), bitRate = 128,
-                                    time = duration!!.toLong(), uri = uri,
-                                    bitmap = null, title = title, alBum = album,
-                                    artist = artist, dateAdded = date, genre = genre,
-                                    mimeType = mimeType
-
-                                )
-                            )
+                            name = preName
                         }
+                        val id = cursor.getString(clID)
+                        val bitmap =
+                            getBitmapByPath(data)
+                        val title = cursor.getString(clTitle)
+                        val album = cursor.getString(clAlbum)
+                        val artist = cursor.getString(clArtist)
+                        if (preName.contains(".")) {
+                            mimeType = preName.substring(preName.lastIndexOf("."), preName.length)
+                        }
+                        val date = getDateByDateAdded(cursor.getLong(clDateAdded))
+                        var genre: String? = "Unknown"
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            genre =
+                                cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.GENRE))
+                        }
+
+
+                        val bitRate =
+                            getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_BITRATE)
+//                    val bitRate = 128
+                        val duration =
+                            getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_DURATION)
+//                    val duration = 1000
+                        val uri = getUriFromFile(id, resolver, file)
+                        Log.d(
+                            "TAG",
+                            "findAllAudioFiles: data :$data \n name : $name   \n ID  $id  \n" +
+                                    " duration: $duration \n sie ${file.length()}  " +
+                                    " \n URI $uri \n title :$title \n" +
+                                    " album : $album   \n" + " artist  $artist  \n" +
+                                    " date: $date \n" + " genre $genre  \n " +
+                                    "MimeType $mimeType \n filePAth  ${file.absolutePath} \n parent${file.parent}  \n BitRate $bitRate "
+                        )
+                        if (file.exists()) {
+                            if (bitmap != null) {
+                                listData.add(
+                                    AudioFile(
+                                        file = file, fileName = name.trim(),
+                                        size = file.length(), bitRate = bitRate!!.toInt(),
+                                        time = duration!!.toLong(), uri = uri,
+                                        bitmap = bitmap, title = title,
+                                        alBum = album, artist = artist,
+                                        dateAdded = date, genre = genre,
+                                        mimeType = mimeType
+                                    )
+                                )
+                            } else {
+                                listData.add(
+                                    AudioFile(
+                                        file = file, fileName = name,
+                                        size = file.length(), bitRate = 128,
+                                        time = duration!!.toLong(), uri = uri,
+                                        bitmap = null, title = title, alBum = album,
+                                        artist = artist, dateAdded = date, genre = genre,
+                                        mimeType = mimeType
+
+                                    )
+                                )
+                            }
+                        }
+
+                        cursor.moveToNext()
                     }
-
-                    cursor.moveToNext()
                 }
+                this@AudioFileManagerImpl.listData.clear()
+                this@AudioFileManagerImpl.listData.addAll(listData)
+                _listAllAudioFile.postValue(AudioFileScans(listData, StateLoad.LOADDONE))
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                cursor?.close()
             }
-
-            _listAllAudioFile.postValue(AudioFileScans(listData, StateLoad.LOADDONE))
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            cursor?.close()
         }
 
-        return listData
+
     }
 
 
@@ -194,7 +213,7 @@ object AudioFileManagerImpl : AudioFileManager {
     }
 
     @SuppressLint("SimpleDateFormat")
-    override fun getdateCreatFile(file: File?): String? {
+    override fun getDateCreatFile(file: File?): String? {
         var lastDate: String = ""
         if (file != null) {
             val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
@@ -305,7 +324,7 @@ object AudioFileManagerImpl : AudioFileManager {
             getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_TITLE),
             getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_ALBUM),
             getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_ARTIST),
-            getdateCreatFile(fileAudio),
+            getDateCreatFile(fileAudio),
             getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_GENRE), mimeType
         )
     }
@@ -314,9 +333,7 @@ object AudioFileManagerImpl : AudioFileManager {
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             CoroutineScope(Dispatchers.IO).launch {
                 Log.d("TAG", "changeList: $uri")
-                val listAllAudio = scanAllFile()
-//                Log.d(TAG, "changeList: ${listAllAudio.size}")
-                _listAllAudioFile.postValue(AudioFileScans(listAllAudio, StateLoad.LOADDONE))
+                scanAllFile()
             }
         }
     }
@@ -368,10 +385,10 @@ object AudioFileManagerImpl : AudioFileManager {
                         if (!dic.exists()) {
                             dic.mkdirs()
                         }
-                            val fileChild = File(pathParent, audioFile.fileName)
-                            val fout = FileOutputStream(fileChild)
-                            fout.write(audioFile.file.readBytes())
-                            fout.close()
+                        val fileChild = File(pathParent, audioFile.fileName)
+                        val fout = FileOutputStream(fileChild)
+                        fout.write(audioFile.file.readBytes())
+                        fout.close()
                         StateFile.STATE_SAVE_SUCCESS
                     } catch (e: IOException) {
                         e.printStackTrace()
