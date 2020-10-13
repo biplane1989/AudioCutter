@@ -223,22 +223,14 @@ class AudioCutterScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener
         when (typeAudioSetAs) {
 
             TypeAudioSetAs.RINGTONE -> {
-                rs = ManagerFactory.getRingtonManager().setRingTone(
-                    requireContext(),
-                    audioFile = audioCutterItem.audioFile
-                )
+                rs = ManagerFactory.getRingtonManager().setRingTone(audioCutterItem.audioFile)
             }
             TypeAudioSetAs.ALARM -> {
-                rs = ManagerFactory.getRingtonManager().setAlarmManager(
-                    requireContext(),
-                    audioFile = audioCutterItem.audioFile
+                rs = ManagerFactory.getRingtonManager().setAlarmManager(audioCutterItem.audioFile
                 )
             }
             TypeAudioSetAs.NOTIFICATION -> {
-                rs = ManagerFactory.getRingtonManager().setNotificationSound(
-                    requireContext(),
-                    audioFile = audioCutterItem.audioFile
-                )
+                rs = ManagerFactory.getRingtonManager().setNotificationSound(audioCutterItem.audioFile)
             }
         }
         if (rs) {

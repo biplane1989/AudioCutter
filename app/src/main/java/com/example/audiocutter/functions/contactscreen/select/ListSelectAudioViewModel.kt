@@ -26,10 +26,10 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
     fun getData(): LiveData<List<SelectItemView>> {
         return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) { items ->
-            Log.d("nmcode", "live data size: " + items.size)
+            Log.d("nmcode", "live data size: " + items.listAudioFiles.size)
             // lan dau tien lay du lieu
             if (mListAudioFileView.size == 0) {
-                items.forEach {
+                items.listAudioFiles.forEach {
                     mListAudioFileView.add(SelectItemView(it))
                 }
                 mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
@@ -38,7 +38,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
             } else { // khi thay doi du lieu update
                 // dong bo hoa du lieu list cu va moi
                 val newListSelectItemView = ArrayList<SelectItemView>()
-                items.forEach {
+                items.listAudioFiles.forEach {
                     val audioFileView = getAudioFileView(it.file.absolutePath)
                     if (audioFileView != null) {
                         newListSelectItemView.add(audioFileView)
@@ -109,8 +109,8 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
 //        selectItemView.audioFile.time = 1000
 
-        ManagerFactory.getAudioFileManager()        // lay time total cho file audio
-            .getDurationByPath(mListAudioFileView[position].audioFile.file)
+     /*   ManagerFactory.getAudioFileManager()        // lay time total cho file audio
+            .getDurationByPath(mListAudioFileView[position].audioFile.file)*/
 
         mListAudioFileView.set(position, selectItemView)
         return mListAudioFileView
