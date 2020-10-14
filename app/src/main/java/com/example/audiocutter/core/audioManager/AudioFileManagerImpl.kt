@@ -30,7 +30,6 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.NullPointerException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -46,7 +45,8 @@ object AudioFileManagerImpl : AudioFileManager {
     private val TAG = AudioFileManagerImpl::class.java.name
     lateinit var mContext: Context
     private var initialized = false
-
+    private var pathParent = ""
+    private var nameTmp = ""
 
     private var _listAllAudioFile = MutableLiveData<AudioFileScans>()
     val listAllAudioFile: LiveData<AudioFileScans>
@@ -366,6 +366,29 @@ object AudioFileManagerImpl : AudioFileManager {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+        return pathParent
+    }
+
+    override fun getPathParentFileByName(name: String, typeFile: Folder): String {
+        val random = Random()
+        var text = ""
+        var nameTmp = ""
+        listData.forEach { item ->
+            text += "${item.fileName},"
+        }
+        if (text.contains(name)) {
+            nameTmp = "$name(${random.nextInt(10)})"
+        } else {
+            nameTmp = name
+        }
+        pathParent = when (typeFile) {
+            Folder.TYPE_CUTTER -> "$SUB_PATH/cutter/$nameTmp"
+            Folder.TYPE_MERGER -> "$SUB_PATH/merger$nameTmp"
+            Folder.TYPE_MIXER -> "$SUB_PATH/mixer$nameTmp"
+        }
+
+        Log.d(TAG, "getParentFileName: $text")
+
         return pathParent
     }
 

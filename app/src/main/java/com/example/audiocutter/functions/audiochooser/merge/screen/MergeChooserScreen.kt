@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.audiochooser.merge.screen
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -32,9 +33,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeAdapter.Au
 
     var currentPos = -1
 
-    var listTmp: MutableList<AudioCutterView> = mutableListOf()
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        listTmp = listMusic.toMutableList()
         audioMerAdapter.submitList(ArrayList(listMusic))
 
     }
@@ -100,9 +99,9 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeAdapter.Au
         binding.tvEmptyListMer.visibility = View.GONE
         binding.ivEmptyListMerge.visibility = View.GONE
         if (yourTextSearch.isEmpty()) {
-            audioMerAdapter.submitList(listTmp)
+            audioMerAdapter.submitList(audioMerModel.getListAudio())
         }
-        if (audioMerModel.searchAudio(listTmp, yourTextSearch).isNotEmpty()) {
+        if (audioMerModel.searchAudio(audioMerModel.getListAudio(), yourTextSearch).isNotEmpty()) {
             audioMerAdapter.submitList(audioMerModel.getListsearch())
         } else {
             binding.rvMerge.visibility = View.GONE
@@ -146,12 +145,8 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeAdapter.Au
 
 
     private fun hideKeyBroad() {
-        val imm = requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        var view = requireActivity().currentFocus
-        if (view == null) {
-            view = View(activity)
-        }
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
 
@@ -241,7 +236,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeAdapter.Au
         binding.rltNextMerParent.visibility = View.VISIBLE
         binding.tvEmptyListMer.visibility = View.GONE
         binding.ivEmptyListMerge.visibility = View.GONE
-        audioMerAdapter.submitList(listTmp)
+        audioMerAdapter.submitList(audioMerModel.getListAudio())
         hideKeyBroad()
         hideOrShowEditText(View.GONE)
         hideOrShowView(View.VISIBLE)

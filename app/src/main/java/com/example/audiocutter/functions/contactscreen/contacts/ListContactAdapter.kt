@@ -47,7 +47,6 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
         } else {
             super.submitList(null)
         }
-
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -87,7 +86,8 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                     itemViewHolder.tvRingtone.visibility = View.VISIBLE
 
                     val contactInfomation = Utils.getNameByUri(mContext!!, contactItem.contactItem.ringtone!!)   // get name song by uri
-                    itemViewHolder.tvRingtone.text = contactInfomation.title.toLowerCase()
+                    itemViewHolder.tvRingtone.text =
+                        contactInfomation.title.toLowerCase(Locale.getDefault())
 
                 } else {
                     itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
@@ -95,9 +95,13 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                     itemViewHolder.tvRingtone.visibility = View.GONE
 
                     if (Utils.getUriRingtoneDefault(mContext!!) != null) {
-                        val contactInfomation = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
-                            .toString())
-                        itemViewHolder.tvRingtoneDefault.text = contactInfomation.title.toLowerCase()
+                        val contactInfomation = Utils.getNameByUri(
+                            mContext!!, Utils.getUriRingtoneDefault(mContext!!)
+                                .toString()
+                        )
+                        itemViewHolder.tvRingtoneDefault.text = contactInfomation.title.toLowerCase(
+                            Locale.getDefault()
+                        )
                     }
 
                 }

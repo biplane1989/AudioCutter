@@ -42,7 +42,7 @@ class AudiocutterAdapter(val mContext: Context) :
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AudiocutterHolder {
-        val view = LayoutInflater.from(mContext).inflate(R.layout.item_audio, parent, false)
+        val view = LayoutInflater.from(mContext).inflate(R.layout.item_audio_cutter, parent, false)
         return AudiocutterHolder(view)
     }
 

@@ -20,6 +20,7 @@ class AudioCutterModel : BaseViewModel() {
     private val TAG = AudioCutterModel::class.java.name
     private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
+    private var mListAudioSearch = ArrayList<AudioCutterView>()
     var duration: Long? = 0L
     private lateinit var mcallBack: OnActionCallback
 
@@ -123,17 +124,22 @@ class AudioCutterModel : BaseViewModel() {
         listTmp: MutableList<AudioCutterView>,
         yourTextSearch: String
     ): ArrayList<AudioCutterView> {
-        mListAudio.clear()
+        mListAudioSearch.clear()
         listTmp.forEach {
-            val rs = it.audioFile.fileName.toLowerCase().contains(yourTextSearch.toLowerCase())
+            val rs = it.audioFile.fileName.toLowerCase(Locale.getDefault())
+                .contains(yourTextSearch.toLowerCase(Locale.getDefault()))
             if (rs) {
-                mListAudio.add(it)
+                mListAudioSearch.add(it)
             }
         }
-        return mListAudio
+        return mListAudioSearch
     }
 
     fun getListsearch(): ArrayList<AudioCutterView> {
+        return mListAudioSearch
+    }
+
+    fun getListAudio(): ArrayList<AudioCutterView> {
         return mListAudio
     }
 

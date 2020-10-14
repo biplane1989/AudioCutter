@@ -1,27 +1,14 @@
 package com.example.audiocutter.functions.contactscreen.contacts
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.ProgressBar
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.PermissionChecker
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -31,7 +18,6 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.ContactManagerImpl
 import com.example.audiocutter.databinding.ListContactScreenBinding
 import kotlinx.android.synthetic.main.list_contact_screen.*
-import kotlinx.coroutines.delay
 
 
 class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListener {

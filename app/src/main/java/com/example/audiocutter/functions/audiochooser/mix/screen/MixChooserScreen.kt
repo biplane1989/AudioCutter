@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.audiochooser.mix.screen
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -38,11 +39,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
 
 
 
-    var listTmp: MutableList<AudioCutterView> = mutableListOf()
     var isChangeList = true
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        listTmp = listMusic.toMutableList()
         audioMixAdapter.submitList(ArrayList(listMusic))
 
     }
@@ -78,7 +77,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         runOnUI {
             delay(500)
             val listAudioViewLiveData = audioMixModel.getAllAudioFile()
-            listAudioViewLiveData.removeObserver(listAudioObserver)
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
         }
     }
@@ -119,9 +117,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         binding.tvEmptyListMixer.visibility = View.GONE
         binding.ivEmptyListMixer.visibility = View.GONE
         if (yourTextSearch.isEmpty()) {
-            audioMixAdapter.submitList(listTmp)
+            audioMixAdapter.submitList(audioMixModel.getListAudio())
         }
-        if (audioMixModel.searchAudio(listTmp, yourTextSearch).isNotEmpty()) {
+        if (audioMixModel.searchAudio(audioMixModel.getListAudio(), yourTextSearch).isNotEmpty()) {
             audioMixAdapter.submitList(audioMixModel.getListsearch())
         } else {
             binding.rvMixer.visibility = View.GONE
@@ -175,13 +173,8 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
 
 
     private fun hideKeyBroad() {
-        val imm =
-            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        var view = requireActivity().currentFocus
-        if (view == null) {
-            view = View(activity)
-        }
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
 
@@ -249,7 +242,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
 
     private fun handleAudiofile() {
         val listItemHandle = audioMixModel.getListItemChoose()
-
         listItemHandle.forEach {
             Log.d(TAG, "handleAudiofile: ${it.audioFile.fileName}")
         }
@@ -271,7 +263,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         binding.rltNextMixerParent.visibility = View.VISIBLE
         binding.tvEmptyListMixer.visibility = View.GONE
         binding.ivEmptyListMixer.visibility = View.GONE
-        audioMixAdapter.submitList(listTmp)
+        audioMixAdapter.submitList(audioMixModel.getListAudio())
         hideKeyBroad()
         hideOrShowEditText(View.GONE)
         hideOrShowView(View.VISIBLE)

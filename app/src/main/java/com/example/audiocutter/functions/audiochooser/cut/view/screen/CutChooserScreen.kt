@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.audiochooser.cut.view.screen
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -42,10 +43,8 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
     var currentPos = -1
 
 
-    var listTmp: MutableList<AudioCutterView> = mutableListOf()
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        listTmp = listMusic.toMutableList()
         audioCutterAdapter.submitList(ArrayList(listMusic))
     }
 
@@ -127,9 +126,11 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
         binding.ivEmptyListCutter.visibility = View.GONE
 
         if (yourTextSearch.isEmpty()) {
-            audioCutterAdapter.submitList(listTmp)
+            audioCutterAdapter.submitList(audioCutterModel.getListAudio())
         }
-        if (audioCutterModel.searchAudio(listTmp, yourTextSearch).isNotEmpty()) {
+        if (audioCutterModel.searchAudio(audioCutterModel.getListAudio(), yourTextSearch)
+                .isNotEmpty()
+        ) {
             audioCutterAdapter.submitList(audioCutterModel.getListsearch())
             Log.d(TAG, "seachAudioByName: ${audioCutterModel.getListsearch().size}")
         } else {
@@ -166,16 +167,12 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
 
 
     private fun hideKeyBroad() {
-        val imm =
-            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        var view = requireActivity().currentFocus
-        if (view == null) {
-            view = View(activity)
-        }
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
     private fun showKeybroad() {
+        binding.edtCutterSearch.requestFocus()
         val imm =
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
@@ -259,11 +256,11 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
     }
 
     private fun previousStatus() {
+        hideKeyBroad()
         binding.rvAudioCutter.visibility = View.VISIBLE
         binding.tvEmptyListCutter.visibility = View.GONE
         binding.ivEmptyListCutter.visibility = View.GONE
-        audioCutterAdapter.submitList(listTmp)
-        hideKeyBroad()
+        audioCutterAdapter.submitList(audioCutterModel.getListAudio())
         hideOrShowEditText(View.GONE)
         hideOrShowView(View.VISIBLE)
     }

@@ -10,14 +10,24 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.cut.objs.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.merge.event.OnActionCallback
 import java.io.File
+import java.util.*
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 
 class MixModel : BaseViewModel() {
     private val TAG = MixModel::class.java.name
     private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
+    private var mListAudioSearch = ArrayList<AudioCutterView>()
     var isChooseItem = false
 
     private lateinit var mcallBack: OnActionCallback
+
+    private val sortListByName: Comparator<AudioCutterView> =
+        Comparator { m1, m2 ->
+            m1!!.audioFile.fileName.substring(0, 1).toUpperCase()
+                .compareTo(m2!!.audioFile.fileName.substring(0, 1).toUpperCase())
+        }
 
     fun setOnCallback(event: OnActionCallback) {
         mcallBack = event
@@ -35,6 +45,7 @@ class MixModel : BaseViewModel() {
             } else {
                 mcallBack.hideProgress()
             }
+            Collections.sort(mListAudio, sortListByName)
             mListAudio
         }
     }
@@ -98,17 +109,21 @@ class MixModel : BaseViewModel() {
         listTmp: MutableList<AudioCutterView>,
         yourTextSearch: String
     ): ArrayList<AudioCutterView> {
-        mListAudio.clear()
+        mListAudioSearch.clear()
         listTmp.forEach {
             val rs = it.audioFile.fileName.toLowerCase().contains(yourTextSearch.toLowerCase())
             if (rs) {
-                mListAudio.add(it)
+                mListAudioSearch.add(it)
             }
         }
-        return mListAudio
+        return mListAudioSearch
     }
 
     fun getListsearch(): ArrayList<AudioCutterView> {
+        return mListAudioSearch
+    }
+
+    fun getListAudio(): ArrayList<AudioCutterView> {
         return mListAudio
     }
 
