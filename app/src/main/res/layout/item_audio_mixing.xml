@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="80dp">
 
-    <com.example.audiocutter.functions.audiochooser.cut.widget.ProgressView
+    <com.example.audiocutter.ui.audiochooser.cut.ProgressView
         android:id="@+id/pg_mixing_choose_screen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

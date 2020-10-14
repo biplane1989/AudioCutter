@@ -4,7 +4,8 @@ import androidx.navigation.fragment.findNavController
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateMutable
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateScreen
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.functions.contacts.contacts.ListContactScreenDirections
+import com.example.audiocutter.functions.contacts.screens.ListContactScreenDirections
+
 
 interface ContactScreenViewState {
     fun getViewStateMutable(): ViewStateMutable
