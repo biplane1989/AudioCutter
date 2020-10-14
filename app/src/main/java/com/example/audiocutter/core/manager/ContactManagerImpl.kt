@@ -13,10 +13,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.core.ManagerFactory
-import com.example.audiocutter.functions.contactscreen.contacts.GetContactResult
+import com.example.audiocutter.functions.contacts.contacts.GetContactResult
 import com.example.audiocutter.objects.ContactItem
 import kotlinx.coroutines.*
-import kotlin.math.log
 
 object ContactManagerImpl : ContactManager {
 

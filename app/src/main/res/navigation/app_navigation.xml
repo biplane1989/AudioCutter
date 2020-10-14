@@ -44,7 +44,7 @@
     </fragment>
     <fragment
         android:id="@+id/list_contact_screen"
-        android:name="com.example.audiocutter.functions.contactscreen.contacts.ListContactScreen"
+        android:name="com.example.audiocutter.functions.contacts.contacts.ListContactScreen"
         tools:layout="@layout/list_contact_screen">
         <action
             android:id="@+id/go_to_list_select_audio_screen"
@@ -53,7 +53,7 @@
 
     <fragment
         android:id="@+id/list_select_audio_screen"
-        android:name="com.example.audiocutter.functions.contactscreen.select.ListSelectAudioScreen"
+        android:name="com.example.audiocutter.functions.contacts.select.ListSelectAudioScreen"
         tools:layout="@layout/list_contact_select_screen">
         <argument
             android:name="phoneNumber"
@@ -65,7 +65,7 @@
 
     <fragment
         android:id="@+id/my_audio_screen"
-        android:name="com.example.audiocutter.functions.mystudioscreen.MyAudioManagerScreen"
+        android:name="com.example.audiocutter.functions.mystudio.MyAudioManagerScreen"
         tools:layout="@layout/my_studio_screen" />
 
     <fragment

@@ -10,7 +10,7 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.util.TypedValue
-import com.example.audiocutter.functions.contactscreen.contacts.ContactInfomation
+import com.example.audiocutter.functions.contacts.contacts.ContactInfomation
 import java.text.Normalizer
 import java.util.regex.Pattern
 

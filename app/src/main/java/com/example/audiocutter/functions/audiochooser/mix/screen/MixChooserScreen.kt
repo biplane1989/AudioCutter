@@ -21,22 +21,17 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MixChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.cut.objs.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.cut.view.screen.CutChooserScreen
-import com.example.audiocutter.functions.audiochooser.mix.adapter.MixAdapter
+import com.example.audiocutter.functions.audiochooser.mix.adapter.MixChooserAdapter
 
-class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioMixerListener {
+class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter.AudioMixerListener {
 
     val TAG = CutChooserScreen::class.java.name
-    private lateinit var audioMixAdapter: MixAdapter
-    private lateinit var audioMixModel: MixModel
+    private lateinit var audioMixAdapter: MixChooserAdapter
+    private lateinit var audioMixModel: MixChooserModel
     private lateinit var binding: MixChooserScreenBinding
     var currentPos = -1
 
-    //rlt_next_recent_parent
-
-
-
     var listTmp: MutableList<AudioCutterView> = mutableListOf()
-    var isChangeList = true
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
         listTmp = listMusic.toMutableList()
@@ -45,14 +40,14 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     }
 
     private val playerInfoObserver = Observer<PlayerInfo> {
-            audioMixAdapter.submitList(audioMixModel.updateMediaInfo(it))
+        audioMixAdapter.submitList(audioMixModel.updateMediaInfo(it))
     }
 
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioMixAdapter = MixAdapter(requireContext())
-        audioMixModel = ViewModelProvider(this).get(MixModel::class.java)
+        audioMixAdapter = MixChooserAdapter(requireContext())
+        audioMixModel = ViewModelProvider(this).get(MixChooserModel::class.java)
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
@@ -116,17 +111,13 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
 
 
     private fun initViews() {
-
-
         binding.ivAudioMixerScreenFile.setOnClickListener(this)
         binding.ivMixerScreenSearch.setOnClickListener(this)
         binding.ivMixerScreenBackEdt.setOnClickListener(this)
         binding.ivMixerScreenClose.setOnClickListener(this)
         binding.rltNextMixer.setOnClickListener(this)
-
+        binding.ivMixerScreenBack.setOnClickListener(this)
         audioMixAdapter.setAudioCutterListtener(this)
-
-
     }
 
     private fun showKeybroad() {
@@ -211,12 +202,23 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     }
 
 
-    override fun onClick(v: View) {
-        when (v.id) {
-            R.id.iv_mixer_screen_search -> searchAudiofile()
-            R.id.iv_mixer_screen_back_edt -> previousStatus()
-            R.id.iv_mixer_screen_close -> clearText()
-            R.id.rlt_next_mixer -> handleAudiofile()
+    override fun onClick(view: View) {
+        when (view) {
+            binding.ivMixerScreenSearch -> {
+                searchAudiofile()
+            }
+            binding.ivMixerScreenBackEdt -> {
+                previousStatus()
+            }
+            binding.ivMixerScreenClose -> {
+                clearText()
+            }
+            binding.rltNextMixer -> {
+                handleAudiofile()
+            }
+            binding.ivMixerScreenBack -> {
+                activity?.onBackPressed()
+            }
         }
     }
 
@@ -255,9 +257,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         hideOrShowEditText(View.VISIBLE)
         hideOrShowView(View.GONE)
     }
-
-
-
 
 
     override fun onDestroyView() {
