@@ -10,15 +10,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
+import com.example.audiocutter.databinding.MixChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.cut.objs.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.cut.view.screen.CutChooserScreen
 import com.example.audiocutter.functions.audiochooser.mix.adapter.MixAdapter
@@ -26,28 +26,14 @@ import com.example.audiocutter.functions.audiochooser.mix.adapter.MixAdapter
 class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioMixerListener {
 
     val TAG = CutChooserScreen::class.java.name
-    private lateinit var mView: View
-    private lateinit var rvAudioMix: RecyclerView
     private lateinit var audioMixAdapter: MixAdapter
     private lateinit var audioMixModel: MixModel
-    lateinit var ivFile: ImageView
-    lateinit var ivEmptyList: ImageView
-    lateinit var ivSearch: ImageView
-    lateinit var ivBack: ImageView
-    lateinit var ivBackEdt: ImageView
-    lateinit var tbName: TableRow
-    lateinit var tvEmptyList: TextView
-    lateinit var ivClose: ImageView
-    lateinit var edtSearch: EditText
+    private lateinit var binding: MixChooserScreenBinding
     var currentPos = -1
 
     //rlt_next_recent_parent
 
-    lateinit var ivNextMix: ImageView
-    lateinit var tvNextMix: TextView
-    lateinit var tvCountFile: TextView
-    lateinit var rltNextMix: RelativeLayout
-    lateinit var rltNextMixParent: RelativeLayout
+
 
     var listTmp: MutableList<AudioCutterView> = mutableListOf()
     var isChangeList = true
@@ -75,10 +61,10 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mView = inflater.inflate(R.layout.mix_chooser_screen, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.mix_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
-        return mView
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -92,14 +78,14 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     }
 
     private fun checkEdtSearchAudio() {
-        edtSearch.addTextChangedListener(object : TextWatcher {
+        binding.edtMixerSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 Log.d(TAG, "onTextChanged: $p0 - $p1-  $p2- $p3")
-                searchAudioByName(edtSearch.text.toString())
+                searchAudioByName(binding.edtMixerSearch.text.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -110,51 +96,35 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
 
     private fun searchAudioByName(yourTextSearch: String) {
         setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_audio_disabled, false)
-        tvCountFile.text = getString(R.string.countFile)
-        rvAudioMix.visibility = View.VISIBLE
-        rltNextMixParent.visibility = View.VISIBLE
-        tvEmptyList.visibility = View.GONE
-        ivEmptyList.visibility = View.GONE
+        binding.tvCountFile.text = getString(R.string.countFile)
+        binding.rvMixer.visibility = View.VISIBLE
+        binding.rltNextMixerParent.visibility = View.VISIBLE
+        binding.tvEmptyListMixer.visibility = View.GONE
+        binding.ivEmptyListMixer.visibility = View.GONE
         if (yourTextSearch.isEmpty()) {
             audioMixAdapter.submitList(listTmp)
         }
         if (audioMixModel.searchAudio(listTmp, yourTextSearch).isNotEmpty()) {
             audioMixAdapter.submitList(audioMixModel.getListsearch())
         } else {
-            rvAudioMix.visibility = View.GONE
-            rltNextMixParent.visibility = View.GONE
-            tvEmptyList.visibility = View.VISIBLE
-            ivEmptyList.visibility = View.VISIBLE
+            binding.rvMixer.visibility = View.GONE
+            binding.rltNextMixerParent.visibility = View.GONE
+            binding.tvEmptyListMixer.visibility = View.VISIBLE
+            binding.ivEmptyListMixer.visibility = View.VISIBLE
         }
     }
 
 
     private fun initViews() {
 
-        rltNextMix = mView.findViewById(R.id.rlt_next_mixer)
-        rltNextMixParent = mView.findViewById(R.id.rlt_next_mixer_parent)
-        ivNextMix = mView.findViewById(R.id.iv_next_mixer)
-        tvNextMix = mView.findViewById(R.id.tv_next_mixer)
-        tvCountFile = mView.findViewById(R.id.tv_count_file)
 
-        ivFile = mView.findViewById(R.id.iv_audio_mixer_screen_file)
-        ivEmptyList = mView.findViewById(R.id.iv_empty_list_mixer)
-        ivBack = mView.findViewById(R.id.iv_mixer_screen_back)
-        ivBackEdt = mView.findViewById(R.id.iv_mixer_screen_back_edt)
-        ivClose = mView.findViewById(R.id.iv_mixer_screen_close)
-        ivSearch = mView.findViewById(R.id.iv_mixer_screen_search)
-        tbName = mView.findViewById(R.id.tb_name_mixer)
-        tvEmptyList = mView.findViewById(R.id.tv_empty_list_mixer)
-        edtSearch = mView.findViewById(R.id.edt_mixer_search)
-
-        ivFile.setOnClickListener(this)
-        ivSearch.setOnClickListener(this)
-        ivBackEdt.setOnClickListener(this)
-        ivClose.setOnClickListener(this)
-        rltNextMix.setOnClickListener(this)
+        binding.ivAudioMixerScreenFile.setOnClickListener(this)
+        binding.ivMixerScreenSearch.setOnClickListener(this)
+        binding.ivMixerScreenBackEdt.setOnClickListener(this)
+        binding.ivMixerScreenClose.setOnClickListener(this)
+        binding.rltNextMixer.setOnClickListener(this)
 
         audioMixAdapter.setAudioCutterListtener(this)
-        rvAudioMix = mView.findViewById(R.id.rv_mixer)
 
 
     }
@@ -167,15 +137,15 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
 
 
     private fun hideOrShowEditText(status: Int) {
-        ivBackEdt.visibility = status
-        ivClose.visibility = status
-        edtSearch.visibility = status
+        binding.ivMixerScreenBackEdt.visibility = status
+        binding.ivMixerScreenClose.visibility = status
+        binding.edtMixerSearch.visibility = status
     }
 
     private fun hideOrShowView(status: Int) {
-        ivSearch.visibility = status
-        tbName.visibility = status
-        ivFile.visibility = status
+        binding.ivMixerScreenSearch.visibility = status
+        binding.tbNameMixer.visibility = status
+        binding.ivAudioMixerScreenFile.visibility = status
     }
 
 
@@ -193,9 +163,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     private fun initLists() {
 
 
-        rvAudioMix.adapter = audioMixAdapter
-        rvAudioMix.setHasFixedSize(true)
-        rvAudioMix.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvMixer.adapter = audioMixAdapter
+        binding.rvMixer.setHasFixedSize(true)
+        binding.rvMixer.layoutManager = LinearLayoutManager(requireContext())
 
     }
 
@@ -229,15 +199,15 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         if (audioMixModel.isChooseItem) {
             showToast(getString(R.string.ToastExceed))
         }
-        tvCountFile.text = "${audioMixModel.checkList()} file"
+        binding.tvCountFile.text = "${audioMixModel.checkList()} file"
     }
 
 
     private fun setColorButtonNext(color: Int, bg: Int, rs: Boolean) {
-        rltNextMix.isEnabled = rs
-        rltNextMix.setBackgroundResource(bg)
-        ivNextMix.setColorFilter(requireActivity().resources.getColor(color));
-        tvNextMix.setTextColor(requireActivity().resources.getColor(color))
+        binding.rltNextMixer.isEnabled = rs
+        binding.rltNextMixer.setBackgroundResource(bg)
+        binding.ivNextMixer.setColorFilter(requireActivity().resources.getColor(color));
+        binding.tvNextMixer.setTextColor(requireActivity().resources.getColor(color))
     }
 
 
@@ -263,17 +233,17 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     }
 
     private fun clearText() {
-        if (!edtSearch.text.toString().isEmpty()) {
-            edtSearch.setText("")
+        if (!binding.edtMixerSearch.text.toString().isEmpty()) {
+            binding.edtMixerSearch.setText("")
         }
     }
 
     private fun previousStatus() {
-        edtSearch.setText("")
-        rvAudioMix.visibility = View.VISIBLE
-        rltNextMixParent.visibility = View.VISIBLE
-        tvEmptyList.visibility = View.GONE
-        ivEmptyList.visibility = View.GONE
+        binding.edtMixerSearch.setText("")
+        binding.rvMixer.visibility = View.VISIBLE
+        binding.rltNextMixerParent.visibility = View.VISIBLE
+        binding.tvEmptyListMixer.visibility = View.GONE
+        binding.ivEmptyListMixer.visibility = View.GONE
         audioMixAdapter.submitList(listTmp)
         hideKeyBroad()
         hideOrShowEditText(View.GONE)

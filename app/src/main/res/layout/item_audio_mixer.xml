@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="80dp">
+    android:layout_height="80dp"
+    android:paddingHorizontal="@dimen/d_16">
 
     <com.example.audiocutter.functions.audiochooser.cut.widget.ProgressView
         android:id="@+id/pg_audio_mixer_screen"
@@ -22,6 +23,7 @@
             android:id="@+id/iv_controller_audio_recent"
             android:layout_width="45dp"
             android:layout_height="45dp"
+            android:scaleType="centerInside"
             android:background="?attr/selectableItemBackground"
             android:src="@drawable/ic_audiocutter_play" />
     <LinearLayout

@@ -20,6 +20,7 @@
         <ImageView
 
             android:id="@+id/iv_controller_audio"
+            android:scaleType="centerInside"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:background="?attr/selectableItemBackground"
