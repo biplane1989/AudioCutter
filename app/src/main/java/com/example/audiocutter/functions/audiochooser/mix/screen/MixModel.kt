@@ -8,6 +8,7 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.cut.objs.AudioCutterView
+import com.example.audiocutter.functions.audiochooser.merge.event.OnActionCallback
 import java.io.File
 
 class MixModel : BaseViewModel() {
@@ -16,12 +17,23 @@ class MixModel : BaseViewModel() {
     private var mListAudio = ArrayList<AudioCutterView>()
     var isChooseItem = false
 
+    private lateinit var mcallBack: OnActionCallback
 
-     fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
+    fun setOnCallback(event: OnActionCallback) {
+        mcallBack = event
+    }
+
+
+    fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
             mListAudio.clear()
             it.listAudioFiles.forEach {
                 mListAudio.add(AudioCutterView(it))
+            }
+            if (mListAudio.size == 0) {
+                mcallBack.showEmptyCallback()
+            } else {
+                mcallBack.hideProgress()
             }
             mListAudio
         }

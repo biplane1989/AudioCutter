@@ -29,14 +29,14 @@ class MixAdapter(val mContext: Context) :
     }
 
     override fun submitList(list: List<AudioCutterView>?) {
-
-        if (list != null) {
+        if (list!!.size != 0 || list != null) {
             listAudios = ArrayList(list)
             super.submitList(listAudios)
-        } else {
-            listAudios = ArrayList()
-            super.submitList(listAudios)
-        }
+        } else
+            if (list!!.size == 0 || list == null) {
+                listAudios = ArrayList()
+                super.submitList(listAudios)
+            }
     }
 
 

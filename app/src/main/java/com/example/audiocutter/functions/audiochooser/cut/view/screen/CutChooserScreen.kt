@@ -25,13 +25,14 @@ import com.example.audiocutter.functions.audiochooser.cut.dialog.SetAsDoneDialog
 import com.example.audiocutter.functions.audiochooser.cut.objs.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.cut.objs.TypeAudioSetAs
 import com.example.audiocutter.functions.audiochooser.cut.view.adapter.AudiocutterAdapter
+import com.example.audiocutter.functions.audiochooser.merge.event.OnActionCallback
+import kotlinx.coroutines.delay
 
 
 class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
-    SetAsDialog.setAsListener, View.OnClickListener {
+    SetAsDialog.setAsListener, View.OnClickListener, OnActionCallback {
     val TAG = CutChooserScreen::class.java.name
     private lateinit var binding: CutChooserScreenBinding
-
     private lateinit var audioCutterAdapter: AudiocutterAdapter
     private lateinit var audioCutterModel: AudioCutterModel
     lateinit var dialog: SetAsDialog
@@ -57,6 +58,7 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
         super.onPostCreate(savedInstanceState)
         audioCutterAdapter = AudiocutterAdapter(requireContext())
         audioCutterModel = ViewModelProvider(this).get(AudioCutterModel::class.java)
+        audioCutterModel.setOnCallback(this)
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
@@ -75,10 +77,31 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLists()
+        showProgressBar(true)
         runOnUI {
+            delay(500)
             val listAudioViewLiveData = audioCutterModel.getAllAudioFile()
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
         }
+    }
+
+    private fun showProgressBar(b: Boolean) {
+        if (b) {
+            binding.pgrAudioCutter.visibility = View.VISIBLE
+        } else {
+            binding.pgrAudioCutter.visibility = View.GONE
+        }
+    }
+
+    override fun showEmptyCallback() {
+        binding.rvAudioCutter.visibility = View.INVISIBLE
+        binding.ivEmptyListCutter.visibility = View.VISIBLE
+        binding.tvEmptyListCutter.visibility = View.VISIBLE
+        showProgressBar(false)
+    }
+
+    override fun hideProgress() {
+        showProgressBar(false)
     }
 
     private fun checkEdtSearchAudio() {
@@ -118,7 +141,6 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
 
 
     private fun initViews() {
-
         binding.ivAudioCutterScreenFile.setOnClickListener(this)
         binding.ivCutterScreenSearch.setOnClickListener(this)
         binding.ivCutterScreenBackEdt.setOnClickListener(this)
@@ -191,6 +213,8 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
         dialog.setOnCallBack(this)
         dialog.show()
     }
+
+
 
     override fun setAudioAs(typeAudioSetAs: TypeAudioSetAs) {
         var rs = false

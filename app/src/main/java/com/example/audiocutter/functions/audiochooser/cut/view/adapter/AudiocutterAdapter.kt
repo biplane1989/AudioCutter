@@ -30,13 +30,14 @@ class AudiocutterAdapter(val mContext: Context) :
     }
 
     override fun submitList(list: List<AudioCutterView>?) {
-        if (list != null) {
+        if (list!!.size != 0 || list != null) {
             listAudios = ArrayList(list)
             super.submitList(listAudios)
-        } else {
-            listAudios = ArrayList()
-            super.submitList(listAudios)
-        }
+        } else
+            if (list!!.size == 0 || list == null) {
+                listAudios = ArrayList()
+                super.submitList(listAudios)
+            }
     }
 
 
@@ -209,8 +210,7 @@ class AudiocutterAdapter(val mContext: Context) :
         fun play(pos: Int)
         fun pause(pos: Int)
         fun resume(pos: Int)
-        fun showDialogSetAs(itemAudio: AudioCutterView) {
-        }
+        fun showDialogSetAs(itemAudio: AudioCutterView)
     }
 }
 

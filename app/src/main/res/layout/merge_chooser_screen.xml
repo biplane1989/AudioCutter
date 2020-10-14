@@ -111,7 +111,12 @@
             </RelativeLayout>
         </LinearLayout>
 
-
+<ProgressBar
+    android:id="@+id/pgr_audio_merge"
+    android:layout_width="60dp"
+    android:visibility="invisible"
+    android:layout_height="60dp"
+    android:layout_centerInParent="true" />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_merge"
             android:layout_width="match_parent"

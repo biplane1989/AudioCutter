@@ -17,6 +17,7 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
@@ -29,6 +30,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.NullPointerException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -121,8 +123,8 @@ object AudioFileManagerImpl : AudioFileManager {
                             name = preName
                         }
                         val id = cursor.getString(clID)
-                        val bitmap =
-                            getBitmapByPath(data)
+//                        val bitmap = getBitmapByPath(data)
+                        val bitmap = BitmapFactory.decodeResource(mContext.resources, R.drawable.ic_play_mixing_audio)
                         val title = cursor.getString(clTitle)
                         val album = cursor.getString(clAlbum)
                         val artist = cursor.getString(clArtist)
@@ -137,12 +139,10 @@ object AudioFileManagerImpl : AudioFileManager {
                         }
 
 
-                        val bitRate =
-                            getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_BITRATE)
-//                    val bitRate = 128
-                        val duration =
-                            getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_DURATION)
-//                    val duration = 1000
+//                        val bitRate = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_BITRATE)
+                    val bitRate = 128
+//                        val duration = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_DURATION)
+                    val duration = 1000
                         val uri = getUriFromFile(id, resolver, file)
                         Log.d(
                             "TAG",
@@ -204,13 +204,17 @@ object AudioFileManagerImpl : AudioFileManager {
             if (itemFile != null) {
                 val mediaMetadataRetriever = MediaMetadataRetriever()
                 mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
+
                 return mediaMetadataRetriever.extractMetadata(type)!!
             }
         } catch (e: Exception) {
             e.printStackTrace()
+        }catch (e:NullPointerException){
+
         }
         return ""
     }
+
 
     @SuppressLint("SimpleDateFormat")
     override fun getDateCreatFile(file: File?): String? {
@@ -266,20 +270,21 @@ object AudioFileManagerImpl : AudioFileManager {
 
 
     private fun getBitmapByPath(path: String?): Bitmap? {
-        path?.let {
-            val mMediaMeta = MediaMetadataRetriever()
-            val buff: ByteArray?
-            val bitmap: Bitmap?
-            val bitmapfactory = BitmapFactory.Options()
+        try {
+            path?.let {
+                val mMediaMeta = MediaMetadataRetriever()
+                val buff: ByteArray?
+                val bitmap: Bitmap?
+                val bitmapfactory = BitmapFactory.Options()
 
-            try {
                 mMediaMeta.setDataSource(path)
                 buff = mMediaMeta.embeddedPicture
                 bitmap = BitmapFactory.decodeByteArray(buff, 0, buff!!.size, bitmapfactory)
                 return bitmap
-            } catch (e: Exception) {
-//                e.printStackTrace()
+
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         return null
     }

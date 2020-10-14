@@ -8,13 +8,26 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.cut.objs.AudioCutterView
+import com.example.audiocutter.functions.audiochooser.merge.event.OnActionCallback
 import java.io.File
+import java.util.*
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 
 class AudioCutterModel : BaseViewModel() {
+
+
     private val TAG = AudioCutterModel::class.java.name
     private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
     var duration: Long? = 0L
+    private lateinit var mcallBack: OnActionCallback
+
+
+    fun setOnCallback(event: OnActionCallback) {
+        mcallBack = event
+    }
+
     private val sortListByName: Comparator<AudioCutterView> =
         Comparator { m1, m2 ->
             m1!!.audioFile.fileName.substring(0, 1).toUpperCase()
@@ -24,10 +37,16 @@ class AudioCutterModel : BaseViewModel() {
     fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(
             ManagerFactory.getAudioFileManager().findAllAudioFiles()
-        ) {
+        ) { it ->
             mListAudio.clear()
             it.listAudioFiles.forEach {
                 mListAudio.add(AudioCutterView(it))
+            }
+            Collections.sort(mListAudio, sortListByName)
+            if (mListAudio.size == 0) {
+                mcallBack.showEmptyCallback()
+            } else {
+                mcallBack.hideProgress()
             }
             mListAudio
         }

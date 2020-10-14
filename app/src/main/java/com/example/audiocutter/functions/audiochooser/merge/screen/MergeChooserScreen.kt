@@ -20,33 +20,17 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MergeChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.cut.objs.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.merge.adapters.MergeAdapter
+import com.example.audiocutter.functions.audiochooser.merge.event.OnActionCallback
+import kotlinx.coroutines.delay
 
-class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeAdapter.AudioMergeListener {
-    private lateinit var mView: View
+class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeAdapter.AudioMergeListener,
+    OnActionCallback {
     private lateinit var binding: MergeChooserScreenBinding
 
-    //    private lateinit var rvAudioMer: RecyclerView
     private lateinit var audioMerAdapter: MergeAdapter
     private lateinit var audioMerModel: MergeChooserModel
 
-    //    lateinit var ivFile: ImageView
-//    lateinit var ivSearch: ImageView
-//    lateinit var ivBack: ImageView
-//    lateinit var ivBackEdt: ImageView
-//    lateinit var tbName: TableRow
-//    lateinit var tvEmptyList: TextView
-//    lateinit var ivClose: ImageView
-//    lateinit var ivEmptyList: ImageView
-//    lateinit var edtSearch: EditText
     var currentPos = -1
-
-//rlt_next_recent_parent
-
-//    lateinit var ivNextMer: ImageView
-//    lateinit var tvNextMer: TextView
-//    lateinit var tvCountFile: TextView
-//    lateinit var rltNextMer: RelativeLayout
-//    lateinit var rltNextMerParent: RelativeLayout
 
     var listTmp: MutableList<AudioCutterView> = mutableListOf()
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
@@ -67,6 +51,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeAdapter.Au
                 requireContext()
             )
         audioMerModel = ViewModelProvider(this).get(MergeChooserModel::class.java)
+        audioMerModel.setOnCallBack(this)
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
@@ -84,12 +69,14 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeAdapter.Au
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLists()
+        showProgressBar(true)
         runOnUI {
+            delay(500)
             val listAudioViewLiveData = audioMerModel.getAllAudioFile()
-            listAudioViewLiveData.removeObserver(listAudioObserver)
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
         }
     }
+
 
     private fun checkEdtSearchAudio() {
         binding.edtMerSearch.addTextChangedListener(object : TextWatcher {
@@ -208,6 +195,18 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeAdapter.Au
     }
 
 
+    override fun hideProgress() {
+        showProgressBar(false)
+    }
+
+    override fun showEmptyCallback() {
+        showProgressBar(false)
+        binding.rvMerge.visibility = View.INVISIBLE
+        binding.ivEmptyListMerge.visibility = View.VISIBLE
+        binding.tvEmptyListMer.visibility = View.VISIBLE
+    }
+
+
     private fun setColorButtonNext(color: Int, bg: Int, rs: Boolean) {
         binding.rltNextMer.isEnabled = rs
         binding.rltNextMer.setBackgroundResource(bg)
@@ -257,6 +256,14 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeAdapter.Au
     override fun onDestroyView() {
         super.onDestroyView()
         ManagerFactory.getAudioPlayer().stop()
+    }
+
+    private fun showProgressBar(b: Boolean) {
+        if (b) {
+            binding.pgrAudioMerge.visibility = View.VISIBLE
+        } else {
+            binding.pgrAudioMerge.visibility = View.GONE
+        }
     }
 
 

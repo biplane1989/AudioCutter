@@ -21,9 +21,12 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MixChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.cut.objs.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.cut.view.screen.CutChooserScreen
+import com.example.audiocutter.functions.audiochooser.merge.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.mix.adapter.MixAdapter
+import kotlinx.coroutines.delay
 
-class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioMixerListener {
+class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioMixerListener,
+    OnActionCallback {
 
     val TAG = CutChooserScreen::class.java.name
     private lateinit var audioMixAdapter: MixAdapter
@@ -53,6 +56,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         super.onPostCreate(savedInstanceState)
         audioMixAdapter = MixAdapter(requireContext())
         audioMixModel = ViewModelProvider(this).get(MixModel::class.java)
+        audioMixModel.setOnCallback(this)
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
@@ -70,11 +74,24 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLists()
+        showProgressBar(true)
         runOnUI {
+            delay(500)
             val listAudioViewLiveData = audioMixModel.getAllAudioFile()
             listAudioViewLiveData.removeObserver(listAudioObserver)
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
         }
+    }
+
+    override fun showEmptyCallback() {
+        binding.rvMixer.visibility = View.INVISIBLE
+        binding.ivEmptyListMixer.visibility = View.VISIBLE
+        binding.tvEmptyListMixer.visibility = View.VISIBLE
+        showProgressBar(false)
+    }
+
+    override fun hideProgress() {
+        showProgressBar(false)
     }
 
     private fun checkEdtSearchAudio() {
@@ -148,6 +165,14 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         binding.ivAudioMixerScreenFile.visibility = status
     }
 
+    private fun showProgressBar(b: Boolean) {
+        if (b) {
+            binding.pgrAudioMix.visibility = View.VISIBLE
+        } else {
+            binding.pgrAudioMix.visibility = View.GONE
+        }
+    }
+
 
     private fun hideKeyBroad() {
         val imm =
@@ -201,6 +226,8 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         }
         binding.tvCountFile.text = "${audioMixModel.checkList()} file"
     }
+
+
 
 
     private fun setColorButtonNext(color: Int, bg: Int, rs: Boolean) {
