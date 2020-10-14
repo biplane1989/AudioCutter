@@ -4,14 +4,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#FFFFFF"
+        paddingTopSystemWindowInsets="@{true}"
         android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_default"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="20dp"
-            android:layout_weight="0.07"
+            android:layout_height="?android:actionBarSize"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -57,9 +56,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_delete"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="20dp"
-            android:layout_weight="0.07"
+            android:layout_height="?android:actionBarSize"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:visibility="gone">
@@ -117,8 +114,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.93"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout

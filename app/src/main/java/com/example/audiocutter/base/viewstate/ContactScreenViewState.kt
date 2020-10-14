@@ -8,10 +8,10 @@ import com.example.audiocutter.functions.contacts.contacts.ListContactScreenDire
 
 interface ContactScreenViewState {
     fun getViewStateMutable(): ViewStateMutable
-    fun contactScreenOnItemClicked(baseFragment: BaseFragment, phoneNumber: String, uri: String) {
+    fun contactScreenOnItemClicked(baseFragment: BaseFragment, phoneNumber: String, fileName: String) {
         if (getViewStateMutable().getLastState() == ViewStateScreen.LIST_CONTACT_SCREEN) {
             getViewStateMutable().pushViewState(ViewStateScreen.LIST_CONTACT_CHOOSER_SCREEN)
-            val action = ListContactScreenDirections.goToListSelectAudioScreen(phoneNumber, uri)
+            val action = ListContactScreenDirections.goToListSelectAudioScreen(phoneNumber, fileName)
             baseFragment.findNavController().navigate(action)
         }
     }

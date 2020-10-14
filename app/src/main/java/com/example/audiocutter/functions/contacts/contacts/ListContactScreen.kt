@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.list_contact_screen.*
 
 
 class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListener {
-    private lateinit var binding:ListContactScreenBinding
+    private lateinit var binding: ListContactScreenBinding
 //    val callBack = mainCallBack
 
     // xin quyen
@@ -45,6 +45,7 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
                 } else {
                     cl_contact.visibility = View.VISIBLE
                     cl_no_contact.visibility = View.GONE
+                    binding.pbAudioCutter.visibility = View.GONE
                     listContactAdapter.submitList(ArrayList(listContact))
                 }
             }
@@ -58,8 +59,12 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
         rv_list_contact.adapter = listContactAdapter
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding =  DataBindingUtil.inflate(inflater, R.layout.list_contact_screen, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.list_contact_screen, container, false)
         ContactManagerImpl.registerContentObserVerDeleted()
         listContact?.observe(this.viewLifecycleOwner, listContactObserver)
         return binding.root
@@ -76,11 +81,8 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
         runOnUI {
             listContact = mlistContactViewModel.getData() // get data from funtion newIntance
             listContact?.observe(this.viewLifecycleOwner, listContactObserver)
-
             isLoading = false
-            binding.pbAudioCutter.visibility = View.GONE
         }
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -93,8 +95,6 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
         binding.backButton.setOnClickListener(this)
         if (isLoading) {
             pb_audio_cutter.visibility = View.VISIBLE
-        } else {
-            pb_audio_cutter.visibility = View.GONE
         }
 
         binding.edtSearch.addTextChangedListener(object : TextWatcher {
@@ -104,7 +104,12 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
 
-            override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
+            override fun onTextChanged(
+                textChange: CharSequence,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
                 if (mlistContactViewModel.searchContact(textChange.toString()).size <= 0) {
                     cl_contact.visibility = View.GONE
                     cl_no_contact.visibility = View.VISIBLE
@@ -113,14 +118,13 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
                     cl_no_contact.visibility = View.GONE
                     listContactAdapter.submitList(mlistContactViewModel.searchContact(textChange.toString()))
                 }
-
             }
         })
     }
 
-    override fun itemOnClick(phoneNumber: String, uri: String) {
+    override fun itemOnClick(phoneNumber: String, fileName: String) {
         hideKeyboard()
-        viewStateManager.contactScreenOnItemClicked(this, phoneNumber, uri)
+        viewStateManager.contactScreenOnItemClicked(this, phoneNumber, fileName)
     }
 
     override fun onPostDestroy() {

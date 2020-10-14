@@ -61,7 +61,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     fun setSelectRingtone(fileName: String): List<SelectItemView> {
         var index = 0
         for (item in mListAudioFileView) {
-            if (TextUtils.equals(item.audioFile.fileName, fileName)) {
+            if (TextUtils.equals(item.audioFile.fileName+".mp3", fileName)) {
                 val newItem = item.copy()
                 newItem.isSelect = true
                 mListAudioFileView.set(index, newItem)
@@ -75,7 +75,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     fun getIndexSelectRingtone(fileName: String): Int {
         var index = 0
         for (item in mListAudioFileView) {
-            if (TextUtils.equals(item.audioFile.fileName, fileName)) {
+            if (TextUtils.equals(item.audioFile.fileName+".mp3", fileName)) {
 
                 return index
             }
@@ -83,7 +83,6 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         }
         return 0
     }
-
 
     fun showPlayingAudio(position: Int): List<SelectItemView> {
 
@@ -230,7 +229,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     }
 
     fun setRingtoneWithUri(phoneNumber: String, uri: String): Boolean {
-        if (phoneNumber != "" && uri != null) {
+        if (phoneNumber != null && uri != null) {
             return ManagerFactory.getRingtoneManager()
                 .setRingToneWithContactNumberAndUri(uri, phoneNumber)
         }

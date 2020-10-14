@@ -9,8 +9,9 @@ import android.os.Build
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.text.TextUtils
+import android.util.Log
 import android.util.TypedValue
-import com.example.audiocutter.functions.contacts.contacts.ContactInfomation
+import java.io.File
 import java.text.Normalizer
 import java.util.regex.Pattern
 
@@ -24,30 +25,28 @@ object Utils {
     }
 
     // lay ten bai hat theo uri
-    fun getNameByUri(context: Context, uri: String): ContactInfomation {
-        var contactInfomation = ContactInfomation("", "")
-        var result: String? = null
-        val newUri = Uri.parse(uri)
-
-        if (newUri.getScheme().equals("content")) {
-            val cursor: Cursor? = context.contentResolver.query(newUri, null, null, null, null)
-            try {
-                if (cursor != null && cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+    fun getNameByUri(context: Context, uri: String): String {
+        Log.d("giangtd", "getNameByUri: uri: " + uri)
+        var fileName = ""
+        try {
+            val newUri = Uri.parse(uri)
+            if (newUri.getScheme().equals("content")) {
+                val cursor: Cursor? = context.contentResolver.query(newUri, null, null, null, null)
+                try {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        fileName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                    }
+                } finally {
+                    cursor!!.close()
                 }
-            } finally {
-                cursor!!.close()
             }
+        } catch (e: Exception) {
+
         }
-        if (result == null) {
-            result = newUri.getPath()
-            val cut: Int? = result?.lastIndexOf('/')
-            if (cut != -1) {
-                result = cut?.plus(1)?.let { result!!.substring(it) }
-            }
+        if (fileName.isEmpty()) {
+            fileName = File(uri).name
         }
-        contactInfomation = result?.let { ContactInfomation(result, it) }!!
-        return contactInfomation
+        return fileName
     }
 
     // lay path bai hat theo uri
@@ -71,7 +70,7 @@ object Utils {
     fun getUriRingtoneDefault(context: Context): String? {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
             if (RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE) != null) {
-                return RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE)
+                return RingtoneManager.getActualDefaultRingtoneUri(context.applicationContext, RingtoneManager.TYPE_RINGTONE)
                     .toString()
             }
         } else {
@@ -81,6 +80,7 @@ object Utils {
         }
         return null
     }
+
 
     // lay bitmap theo path
     fun getImageCover(context: Context, path: String?): Bitmap? {
