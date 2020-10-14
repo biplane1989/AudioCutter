@@ -9,7 +9,8 @@ import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.objects.AudioFile
 import java.io.File
 
-class FakeAudioFileManager : AudioFileManager {
+class FakeAudioFileManager {
+//    : AudioFileManager {
     private val audioFileLiveData = MutableLiveData<List<AudioFile>>()
     private val audioFileLiveData1 = MutableLiveData<List<AudioFile>>()
     private val audioFileLiveData2 = MutableLiveData<List<AudioFile>>()
@@ -56,62 +57,62 @@ class FakeAudioFileManager : AudioFileManager {
 //            audioFileLiveData.postValue(listAudioFile)
 //        }
     }
+//
+//    override suspend fun findAllAudioFiles(): LiveData<List<AudioFile>> {
+//        return audioFileLiveData
+//    }
+//
+//    override fun buildAudioFile(filePath: String): AudioFile {
+//        return AudioFile(File(filePath), "file_name1", 10000, 128)
+//    }
+//
+//    override suspend fun saveFile(audioFile: AudioFile, typeFile: Folder): StateFile {
+//        TODO()
+//    }
+//
+//    override suspend fun deleteFile(items: List<AudioFile>, typeFile: Folder): Boolean {
+//        when (typeFile) {
+//            Folder.TYPE_CUTTER -> {
+//                items.forEach {
+//                    listAudioFile.remove(it)
+//                }
+//                audioFileLiveData.postValue(listAudioFile)
+//                return true
+//            }
+//            Folder.TYPE_MERGER -> {
+//                items.forEach {
+//                    listAudioFile1.remove(it)
+//                }
+//                audioFileLiveData1.postValue(listAudioFile1)
+//                return false
+//            }
+//            Folder.TYPE_MIXER -> {
+//                items.forEach {
+//                    listAudioFile2.remove(it)
+//                }
+//                audioFileLiveData2.postValue(listAudioFile2)
+//                return true
+//            }
+//            else -> return false
+//        }
+//    }
 
-    override suspend fun findAllAudioFiles(): LiveData<List<AudioFile>> {
-        return audioFileLiveData
-    }
-
-    override fun buildAudioFile(filePath: String): AudioFile {
-        return AudioFile(File(filePath), "file_name1", 10000, 128)
-    }
-
-    override suspend fun saveFile(audioFile: AudioFile, typeFile: Folder): StateFile {
-        TODO()
-    }
-
-    override suspend fun deleteFile(items: List<AudioFile>, typeFile: Folder): Boolean {
-        when (typeFile) {
-            Folder.TYPE_CUTTER -> {
-                items.forEach {
-                    listAudioFile.remove(it)
-                }
-                audioFileLiveData.postValue(listAudioFile)
-                return true
-            }
-            Folder.TYPE_MERGER -> {
-                items.forEach {
-                    listAudioFile1.remove(it)
-                }
-                audioFileLiveData1.postValue(listAudioFile1)
-                return false
-            }
-            Folder.TYPE_MIXER -> {
-                items.forEach {
-                    listAudioFile2.remove(it)
-                }
-                audioFileLiveData2.postValue(listAudioFile2)
-                return true
-            }
-            else -> return false
-        }
-    }
-
-    override suspend fun getListAudioFileByType(typeFile: Folder): LiveData<List<AudioFile>> {
-        when (typeFile) {
-            Folder.TYPE_CUTTER -> {
-                return audioFileLiveData
-            }
-            Folder.TYPE_MERGER -> {
-                return audioFileLiveData1
-            }
-            Folder.TYPE_MIXER -> {
-                return audioFileLiveData2
-            }
-        }
-        return audioFileLiveData
-    }
-
-    override fun getDurationByPath(itemFile: File?): String {
-        return ""
-    }
+//    override suspend fun getListAudioFileByType(typeFile: Folder): LiveData<List<AudioFile>> {
+//        when (typeFile) {
+//            Folder.TYPE_CUTTER -> {
+//                return audioFileLiveData
+//            }
+//            Folder.TYPE_MERGER -> {
+//                return audioFileLiveData1
+//            }
+//            Folder.TYPE_MIXER -> {
+//                return audioFileLiveData2
+//            }
+//        }
+//        return audioFileLiveData
+//    }
+//
+//    override fun getDurationByPath(itemFile: File?): String {
+//        return ""
+//    }
 }

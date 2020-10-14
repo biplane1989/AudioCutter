@@ -1,7 +1,9 @@
 package com.example.a0025antivirusapplockclean.base.viewstate
 
-interface ViewStateManager {
-    fun getViewStateMutable(): ViewStateMutable
+import com.example.audiocutter.base.viewstate.ContactScreenViewState
+import com.example.audiocutter.base.viewstate.MainScreenViewState
+
+interface ViewStateManager : MainScreenViewState, ContactScreenViewState {
     fun initState(viewStateScreen: ViewStateScreen)
     fun onBackPressed()
 }

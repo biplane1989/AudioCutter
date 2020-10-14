@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorWhite">
+
+        <LinearLayout
+            android:id="@+id/rlt_actionbar"
+            paddingTopSystemWindowInsets="@{true}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:background="?attr/selectableItemBackground">
+
+                <EditText
+                    android:id="@+id/edt_cutter_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:focusableInTouchMode="true"
+                    android:background="@color/colorWhite"
+                    android:hint="Search..."
+                    android:paddingStart="40dp"
+                    android:singleLine="true"
+                    android:visibility="gone">
+
+                    <requestFocus />
+                </EditText>
+
+                <ImageView
+                    android:id="@+id/iv_cutter_screen_back"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_audiocutter_back" />
+
+
+                <ImageView
+                    android:id="@+id/iv_cutter_screen_back_edt"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_audiocutter_back"
+                    android:visibility="gone" />
+
+                <TableRow
+                    android:id="@+id/tb_name_cutter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/iv_cutter_screen_back"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tv_cutter_screen"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/sanfranciscodisplay_bold"
+                        android:text="Audio Cutter"
+                        android:textColor="@color/colorBlack"
+                        android:textIsSelectable="true"
+                        android:textSize="@dimen/d_18" />
+                </TableRow>
+
+
+                <ImageView
+                    android:id="@+id/iv_cutter_screen_search"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_audiocutter_search" />
+
+                <ImageView
+                    android:id="@+id/iv_audio_cutter_screen_file"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@id/iv_cutter_screen_search"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_audiocutter_file" />
+
+                <ImageView
+                    android:id="@+id/iv_cutter_screen_close"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:padding="@dimen/d_5"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_audiocutter_close"
+                    android:visibility="gone" />
+
+
+            </RelativeLayout>
+        </LinearLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_audio_cutter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/rlt_actionbar"
+            android:visibility="visible"
+            tools:listitem="@layout/item_audio" />
+
+        <ImageView
+            android:id="@+id/iv_empty_list_cutter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_item_empty_list"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_empty_list_cutter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_empty_list_cutter"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:fontFamily="@font/sanfranciscodisplay_regular"
+            android:text="No result."
+            android:textColor="@color/colorgray"
+            android:textSize="@dimen/d_18"
+            android:visibility="gone" />
+
+
+    </RelativeLayout>
+</layout>

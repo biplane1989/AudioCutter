@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_audio_item_header"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="?attr/selectableItemBackground"
+        android:orientation="horizontal">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_item"
+            android:layout_width="match_parent"
+            android:layout_height="56dp">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cv_avatar"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginLeft="16dp"
+
+                app:cardBackgroundColor="#C4C6D2"
+                app:cardCornerRadius="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/iv_avatar_music"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/my_studio_item_icon_music" />
+            </androidx.cardview.widget.CardView>
+
+
+            <TextView
+                android:id="@+id/tv_title_music"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginLeft="15dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:gravity="top"
+                android:maxLines="1"
+                android:text="@string/my_studio_screen_item_title"
+                android:textColor="#2E3041"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/ll_info"
+                app:layout_constraintEnd_toStartOf="@id/iv_select"
+                app:layout_constraintStart_toEndOf="@id/cv_avatar"
+                app:layout_constraintTop_toTopOf="@id/cv_avatar" />
+
+            <LinearLayout
+                android:id="@+id/ll_info"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="bottom"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="@id/cv_avatar"
+                app:layout_constraintEnd_toStartOf="@id/iv_select"
+                app:layout_constraintStart_toStartOf="@id/tv_title_music"
+                app:layout_constraintTop_toBottomOf="@id/tv_title_music">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cv_default"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="#FDAA74"
+                    app:cardCornerRadius="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginRight="2dp"
+                        android:fontFamily="@font/sanfranciscodisplay_light"
+                        android:text="@string/list_contact_item_default"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp" />
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/tv_info_music"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:fontFamily="@font/sanfranciscodisplay_light"
+                    android:text="5.3 MB | 128kb/s"
+                    android:textColor="#9C9C9C"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+
+            <ImageView
+                android:id="@+id/iv_select"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginRight="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/list_contact_unselect"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/ll_play_music"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/iv_pause_play_music"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="0.1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/my_studio_item_icon_play" />
+
+        <androidx.appcompat.widget.AppCompatSeekBar
+            android:id="@+id/sb_music"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:progressTint="#FDAA74"
+            android:thumbTint="#FDAA74" />
+
+        <TextView
+            android:id="@+id/tv_time_life"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:fontFamily="@font/sanfranciscodisplay_medium"
+            android:gravity="end"
+            android:text="00:00"
+            android:textColor="#9C9C9C"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tv_time_total"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0.1"
+            android:fontFamily="@font/sanfranciscodisplay_medium"
+            android:text="/08:05"
+            android:textColor="#9C9C9C"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+</LinearLayout>

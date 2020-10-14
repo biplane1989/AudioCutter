@@ -1,26 +1,22 @@
 package com.example.audiocutter.activities
 
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
-import androidx.fragment.app.FragmentTransaction
+import android.os.PersistableBundle
+import androidx.databinding.DataBindingUtil
+import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateScreen
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
-import com.example.audiocutter.core.audioplayer.AudioPlayerImpl
-import com.example.audiocutter.functions.MainScreen
-import com.example.audiocutter.functions.mystudio.OutputAudioManagerScreen
-import com.example.audiocutter.objects.AudioFile
-import kotlinx.android.synthetic.main.main_screen.*
-import java.io.File
+import com.example.audiocutter.databinding.ActivityMainBinding
 
 class MainActivity : BaseActivity() {
-    override fun createView(savedInstanceState: Bundle?) {
-        setContentView(R.layout.activity_main)
-
-    }
+    lateinit var binding: ActivityMainBinding
 
     override fun onPostCreate() {
         super.onPostCreate()
+        viewStateManager.initState(ViewStateScreen.HOME_SCREEN)
+    }
+    override fun createView(savedInstanceState: Bundle?) {
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
     }
 
 }

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="80dp">
 
-    <com.example.audiocutter.functions.audiocutterscreen.widget.ProgressView
+    <com.example.audiocutter.ui.audiochooser.cut.ProgressView
         android:id="@+id/pg_merge_choose_screen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -23,6 +23,7 @@
             android:id="@+id/iv_controller_audio"
             android:layout_width="45dp"
             android:layout_height="45dp"
+            android:scaleType="centerInside"
             android:background="?attr/selectableItemBackground"
             android:src="@drawable/ic_audiocutter_play" />
 
@@ -57,7 +58,7 @@
 
             </LinearLayout>
 
-            <com.example.audiocutter.functions.audiocutterscreen.widget.WaveAudio
+            <com.example.audiocutter.ui.audiochooser.cut.WaveAudio
                 android:id="@+id/wave_merge_choose_cutter"
                 android:layout_width="@dimen/d_20"
                 android:layout_height="20dp"
@@ -70,17 +71,17 @@
 
         <ImageView
             android:id="@+id/iv_trash_merge_choose"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginRight="@dimen/d_10"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:scaleType="centerInside"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_trash_merge" />
 
         <ImageView
             android:id="@+id/iv_move_item"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginRight="@dimen/d_16"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:scaleType="centerInside"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_move_item_merge" />
 

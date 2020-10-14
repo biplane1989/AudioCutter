@@ -6,7 +6,6 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_dialog_info.*
-import kotlinx.android.synthetic.main.my_studio_dialog_delete.*
 import java.text.SimpleDateFormat
 
 class InfoDialog : BaseDialog() {
@@ -20,10 +19,8 @@ class InfoDialog : BaseDialog() {
         fun newInstance(audioFile: AudioFile): InfoDialog {
             val dialog = InfoDialog()
             val bundle = Bundle()
-//            bundle.putSerializable(BUNDLE_NAME_KEY, audioFile)
+            //bundle.putParcelable(BUNDLE_NAME_KEY, audioFile)
             dialog.arguments = bundle
-
-            this.audioFile = audioFile
             return dialog
         }
     }
@@ -35,6 +32,7 @@ class InfoDialog : BaseDialog() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, R.style.DialogGray)
+        //audioFile = requireArguments().getParcelable(BUNDLE_NAME_KEY)!!
 
     }
 
@@ -56,9 +54,10 @@ class InfoDialog : BaseDialog() {
         tv_size.text = audioFile.size.toString() + "kb"
         tv_length.text = simpleDateFormat.format(audioFile.time)
         tv_birate.text = audioFile.bitRate.toString() + "kb/s"
-        tv_title.text = "Unknown"
-        tv_artist.text = "Unknown"
-        tv_album.text = "Unknown"
-        tv_genre.text = "Unknown"
+        tv_title.text = audioFile.title
+        tv_artist.text = audioFile.artist
+        tv_album.text = audioFile.alBum
+        tv_genre.text = audioFile.genre
+        tv_date.text = audioFile.dateAdded
     }
 }

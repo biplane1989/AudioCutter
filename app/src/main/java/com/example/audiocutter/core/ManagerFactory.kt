@@ -6,20 +6,27 @@ import com.example.audiocutter.core.audioplayer.AudioPlayerImpl
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ContactManager
+import com.example.audiocutter.core.manager.ContactManagerImpl
 import com.example.audiocutter.core.manager.fake.FakeAudioCutter
-import com.example.audiocutter.core.manager.fake.FakeAudioFileManager
-import com.example.audiocutter.core.manager.fake.FakeContactManager
+import com.example.audiocutter.core.rington.RingtonManager
+import com.example.audiocutter.core.rington.RingtonManagerImpl
 import com.example.core.core.AudioCutter
 import com.example.core.core.AudioCutterImpl
 
 object ManagerFactory {
-    private val mAudioFileManager: AudioFileManager = FakeAudioFileManager()
+    private val mAudioFileManager = AudioFileManagerImpl
     private val mAudioCutter: AudioCutter = AudioCutterImpl()
-    private val mContactManager: ContactManager = FakeContactManager()
+    private val mRingtons = RingtonManagerImpl
 
     fun init(appContext: Context) {
         AudioPlayerImpl.init(appContext)
         AudioFileManagerImpl.init(appContext)
+        ContactManagerImpl.init(appContext)
+        RingtonManagerImpl.init(appContext)
+    }
+
+    fun getRingtonManager(): RingtonManagerImpl {
+        return mRingtons
     }
 
     fun getAudioFileManager(): AudioFileManager {
@@ -31,16 +38,16 @@ object ManagerFactory {
     }
 
     fun getContactManager(): ContactManager {
-        return mContactManager
+//        return mContactManager
+        return ContactManagerImpl
     }
 
     fun getAudioPlayer(): AudioPlayer {
         return AudioPlayerImpl
     }
 
-    fun getAudioFileManagerImpl(): AudioFileManagerImpl {
-        return AudioFileManagerImpl
+    fun getRingtoneManager(): RingtonManager {
+        return RingtonManagerImpl
     }
-
 
 }
