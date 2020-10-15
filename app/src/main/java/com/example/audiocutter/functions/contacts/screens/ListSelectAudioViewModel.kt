@@ -4,24 +4,32 @@ import android.app.Application
 import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
+import com.example.audiocutter.objects.StateLoad
 import com.example.audiocutter.util.Utils
 
 class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(application) {
-
+    val TAG = "giangtd"
     private val mContext = getApplication<Application>().applicationContext
     var isPlayingStatus = false
     private var mListAudioFileView = ArrayList<SelectItemView>()
-    val TAG = "giangtd"
 
+    private val loadingData = MutableLiveData<Boolean>()
     fun getData(): LiveData<List<SelectItemView>> {
-        return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) { items ->
-            Log.d("nmcode", "live data size: " + items.listAudioFiles.size)
+        return Transformations.map(
+            ManagerFactory.getAudioFileManager().findAllAudioFiles()
+        ) { items ->
+            if (items.state == StateLoad.LOADING) {
+                loadingData.postValue(true)
+            } else {
+                loadingData.postValue(false)
+            }
             // lan dau tien lay du lieu
             if (mListAudioFileView.size == 0) {
                 items.listAudioFiles.forEach {
@@ -31,7 +39,8 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
                         )
                     )
                 }
-                mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
+                mListAudioFileView =
+                    getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
 //                mListAudioFileView
 
             } else { // khi thay doi du lieu update
@@ -50,7 +59,8 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
                     }
                 }
 
-                mListAudioFileView = getRingtoneDefault(newListSelectItemView) as ArrayList<SelectItemView>
+                mListAudioFileView =
+                    getRingtoneDefault(newListSelectItemView) as ArrayList<SelectItemView>
 //                mListAudioFileView
             }
             mListAudioFileView
@@ -70,7 +80,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     fun setSelectRingtone(fileName: String): List<SelectItemView> {
         var index = 0
         for (item in mListAudioFileView) {
-            if (TextUtils.equals(item.audioFile.fileName+".mp3", fileName)) {
+            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileName)) {
                 val newItem = item.copy()
                 newItem.isSelect = true
                 mListAudioFileView.set(index, newItem)
@@ -84,7 +94,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     fun getIndexSelectRingtone(fileName: String): Int {
         var index = 0
         for (item in mListAudioFileView) {
-            if (TextUtils.equals(item.audioFile.fileName+".mp3", fileName)) {
+            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileName)) {
 
                 return index
             }
@@ -111,8 +121,8 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
 //        selectItemView.audioFile.time = 1000
 
-     /*   ManagerFactory.getAudioFileManager()        // lay time total cho file audio
-            .getDurationByPath(mListAudioFileView[position].audioFile.file)*/
+        /*   ManagerFactory.getAudioFileManager()        // lay time total cho file audio
+               .getDurationByPath(mListAudioFileView[position].audioFile.file)*/
 
         mListAudioFileView.set(position, selectItemView)
         return mListAudioFileView
@@ -136,7 +146,8 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
     private fun getRingtoneDefault(list: List<SelectItemView>): List<SelectItemView> {
         for (item in list) {
-            item.isRingtoneDefault = Utils.checkRingtoneDefault(mContext, item.audioFile.uri.toString())
+            item.isRingtoneDefault =
+                Utils.checkRingtoneDefault(mContext, item.audioFile.uri.toString())
         }
         return list
     }

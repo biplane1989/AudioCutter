@@ -21,7 +21,7 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.CutChooserScreenBinding
-import com.example.audiocutter.functions.audiochooser.adapters.AudiocutterAdapter
+import com.example.audiocutter.functions.audiochooser.adapters.CutChooserAdapter
 import com.example.audiocutter.functions.audiochooser.dialogs.SetAsDialog
 import com.example.audiocutter.functions.audiochooser.dialogs.SetAsDoneDialog
 import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
@@ -30,18 +30,17 @@ import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.objects.TypeAudioSetAs
 import kotlinx.coroutines.delay
 
-class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
+class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     SetAsDialog.setAsListener, View.OnClickListener, OnActionCallback {
     val TAG = CutChooserScreen::class.java.name
     private lateinit var binding: CutChooserScreenBinding
-    private lateinit var audioCutterAdapter: AudiocutterAdapter
+    private lateinit var audioCutterAdapter: CutChooserAdapter
     private lateinit var audioCutterModel: AudioCutterModel
     lateinit var dialog: SetAsDialog
     lateinit var dialogDone: SetAsDoneDialog
     lateinit var audioCutterItem: AudioCutterView
 
     var currentPos = -1
-
 
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
@@ -55,7 +54,7 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioCutterAdapter = AudiocutterAdapter(requireContext())
+        audioCutterAdapter = CutChooserAdapter(requireContext())
         audioCutterModel = ViewModelProvider(this).get(AudioCutterModel::class.java)
         audioCutterModel.setOnCallback(this)
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
@@ -140,7 +139,10 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
         }
     }
 
-
+    override fun onPause() {
+        super.onPause()
+        audioCutterModel.pause()
+    }
     private fun initViews() {
         binding.ivCutterScreenBack.setOnClickListener(this)
         binding.ivAudioCutterScreenFile.setOnClickListener(this)
@@ -212,7 +214,9 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
         dialog.show()
     }
 
-
+    override fun onCutItemClicked(itemAudio: AudioCutterView) {
+        viewStateManager.onCuttingItemClicked(this, itemAudio)
+    }
 
     override fun setAudioAs(typeAudioSetAs: TypeAudioSetAs) {
         var rs = false

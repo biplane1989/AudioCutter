@@ -74,7 +74,9 @@ class CuttingViewModel : BaseViewModel() {
     }
 
     fun pauseAudio() {
-        audioPlayer.pause()
+        if (audioPlayer.getPlayerInfoData().playerState == PlayerState.PLAYING) {
+            audioPlayer.pause()
+        }
     }
 
     fun seekAudio(pos: Int) {

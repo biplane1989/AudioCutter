@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/fragment_cutter_bg_color"
@@ -11,16 +11,17 @@
         <RelativeLayout
             android:id="@+id/title_rl"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_alignParentTop="true">
+            android:layout_height="?actionBarSize"
+            android:layout_alignParentTop="true"
+            marginTopSystemWindowInsets="@{true}">
 
             <ImageView
                 android:id="@+id/close_iv"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
                 android:background="@drawable/ripple_item_view"
-                android:scaleType="center"
-                android:src="@drawable/fragment_cutter_close_ic" />
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_back_screen" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -35,21 +36,20 @@
 
             <ImageView
                 android:id="@+id/tick_iv"
-                android:layout_width="42dp"
-                android:layout_height="48dp"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="7dp"
                 android:background="@drawable/ripple_item_view"
-                android:scaleType="center"
+                android:scaleType="centerInside"
                 android:src="@drawable/fragment_cutter_tick_ic" />
 
             <ImageView
                 android:id="@+id/option_iv"
-                android:layout_width="42dp"
-                android:layout_height="48dp"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
                 android:layout_toLeftOf="@id/tick_iv"
                 android:background="@drawable/ripple_item_view"
-                android:scaleType="center"
+                android:scaleType="centerInside"
                 android:src="@drawable/fragment_cutter_custom_ic" />
         </RelativeLayout>
         <View
@@ -100,9 +100,9 @@
 
                 <ImageView
                     android:id="@+id/reduction_start_time_iv"
-                    android:background="@drawable/ripple_item_view"
-                    android:layout_width="36dp"
+                    android:layout_width="37dp"
                     android:layout_height="36dp"
+                    android:background="@drawable/ripple_item_view"
                     android:scaleType="center"
                     android:src="@drawable/fragment_cutter_reduced_time_ic" />
 
@@ -112,7 +112,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="@font/sanfrancisco_medium"
-                    android:text="0:00.0"
+                    android:text="00:00.0"
                     android:textColor="@color/fragment_cutter_text_time_color"
                     android:textSize="14sp" />
 
@@ -148,7 +148,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="@font/sanfrancisco_medium"
-                    android:text="0:00.0"
+                    android:text="00:00.0"
                     android:textColor="@color/fragment_cutter_text_time_color"
                     android:textSize="14sp" />
 
