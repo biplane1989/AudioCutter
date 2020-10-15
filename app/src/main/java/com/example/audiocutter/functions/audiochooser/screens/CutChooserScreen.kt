@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.audiochooser.cut.view.screen
+package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Activity
 import android.content.Context
@@ -21,12 +21,13 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.CutChooserScreenBinding
-import com.example.audiocutter.functions.audiochooser.cut.dialog.SetAsDialog
-import com.example.audiocutter.functions.audiochooser.cut.dialog.SetAsDoneDialog
-import com.example.audiocutter.functions.audiochooser.cut.objs.AudioCutterView
-import com.example.audiocutter.functions.audiochooser.cut.objs.TypeAudioSetAs
-import com.example.audiocutter.functions.audiochooser.cut.view.adapter.AudiocutterAdapter
-import com.example.audiocutter.functions.audiochooser.merge.event.OnActionCallback
+import com.example.audiocutter.functions.audiochooser.adapters.AudiocutterAdapter
+import com.example.audiocutter.functions.audiochooser.dialogs.SetAsDialog
+import com.example.audiocutter.functions.audiochooser.dialogs.SetAsDoneDialog
+import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
+
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.audiochooser.objects.TypeAudioSetAs
 import kotlinx.coroutines.delay
 
 class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
@@ -292,7 +293,6 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
         super.onDestroyView()
         ManagerFactory.getAudioPlayer().stop()
     }
-
 
 }
 

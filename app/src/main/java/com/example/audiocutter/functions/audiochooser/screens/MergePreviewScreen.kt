@@ -18,17 +18,17 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MergePreviewScreenBinding
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
-import com.example.audiocutter.functions.audiochooser.adapters.MergeChooseAdapter
+import com.example.audiocutter.functions.audiochooser.adapters.MergePreviewAdapter
 import com.example.audiocutter.functions.audiochooser.dialogs.MergeDialog
 import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.ui.audiochooser.merge.MyItemTouchHelper
 import com.example.audiocutter.ui.audiochooser.merge.WrapContentLinearLayoutManager
 
-class MergePreviewScreen : BaseFragment(), MergeChooseAdapter.AudioMergeChooseListener,
+class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseListener,
     View.OnClickListener, MergeDialog.MergeDialogListener {
     private val TAG = "manhqn"
     private lateinit var binding: MergePreviewScreenBinding
-    private lateinit var audioMerAdapter: MergeChooseAdapter
+    private lateinit var audioMerAdapter: MergePreviewAdapter
     private lateinit var audioMerModel: MergePreviewModel
     var currentPos = -1
     private lateinit var mCallback: OnActionCallback
@@ -48,7 +48,7 @@ class MergePreviewScreen : BaseFragment(), MergeChooseAdapter.AudioMergeChooseLi
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         audioMerAdapter =
-            MergeChooseAdapter(
+            MergePreviewAdapter(
                 requireContext()
             )
         audioMerModel = ViewModelProvider(this).get(MergePreviewModel::class.java)

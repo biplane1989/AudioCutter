@@ -17,9 +17,8 @@
 
             <ImageView
                 android:id="@+id/back_button"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginLeft="10dp"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/list_contact_icon_back"

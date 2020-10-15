@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.audiochooser.merge.screen
+package com.example.audiocutter.functions.audiochooser.screens
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -19,16 +19,17 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MergeChooserScreenBinding
-import com.example.audiocutter.functions.audiochooser.cut.objs.AudioCutterView
-import com.example.audiocutter.functions.audiochooser.merge.adapters.MergeAdapter
-import com.example.audiocutter.functions.audiochooser.merge.event.OnActionCallback
+import com.example.audiocutter.functions.audiochooser.adapters.MergeChooserAdapter
+import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import kotlinx.coroutines.delay
 
-class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeAdapter.AudioMergeListener,
+class MergeChooserScreen : BaseFragment(), View.OnClickListener,
+    MergeChooserAdapter.AudioMergeListener,
     OnActionCallback {
     private lateinit var binding: MergeChooserScreenBinding
 
-    private lateinit var audioMerAdapter: MergeAdapter
+    private lateinit var audioMerAdapter: MergeChooserAdapter
     private lateinit var audioMerModel: MergeChooserModel
 
     var currentPos = -1
@@ -46,7 +47,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeAdapter.Au
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         audioMerAdapter =
-            MergeAdapter(
+            MergeChooserAdapter(
                 requireContext()
             )
         audioMerModel = ViewModelProvider(this).get(MergeChooserModel::class.java)
@@ -272,6 +273,4 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeAdapter.Au
             binding.pgrAudioMerge.visibility = View.GONE
         }
     }
-
-
 }

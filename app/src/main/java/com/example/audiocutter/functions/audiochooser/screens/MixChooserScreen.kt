@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.audiochooser.mix.screen
+package com.example.audiocutter.functions.audiochooser.screens
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -20,23 +20,21 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MixChooserScreenBinding
-import com.example.audiocutter.functions.audiochooser.cut.objs.AudioCutterView
-import com.example.audiocutter.functions.audiochooser.cut.view.screen.CutChooserScreen
-import com.example.audiocutter.functions.audiochooser.merge.event.OnActionCallback
-import com.example.audiocutter.functions.audiochooser.mix.adapter.MixAdapter
+import com.example.audiocutter.functions.audiochooser.adapters.MixChooserAdapter
+import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import kotlinx.coroutines.delay
 
-class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioMixerListener,
+class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter.AudioMixerListener,
     OnActionCallback {
 
     val TAG = CutChooserScreen::class.java.name
-    private lateinit var audioMixAdapter: MixAdapter
+    private lateinit var audioMixAdapter: MixChooserAdapter
     private lateinit var audioMixModel: MixModel
     private lateinit var binding: MixChooserScreenBinding
     var currentPos = -1
 
     //rlt_next_recent_parent
-
 
 
     var isChangeList = true
@@ -47,13 +45,13 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     }
 
     private val playerInfoObserver = Observer<PlayerInfo> {
-            audioMixAdapter.submitList(audioMixModel.updateMediaInfo(it))
+        audioMixAdapter.submitList(audioMixModel.updateMediaInfo(it))
     }
 
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioMixAdapter = MixAdapter(requireContext())
+        audioMixAdapter = MixChooserAdapter(requireContext())
         audioMixModel = ViewModelProvider(this).get(MixModel::class.java)
         audioMixModel.setOnCallback(this)
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
@@ -219,8 +217,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
     }
 
 
-
-
     private fun setColorButtonNext(color: Int, bg: Int, rs: Boolean) {
         binding.rltNextMixer.isEnabled = rs
         binding.rltNextMixer.setBackgroundResource(bg)
@@ -290,7 +286,13 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixAdapter.AudioM
         ManagerFactory.getAudioPlayer().stop()
     }
 
+    override fun sendAndReceiveData(listData: List<AudioCutterView>) {
+        TODO("Not yet implemented")
+    }
 
+    override fun backFrg() {
+        TODO("Not yet implemented")
+    }
 }
 
 
