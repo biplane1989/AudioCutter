@@ -4,6 +4,7 @@ import android.app.Application
 import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.ManagerFactory
@@ -19,17 +20,15 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     private var mListAudioFileView = ArrayList<SelectItemView>()
     val TAG = "giangtd"
 
+    var loadingStatus: MutableLiveData<Boolean> = MutableLiveData()
+
     fun getData(): LiveData<List<SelectItemView>> {
-        return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) { items ->
-            Log.d("nmcode", "live data size: " + items.listAudioFiles.size)
+        return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) { listAudio ->
+            Log.d("nmcode", "live data size: " + listAudio.listAudioFiles.size)
             // lan dau tien lay du lieu
             if (mListAudioFileView.size == 0) {
-                items.listAudioFiles.forEach {
-                    mListAudioFileView.add(
-                        SelectItemView(
-                            it
-                        )
-                    )
+                listAudio.listAudioFiles.forEach {
+                    mListAudioFileView.add(SelectItemView(it))
                 }
                 mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
 //                mListAudioFileView
@@ -37,16 +36,12 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
             } else { // khi thay doi du lieu update
                 // dong bo hoa du lieu list cu va moi
                 val newListSelectItemView = ArrayList<SelectItemView>()
-                items.listAudioFiles.forEach {
+                listAudio.listAudioFiles.forEach {
                     val audioFileView = getAudioFileView(it.file.absolutePath)
                     if (audioFileView != null) {
                         newListSelectItemView.add(audioFileView)
                     } else {
-                        newListSelectItemView.add(
-                            SelectItemView(
-                                it
-                            )
-                        )
+                        newListSelectItemView.add(SelectItemView(it))
                     }
                 }
 
@@ -70,7 +65,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     fun setSelectRingtone(fileName: String): List<SelectItemView> {
         var index = 0
         for (item in mListAudioFileView) {
-            if (TextUtils.equals(item.audioFile.fileName+".mp3", fileName)) {
+            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileName)) {
                 val newItem = item.copy()
                 newItem.isSelect = true
                 mListAudioFileView.set(index, newItem)
@@ -84,7 +79,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     fun getIndexSelectRingtone(fileName: String): Int {
         var index = 0
         for (item in mListAudioFileView) {
-            if (TextUtils.equals(item.audioFile.fileName+".mp3", fileName)) {
+            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileName)) {
 
                 return index
             }
@@ -111,8 +106,8 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
 //        selectItemView.audioFile.time = 1000
 
-     /*   ManagerFactory.getAudioFileManager()        // lay time total cho file audio
-            .getDurationByPath(mListAudioFileView[position].audioFile.file)*/
+        /*   ManagerFactory.getAudioFileManager()        // lay time total cho file audio
+               .getDurationByPath(mListAudioFileView[position].audioFile.file)*/
 
         mListAudioFileView.set(position, selectItemView)
         return mListAudioFileView

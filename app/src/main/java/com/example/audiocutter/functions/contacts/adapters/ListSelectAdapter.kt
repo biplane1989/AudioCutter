@@ -75,7 +75,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                     holder.sbMusic.progress = 0
                 }
             }
-            if (selectItemView.isSelect) {
+            if (newItem.isSelect) {
                 holder.ivSelect.setImageResource(R.drawable.list_contact_select)
             } else {
                 holder.ivSelect.setImageResource(R.drawable.list_contact_unselect)
@@ -141,6 +141,8 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
             if (selectItemView.isRingtoneDefault) {
                 cvCarview.visibility = View.VISIBLE
+            }else{
+                cvCarview.visibility = View.GONE
             }
 
             when (selectItemView.selectItemStatus.playerState) {

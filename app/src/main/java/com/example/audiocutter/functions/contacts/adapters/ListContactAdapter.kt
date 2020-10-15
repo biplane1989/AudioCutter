@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.functions.contacts.objects.ContactItemView
+import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.util.Utils
 import java.util.*
 
@@ -22,9 +23,7 @@ interface ContactCallback {
     fun itemOnClick(phoneNumber: String, fileName: String)
 }
 
-class ListContactAdapter(context: Context?, var contactCallback: ContactCallback) : ListAdapter<ContactItemView, RecyclerView.ViewHolder>(
-    ContactDiffCallBack()
-) {
+class ListContactAdapter(context: Context?, var contactCallback: ContactCallback) : ListAdapter<ContactItemView, RecyclerView.ViewHolder>(ContactDiffCallBack()) {
 
     var mContext: Context? = context
 
@@ -80,17 +79,17 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 headerViewHolder.onBind()
             } else {
                 val itemViewHolder = holder as ItemViewHolder
-                val ringtone = payloads.firstOrNull() as String
-                val contactItem = getItem(position)
+                val newItem = payloads.firstOrNull() as ContactItemView
+//                val contactItem = getItem(position)
 
 //                if (contactItem.contactItem.ringtone != null) {
-                if (!contactItem.contactItem.isRingtoneDefault) {
+                if (!newItem.contactItem.isRingtoneDefault) {
                     itemViewHolder.tvRingtoneDefault.visibility = View.GONE
                     itemViewHolder.cvDefault.visibility = View.GONE
                     itemViewHolder.tvRingtone.visibility = View.VISIBLE
 
-                    val fileName = Utils.getNameByUri(mContext!!, contactItem.contactItem.ringtone!!)   // get name song by uri
-                    itemViewHolder.tvRingtone.text = fileName.toLowerCase()
+                    val fileName = Utils.getNameByUri(mContext!!, newItem.contactItem.ringtone!!)   // get name song by uri    | sua contactItem = newItem
+                    itemViewHolder.tvRingtone.text = fileName.toLowerCase(Locale.ROOT)
 
                 } else {
                     itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
@@ -100,7 +99,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                     if (Utils.getUriRingtoneDefault(mContext!!) != null) {
                         val fileName = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
                             .toString())
-                        itemViewHolder.tvRingtoneDefault.text = fileName.toLowerCase()
+                        itemViewHolder.tvRingtoneDefault.text = fileName.toLowerCase(Locale.ROOT)
                     }
 
                 }
@@ -133,7 +132,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 tvRingtone.visibility = View.VISIBLE
 
                 val fileName = Utils.getNameByUri(mContext!!, contentItem.contactItem.ringtone!!)   // get name song by uri
-                tvRingtone.text = fileName.toLowerCase()
+                tvRingtone.text = fileName.toLowerCase(Locale.ROOT)
             } else {
                 tvRingtoneDefault.visibility = View.VISIBLE
                 cvDefault.visibility = View.VISIBLE
@@ -143,8 +142,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                     val fileName = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
                         .toString())
 
-                    tvRingtoneDefault.text = fileName.toLowerCase()
-
+                    tvRingtoneDefault.text = fileName.toLowerCase(Locale.ROOT)
                 }
             }
 
@@ -194,6 +192,7 @@ class ContactDiffCallBack : DiffUtil.ItemCallback<ContactItemView>() {
 
     override fun getChangePayload(oldItem: ContactItemView, newItem: ContactItemView): Any? {
 
-        return newItem.contactItem.ringtone
+        return newItem
+//        return newItem.contactItem.ringtone
     }
 }

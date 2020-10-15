@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.mystudio.fragment
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -13,6 +14,7 @@ import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.DeleteState
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
+import com.example.audiocutter.objects.StateLoad
 
 class MyStudioViewModel : BaseViewModel() {
 
@@ -32,23 +34,40 @@ class MyStudioViewModel : BaseViewModel() {
     // kiểm tra playaudio đã được khởi tạo chưa
     var isPlayingStatus = false
 
+    var loadingStatus: MutableLiveData<Boolean> = MutableLiveData()
+    var isEmptyStatus: MutableLiveData<Boolean> = MutableLiveData()
+
     suspend fun getData(typeAudio: Int): LiveData<List<AudioFileView>> {
         val mAudioScaners: LiveData<AudioFileScans>
+
         when (typeAudio) {
             Constance.AUDIO_CUTTER -> {
-                mAudioScaners =
-                    ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_CUTTER)
+                mAudioScaners = ManagerFactory.getAudioFileManager()
+                    .getListAudioFileByType(Folder.TYPE_CUTTER)
             }
             Constance.AUDIO_MERGER -> {
-                mAudioScaners =
-                    ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_MERGER)
+                mAudioScaners = ManagerFactory.getAudioFileManager()
+                    .getListAudioFileByType(Folder.TYPE_MERGER)
             }
             else -> {
-                mAudioScaners =
-                    ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_MIXER)
+                mAudioScaners = ManagerFactory.getAudioFileManager()
+                    .getListAudioFileByType(Folder.TYPE_MIXER)
             }
         }
         return Transformations.map(mAudioScaners) {
+            if (it.state == StateLoad.LOADING) {
+                loadingStatus.postValue(true)
+            }
+            if (it.state == StateLoad.LOADDONE) {
+                loadingStatus.postValue(false)
+            }
+            Log.d(TAG, "StateLoad: " + it.state)
+
+            if (it.listAudioFiles.isEmpty()) {
+                isEmptyStatus.postValue(true)
+            } else {
+                isEmptyStatus.postValue(false)
+            }
             // lan dau tien lay du lieu
             if (mListAudioFileView.size == 0) {
                 it.listAudioFiles.forEach {
@@ -67,8 +86,6 @@ class MyStudioViewModel : BaseViewModel() {
                             val newAudioFileView = AudioFileView(it)
                             newAudioFileView.itemLoadStatus.deleteState = DeleteState.UNCHECK
                             newListAudioFileView.add(newAudioFileView)
-
-
                         } else {
                             newListAudioFileView.add(AudioFileView(it))
                         }
@@ -88,6 +105,14 @@ class MyStudioViewModel : BaseViewModel() {
             }
         }
         return null
+    }
+
+    fun getLoadingStatus(): LiveData<Boolean> {
+        return loadingStatus
+    }
+
+    fun getIsEmptyStatus(): LiveData<Boolean> {
+        return isEmptyStatus
     }
 
     // xử lý button check delete

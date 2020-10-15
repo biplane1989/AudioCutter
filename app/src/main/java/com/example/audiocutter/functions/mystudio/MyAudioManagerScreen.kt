@@ -25,11 +25,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     var isDeleteClicked = true
     var tabPosition = -1
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_screen, container, false)
         return binding.root
     }
@@ -67,11 +63,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     override fun onClick(view: View) {
         when (view) {
             binding.ivDelete -> {
-                sendFragmentAction(
-                    MyStudioFragment::class.java.name,
-                    Constance.ACTION_CHECK_DELETE,
-                    tabPosition
-                )
+                sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_CHECK_DELETE, tabPosition)
             }
             binding.ivClose -> {
                 cl_default.visibility = View.VISIBLE
@@ -96,7 +88,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_UNCHECK)
             }
             binding.backButton -> {
-               requireActivity().onBackPressed()
+                requireActivity().onBackPressed()
             }
         }
     }
@@ -120,11 +112,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                         isDeleteClicked = false
                     }
                 } else {
-                    Toast.makeText(
-                        context,
-                        getString(R.string.my_studio_notification_chose_item_delete),
-                        Toast.LENGTH_SHORT
-                    )
+                    Toast.makeText(context, getString(R.string.my_studio_notification_chose_item_delete), Toast.LENGTH_SHORT)
                         .show()
                 }
             }
@@ -136,11 +124,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     override fun onDeleteClick() {
         Log.d(TAG, "onDeleteClick: ")
         isDeleteClicked = true
-        sendFragmentAction(
-            MyStudioFragment::class.java.name,
-            Constance.ACTION_DELETE_ALL,
-            tabPosition
-        )
+        sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_DELETE_ALL, tabPosition)
     }
 
     override fun onCancel() {
