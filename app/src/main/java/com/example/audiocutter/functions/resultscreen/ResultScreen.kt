@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions
+package com.example.audiocutter.functions.resultscreen
 
 import android.os.Bundle
 import android.view.LayoutInflater
