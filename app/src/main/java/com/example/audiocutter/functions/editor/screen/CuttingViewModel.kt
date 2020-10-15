@@ -59,9 +59,9 @@ class CuttingViewModel : BaseViewModel() {
 
 
             }
-
+            cuttingCurrPos = newPos
         }
-        cuttingCurrPos = newPos
+
 
     }
 
