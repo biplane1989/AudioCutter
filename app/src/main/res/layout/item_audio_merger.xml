@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="80dp">
 
-    <com.example.audiocutter.functions.audiochooser.cut.widget.ProgressView
+    <com.example.audiocutter.ui.audiochooser.cut.ProgressView
         android:id="@+id/pg_audio_merger_screen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -85,7 +85,7 @@
 
             </LinearLayout>
 
-            <com.example.audiocutter.functions.audiochooser.cut.widget.WaveAudio
+            <com.example.audiocutter.ui.audiochooser.cut.WaveAudio
                 android:layout_width="24dp"
                 android:id="@+id/wave_audio_merger"
                 android:layout_height="24dp"

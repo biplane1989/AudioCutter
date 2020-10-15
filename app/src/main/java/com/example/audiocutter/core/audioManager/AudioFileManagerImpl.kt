@@ -72,7 +72,6 @@ object AudioFileManagerImpl : AudioFileManager {
             registerContentObserVerDeleted()
         } else {
             initialized = false
-
         }
     }
 
@@ -349,6 +348,20 @@ object AudioFileManagerImpl : AudioFileManager {
 
     fun unRegisterContentObserve() {
         mContext.contentResolver.unregisterContentObserver(audioFileObserver)
+    }
+
+    override fun getParentFile(typeFile: Folder): String {
+        var pathParent = ""
+        try {
+            pathParent = when (typeFile) {
+                Folder.TYPE_CUTTER -> "$SUB_PATH/cutter"
+                Folder.TYPE_MERGER -> "$SUB_PATH/merger"
+                Folder.TYPE_MIXER -> "$SUB_PATH/mixer"
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return pathParent
     }
 
 

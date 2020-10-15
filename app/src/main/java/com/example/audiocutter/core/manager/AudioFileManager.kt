@@ -17,6 +17,7 @@ interface AudioFileManager {
     fun getListAudioFileByType(typeFile: Folder): LiveData<AudioFileScans>
     fun getInfoAudioFile(itemFile: File?, type: Int): String?
     fun getDateCreatFile(file:File?): String?
+    fun getParentFile(typeFile: Folder): String
 
 
 }

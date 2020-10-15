@@ -13,10 +13,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.core.ManagerFactory
-import com.example.audiocutter.functions.contactscreen.contacts.GetContactResult
+import com.example.audiocutter.functions.contacts.objects.GetContactResult
 import com.example.audiocutter.objects.ContactItem
 import kotlinx.coroutines.*
-import kotlin.math.log
 
 object ContactManagerImpl : ContactManager {
 
@@ -113,7 +112,12 @@ object ContactManagerImpl : ContactManager {
 //        contactLiveData.postValue(GetContactResult(false, ArrayList()))
         CoroutineScope(Dispatchers.Default).launch {
             val listContact = scanContact()
-            contactLiveData.postValue(GetContactResult(true, listContact))
+            contactLiveData.postValue(
+                GetContactResult(
+                    true,
+                    listContact
+                )
+            )
         }
 
         return contactLiveData
@@ -122,7 +126,12 @@ object ContactManagerImpl : ContactManager {
     class ContactObserver(handler: Handler?) : ContentObserver(handler) {
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             CoroutineScope(Dispatchers.Default).launch {
-                contactLiveData.postValue(GetContactResult(true, scanContact()))
+                contactLiveData.postValue(
+                    GetContactResult(
+                        true,
+                        scanContact()
+                    )
+                )
             }
         }
     }
