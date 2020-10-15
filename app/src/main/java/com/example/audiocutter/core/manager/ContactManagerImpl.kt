@@ -27,6 +27,7 @@ object ContactManagerImpl : ContactManager {
     var oldRingtoneDefault = ""
     val contactObserver = ContactObserver(Handler())
     val mainScope = MainScope()
+
     fun init(context: Context) {
         mContext = context
     }

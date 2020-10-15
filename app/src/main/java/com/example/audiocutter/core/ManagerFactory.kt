@@ -8,6 +8,8 @@ import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ContactManager
 import com.example.audiocutter.core.manager.ContactManagerImpl
 import com.example.audiocutter.core.manager.fake.FakeAudioCutter
+import com.example.audiocutter.core.result.AudioEditorManager
+import com.example.audiocutter.core.result.AudioEditorManagerlmpl
 import com.example.audiocutter.core.rington.RingtonManager
 import com.example.audiocutter.core.rington.RingtonManagerImpl
 import com.example.core.core.AudioCutter
@@ -22,6 +24,8 @@ object ManagerFactory {
         AudioFileManagerImpl.init(appContext)
         ContactManagerImpl.init(appContext)
         RingtonManagerImpl.init(appContext)
+
+        AudioEditorManagerlmpl.init(appContext)
     }
 
     fun getRingtonManager(): RingtonManagerImpl {
@@ -47,6 +51,10 @@ object ManagerFactory {
 
     fun getRingtoneManager(): RingtonManager {
         return RingtonManagerImpl
+    }
+
+    fun getAudioEditorManager(): AudioEditorManager {
+        return AudioEditorManagerlmpl
     }
 
 }

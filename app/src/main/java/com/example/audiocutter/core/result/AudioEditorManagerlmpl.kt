@@ -1,8 +1,15 @@
 package com.example.audiocutter.core.result
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.IBinder
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import com.example.audiocutter.core.manager.ContactManagerImpl
 import com.example.audiocutter.functions.resultscreen.*
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.coroutines.*
@@ -11,23 +18,59 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-object  FakeAudioEditorManager : AudioEditorManager {
+object AudioEditorManagerlmpl : AudioEditorManager {
+
+    lateinit var mContext: Context
+    val TAG = "giangtd"
+    fun init(context: Context) {
+        mContext = context
+    }
+
+    var mService: ResultService? = null
+    var mIsBound: Boolean = false
+    var notificationID = 4
+
     private val listConvertingItemData = ArrayList<ConvertingItem>()
     private val listConvertingItems = MutableLiveData<List<ConvertingItem>>()  // list chung
     private var currConvertingId = 0
     private val mainScope = MainScope()
     private val currentProcessingItem = MutableLiveData<ConvertingItem>()
 
+
+    val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, iBinder: IBinder) {
+            val binder = iBinder as ResultService.MyBinder
+            mService = binder.service
+            mIsBound = true
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            mIsBound = false
+        }
+    }
+
     private fun getProcessingItem(): ConvertingItem? {
+        for (waitingItem in listConvertingItemData) {
+            if (waitingItem.state == ConvertingState.PROGRESSING) return waitingItem
+        }
         return null
     }
 
     private fun getWaitingItem(): ConvertingItem? {
+        for (waitingItem in listConvertingItemData) {
+            if (waitingItem.state == ConvertingState.WAITING) return waitingItem
+        }
         return null
     }
 
     override fun cutAudio(audioFile: AudioFile, cuttingConfig: CuttingConfig, outFile: File) {
 
+        if (!mIsBound) {
+            Intent(mContext, ResultService::class.java).also {
+                mContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
+                Log.d(TAG, "bindService: ")
+            }
+        }
         val item = CuttingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, outFile, audioFile, cuttingConfig)
         listConvertingItemData.add(item)
         currConvertingId++
@@ -42,14 +85,20 @@ object  FakeAudioEditorManager : AudioEditorManager {
 
     private fun processNextItem() {
         val waitingItem = getWaitingItem()
-        if (waitingItem == null) {
-            // TODO khi khoong coon item nao can xu ly
+        if (waitingItem == null) {      // khi khong con item nao thi bo service di
+
+            if (mIsBound) {
+                Intent(mContext, ResultService::class.java).also { intent ->
+                    mContext.unbindService(serviceConnection)
+                }
+                Log.d(TAG, "unbindService: ")
+            }
+
         } else {
             waitingItem.state = ConvertingState.PROGRESSING
             mainScope.launch {
                 processItem(waitingItem)
             }
-
         }
     }
 
@@ -61,9 +110,9 @@ object  FakeAudioEditorManager : AudioEditorManager {
     private suspend fun processItem(item: ConvertingItem) = withContext(Dispatchers.Default) {
         item.percent = 0
         notifyConvertingItemChanged(item)
-        (0..100).forEach {
+        (0..99).forEach {
             delay(100)
-            item.percent += 1
+            item.percent++
             notifyConvertingItemChanged(item)
         }
         item.state = ConvertingState.SUCCESS
@@ -80,7 +129,14 @@ object  FakeAudioEditorManager : AudioEditorManager {
     }
 
     override fun cancel(int: Int) {
-        TODO("Not yet implemented")
+        when (listConvertingItemData.get(int).state) {
+            ConvertingState.WAITING -> {
+                listConvertingItemData.drop(int)
+            }
+            ConvertingState.PROGRESSING -> {
+                mService?.cancelNotidication()
+            }
+        }
     }
 
 

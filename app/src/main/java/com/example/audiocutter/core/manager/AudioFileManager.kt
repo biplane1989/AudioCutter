@@ -19,5 +19,4 @@ interface AudioFileManager {
     fun getDateCreatFile(file:File?): String?
     fun getParentFile(typeFile: Folder): String
 
-
 }
