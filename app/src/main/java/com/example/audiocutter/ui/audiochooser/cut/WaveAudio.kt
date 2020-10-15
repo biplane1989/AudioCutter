@@ -31,7 +31,7 @@ class WaveAudio @JvmOverloads constructor(
 
 
     companion object {
-        private const val BORDER_ROW = 1
+        private const val BORDER_ROW = 2
         private const val MID_POINT = 2
         private val START_COLOR = Color.parseColor("#FCB674")
         private val END_COLOR = Color.parseColor("#FF9292")
@@ -62,7 +62,7 @@ class WaveAudio @JvmOverloads constructor(
             rect.left,
             rect.top + radius,
             rect.right,
-            rect.bottom,
+            rect.bottom + radius,
             paint
         )
     }
@@ -87,8 +87,8 @@ class WaveAudio @JvmOverloads constructor(
         createAnim1(0f, mHeightView.toFloat())
         handler.postDelayed({
             createAnim2(0f, mHeightView.toFloat())
-            postDelayed({ createAnim3(0f, mHeightView.toFloat()) }, 100)
-        }, 100)
+            postDelayed({ createAnim3(0f, mHeightView.toFloat()) }, 150)
+        }, 150)
 
     }
 

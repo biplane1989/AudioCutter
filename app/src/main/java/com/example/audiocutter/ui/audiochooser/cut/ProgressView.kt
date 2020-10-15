@@ -64,6 +64,7 @@ class ProgressView : View {
         requestLayout()
     }
 
+
     fun updatePG(currentPos: Long, duration: Long) {
         this.duration = duration
         if (currentPos > 0 && this.duration > 0) {

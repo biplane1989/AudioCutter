@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.audiochooser.screens
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.ManagerFactory
@@ -9,6 +10,7 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.objects.StateLoad
 import java.io.File
 import java.util.*
 import kotlin.Comparator
@@ -24,9 +26,13 @@ class AudioCutterModel : BaseViewModel() {
     var duration: Long? = 0L
     private lateinit var mcallBack: OnActionCallback
 
+    private var _stateLoadProgress = MutableLiveData<Boolean>()
+    val stateLoadProgress: LiveData<Boolean>
+        get() = _stateLoadProgress
 
-    fun setOnCallback(event: OnActionCallback) {
-        mcallBack = event
+
+    fun getStateLoading(): LiveData<Boolean> {
+        return stateLoadProgress
     }
 
     private val sortListByName: Comparator<AudioCutterView> =
@@ -38,17 +44,18 @@ class AudioCutterModel : BaseViewModel() {
     fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(
             ManagerFactory.getAudioFileManager().findAllAudioFiles()
-        ) { it ->
+        ) {
+            if (it.state == StateLoad.LOADING) {
+                _stateLoadProgress.postValue(true)
+            } else {
+                _stateLoadProgress.postValue(false)
+            }
             mListAudio.clear()
             it.listAudioFiles.forEach {
                 mListAudio.add(AudioCutterView(it))
             }
             Collections.sort(mListAudio, sortListByName)
-            if (mListAudio.size == 0) {
-                mcallBack.showEmptyCallback()
-            } else {
-                mcallBack.hideProgress()
-            }
+
             mListAudio
         }
     }

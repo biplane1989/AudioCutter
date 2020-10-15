@@ -16,9 +16,11 @@
         android:background="?attr/selectableItemBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingLeft="@dimen/d_16">
+       >
 
         <LinearLayout
+            android:layout_marginLeft="@dimen/d_16"
+            android:layout_marginRight="@dimen/d_16"
             android:layout_width="0dp"
             android:layout_height="45dp"
             android:layout_weight="1"
@@ -30,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
-                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:singleLine="true"
                 android:text="Audio Name"
                 android:textColor="@color/colorBlack"
@@ -49,15 +51,13 @@
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_sound_mixing" />
 
-                <SeekBar
-                    android:id="@+id/volume_bar"
-                    android:layout_width="match_parent"
+                <androidx.appcompat.widget.AppCompatSeekBar
+                    android:id="@+id/sb_music_mixing"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:max="100"
-                    android:progress="0"
-                    android:progressDrawable="@drawable/bg_view_rounder_single"
-                    android:secondaryProgress="0" />
+                    android:layout_weight="0.6"
+                    android:progressTint="#FDAA74"
+                    android:thumbTint="#FDAA74" />
             </TableRow>
 
         </LinearLayout>

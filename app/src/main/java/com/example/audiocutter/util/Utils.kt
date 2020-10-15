@@ -3,6 +3,9 @@ package com.example.audiocutter.util
 import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
+import android.graphics.Paint
+import android.graphics.Rect
+import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
@@ -10,12 +13,10 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.util.Log
-import android.graphics.Paint
-import android.graphics.Rect
-import android.media.MediaPlayer
 import android.util.TypedValue
 import java.io.File
 import java.text.Normalizer
+import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
 object Utils {
@@ -114,7 +115,13 @@ object Utils {
     fun getPathByUri(context: Context, uri: String): String? {
         var audioTitle = ""
         val proj = arrayOf(MediaStore.Audio.Media.DATA)
-        var audioCursor: Cursor? = context.contentResolver.query(Uri.parse(uri), proj, null, null, null)
+        var audioCursor: Cursor? = context.contentResolver.query(
+            Uri.parse(uri),
+            proj,
+            null,
+            null,
+            null
+        )
         try {
             if (audioCursor != null) {
                 if (audioCursor.moveToFirst()) {
@@ -131,7 +138,10 @@ object Utils {
     fun getUriRingtoneDefault(context: Context): String? {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
             if (RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE) != null) {
-                return RingtoneManager.getActualDefaultRingtoneUri(context.applicationContext, RingtoneManager.TYPE_RINGTONE)
+                return RingtoneManager.getActualDefaultRingtoneUri(
+                    context.applicationContext,
+                    RingtoneManager.TYPE_RINGTONE
+                )
                     .toString()
             }
         } else {
@@ -147,7 +157,11 @@ object Utils {
     fun getImageCover(context: Context, path: String?): Bitmap? {
         try {
             if (path != null) {
-                val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, Uri.parse(path))
+                val bitmap = MediaStore.Images.Media.getBitmap(
+                    context.contentResolver, Uri.parse(
+                        path
+                    )
+                )
                 return bitmap
             }
         } catch (e: Exception) {
@@ -174,13 +188,30 @@ object Utils {
         return null
     }
 
-    fun convertValue(min1: Double, max1: Double, min2: Double, max2: Double, value: Double): Double {
+    fun convertValue(
+        min1: Double,
+        max1: Double,
+        min2: Double,
+        max2: Double,
+        value: Double
+    ): Double {
         return ((value - min1) * ((max2 - min2) / (max1 - min1)) + min2)
     }
 
 
+    fun convertTime(time: Int): String {
+        if (time < 0) return "00:00"
+        val df = SimpleDateFormat("mm:ss")
+        return df.format(time)
+    }
+
+
     fun convertDp2Px(dip: Int, context: Context): Float {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip.toFloat(), context.resources.displayMetrics)
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dip.toFloat(),
+            context.resources.displayMetrics
+        )
     }
 
     //test

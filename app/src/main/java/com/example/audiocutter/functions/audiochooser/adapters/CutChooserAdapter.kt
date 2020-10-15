@@ -159,6 +159,7 @@ class AudiocutterAdapter(val mContext: Context) :
         }
 
 
+
         private fun controllerAudio() {
             val itemAudio = listAudios[adapterPosition]
             if (adapterPosition == -1) {

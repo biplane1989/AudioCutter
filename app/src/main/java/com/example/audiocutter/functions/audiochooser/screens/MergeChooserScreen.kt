@@ -20,21 +20,28 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MergeChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergeChooserAdapter
-import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import kotlinx.coroutines.delay
 
 class MergeChooserScreen : BaseFragment(), View.OnClickListener,
-    MergeChooserAdapter.AudioMergeListener,
-    OnActionCallback {
+    MergeChooserAdapter.AudioMergeListener {
     private lateinit var binding: MergeChooserScreenBinding
 
     private lateinit var audioMerAdapter: MergeChooserAdapter
     private lateinit var audioMerModel: MergeChooserModel
-
+    var stateObserver = Observer<Boolean> {
+        if (it) {
+            showProgressBar(true)
+        } else {
+            showProgressBar(false)
+        }
+    }
     var currentPos = -1
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
+        if (listMusic.isEmpty()) {
+            showEmptyView()
+        }
         audioMerAdapter.submitList(ArrayList(listMusic))
 
     }
@@ -51,7 +58,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
                 requireContext()
             )
         audioMerModel = ViewModelProvider(this).get(MergeChooserModel::class.java)
-        audioMerModel.setOnCallBack(this)
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
@@ -72,8 +78,9 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         showProgressBar(true)
         runOnUI {
             delay(500)
-            val listAudioViewLiveData = audioMerModel.getAllAudioFile()
-            listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
+            audioMerModel.getAllAudioFile().observe(viewLifecycleOwner, listAudioObserver)
+            audioMerModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
+
         }
     }
 
@@ -194,11 +201,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     }
 
 
-    override fun hideProgress() {
-        showProgressBar(false)
-    }
-
-    override fun showEmptyCallback() {
+    private fun showEmptyView() {
         showProgressBar(false)
         binding.rvMerge.visibility = View.INVISIBLE
         binding.ivEmptyListMerge.visibility = View.VISIBLE

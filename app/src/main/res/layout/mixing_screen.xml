@@ -1,117 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:fitsSystemWindows="true"
-    android:layout_height="match_parent">
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/d_56"
-        android:paddingHorizontal="@dimen/d_16">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/iv_back_mixing"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_centerVertical="true"
-            android:padding="4dp"
-            android:src="@drawable/ic_back_screen" />
-
-        <TextView
+        <LinearLayout
+            android:id="@+id/rlt_actionbar_mixing"
+            paddingTopSystemWindowInsets="@{true}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/d_16"
-            android:layout_toRightOf="@id/iv_back_mixing"
-            android:fontFamily="@font/sanfranciscodisplay_bold"
-            android:text="@string/AUDIO_MIXER"
-            android:textColor="@color/colorBlack"
-            android:textSize="@dimen/d_18" />
+            android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:padding="4dp"
-            android:src="@drawable/ic_done_mixing" />
-    </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/d_56">
 
-    <include
-        layout="@layout/item_audio_mixing"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/d_56" />
+                <ImageView
+                    android:id="@+id/iv_back_mixing"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_centerVertical="true"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_back_screen" />
 
-    <RelativeLayout
-        android:id="@+id/rlt_controller"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/d_16">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/d_16"
+                    android:layout_toRightOf="@id/iv_back_mixing"
+                    android:fontFamily="@font/sanfranciscodisplay_bold"
+                    android:text="@string/AUDIO_MIXER"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/d_18" />
 
-        <ImageView
-            android:id="@+id/iv_play_mixing"
+                <ImageView
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_done_mixing" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_play_mixing_audio" />
+            android:layout_below="@id/rlt_actionbar_mixing">
 
-        <ImageView
-            android:id="@+id/iv_next_mixing"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/d_10"
-            android:layout_toRightOf="@id/iv_play_mixing"
-            android:padding="@dimen/d_5"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_next_audio_mixing" />
 
-        <ImageView
-            android:id="@+id/iv_previous_mixing"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="@dimen/d_10"
-            android:layout_toLeftOf="@id/iv_play_mixing"
-            android:padding="@dimen/d_5"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_previous_audio_mixing" />
+            <LinearLayout
+                android:id="@+id/ln_add_item_mixing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/d_16"
+
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/item_audio_1"
+                    layout="@layout/item_audio_mixing"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <include
+                    android:id="@+id/item_audio_2"
+                    layout="@layout/item_audio_mixing"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/item_audio_1"
+                    android:layout_marginTop="@dimen/d_16" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <com.example.audiocutter.ui.audiochooser.mix.ChangeRangeView
+            android:id="@+id/cr_change_view_mixing"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_below="@id/rlt_actionbar_mixing" />
+
+
+        <RelativeLayout
+            android:id="@+id/rlt_controller"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/d_16">
+
+
+            <RelativeLayout
+                android:id="@+id/rlt_play_mixing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <ImageView
+                    android:id="@+id/play_iv"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_centerInParent="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/play_selector"
+                    android:scaleType="center"
+                    android:src="@drawable/fragment_cutter_play_ic" />
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/iv_previous_mixing"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/rlt_play_mixing"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_previous_audio_mixing" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/d_56"
+            android:layout_above="@id/rlt_controller"
+            android:layout_marginBottom="@dimen/d_10"
+            android:paddingHorizontal="@dimen/d_16">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_next_audio_enabled"
+                android:fontFamily="@font/sanfranciscodisplay_medium"
+                android:paddingHorizontal="@dimen/d_10"
+                android:text="@string/shorted_audio_mixing"
+                android:textColor="@color/colorWhite" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="right"
+                android:background="@drawable/bg_next_audio_disabled"
+                android:fontFamily="@font/sanfranciscodisplay_medium"
+                android:paddingHorizontal="@dimen/d_10"
+                android:text="@string/longgest_audio_mixing"
+                android:textColor="@color/colorgray" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/d_56"
-        android:layout_above="@id/rlt_controller"
-        android:layout_marginBottom="@dimen/d_10"
-        android:paddingHorizontal="@dimen/d_16">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@drawable/bg_next_audio_enabled"
-            android:fontFamily="@font/sanfranciscodisplay_medium"
-            android:paddingHorizontal="@dimen/d_10"
-            android:text="SHORTED AUDIO"
-            android:textColor="@color/colorWhite" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            android:layout_gravity="right"
-            android:background="@drawable/bg_next_audio_disabled"
-            android:fontFamily="@font/sanfranciscodisplay_medium"
-            android:paddingHorizontal="@dimen/d_10"
-            android:text="LONGGEST AUDIO"
-            android:textColor="@color/colorgray" />
-
-    </RelativeLayout>
-
-</RelativeLayout>
 </layout>

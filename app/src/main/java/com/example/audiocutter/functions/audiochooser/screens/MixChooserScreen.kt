@@ -21,25 +21,31 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MixChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MixChooserAdapter
-import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import kotlinx.coroutines.delay
 
-class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter.AudioMixerListener,
-    OnActionCallback {
+class MixChooserScreen : BaseFragment(), View.OnClickListener,
+    MixChooserAdapter.AudioMixerListener {
 
     val TAG = CutChooserScreen::class.java.name
     private lateinit var audioMixAdapter: MixChooserAdapter
     private lateinit var audioMixModel: MixModel
     private lateinit var binding: MixChooserScreenBinding
-    var currentPos = -1
-
-    //rlt_next_recent_parent
-
+    private var currentPos = -1
+    private var stateObserver = Observer<Boolean> {
+        if (it) {
+            showProgressBar(true)
+        } else {
+            showProgressBar(false)
+        }
+    }
 
     var isChangeList = true
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
+        if (listMusic.isEmpty()) {
+            showEmptyView()
+        }
         audioMixAdapter.submitList(ArrayList(listMusic))
 
     }
@@ -53,7 +59,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
         super.onPostCreate(savedInstanceState)
         audioMixAdapter = MixChooserAdapter(requireContext())
         audioMixModel = ViewModelProvider(this).get(MixModel::class.java)
-        audioMixModel.setOnCallback(this)
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
@@ -76,19 +81,17 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
             delay(500)
             val listAudioViewLiveData = audioMixModel.getAllAudioFile()
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
+            audioMixModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
         }
     }
 
-    override fun showEmptyCallback() {
+    private fun showEmptyView() {
         binding.rvMixer.visibility = View.INVISIBLE
         binding.ivEmptyListMixer.visibility = View.VISIBLE
         binding.tvEmptyListMixer.visibility = View.VISIBLE
         showProgressBar(false)
     }
 
-    override fun hideProgress() {
-        showProgressBar(false)
-    }
 
     private fun checkEdtSearchAudio() {
         binding.edtMixerSearch.addTextChangedListener(object : TextWatcher {
@@ -286,13 +289,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
         ManagerFactory.getAudioPlayer().stop()
     }
 
-    override fun sendAndReceiveData(listData: List<AudioCutterView>) {
-        TODO("Not yet implemented")
-    }
-
-    override fun backFrg() {
-        TODO("Not yet implemented")
-    }
 }
 
 

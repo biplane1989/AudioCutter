@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.audiochooser.objects
 
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.objects.AudioFile
+import com.example.audiocutter.objects.StateLoad
 
 data class AudioCutterView(
     val audioFile: AudioFile,
