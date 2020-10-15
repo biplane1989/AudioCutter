@@ -7,7 +7,7 @@ enum class Effect(val time: Int) {
 }
 
 enum class BitRate(val value: Int) {
-    _128kb(128), _64kb(64), _32kb(32), _192kb(192), _256kb(256), _320kb(320)
+    _32kb(32), _64kb(64), _128kb(128), _192kb(192), _256kb(256), _320kb(320)
 }
 
 enum class AudioFormat(val type: String) {
@@ -23,15 +23,15 @@ enum class FFMpegState {
 }
 
 data class AudioCutConfig(
-    val startPosition: Int,
-    val endPosition: Int,
-    val volumePercent: Int = 300,
-    val fileName: String,
-    val inEffect: Effect = Effect.OFF,
-    val outEffect: Effect = Effect.OFF,
-    val bitRate: BitRate = BitRate._128kb,
-    val format: AudioFormat = AudioFormat.MP3,
-    val pathFolder: String
+    var startPosition: Float,
+    var endPosition: Float,
+    var volumePercent: Int = 300,
+    var fileName: String,
+    var inEffect: Effect = Effect.OFF,
+    var outEffect: Effect = Effect.OFF,
+    var bitRate: BitRate = BitRate._128kb,
+    var format: AudioFormat = AudioFormat.MP3,
+    var pathFolder: String
 )
 
 data class AudioMixConfig(

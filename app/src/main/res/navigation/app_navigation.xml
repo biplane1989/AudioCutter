@@ -10,7 +10,12 @@
         tools:layout="@layout/main_screen">
         <action
             android:id="@+id/go_to_list_contact_screen"
-            app:destination="@+id/list_contact_screen" />
+            app:destination="@+id/list_contact_screen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
         <action
             android:id="@+id/go_to_my_audio_screen"
             app:destination="@id/my_audio_screen"
@@ -44,16 +49,20 @@
     </fragment>
     <fragment
         android:id="@+id/list_contact_screen"
-        android:name="com.example.audiocutter.functions.contactscreen.contacts.ListContactScreen"
+        android:name="com.example.audiocutter.functions.contacts.screens.ListContactScreen"
         tools:layout="@layout/list_contact_screen">
         <action
             android:id="@+id/go_to_list_select_audio_screen"
-            app:destination="@+id/list_select_audio_screen" />
+            app:destination="@+id/list_select_audio_screen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
         android:id="@+id/list_select_audio_screen"
-        android:name="com.example.audiocutter.functions.contactscreen.select.ListSelectAudioScreen"
+        android:name="com.example.audiocutter.functions.contacts.screens.ListSelectAudioScreen"
         tools:layout="@layout/list_contact_select_screen">
         <argument
             android:name="phoneNumber"
@@ -65,17 +74,34 @@
 
     <fragment
         android:id="@+id/my_audio_screen"
-        android:name="com.example.audiocutter.functions.mystudioscreen.MyAudioManagerScreen"
+        android:name="com.example.audiocutter.functions.mystudio.MyAudioManagerScreen"
         tools:layout="@layout/my_studio_screen" />
 
     <fragment
         android:id="@+id/cut_chooser_screen"
-        android:name="com.example.audiocutter.functions.audiochooser.cut.view.screen.CutChooserScreen"
-        tools:layout="@layout/cut_chooser_screen" />
+        android:name="com.example.audiocutter.functions.audiochooser.screens.CutChooserScreen"
+        tools:layout="@layout/cut_chooser_screen">
+        <action
+            android:id="@+id/go_to_cutting_editor_screen"
+            app:destination="@id/cutting_editor_screen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cutting_editor_screen"
+        android:name="com.example.audiocutter.functions.editor.screen.CuttingEditorScreen"
+        tools:layout="@layout/cutting_editor_screen">
+        <argument
+            android:name="pathAudio"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/merge_chooser_screen"
-        android:name="com.example.audiocutter.functions.audiochooser.merge.screen.MergeChooserScreen"
+        android:name="com.example.audiocutter.functions.audiochooser.screens.MergeChooserScreen"
         tools:layout="@layout/merge_chooser_screen">
         <action
             android:id="@+id/go_to_preview_screen"
@@ -88,13 +114,13 @@
 
     <fragment
         android:id="@+id/merge_preview_screen"
-        android:name="com.example.audiocutter.functions.audiochooser.merge.screen.MergePreviewScreen"
+        android:name="com.example.audiocutter.functions.audiochooser.screens.MergePreviewScreen"
         tools:layout="@layout/merge_preview_screen" />
 
 
     <fragment
         android:id="@+id/mix_chooser_screen"
-        android:name="com.example.audiocutter.functions.audiochooser.mix.screen.MixChooserScreen"
+        android:name="com.example.audiocutter.functions.audiochooser.screens.MixChooserScreen"
         tools:layout="@layout/mix_chooser_screen" />
 
 </navigation>

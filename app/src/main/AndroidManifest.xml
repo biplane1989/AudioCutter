@@ -14,7 +14,6 @@
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
 
-
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -24,12 +23,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".activities.acttest.CutActivity" >
+
+        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.audiocutter.fileprovider"
             android:exported="false"
-            android:grantUriPermissions="true" >
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
