@@ -5,8 +5,7 @@ import android.os.Environment
 import androidx.fragment.app.FragmentTransaction
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
-import com.example.audiocutter.functions.fragmentcutterscreen.AudioCutFragment
-import com.google.android.material.slider.Slider
+import com.example.audiocutter.functions.editor.screen.CuttingEditorScreen
 import java.io.File
 
 class CutActivity : BaseActivity() {
@@ -26,13 +25,11 @@ class CutActivity : BaseActivity() {
 
     override fun createView(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_cut)
-
-
         val ft: FragmentTransaction = supportFragmentManager.beginTransaction()
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-        val audioCutFragment = AudioCutFragment.newInstance(PATH_FOLDER)
+        val audioCutFragment = CuttingEditorScreen.newInstance(PATH_FOLDER)
         ft.add(R.id.root_view, audioCutFragment)
-            .addToBackStack(AudioCutFragment::class.java.simpleName).commit()
+            .addToBackStack(CuttingEditorScreen::class.java.simpleName).commit()
     }
 
 }

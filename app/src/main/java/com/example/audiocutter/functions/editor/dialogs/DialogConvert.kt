@@ -1,4 +1,4 @@
-package com.example.audiocutter.ui.fragment_cut.dialog
+package com.example.audiocutter.functions.editor.dialogs
 
 import android.os.Bundle
 import android.view.View
@@ -8,9 +8,8 @@ import androidx.fragment.app.FragmentManager
 import com.example.audiocutter.R
 import com.example.audiocutter.activities.acttest.CoreTestActivity
 import com.example.audiocutter.base.BaseDialog
-import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.objects.AudioFile
-import com.example.audiocutter.ui.fragment_cut.view.spinner.MaterialSpinner
+import com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
 import com.example.audiocutter.util.PreferencesHelper
 import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioCutConfig
@@ -51,8 +50,9 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
             audioFile: AudioFile
         ) {
             val bundle = Bundle()
-            bundle.putSerializable(Utils.KEY_SEND_AUDIO, audioFile)
-            val dialogConvert = DialogConvert()
+            //bundle.putSerializable(Utils.KEY_SEND_AUDIO, audioFile)
+            val dialogConvert =
+                DialogConvert()
             dialogConvert.arguments = bundle
             dialogConvert.audioFile = audioFile
             dialogConvert.listener = listener

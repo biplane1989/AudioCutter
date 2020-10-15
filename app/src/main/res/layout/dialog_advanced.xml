@@ -34,7 +34,7 @@
                 android:textColor="@color/dialog_advanced_title_fade_color"
                 android:textSize="12dp" />
 
-            <com.example.audiocutter.ui.fragment_cut.view.spinner.MaterialSpinner
+            <com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
                 android:id="@+id/spinner_fade_in"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
@@ -53,7 +53,7 @@
                 android:textColor="@color/dialog_advanced_title_fade_color"
                 android:textSize="12dp" />
 
-            <com.example.audiocutter.ui.fragment_cut.view.spinner.MaterialSpinner
+            <com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
                 android:id="@+id/spinner_fade_out"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"

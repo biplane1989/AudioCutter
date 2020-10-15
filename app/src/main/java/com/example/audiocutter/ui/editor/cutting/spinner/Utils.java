@@ -15,7 +15,7 @@
  *
  */
 
-package com.example.audiocutter.ui.fragment_cut.view.spinner;
+package com.example.audiocutter.ui.editor.cutting.spinner;
 
 import android.content.Context;
 import android.graphics.Color;

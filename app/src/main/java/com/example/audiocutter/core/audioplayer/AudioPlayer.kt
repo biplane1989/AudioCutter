@@ -86,7 +86,7 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                 prepare(audioFile)
                 isStopped = false;
             }
-                startTimerIfReady()
+            startTimerIfReady()
             return true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -154,7 +154,7 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
 
     override fun pause() {
-        if ( playInfoData.playerState == PlayerState.PLAYING) {
+        if (playInfoData.playerState == PlayerState.PLAYING) {
             mPlayer.pause()
         }
 
@@ -162,7 +162,7 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
 
     override fun resume() {
-        if ( playInfoData.playerState == PlayerState.PAUSE) {
+        if (playInfoData.playerState == PlayerState.PAUSE) {
             mPlayer.start()
         }
     }
@@ -251,6 +251,9 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         }
     }
 
+    override fun getPlayerInfoData(): PlayerInfo {
+        return playInfoData
+    }
 
     override fun getPlayerInfo(): LiveData<PlayerInfo> {
         return mPlayInfo

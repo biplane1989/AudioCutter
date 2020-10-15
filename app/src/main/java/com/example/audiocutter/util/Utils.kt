@@ -13,9 +13,7 @@ import android.util.Log
 import android.graphics.Paint
 import android.graphics.Rect
 import android.media.MediaPlayer
-import android.net.Uri
 import android.util.TypedValue
-import java.io.File
 import java.io.File
 import java.text.Normalizer
 import java.util.regex.Pattern
@@ -181,12 +179,6 @@ object Utils {
     }
 
 
-    fun convertDp2Px(dip: Int, context: Context): Float {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dip.toFloat(),
-            context.resources.displayMetrics
-        )
     fun convertDp2Px(dip: Int, context: Context): Float {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip.toFloat(), context.resources.displayMetrics)
     }

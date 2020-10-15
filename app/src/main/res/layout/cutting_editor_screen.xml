@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/fragment_cutter_bg_color"
-        tools:context=".functions.fragmentcutterscreen.AudioCutFragment">
+        tools:context=".functions.editor.screen.CuttingEditorScreen">
 
         <RelativeLayout
             android:id="@+id/title_rl"
@@ -59,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"/>
 
-        <com.example.audiocutter.ui.fragment_cut.view.WaveformEditView
+        <com.example.audiocutter.ui.editor.cutting.WaveformEditView
             android:layout_above="@id/ads_view"
             android:id="@+id/wave_edit_view"
             android:layout_width="match_parent"

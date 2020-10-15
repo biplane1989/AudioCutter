@@ -1,4 +1,4 @@
-package com.example.audiocutter.ui.fragment_cut.view
+package com.example.audiocutter.ui.editor.cutting;
 
 import android.content.Context
 import android.graphics.*
@@ -12,7 +12,6 @@ import android.view.View
 import androidx.dynamicanimation.animation.FlingAnimation
 import androidx.dynamicanimation.animation.FloatValueHolder
 import com.example.audiocutter.R
-import com.example.audiocutter.ui.fragment_cut.view.WaveformLoader.Companion.get
 import com.example.audiocutter.util.Utils
 import kotlin.math.abs
 import kotlin.math.sqrt
@@ -167,7 +166,7 @@ class WaveformEditView : View {
                 numberSample * waveformLineWidth + (numberSample - 1) * waveformLineSpace
             Log.d(TAG, String.format("numberSample = %d", numberSample))
             initWaveformProperties()
-            get()!!.extractor(path, object : WaveformLoader.OnWaveformLoaderCallBack {
+            WaveformLoader.get()!!.extractor(path, object : WaveformLoader.OnWaveformLoaderCallBack {
                 override fun onWaveformUpdate(db: DoubleArray?, chanelCount: Int) {
                     if (db != null) {
                         var i = 0
@@ -722,7 +721,7 @@ class WaveformEditView : View {
     }
 
     private fun cancelLoad() {
-        get()!!.cancel()
+        WaveformLoader.get()!!.cancel()
     }
 
     override fun onDetachedFromWindow() {

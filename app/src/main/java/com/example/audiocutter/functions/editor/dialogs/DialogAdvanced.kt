@@ -1,4 +1,4 @@
-package com.example.audiocutter.ui.fragment_cut.dialog
+package com.example.audiocutter.functions.editor.dialogs
 
 import android.app.Dialog
 import android.content.Context
@@ -104,7 +104,10 @@ class DialogAdvanced : Dialog, View.OnClickListener {
             context: Context,
             onDialogAdvanceListener: OnDialogAdvanceListener
         ) {
-            val dialog = DialogAdvanced(context)
+            val dialog =
+                DialogAdvanced(
+                    context
+                )
             dialog.listener = onDialogAdvanceListener
             dialog.show()
         }

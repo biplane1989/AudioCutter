@@ -28,4 +28,5 @@ interface AudioPlayer {
     fun setVolume(volume: Float)
     fun getMaxVolume(): Int
     fun getPlayerInfo(): LiveData<PlayerInfo>
+    fun getPlayerInfoData(): PlayerInfo
 }

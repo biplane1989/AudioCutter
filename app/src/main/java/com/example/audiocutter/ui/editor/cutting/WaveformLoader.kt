@@ -1,4 +1,4 @@
-package com.example.audiocutter.ui.fragment_cut.view
+package com.example.audiocutter.ui.editor.cutting;
 
 import android.media.MediaCodec
 import android.media.MediaExtractor

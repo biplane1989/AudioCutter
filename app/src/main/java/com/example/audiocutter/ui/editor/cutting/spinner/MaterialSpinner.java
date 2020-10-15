@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
+package com.example.audiocutter.ui.editor.cutting.spinner;
 
-package com.example.audiocutter.ui.fragment_cut.view.spinner;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
