@@ -160,7 +160,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:gravity="center_vertical"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@+id/ll_audio_item">
 
             <ProgressBar
@@ -187,7 +187,7 @@
             android:layout_height="34dp"
             android:gravity="center"
             android:orientation="horizontal"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintTop_toBottomOf="@+id/ll_audio_item">
 
             <ImageView
@@ -201,6 +201,7 @@
                 android:src="@drawable/common_ic_play" />
 
             <androidx.appcompat.widget.AppCompatSeekBar
+                android:progressDrawable="@drawable/result_bg_progressbar"
                 android:id="@+id/sb_music"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -265,8 +266,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="Ringtone" />
+                    android:text="Ringtone"
+                    android:textColor="#2E3041"
+                    android:textSize="14dp" />
 
             </LinearLayout>
 
@@ -274,8 +278,8 @@
                 android:id="@+id/ll_alarm"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginLeft="13dp"
+                android:layout_marginRight="13dp"
                 android:background="@drawable/result_bg_item"
                 android:gravity="center"
                 android:orientation="vertical"
@@ -295,8 +299,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="Alarm" />
+                    android:text="Alarm"
+                    android:textColor="#2E3041"
+                    android:textSize="14dp" />
 
             </LinearLayout>
 
@@ -304,7 +311,7 @@
                 android:id="@+id/ll_notification"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
+                android:layout_marginLeft="13dp"
                 android:layout_marginRight="16dp"
                 android:background="@drawable/result_bg_item"
                 android:gravity="center"
@@ -325,8 +332,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="notification" />
+                    android:text="notification"
+                    android:textColor="#2E3041"
+                    android:textSize="14dp" />
 
             </LinearLayout>
 
@@ -336,7 +346,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="26dp"
                 android:layout_marginRight="16dp"
                 android:background="@drawable/result_bg_item"
                 android:gravity="center"
@@ -358,16 +368,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="Share" />
+                    android:text="Share"
+                    android:textColor="#2E3041"
+                    android:textSize="14dp" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/ll_contact"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginLeft="13dp"
+                android:layout_marginTop="26dp"
                 android:layout_marginRight="16dp"
                 android:background="@drawable/result_bg_item"
                 android:gravity="center"
@@ -388,8 +401,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="Contacts" />
+                    android:text="Contacts"
+                    android:textColor="#2E3041"
+                    android:textSize="14dp" />
 
             </LinearLayout>
 
@@ -397,8 +413,8 @@
                 android:id="@+id/ll_openwith"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginLeft="13dp"
+                android:layout_marginTop="26dp"
                 android:layout_marginRight="16dp"
                 android:background="@drawable/result_bg_item"
                 android:gravity="center"
@@ -419,8 +435,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="Open With" />
+                    android:text="Open With"
+                    android:textColor="#2E3041"
+                    android:textSize="14dp" />
 
             </LinearLayout>
 
