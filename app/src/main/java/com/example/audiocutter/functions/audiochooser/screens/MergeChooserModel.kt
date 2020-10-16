@@ -7,25 +7,44 @@ import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
+import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import java.io.File
+import java.util.*
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 
 class MergeChooserModel : BaseViewModel() {
     private val TAG = MergeChooserModel::class.java.name
     private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
+    private var mListAudioSearch = ArrayList<AudioCutterView>()
+
+    private lateinit var mCallBack: OnActionCallback
+
+    private val sortListByName: Comparator<AudioCutterView> =
+        Comparator { m1, m2 ->
+            m1!!.audioFile.fileName.substring(0, 1).toUpperCase()
+                .compareTo(m2!!.audioFile.fileName.substring(0, 1).toUpperCase())
+        }
+
+    fun setOnCallBack(event: OnActionCallback) {
+        mCallBack = event
+    }
 
 
     suspend fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
             mListAudio.clear()
             it.listAudioFiles.forEach {
-                mListAudio.add(
-                    AudioCutterView(
-                        it
-                    )
-                )
+                mListAudio.add(AudioCutterView(it))
             }
+            if (mListAudio.size == 0) {
+                mCallBack.showEmptyCallback()
+            } else {
+                mCallBack.hideProgress()
+            }
+            Collections.sort(mListAudio, sortListByName)
             mListAudio
         }
     }
@@ -88,17 +107,21 @@ class MergeChooserModel : BaseViewModel() {
         listTmp: MutableList<AudioCutterView>,
         yourTextSearch: String
     ): ArrayList<AudioCutterView> {
-        mListAudio.clear()
+        mListAudioSearch.clear()
         listTmp.forEach {
             val rs = it.audioFile.fileName.toLowerCase().contains(yourTextSearch.toLowerCase())
             if (rs) {
-                mListAudio.add(it)
+                mListAudioSearch.add(it)
             }
         }
-        return mListAudio
+        return mListAudioSearch
     }
 
     fun getListsearch(): ArrayList<AudioCutterView> {
+        return mListAudioSearch
+    }
+
+    fun getListAudio(): ArrayList<AudioCutterView> {
         return mListAudio
     }
 

@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#FDAA74</color>
     <color name="colorBlack">#000000</color>
-    <color name="colorGray">#f6f6f6</color>
+    <color name="colorGray">#FAFAFA</color>
     <color name="colorgray">#8C8C8C</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorAlpha">#00FFFFFF</color>
@@ -15,4 +15,21 @@
     <color name="colorYelowDark">#FDAA74</color>
     <color name="colorYelowAlpha">#4BFFD18D</color>
     <color name="colorAlphaGray">#A7A7A7</color>
+    <color name="colorgrayAlpha">#EEEEEE</color>
+    <!--fragment cut audio-->
+    <color name="fragment_cutter_text_title_color">#2E3041</color>
+    <color name="fragment_cutter_text_time_color">#707489</color>
+    <color name="fragment_cutter_ripple_bg">#FFFFFF</color>
+    <color name="fragment_cutter_ripple_color">#E3E3E3</color>
+    <color name="fragment_cutter_play_bg_color">#FDAA74</color>
+    <color name="fragment_cutter_play_bg_press_color">#ABFDAA74</color>
+    <color name="fragment_cutter_line_color">#F6F6F6</color>
+    <color name="fragment_cutter_bg_color">#FFFFFF</color>
+    <color name="dialog_bg_color">#FFFFFF</color>
+    <color name="dialog_advanced_title_color">#2E3041</color>
+    <color name="dialog_advanced_title_fade_color">#6E6E6E</color>
+    <color name="dialog_advanced_cancel_color">#BDBDBD</color>
+    <color name="dialog_advanced_ok_color">#FDAA74</color>
+    <color name="dialog_advanced_text_sniper_color">#2E3041</color>
+    <color name="dialog_convert_seekbar_color">#FDAA74</color>
 </resources>

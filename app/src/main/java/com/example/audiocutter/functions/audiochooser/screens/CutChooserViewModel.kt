@@ -7,14 +7,29 @@ import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
+import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import java.io.File
+import java.util.*
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 
-class CutChooserViewModel : BaseViewModel() {
-    private val TAG = CutChooserViewModel::class.java.name
+class AudioCutterModel : BaseViewModel() {
+
+
+    private val TAG = AudioCutterModel::class.java.name
     private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
+    private var mListAudioSearch = ArrayList<AudioCutterView>()
     var duration: Long? = 0L
+    var audioPlayer = ManagerFactory.getAudioPlayer()
+    private lateinit var mcallBack: OnActionCallback
+
+
+    fun setOnCallback(event: OnActionCallback) {
+        mcallBack = event
+    }
+
     private val sortListByName: Comparator<AudioCutterView> =
         Comparator { m1, m2 ->
             m1!!.audioFile.fileName.substring(0, 1).toUpperCase()
@@ -24,14 +39,16 @@ class CutChooserViewModel : BaseViewModel() {
     fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(
             ManagerFactory.getAudioFileManager().findAllAudioFiles()
-        ) {
+        ) { it ->
             mListAudio.clear()
             it.listAudioFiles.forEach {
-                mListAudio.add(
-                    AudioCutterView(
-                        it
-                    )
-                )
+                mListAudio.add(AudioCutterView(it))
+            }
+            Collections.sort(mListAudio, sortListByName)
+            if (mListAudio.size == 0) {
+                mcallBack.showEmptyCallback()
+            } else {
+                mcallBack.hideProgress()
             }
             mListAudio
         }
@@ -40,15 +57,18 @@ class CutChooserViewModel : BaseViewModel() {
 
     suspend fun play(pos: Int) {
         val audioItem = mListAudio[pos]
-        ManagerFactory.getAudioPlayer().play(audioItem.audioFile)
+        audioPlayer.play(audioItem.audioFile)
     }
 
     fun pause() {
-        ManagerFactory.getAudioPlayer().pause()
+        if(audioPlayer.getPlayerInfoData().playerState == PlayerState.PLAYING){
+            audioPlayer.pause()
+        }
+
     }
 
     fun resume() {
-        ManagerFactory.getAudioPlayer().resume()
+        audioPlayer.resume()
     }
 
 
@@ -108,17 +128,22 @@ class CutChooserViewModel : BaseViewModel() {
         listTmp: MutableList<AudioCutterView>,
         yourTextSearch: String
     ): ArrayList<AudioCutterView> {
-        mListAudio.clear()
+        mListAudioSearch.clear()
         listTmp.forEach {
-            val rs = it.audioFile.fileName.toLowerCase().contains(yourTextSearch.toLowerCase())
+            val rs = it.audioFile.fileName.toLowerCase(Locale.getDefault())
+                .contains(yourTextSearch.toLowerCase(Locale.getDefault()))
             if (rs) {
-                mListAudio.add(it)
+                mListAudioSearch.add(it)
             }
         }
-        return mListAudio
+        return mListAudioSearch
     }
 
     fun getListsearch(): ArrayList<AudioCutterView> {
+        return mListAudioSearch
+    }
+
+    fun getListAudio(): ArrayList<AudioCutterView> {
         return mListAudio
     }
 

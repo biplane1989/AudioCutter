@@ -20,6 +20,7 @@
     <string name="open_with">Open With</string>
     <string name="share">Share</string>
     <string name="rename">Rename</string>
+    <string name="dialog_advance_ok">OK</string>
     <string name="info">Info</string>
     <string name="delete">Delete</string>
     <string name="my_studio_dialog_info">Info</string>
@@ -65,6 +66,16 @@
     <string name="list_contact_title">Contacts</string>
     <string name="list_contact_item_default">Default</string>
     <string name="countFile">0 file</string>
+
+    <string name="dialog_advanced_title">Advanced</string>
+    <string name="dialog_advanced_fade_in">Fade in</string>
+    <string name="dialog_advanced_fade_out">Fade out</string>
+    <string name="dialog_convert_title">Convert</string>
+    <string name="dialog_convert_file_name">File Name</string>
+    <string name="dialog_convert_format">Format</string>
+    <string name="dialog_convert_bitrate">Bitrate</string>
+    <string name="dialog_convert_volume">Volume</string>
+    <string name="dialog_convert_ok">CONVERT</string>
     <string name="storage_guide_permission_step_1">Step 1 : "Clicked Permissions"</string>
     <string name="storage_guide_permission_step_2">Step 2 : "Turn On Storage"</string>
 

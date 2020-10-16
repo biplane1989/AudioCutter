@@ -6,10 +6,15 @@ import java.util.*
 
 object PreferencesHelper {
     private val SHARED_PREFERENCES_NAME = "rington_cutter_pref"
+    val FADE_IN_TIME = "fade_in_time"
+    val FADE_OUT_TIME = "fade_out_time"
+    val CONVERT_FORMAT = "convert_format"
+    val CONVERT_VOLUME = "convert_volume"
 
     private lateinit var sharedPreferences: SharedPreferences
     fun start(appContext: Context) {
-        sharedPreferences = appContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+        sharedPreferences =
+            appContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
     }
 
 

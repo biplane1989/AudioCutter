@@ -36,7 +36,7 @@ class ProgressView : View {
 
 
     init {
-        mPaint1.color = resources.getColor(R.color.colorGray)
+        mPaint1.color = resources.getColor(R.color.colorWhite)
         mPaint1.style = Paint.Style.FILL
         mPaint2.color = resources.getColor(R.color.colorYelowAlpha)
         mPaint2.style = Paint.Style.FILL

@@ -19,13 +19,19 @@
                 android:layout_height="@dimen/d_56"
                 android:background="?attr/selectableItemBackground">
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/colorgrayAlpha" />
+
                 <EditText
                     android:id="@+id/edt_mixer_search"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/colorWhite"
-                    android:hint="Search..."
                     android:focusableInTouchMode="true"
+                    android:hint="Search..."
                     android:paddingStart="40dp"
                     android:singleLine="true"
                     android:visibility="gone">
@@ -110,6 +116,13 @@
             </RelativeLayout>
         </LinearLayout>
 
+        <ProgressBar
+            android:id="@+id/pgr_audio_mix"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerInParent="true"
+            android:visibility="invisible" />
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_mixer"
@@ -138,69 +151,76 @@
             android:fontFamily="@font/sanfranciscodisplay_regular"
             android:text="No result."
             android:textColor="@color/colorgray"
-        android:textSize="@dimen/d_18"
-        android:visibility="gone" />
+            android:textSize="@dimen/d_18"
+            android:visibility="gone" />
 
-    <RelativeLayout
-        android:id="@+id/rlt_next_mixer_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/d_56"
-        android:gravity="center_vertical">
-
-
-        <TextView
-            android:layout_marginLeft="@dimen/d_16"
-            android:id="@+id/tv_count_file"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:fontFamily="@font/sanfranciscodisplay_bold"
-            android:text="@string/countFile"
-            android:textColor="@color/colorBlack"
-            android:textSize="14dp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:layout_above="@id/rlt_next_mixer_parent"
+            android:background="@color/colorgrayAlpha" />
 
 
         <RelativeLayout
-            android:layout_marginRight="@dimen/d_16"
-            android:layout_width="90dp"
-            android:layout_height="40dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:id="@+id/rlt_next_mixer"
-            android:background="@drawable/bg_next_audio_disabled">
+            android:id="@+id/rlt_next_mixer_parent"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/d_56"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:gravity="center"
-                android:orientation="horizontal">
+            <TextView
+                android:id="@+id/tv_count_file"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/d_16"
+                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:text="@string/countFile"
+                android:textColor="@color/colorBlack"
+                android:textSize="14dp" />
 
-                <TextView
-                    android:id="@+id/tv_next_mixer"
+
+            <RelativeLayout
+                android:id="@+id/rlt_next_mixer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/d_16"
+                android:background="@drawable/bg_next_audio_disabled"
+                android:paddingHorizontal="@dimen/d_16"
+                android:paddingVertical="@dimen/d_10">
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/sanfranciscodisplay_bold"
-                    android:text="Next"
-                    android:textColor="@color/colorgray"
-                    android:textSize="@dimen/d_18"/>
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                <ImageView
-                    android:id="@+id/iv_next_mixer"
-                    android:layout_width="24dp"
-                    android:layout_marginLeft="@dimen/d_10"
-                    android:layout_height="24dp"
-                    android:padding="@dimen/d_5"
-                    android:src="@drawable/ic_mixer_next"
-                    app:tint="@color/colorgray" />
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/tv_next_mixer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/sanfranciscodisplay_bold"
+                        android:text="Next"
+                        android:textColor="@color/colorgray"
+                        android:textSize="@dimen/d_18" />
+
+                    <ImageView
+                        android:id="@+id/iv_next_mixer"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_mixer_next"
+                        app:tint="@color/colorgray" />
+                </LinearLayout>
+
+
+            </RelativeLayout>
 
 
         </RelativeLayout>
-
-
-    </RelativeLayout>
 
     </RelativeLayout>
 </layout>

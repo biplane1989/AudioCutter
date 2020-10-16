@@ -18,32 +18,33 @@ import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
 import kotlin.math.floor
 
-class AudiocutterAdapter(val mContext: Context) :
-    ListAdapter<AudioCutterView, AudiocutterAdapter.AudiocutterHolder>(
+class CutChooserAdapter(val mContext: Context) :
+    ListAdapter<AudioCutterView, CutChooserAdapter.AudiocutterHolder>(
         CutChooserAudioDiff()
     ) {
-    lateinit var mCallBack: AudioCutterListener
+    lateinit var mCallBack: CutChooserListener
     val SIZE_MB = 1024 * 1024
     var listAudios = mutableListOf<AudioCutterView>()
 
 
-    fun setAudioCutterListtener(event: AudioCutterListener) {
+    fun setAudioCutterListtener(event: CutChooserListener) {
         mCallBack = event
     }
 
     override fun submitList(list: List<AudioCutterView>?) {
-        if (list != null) {
+        if (list!!.size != 0 || list != null) {
             listAudios = ArrayList(list)
             super.submitList(listAudios)
-        } else {
-            listAudios = ArrayList()
-            super.submitList(listAudios)
-        }
+        } else
+            if (list!!.size == 0 || list == null) {
+                listAudios = ArrayList()
+                super.submitList(listAudios)
+            }
     }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AudiocutterHolder {
-        val view = LayoutInflater.from(mContext).inflate(R.layout.item_audio, parent, false)
+        val view = LayoutInflater.from(mContext).inflate(R.layout.item_audio_cutter, parent, false)
         return AudiocutterHolder(view)
     }
 
@@ -103,7 +104,7 @@ class AudiocutterAdapter(val mContext: Context) :
         fun bind() {
             val itemAudioFile = getItem(position)
             Log.d("TAG", "bind: ${itemAudioFile.isCheckDistance}    state ${itemAudioFile.state}")
-              tvBitrateAudio.text ="${itemAudioFile.audioFile.bitRate}kbp/s"
+            tvBitrateAudio.text = "${itemAudioFile.audioFile.bitRate}kbp/s"
 
             tvNameAudio.text = itemAudioFile.audioFile.fileName
             var size = (itemAudioFile.audioFile.size.toDouble() / SIZE_MB)
@@ -184,7 +185,7 @@ class AudiocutterAdapter(val mContext: Context) :
 
                 when (it.itemId) {
                     R.id.menu_cut -> {
-                        Toast.makeText(mContext, "cut", Toast.LENGTH_SHORT).show()
+                        mCallBack.onCutItemClicked(getItem(adapterPosition))
                     }
                     R.id.menu_play
                     -> {
@@ -206,13 +207,12 @@ class AudiocutterAdapter(val mContext: Context) :
         }
     }
 
-    interface AudioCutterListener {
-
+    interface CutChooserListener {
         fun play(pos: Int)
         fun pause(pos: Int)
         fun resume(pos: Int)
-        fun showDialogSetAs(itemAudio: AudioCutterView) {
-        }
+        fun showDialogSetAs(itemAudio: AudioCutterView)
+        fun onCutItemClicked(itemAudio: AudioCutterView)
     }
 }
 

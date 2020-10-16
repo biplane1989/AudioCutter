@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.audiochooser.screens
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -18,40 +19,22 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MergeChooserScreenBinding
+import com.example.audiocutter.functions.audiochooser.adapters.MergeChooserAdapter
+import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
-import com.example.audiocutter.functions.audiochooser.adapters.MergePreviewAdapter
+import kotlinx.coroutines.delay
 
 class MergeChooserScreen : BaseFragment(), View.OnClickListener,
-    MergePreviewAdapter.AudioMergeListener {
-    private lateinit var mView: View
+    MergeChooserAdapter.AudioMergeListener,
+    OnActionCallback {
     private lateinit var binding: MergeChooserScreenBinding
 
-    //    private lateinit var rvAudioMer: RecyclerView
-    private lateinit var audioMerAdapter: MergePreviewAdapter
+    private lateinit var audioMerAdapter: MergeChooserAdapter
     private lateinit var audioMerModel: MergeChooserModel
 
-    //    lateinit var ivFile: ImageView
-//    lateinit var ivSearch: ImageView
-//    lateinit var ivBack: ImageView
-//    lateinit var ivBackEdt: ImageView
-//    lateinit var tbName: TableRow
-//    lateinit var tvEmptyList: TextView
-//    lateinit var ivClose: ImageView
-//    lateinit var ivEmptyList: ImageView
-//    lateinit var edtSearch: EditText
     var currentPos = -1
 
-//rlt_next_recent_parent
-
-//    lateinit var ivNextMer: ImageView
-//    lateinit var tvNextMer: TextView
-//    lateinit var tvCountFile: TextView
-//    lateinit var rltNextMer: RelativeLayout
-//    lateinit var rltNextMerParent: RelativeLayout
-
-    var listTmp: MutableList<AudioCutterView> = mutableListOf()
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        listTmp = listMusic.toMutableList()
         audioMerAdapter.submitList(ArrayList(listMusic))
 
     }
@@ -64,10 +47,11 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         audioMerAdapter =
-            MergePreviewAdapter(
+            MergeChooserAdapter(
                 requireContext()
             )
         audioMerModel = ViewModelProvider(this).get(MergeChooserModel::class.java)
+        audioMerModel.setOnCallBack(this)
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
@@ -85,12 +69,14 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLists()
+        showProgressBar(true)
         runOnUI {
+            delay(500)
             val listAudioViewLiveData = audioMerModel.getAllAudioFile()
-            listAudioViewLiveData.removeObserver(listAudioObserver)
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
         }
     }
+
 
     private fun checkEdtSearchAudio() {
         binding.edtMerSearch.addTextChangedListener(object : TextWatcher {
@@ -114,9 +100,9 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         binding.tvEmptyListMer.visibility = View.GONE
         binding.ivEmptyListMerge.visibility = View.GONE
         if (yourTextSearch.isEmpty()) {
-            audioMerAdapter.submitList(listTmp)
+            audioMerAdapter.submitList(audioMerModel.getListAudio())
         }
-        if (audioMerModel.searchAudio(listTmp, yourTextSearch).isNotEmpty()) {
+        if (audioMerModel.searchAudio(audioMerModel.getListAudio(), yourTextSearch).isNotEmpty()) {
             audioMerAdapter.submitList(audioMerModel.getListsearch())
         } else {
             binding.rvMerge.visibility = View.GONE
@@ -163,13 +149,8 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
 
 
     private fun hideKeyBroad() {
-        val imm =
-            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        var view = requireActivity().currentFocus
-        if (view == null) {
-            view = View(activity)
-        }
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
 
@@ -210,6 +191,18 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         }
 
         binding.tvCountFileMer.text = "${audioMerModel.checkList()} file"
+    }
+
+
+    override fun hideProgress() {
+        showProgressBar(false)
+    }
+
+    override fun showEmptyCallback() {
+        showProgressBar(false)
+        binding.rvMerge.visibility = View.INVISIBLE
+        binding.ivEmptyListMerge.visibility = View.VISIBLE
+        binding.tvEmptyListMer.visibility = View.VISIBLE
     }
 
 
@@ -256,7 +249,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         binding.rltNextMerParent.visibility = View.VISIBLE
         binding.tvEmptyListMer.visibility = View.GONE
         binding.ivEmptyListMerge.visibility = View.GONE
-        audioMerAdapter.submitList(listTmp)
+        audioMerAdapter.submitList(audioMerModel.getListAudio())
         hideKeyBroad()
         hideOrShowEditText(View.GONE)
         hideOrShowView(View.VISIBLE)
@@ -273,5 +266,11 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         ManagerFactory.getAudioPlayer().stop()
     }
 
-
+    private fun showProgressBar(b: Boolean) {
+        if (b) {
+            binding.pgrAudioMerge.visibility = View.VISIBLE
+        } else {
+            binding.pgrAudioMerge.visibility = View.GONE
+        }
+    }
 }

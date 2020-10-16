@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:background="@drawable/border_dialog_bg"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:gravity="center"
+                android:text="@string/dialog_advanced_title"
+                android:textColor="@color/dialog_advanced_title_color"
+                android:textSize="20dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/sanfranciscodisplay_medium"
+                android:gravity="center"
+                android:text="@string/dialog_advanced_fade_in"
+                android:textColor="@color/dialog_advanced_title_fade_color"
+                android:textSize="12dp" />
+
+            <com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
+                android:id="@+id/spinner_fade_in"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginRight="24dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/sanfranciscodisplay_medium"
+                android:gravity="center"
+                android:text="@string/dialog_advanced_fade_out"
+                android:textColor="@color/dialog_advanced_title_fade_color"
+                android:textSize="12dp" />
+
+            <com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
+                android:id="@+id/spinner_fade_out"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginRight="24dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="21dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:id="@+id/cancel_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:gravity="center"
+                    android:text="@string/my_studio_dialog_btn_cancel"
+                    android:textColor="@color/dialog_advanced_cancel_color"
+                    android:textSize="14dp" />
+
+                <TextView
+                    android:id="@+id/ok_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:gravity="center"
+                    android:text="@string/dialog_advance_ok"
+                    android:textColor="@color/dialog_advanced_ok_color"
+                    android:textSize="14dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+</layout>

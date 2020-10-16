@@ -5,7 +5,14 @@
     android:gravity="center"
     android:id="@+id/ln_main"
     android:orientation="vertical">
-
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/edt_text"/>
+<Button
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:id="@+id/bt_c"/>
 
 
 </LinearLayout>

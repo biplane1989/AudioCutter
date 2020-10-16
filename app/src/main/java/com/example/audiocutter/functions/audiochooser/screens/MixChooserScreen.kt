@@ -2,7 +2,7 @@ package com.example.audiocutter.functions.audiochooser.screens
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.graphics.Canvas
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,23 +20,28 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MixChooserScreenBinding
-import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.adapters.MixChooserAdapter
+import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import kotlinx.coroutines.delay
 
-class MixChooserScreen : BaseFragment(), View.OnClickListener,
-    MixChooserAdapter.AudioMixerListener {
+class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter.AudioMixerListener,
+    OnActionCallback {
 
     val TAG = CutChooserScreen::class.java.name
     private lateinit var audioMixAdapter: MixChooserAdapter
-    private lateinit var audioMixModel: MixChooserModel
+    private lateinit var audioMixModel: MixModel
     private lateinit var binding: MixChooserScreenBinding
     var currentPos = -1
 
-    var listTmp: MutableList<AudioCutterView> = mutableListOf()
+    //rlt_next_recent_parent
+
+
+    var isChangeList = true
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        listTmp = listMusic.toMutableList()
         audioMixAdapter.submitList(ArrayList(listMusic))
+
     }
 
     private val playerInfoObserver = Observer<PlayerInfo> {
@@ -46,11 +51,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioMixAdapter =
-            MixChooserAdapter(
-                requireContext()
-            )
-        audioMixModel = ViewModelProvider(this).get(MixChooserModel::class.java)
+        audioMixAdapter = MixChooserAdapter(requireContext())
+        audioMixModel = ViewModelProvider(this).get(MixModel::class.java)
+        audioMixModel.setOnCallback(this)
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
@@ -68,11 +71,23 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLists()
+        showProgressBar(true)
         runOnUI {
+            delay(500)
             val listAudioViewLiveData = audioMixModel.getAllAudioFile()
-            listAudioViewLiveData.removeObserver(listAudioObserver)
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
         }
+    }
+
+    override fun showEmptyCallback() {
+        binding.rvMixer.visibility = View.INVISIBLE
+        binding.ivEmptyListMixer.visibility = View.VISIBLE
+        binding.tvEmptyListMixer.visibility = View.VISIBLE
+        showProgressBar(false)
+    }
+
+    override fun hideProgress() {
+        showProgressBar(false)
     }
 
     private fun checkEdtSearchAudio() {
@@ -100,9 +115,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         binding.tvEmptyListMixer.visibility = View.GONE
         binding.ivEmptyListMixer.visibility = View.GONE
         if (yourTextSearch.isEmpty()) {
-            audioMixAdapter.submitList(listTmp)
+            audioMixAdapter.submitList(audioMixModel.getListAudio())
         }
-        if (audioMixModel.searchAudio(listTmp, yourTextSearch).isNotEmpty()) {
+        if (audioMixModel.searchAudio(audioMixModel.getListAudio(), yourTextSearch).isNotEmpty()) {
             audioMixAdapter.submitList(audioMixModel.getListsearch())
         } else {
             binding.rvMixer.visibility = View.GONE
@@ -114,6 +129,8 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
 
     private fun initViews() {
+
+
         binding.ivAudioMixerScreenFile.setOnClickListener(this)
         binding.ivMixerScreenSearch.setOnClickListener(this)
         binding.ivMixerScreenBackEdt.setOnClickListener(this)
@@ -142,15 +159,18 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         binding.ivAudioMixerScreenFile.visibility = status
     }
 
+    private fun showProgressBar(b: Boolean) {
+        if (b) {
+            binding.pgrAudioMix.visibility = View.VISIBLE
+        } else {
+            binding.pgrAudioMix.visibility = View.GONE
+        }
+    }
+
 
     private fun hideKeyBroad() {
-        val imm =
-            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        var view = requireActivity().currentFocus
-        if (view == null) {
-            view = View(activity)
-        }
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
 
@@ -227,7 +247,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
     private fun handleAudiofile() {
         val listItemHandle = audioMixModel.getListItemChoose()
-
         listItemHandle.forEach {
             Log.d(TAG, "handleAudiofile: ${it.audioFile.fileName}")
         }
@@ -249,7 +268,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         binding.rltNextMixerParent.visibility = View.VISIBLE
         binding.tvEmptyListMixer.visibility = View.GONE
         binding.ivEmptyListMixer.visibility = View.GONE
-        audioMixAdapter.submitList(listTmp)
+        audioMixAdapter.submitList(audioMixModel.getListAudio())
         hideKeyBroad()
         hideOrShowEditText(View.GONE)
         hideOrShowView(View.VISIBLE)
@@ -267,7 +286,13 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         ManagerFactory.getAudioPlayer().stop()
     }
 
+    override fun sendAndReceiveData(listData: List<AudioCutterView>) {
+        TODO("Not yet implemented")
+    }
 
+    override fun backFrg() {
+        TODO("Not yet implemented")
+    }
 }
 
 

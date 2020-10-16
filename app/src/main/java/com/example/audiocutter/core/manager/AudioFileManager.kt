@@ -18,5 +18,6 @@ interface AudioFileManager {
     fun getInfoAudioFile(itemFile: File?, type: Int): String?
     fun getDateCreatFile(file:File?): String?
     fun getParentFile(typeFile: Folder): String
+    fun getPathParentFileByName(name:String, typeFile: Folder): String
 
 }

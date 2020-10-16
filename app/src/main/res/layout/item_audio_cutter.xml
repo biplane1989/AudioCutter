@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="80dp">
+    android:layout_height="80dp"
+    android:background="@color/colorGray">
     <com.example.audiocutter.ui.audiochooser.cut.ProgressView
         android:layout_width="match_parent"
         android:id="@+id/pg_audio_cutter_screen"
@@ -20,10 +21,9 @@
         <ImageView
 
             android:id="@+id/iv_controller_audio"
-            android:scaleType="centerInside"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:background="?attr/selectableItemBackground"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_audiocutter_play" />
 
         <LinearLayout
@@ -87,9 +87,9 @@
             </LinearLayout>
 
             <com.example.audiocutter.ui.audiochooser.cut.WaveAudio
-                android:layout_width="24dp"
+                android:layout_width="@dimen/d_20"
                 android:id="@+id/wave_audio_cutter"
-                android:layout_height="24dp"
+                android:layout_height="@dimen/d_20"
                 android:layout_gravity="center"
                 android:visibility="invisible" />
 
@@ -99,13 +99,15 @@
     <LinearLayout
         android:id="@+id/ln_menu"
         android:layout_width="50dp"
+        android:layout_marginRight="@dimen/d_16"
         android:layout_height="match_parent"
         android:gravity="center">
 
         <ImageView
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:layout_width="@dimen/d_16"
-            android:layout_height="@dimen/d_16"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_audiocutter_popupmenu" />
 
     </LinearLayout>

@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:paddingHorizontal="@dimen/d_16">
+    android:background="@color/colorGray">
 
     <com.example.audiocutter.ui.audiochooser.cut.ProgressView
         android:id="@+id/pg_audio_mixer_screen"
@@ -11,6 +11,7 @@
         android:visibility="gone" />
 
     <LinearLayout
+
         android:id="@+id/ln_item_audio_mixer_screen"
         android:layout_width="match_parent"
         android:layout_height="80dp"
@@ -19,12 +20,11 @@
         android:orientation="horizontal">
 
         <ImageView
-
+            android:layout_width="48dp"
             android:id="@+id/iv_controller_audio_recent"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:scaleType="centerInside"
-            android:background="?attr/selectableItemBackground"
+            android:layout_height="48dp"
+            android:layout_marginLeft="@dimen/d_16"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_audiocutter_play" />
     <LinearLayout
         android:gravity="right"
@@ -88,9 +88,9 @@
         </LinearLayout>
 
         <com.example.audiocutter.ui.audiochooser.cut.WaveAudio
-            android:layout_width="24dp"
+            android:layout_width="@dimen/d_20"
             android:id="@+id/wave_audio_mixer"
-            android:layout_height="24dp"
+            android:layout_height="@dimen/d_20"
             android:layout_gravity="center"
             android:visibility="invisible" />
 
@@ -98,6 +98,7 @@
     </LinearLayout>
 
         <LinearLayout
+            android:layout_marginRight="@dimen/d_16"
             android:id="@+id/ln_menu_recent"
             android:layout_width="50dp"
             android:layout_height="match_parent"
@@ -105,8 +106,9 @@
 
             <ImageView
                 android:id="@+id/iv_recent_check"
-                android:layout_width="@dimen/d_20"
-                android:layout_height="@dimen/d_20"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="centerInside"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_noncheck" />
 
