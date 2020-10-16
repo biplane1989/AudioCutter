@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.mystudio
+package com.example.audiocutter.functions.mystudio.screens
 
 import android.os.Bundle
 import android.util.Log
@@ -12,9 +12,10 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.channel.FragmentMeta
 import com.example.audiocutter.databinding.MyStudioScreenBinding
+import com.example.audiocutter.functions.mystudio.Constance
+import com.example.audiocutter.functions.mystudio.adapters.MyStudioViewPagerAdapter
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialog
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialogListener
-import com.example.audiocutter.functions.mystudio.fragment.MyStudioFragment
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.my_studio_screen.*
 

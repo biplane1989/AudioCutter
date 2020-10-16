@@ -1,9 +1,10 @@
-package com.example.audiocutter.functions.mystudio
+package com.example.audiocutter.functions.mystudio.adapters
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.example.audiocutter.functions.mystudio.fragment.MyStudioFragment
+import com.example.audiocutter.functions.mystudio.Constance
+import com.example.audiocutter.functions.mystudio.screens.MyStudioFragment
 
 class MyStudioViewPagerAdapter(
 

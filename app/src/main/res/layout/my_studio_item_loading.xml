@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ll_audio_loading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="?attr/selectableItemBackground"
+            android:orientation="horizontal">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_item"
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cv_avatar"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginLeft="16dp"
+
+                    app:cardBackgroundColor="#C4C6D2"
+                    app:cardCornerRadius="4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/iv_avatar_music"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/my_studio_item_icon_music" />
+                </androidx.cardview.widget.CardView>
+
+
+                <TextView
+                    android:id="@+id/tv_title_music"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginLeft="15dp"
+                    android:fontFamily="@font/sanfranciscodisplay_bold"
+                    android:gravity="top"
+                    android:text="@string/my_studio_screen_item_title"
+                    android:textColor="#2E3041"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+
+                    app:layout_constraintStart_toEndOf="@id/cv_avatar"
+                    app:layout_constraintTop_toTopOf="@id/cv_avatar" />
+
+                <TextView
+                    android:id="@+id/tv_wait"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginLeft="15dp"
+                    android:fontFamily="@font/sanfranciscodisplay_light"
+                    android:text="Wait..."
+                    android:textColor="#9C9C9C"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="@id/cv_avatar"
+                    app:layout_constraintStart_toEndOf="@id/cv_avatar" />
+
+                <LinearLayout
+                    android:id="@+id/ll_progressbar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:gravity="center_vertical"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="@id/cv_avatar"
+                    app:layout_constraintEnd_toStartOf="@+id/iv_cancel"
+                    app:layout_constraintStart_toEndOf="@id/cv_avatar">
+
+                    <ProgressBar
+                        android:id="@+id/pb_loading"
+                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="8dp"
+                        android:layout_weight="0.94"
+                        android:progress="30"
+                        android:progressDrawable="@drawable/result_bg_progressbar" />
+
+                    <TextView
+                        android:id="@+id/tv_loading"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.06"
+                        android:gravity="end"
+                        android:text="45%" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/iv_cancel"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginRight="10dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/common_ic_close"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>

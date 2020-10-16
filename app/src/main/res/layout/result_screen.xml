@@ -81,6 +81,12 @@
 
                     <ImageView
                         android:id="@+id/iv_avatar_music"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:scaleType="centerInside" />
+
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -143,7 +149,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:fontFamily="@font/sanfranciscodisplay_light"
-                        android:text="5.3 MB | 128kb/s"
+                        android:text=" 128kb/s"
                         android:textColor="#9C9C9C"
                         android:textSize="14sp" />
 
@@ -160,11 +166,11 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:gravity="center_vertical"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintTop_toBottomOf="@+id/ll_audio_item">
 
             <ProgressBar
-                android:id="@+id/sb_progessbar"
+                android:id="@+id/pb_loading"
                 style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                 android:layout_width="0dp"
                 android:layout_height="8dp"
@@ -173,7 +179,7 @@
                 android:progressDrawable="@drawable/result_bg_progressbar" />
 
             <TextView
-                android:id="@+id/tv_seekbar"
+                android:id="@+id/tv_loading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.06"
@@ -187,7 +193,7 @@
             android:layout_height="34dp"
             android:gravity="center"
             android:orientation="horizontal"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@+id/ll_audio_item">
 
             <ImageView
@@ -201,7 +207,6 @@
                 android:src="@drawable/common_ic_play" />
 
             <androidx.appcompat.widget.AppCompatSeekBar
-                android:progressDrawable="@drawable/result_bg_progressbar"
                 android:id="@+id/sb_music"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -233,8 +238,8 @@
 
         </LinearLayout>
 
-
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_marginTop="20dp"
             android:id="@+id/cl_opption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -244,13 +249,14 @@
             <LinearLayout
                 android:id="@+id/ll_ringtone"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:background="@drawable/result_bg_item"
+                android:background="@drawable/result_btn_ringtone_selector"
                 android:gravity="center"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toTopOf="@id/ll_share"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toStartOf="@id/ll_alarm"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -258,14 +264,12 @@
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:layout_marginTop="30dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/result_ic_ringtone" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
                     android:text="Ringtone"
@@ -277,13 +281,14 @@
             <LinearLayout
                 android:id="@+id/ll_alarm"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginLeft="13dp"
                 android:layout_marginRight="13dp"
-                android:background="@drawable/result_bg_item"
+                android:background="@drawable/result_btn_ringtone_selector"
                 android:gravity="center"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toTopOf="@id/ll_contact"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toStartOf="@+id/ll_notification"
                 app:layout_constraintStart_toEndOf="@+id/ll_ringtone"
                 app:layout_constraintTop_toTopOf="parent">
@@ -291,14 +296,13 @@
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:layout_marginTop="30dp"
+
                     android:scaleType="centerInside"
                     android:src="@drawable/result_ic_alarm" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
                     android:text="Alarm"
@@ -310,13 +314,14 @@
             <LinearLayout
                 android:id="@+id/ll_notification"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginLeft="13dp"
                 android:layout_marginRight="16dp"
-                android:background="@drawable/result_bg_item"
+                android:background="@drawable/result_btn_ringtone_selector"
                 android:gravity="center"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toTopOf="@id/ll_openwith"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/ll_alarm"
                 app:layout_constraintTop_toTopOf="parent">
@@ -324,14 +329,12 @@
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:layout_marginTop="30dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/result_ic_notification" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
                     android:text="notification"
@@ -344,14 +347,15 @@
             <LinearLayout
                 android:id="@+id/ll_share"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="26dp"
                 android:layout_marginRight="16dp"
-                android:background="@drawable/result_bg_item"
+                android:background="@drawable/result_btn_ringtone_selector"
                 android:gravity="center"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toStartOf="@id/ll_contact"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/ll_ringtone">
@@ -360,14 +364,12 @@
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:layout_marginTop="30dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/result_ic_share" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
                     android:text="Share"
@@ -378,14 +380,15 @@
             <LinearLayout
                 android:id="@+id/ll_contact"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginLeft="13dp"
                 android:layout_marginTop="26dp"
                 android:layout_marginRight="16dp"
-                android:background="@drawable/result_bg_item"
+                android:background="@drawable/result_btn_ringtone_selector"
                 android:gravity="center"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toStartOf="@+id/ll_openwith"
                 app:layout_constraintStart_toEndOf="@+id/ll_share"
                 app:layout_constraintTop_toBottomOf="@id/ll_alarm">
@@ -393,14 +396,12 @@
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:layout_marginTop="30dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/result_ic_contacts" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
                     android:text="Contacts"
@@ -412,14 +413,15 @@
             <LinearLayout
                 android:id="@+id/ll_openwith"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginLeft="13dp"
                 android:layout_marginTop="26dp"
                 android:layout_marginRight="16dp"
-                android:background="@drawable/result_bg_item"
+                android:background="@drawable/result_btn_ringtone_selector"
                 android:gravity="center"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/ll_contact"
                 app:layout_constraintTop_toBottomOf="@id/ll_notification">
@@ -427,14 +429,12 @@
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:layout_marginTop="30dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/result_ic_openwith" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
                     android:text="Open With"

@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.mystudio.fragment
+package com.example.audiocutter.functions.mystudio.screens
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -9,9 +9,9 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.functions.mystudio.AudioFileView
+import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.functions.mystudio.DeleteState
+import com.example.audiocutter.functions.mystudio.objects.DeleteState
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad

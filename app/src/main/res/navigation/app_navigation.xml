@@ -74,7 +74,7 @@
 
     <fragment
         android:id="@+id/my_audio_screen"
-        android:name="com.example.audiocutter.functions.mystudio.MyAudioManagerScreen"
+        android:name="com.example.audiocutter.functions.mystudio.screens.MyAudioManagerScreen"
         tools:layout="@layout/my_studio_screen" />
 
     <fragment

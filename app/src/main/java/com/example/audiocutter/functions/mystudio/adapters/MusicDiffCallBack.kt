@@ -1,6 +1,7 @@
-package com.example.audiocutter.functions.mystudio
+package com.example.audiocutter.functions.mystudio.adapters
 
 import androidx.recyclerview.widget.DiffUtil
+import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 
 class MusicDiffCallBack : DiffUtil.ItemCallback<AudioFileView>() {
 

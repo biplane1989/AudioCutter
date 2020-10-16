@@ -9,12 +9,11 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import com.example.audiocutter.core.manager.ContactManagerImpl
-import com.example.audiocutter.functions.resultscreen.*
+import com.example.audiocutter.functions.resultscreen.objects.*
+import com.example.audiocutter.functions.resultscreen.services.ResultService
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.coroutines.*
 import java.io.File
-import java.util.*
 import kotlin.collections.ArrayList
 
 
@@ -65,13 +64,13 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
     override fun cutAudio(audioFile: AudioFile, cuttingConfig: CuttingConfig, outFile: File) {
 
-        if (!mIsBound) {
-            Intent(mContext, ResultService::class.java).also {
-                mContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
-                Log.d(TAG, "bindService: ")
-            }
+//        if (!mIsBound) {
+        Intent(mContext, ResultService::class.java).also {
+            mContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
+            Log.d(TAG, "bindService: ")
         }
-        val item = CuttingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, outFile, audioFile, cuttingConfig)
+//        }
+        val item = CuttingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile, cuttingConfig)
         listConvertingItemData.add(item)
         currConvertingId++
         val processingItem = getProcessingItem()
@@ -114,6 +113,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             delay(100)
             item.percent++
             notifyConvertingItemChanged(item)
+
         }
         item.state = ConvertingState.SUCCESS
         notifyConvertingItemChanged(item)
@@ -178,5 +178,13 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             }
             listItem
         }
+    }
+
+    override fun getIDProcessingItem(): Int {
+        return listConvertingItemData.size - 1
+    }
+
+    override fun getConvertingItem(): ConvertingItem {
+        return listConvertingItemData.get(listConvertingItemData.size - 1)
     }
 }

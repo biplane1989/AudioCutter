@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.mystudio.fragment
+package com.example.audiocutter.functions.mystudio.adapters
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.functions.mystudio.AudioFileView
+import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.functions.mystudio.DeleteState
-import com.example.audiocutter.functions.mystudio.MusicDiffCallBack
+import com.example.audiocutter.functions.mystudio.objects.DeleteState
+import com.example.audiocutter.functions.mystudio.ItemLoadStatus
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
 import java.text.SimpleDateFormat
@@ -35,13 +35,13 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     private var listAudios = ArrayList<AudioFileView>()
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AudioCutterAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.my_studio_screen_item, parent, false)
         return ViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(holder: AudioCutterAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind()
     }
 

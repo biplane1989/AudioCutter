@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.resultscreen
+package com.example.audiocutter.functions.resultscreen.services
 
 import android.app.PendingIntent
 import android.content.Intent
@@ -16,6 +16,8 @@ import com.example.audiocutter.MyApplication
 import com.example.audiocutter.R
 import com.example.audiocutter.activities.acttest.ResultTestActivity
 import com.example.audiocutter.core.ManagerFactory
+import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
+import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 
 class ResultService : LifecycleService() {
 
@@ -30,11 +32,11 @@ class ResultService : LifecycleService() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     val processObserver = Observer<ConvertingItem> { it ->
-        builderNotification(it.getOutputName())
+        builderNotification(it.audioFile.title.toString())
         sendNotification(1, it.percent)
 
         if (it.state == ConvertingState.SUCCESS) {
-            builderNotification(it.getOutputName())
+            builderNotification(it.audioFile.title.toString())
             sendNotificationComplte(notificationID++)
         }
 

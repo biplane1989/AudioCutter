@@ -1,11 +1,10 @@
 package com.example.audiocutter.core.result
 
-import android.content.Context
 import androidx.lifecycle.LiveData
-import com.example.audiocutter.functions.resultscreen.ConvertingItem
-import com.example.audiocutter.functions.resultscreen.CuttingConfig
-import com.example.audiocutter.functions.resultscreen.MergingConfig
-import com.example.audiocutter.functions.resultscreen.MixingConfig
+import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
+import com.example.audiocutter.functions.resultscreen.objects.CuttingConfig
+import com.example.audiocutter.functions.resultscreen.objects.MergingConfig
+import com.example.audiocutter.functions.resultscreen.objects.MixingConfig
 import com.example.audiocutter.objects.AudioFile
 import java.io.File
 
@@ -18,5 +17,7 @@ interface AudioEditorManager {
     fun getListCuttingItems(): LiveData<List<ConvertingItem>>
     fun getListMergingItems(): LiveData<List<ConvertingItem>>
     fun getListMixingItems(): LiveData<List<ConvertingItem>>
+    fun getIDProcessingItem(): Int
+    fun getConvertingItem(): ConvertingItem
 
 }

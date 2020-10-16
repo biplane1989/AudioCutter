@@ -51,7 +51,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".functions.resultscreen.ResultService" />
+        <service android:name=".functions.resultscreen.services.ResultService" />
     </application>
 
 </manifest>
