@@ -139,10 +139,10 @@ object AudioFileManagerImpl : AudioFileManager {
                         }
 
 
-//                        val bitRate = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_BITRATE)
-                    val bitRate = 128
-//                        val duration = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_DURATION)
-                    val duration = 1000
+                        val bitRate = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_BITRATE)
+//                    val bitRate = 128
+                        val duration = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_DURATION)
+//                    val duration = 1000
                         val uri = getUriFromFile(id, resolver, file)
                         Log.d(
                             "TAG",
@@ -209,7 +209,9 @@ object AudioFileManagerImpl : AudioFileManager {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-        }catch (e:NullPointerException){
+        } catch (e: NullPointerException) {
+
+        } catch (e: NumberFormatException) {
 
         }
         return ""
@@ -310,7 +312,7 @@ object AudioFileManagerImpl : AudioFileManager {
 
 
     override fun buildAudioFile(filePath: String): AudioFile {
-        val fileAudio = File(filePath)
+        val fileAudio = File(filePath.trim())
         var mimeType = ""
         val abSolutePath = fileAudio.absolutePath.toString()
         val uri = getUriByPath(fileAudio)
@@ -318,11 +320,14 @@ object AudioFileManagerImpl : AudioFileManager {
         if (abSolutePath.contains(".")) {
             mimeType = abSolutePath.substring(abSolutePath.lastIndexOf("."), abSolutePath.length)
         }
+        var bitrate =
+            getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_BITRATE)!!.toInt()
+//        val bitrate = 128
         return AudioFile(
             fileAudio,
             fileAudio.name,
             fileAudio.length(),
-            getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_BITRATE)!!.toInt(),
+            bitrate,
             duration!!.toLong(),
             uri,
             getBitmapByPath(filePath),
@@ -332,6 +337,7 @@ object AudioFileManagerImpl : AudioFileManager {
             getDateCreatFile(fileAudio),
             getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_GENRE), mimeType
         )
+
     }
 
     class AudioFileObserver(handler: Handler?) : ContentObserver(handler) {
