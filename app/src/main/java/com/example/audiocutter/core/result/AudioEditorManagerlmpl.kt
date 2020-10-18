@@ -113,7 +113,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             delay(100)
             item.percent++
             notifyConvertingItemChanged(item)
-
         }
         item.state = ConvertingState.SUCCESS
         notifyConvertingItemChanged(item)

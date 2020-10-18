@@ -22,17 +22,22 @@ import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterAdapter
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterScreenCallback
+import com.example.audiocutter.functions.mystudio.adapters.ItemLoadingCallBack
+import com.example.audiocutter.functions.mystudio.adapters.MyStudioAdapterItemLoading
 import com.example.audiocutter.functions.mystudio.dialog.*
+import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_fragment.*
 
 
-class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener {
+class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, ItemLoadingCallBack {
 
     private lateinit var binding: MyStudioFragmentBinding
     val TAG = "giangtd"
     lateinit var myStudioViewModel: MyStudioViewModel
     lateinit var audioCutterAdapter: AudioCutterAdapter
+    lateinit var loadingItemAdapter: MyStudioAdapterItemLoading
+
     var typeAudio: Int = -1
     var isDoubleDeleteClicked = true
     var isLoading = false   // trang thai load cua progressbar
@@ -41,15 +46,20 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
 
     // observer data
     val listAudioObserver = Observer<List<AudioFileView>> { listMusic ->
-        if (listMusic != null) {
-            runOnUI {
-                if (listMusic.isEmpty()) {
-//                    ll_no_finish_task.visibility = View.VISIBLE
-//                    cl_delete_all.visibility = View.GONE
-                } else {
-//                    ll_no_finish_task.visibility = View.GONE
-                    audioCutterAdapter.submitList(ArrayList(listMusic))
-                }
+        listMusic?.let {
+            if (!listMusic.isEmpty()) {
+                audioCutterAdapter.submitList(ArrayList(listMusic))
+            }
+        }
+    }
+
+    val listLoadingObserver = Observer<List<ConvertingItem>> { listLoading ->
+        listLoading?.let {
+            if (!listLoading.isEmpty()) {
+                binding.rvLoadingItem.visibility = View.VISIBLE
+                loadingItemAdapter.submitList(ArrayList(listLoading))
+            } else {
+                binding.rvLoadingItem.visibility = View.GONE
             }
         }
     }
@@ -60,6 +70,7 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
             audioCutterAdapter.submitList(myStudioViewModel.updatePlayerInfo(it))
         }
     }
+
 
     // observer loading sstatus
     private val loadingStatusObserver = Observer<Boolean> {
@@ -82,6 +93,10 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
         }
     }
 
+    private val progressObserver = Observer<ConvertingItem> {
+        loadingItemAdapter.submitList(myStudioViewModel.updateLoadingEditor(it))
+    }
+
     companion object {
         val TAG = "FragmentMyStudio"
         val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
@@ -100,35 +115,37 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
         rv_list_audio_cutter.layoutManager = LinearLayoutManager(context)
         rv_list_audio_cutter.setHasFixedSize(true)
         rv_list_audio_cutter.adapter = audioCutterAdapter
+
+        rv_loading_item.layoutManager = LinearLayoutManager(context)
+        rv_loading_item.setHasFixedSize(true)
+        rv_loading_item.adapter = loadingItemAdapter
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         myStudioViewModel = ViewModelProviders.of(this).get(MyStudioViewModel::class.java)
         audioCutterAdapter = AudioCutterAdapter(this)
+        loadingItemAdapter = MyStudioAdapterItemLoading(this)
 
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+        ManagerFactory.getAudioEditorManager().getCurrentProcessingItem()
+            .observe(this, progressObserver)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_fragment, container, false)
 
         typeAudio = requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
-//        currentView = inflater.inflate(R.layout.my_studio_fragment, container, false)
-        //        isLoading = true
         runOnUI {
             val listAudioViewLiveData = myStudioViewModel.getData(typeAudio) // get data from funtion newIntance
             listAudioViewLiveData.observe(this as LifecycleOwner, listAudioObserver)
 
-            myStudioViewModel.getLoadingStatus()
-                .observe(viewLifecycleOwner, loadingStatusObserver)
+            myStudioViewModel.getListLoading(typeAudio)
+                .observe(this as LifecycleOwner, listLoadingObserver)
 
-            myStudioViewModel.getIsEmptyStatus()
-                .observe(viewLifecycleOwner, isEmptyStatusObserver)
+            myStudioViewModel.getLoadingStatus().observe(viewLifecycleOwner, loadingStatusObserver)
 
-//            isLoading = false
-
-//            currentView?.findViewById<ProgressBar>(R.id.pb_audio_cutter)?.visibility = View.GONE    // tai day hamonCreateView da chay xong r do runOnUI
+            myStudioViewModel.getIsEmptyStatus().observe(viewLifecycleOwner, isEmptyStatusObserver)
         }
         return binding.root
     }
@@ -136,11 +153,6 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
-        /* if (isLoading) {
-             pb_audio_cutter.visibility = View.VISIBLE
-         } else {
-             pb_audio_cutter.visibility = View.GONE
-         }*/
         iv_check.setOnClickListener(View.OnClickListener {
             audioCutterAdapter.submitList(myStudioViewModel.clickSelectAllBtn())
             checkAllItemSelected()
@@ -329,6 +341,11 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
                 }
             }
         }
+    }
+
+    // cancel loading item
+    override fun cancel(id: Int) {
+        Log.d(TAG, "cancel: canelllllllllll")
     }
 
 }

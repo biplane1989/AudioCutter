@@ -14,8 +14,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.example.audiocutter.MyApplication
 import com.example.audiocutter.R
+import com.example.audiocutter.activities.MainActivity
 import com.example.audiocutter.activities.acttest.ResultTestActivity
 import com.example.audiocutter.core.ManagerFactory
+import com.example.audiocutter.functions.mystudio.screens.MyAudioManagerScreen
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 
@@ -78,7 +80,7 @@ class ResultService : LifecycleService() {
     }
 
     fun builderNotification(audioTitle: String) {
-        val intent = Intent(this, ResultTestActivity::class.java).apply {
+        val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         intent.putExtra("orange", strContent)
@@ -110,7 +112,7 @@ class ResultService : LifecycleService() {
 
     fun builderForegroundService(notificationID: Int) {
         // tao intent ve screen result
-        val intent = Intent(this, ResultTestActivity::class.java).apply {
+        val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         intent.putExtra("orange", strContent)
