@@ -1,10 +1,7 @@
 package com.example.audiocutter.ui.audiochooser.mix
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
-import android.graphics.RectF
+import android.graphics.*
 import android.media.MediaMetadataRetriever
 import android.util.AttributeSet
 import android.util.Log
@@ -21,175 +18,294 @@ class ChangeRangeView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
+    private lateinit var rectImageDst2: Rect
+    private lateinit var rectImageDst1: Rect
+    private lateinit var rectImage: Rect
+    private val FONT_MEDIUM = "fonts/sanfranciscodisplay_medium.otf"
+    private val FONT_BOLD = "fonts/sanfranciscodisplay_bold.otf"
+    private val FONT_LIGHT = "fonts/sanfranciscodisplay_light.otf"
+    private val FONT_REGULAR = "fonts/sanfranciscodisplay_regular.otf"
+    private lateinit var typeFace: Typeface
+    private lateinit var rectText2: Rect
+    private lateinit var rectText1: Rect
+    private val TAG = ChangeRangeView::class.java.name
     private lateinit var rect: Rect
     private var durationAudio2: Int = 0
     private var durationAudio1: Int = 0
     private var duration: Int = 0
     private val mPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val mPaint2 = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val mPaint3 = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val mPaint4 = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val mPaint5 = Paint(Paint.ANTI_ALIAS_FLAG)
     private var mHeight = 0
     private var mWidth = 0
-    private var rowRect1: RectF? = null
-    private var rowRect2: RectF? = null
+    private lateinit var rowRect1: RectF
+    private lateinit var rowRect2: RectF
+    private lateinit var rowRectProGress1: RectF
+    private lateinit var rowRectProGress2: RectF
     private var startCurrentX = 0
     private var endCurrentX = 0
     private lateinit var audioFile1: AudioFile
     private lateinit var audioFile2: AudioFile
     lateinit var mCallback: OnPlayLineChange
-    private var isTouch = false
+    private var isTouch = 0
     private var rs = false
     private var numPos = ""
     private var RADIUS = Utils.convertDp2Px(9, context)
+    private var RANGE = Utils.convertDp2Px(20, context)
+    private var SIZE_IMAGE = Utils.convertDp2Px(30, context)
     private var mHeightText = 0
     private var currentLength1 = RADIUS.toDouble()
     private var currentLength2 = RADIUS.toDouble()
+    private var textGetX = 0f
+
+
+    private var textName1 = ""
+    private var textName2 = ""
+    private var imageSound = 0
 
 
     init {
-        mPaint.color = context.resources.getColor(R.color.colorYelowDark)
-        mPaint.style = Paint.Style.FILL
-        mPaint2.color = context.resources.getColor(R.color.colorYelowAlpha)
-        mPaint2.style = Paint.Style.FILL
+        typeFace = Typeface.createFromAsset(context.assets, FONT_MEDIUM)
+        setPaint(mPaint5, R.color.colorAlphaGray)
+        setPaint(mPaint4, R.color.colorBlack)
+        setPaint(mPaint3, R.color.colorBlack)
+        setPaint(mPaint2, R.color.colorYelowAlpha)
+        setPaint(mPaint, R.color.colorYelowDark)
         mPaint.textSize = Utils.convertDp2Px(15, context)
+        mPaint2.textSize = Utils.convertDp2Px(15, context)
+        mPaint3.textSize = Utils.convertDp2Px(15, context)
         rect = Rect()
         mHeightText = Utils.convertDp2Px(20, context).toInt()
 
+    }
+
+    private fun setPaint(paint: Paint, color: Int) {
+        paint.color = context.resources.getColor(color)
+        paint.style = Paint.Style.FILL
     }
 
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         mHeight = h
-        mWidth = w - 16
-    }
-
-
-    private fun Canvas.drawTopRoundRect(rect: RectF, radius: Float, paint: Paint) {
-        drawRoundRect(rect, radius, radius, paint)
-        drawRect(
-            rect.left,
-            rect.top,
-            rect.right,
-            rect.bottom,
-            paint
-        )
+        mWidth = w - 20
     }
 
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        initRect()
+        initRect(canvas)
         initLine(canvas)
-        canvas.drawTopRoundRect(rowRect1!!, 0f, mPaint2)
-        canvas.drawTopRoundRect(rowRect2!!, 0f, mPaint2)
+        canvas.drawRoundRect(rowRect1, 10f, 10f, mPaint2)
+        canvas.drawRoundRect(rowRect2, 10f, 10f, mPaint2)
 
     }
 
-    private fun initRect() {
-        val rs = Utils.convertDp2Px(70, context)
-        rowRect1 = RectF(RADIUS, mHeightText.toFloat(), currentLength1.toFloat(), rs + mHeightText)
+    private fun initRect(canvas: Canvas) {
+        val rs = Utils.convertDp2Px(20, context)
+        rowRect1 = RectF(RADIUS, mHeightText.toFloat(), currentLength1.toFloat(), mHeight / 2 - rs)
 
         rowRect2 = RectF(
             RADIUS,
-            mHeightText + rowRect1!!.height() + Utils.convertDp2Px(10, context),
+            mHeightText + rowRect1.height() + Utils.convertDp2Px(10, context),
             currentLength2.toFloat(),
-            mHeightText + rs * 2 + Utils.convertDp2Px(10, context)
+            (mHeight / 2 - rs) * 2 - Utils.convertDp2Px(10, context)
         )
 
+
+        drawTextName(canvas, "day la bai hat 1")
+        drawTextName2(canvas, "day la bai hat 2")
+        drawBitmap(canvas, rowRect1.top + rectText1.height() + RANGE * 3 / 2)
+        drawBitmap2(canvas, rowRect2.top + rectText2.height() + RANGE * 3 / 2)
+
+        rowRectProGress1 = RectF(
+            rectImageDst1.width() + RANGE * 2,
+            rectImageDst1.top + RADIUS,
+            mWidth / 1.3f + RANGE,
+            rectImageDst1.top + RADIUS + 10
+        )
+        rowRectProGress2 = RectF(
+            rectImageDst2.width() + RANGE * 2,
+            rectImageDst2.top + RADIUS,
+            mWidth / 1.3f + RANGE,
+            rectImageDst2.top + RADIUS + 10
+        )
+        canvas.drawRoundRect(rowRectProGress1, 5f, 5f, mPaint5)
+        canvas.drawRoundRect(rowRectProGress2, 5f, 5f, mPaint5)
+
+        canvas.drawCircle(
+            rectImageDst1.width() + RANGE * 2,
+            rectImageDst1.top + RADIUS + 3,
+            RADIUS,
+            mPaint
+        )
+        canvas.drawCircle(
+            rectImageDst2.width() + RANGE * 2,
+            rectImageDst2.top + RADIUS + 3,
+            RADIUS,
+            mPaint
+        )
     }
 
 
-    private fun initLine(canvas: Canvas?) {
-        canvas?.let {
-            canvas.drawLine(
-                startCurrentX.toFloat() + Utils.convertDp2Px(9, context),
-                0f + Utils.convertDp2Px(15, context),
-                endCurrentX.toFloat() + Utils.convertDp2Px(9, context),
-                mHeight * 1f,
-                mPaint
+    private fun initLine(canvas: Canvas) {
+
+        canvas.drawLine(
+            startCurrentX.toFloat() + Utils.convertDp2Px(9, context),
+            0f + Utils.convertDp2Px(15, context),
+            endCurrentX.toFloat() + Utils.convertDp2Px(9, context),
+            mHeight * 1f,
+            mPaint
+        )
+        canvas.drawCircle(
+            startCurrentX.toFloat() + Utils.convertDp2Px(9, context),
+            (mHeight * 1f) - RADIUS,
+            RADIUS,
+            mPaint
+        )
+        drawText(canvas, numPos, startCurrentX.toFloat() - rect.width() / 2, mPaint)
+        drawText(canvas, "00:00", 0f + Utils.convertDp2Px(9, context), mPaint3)
+        rs = durationAudio1 > durationAudio2
+        if (!rs) {
+            drawText(
+                canvas,
+                Utils.convertTime(durationAudio2),
+                (mWidth - rect.width()).toFloat(),
+                mPaint3
             )
-            canvas.drawCircle(
-                startCurrentX.toFloat() + Utils.convertDp2Px(9, context),
-                (mHeight * 1f) - RADIUS,
-                RADIUS,
-                mPaint
+            drawTextDurationMin(
+                canvas,
+                Utils.convertTime(
+                    ManagerFactory.getAudioFileManager().getInfoAudioFile(
+                        audioFile1.file, MediaMetadataRetriever.METADATA_KEY_DURATION
+                    )!!.toInt()
+                )
             )
-            drawText(canvas, numPos)
-            drawTextStart(canvas, "00:00")
-            rs = durationAudio1 > durationAudio2
-            if (!rs) {
-                drawTextDuration(canvas, Utils.convertTime(durationAudio2))
-                drawTextDurationMin(
-                    canvas,
-                    Utils.convertTime(
-                        ManagerFactory.getAudioFileManager().getInfoAudioFile(
-                            audioFile1.file,
-                            MediaMetadataRetriever.METADATA_KEY_DURATION
-                        )!!.toInt()
-                    )
+        } else {
+            drawText(
+                canvas,
+                Utils.convertTime(durationAudio1),
+                (mWidth - rect.width()).toFloat(),
+                mPaint3
+            )
+            drawTextDurationMin(
+                canvas,
+                Utils.convertTime(
+                    ManagerFactory.getAudioFileManager().getInfoAudioFile(
+                        audioFile2.file,
+                        MediaMetadataRetriever.METADATA_KEY_DURATION
+                    )!!.toInt()
                 )
-            } else {
-                drawTextDuration(canvas, Utils.convertTime(durationAudio1))
-                drawTextDurationMin(
-                    canvas,
-                    Utils.convertTime(
-                        ManagerFactory.getAudioFileManager().getInfoAudioFile(
-                            audioFile2.file,
-                            MediaMetadataRetriever.METADATA_KEY_DURATION
-                        )!!.toInt()
-                    )
-                )
-            }
+            )
         }
+
+//        canvas.drawTopRoundRectRadius(rowRectProGress2, 5f, mPaint)
+
+
     }
 
-    private fun drawText(canvas: Canvas, text: String) {
+    private fun drawTextName2(canvas: Canvas, nameAudio: String) {
+
+        rectText2 = Rect()
+        mPaint4.textSize = Utils.convertDp2Px(20, context)
+        mPaint4.getTextBounds(nameAudio, 0, nameAudio.length, rectText2)
+        mPaint4.color = context.resources.getColor(R.color.colorBlack)
+        mPaint4.typeface = typeFace
+        canvas.drawText(
+            nameAudio,
+            RADIUS * 2,
+            rowRect2.top + rectText2.height() + RADIUS,
+            mPaint4
+        )
+    }
+
+    private fun drawBitmap(canvas: Canvas, fl: Float) {
+        val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_sound_mixing)
+        rectImage = Rect(
+            0,
+            0,
+            imageSound.width,
+            imageSound.height
+        )
+        rectImageDst1 = Rect(
+            (RADIUS * 2).toInt(),
+            fl.toInt(),
+            (RADIUS * 2 + RANGE).toInt(),
+            (fl + RANGE).toInt()
+        )
+        Log.d(TAG, "drawBitmap: $rectImage")
+        Log.d(TAG, "drawBitmap1: $rectImageDst1")
+        canvas.drawBitmap(
+            imageSound, rectImage,
+            rectImageDst1, mPaint
+        )
+    }
+
+    private fun drawBitmap2(canvas: Canvas, fl: Float) {
+        val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_sound_mixing)
+        rectImage = Rect(
+            0,
+            0,
+            imageSound.width,
+            imageSound.height
+        )
+        rectImageDst2 = Rect(
+            (RADIUS * 2).toInt(),
+            fl.toInt(),
+            (RADIUS * 2 + RANGE).toInt(),
+            (fl + RANGE).toInt()
+        )
+        Log.d(TAG, "drawBitmap: $rectImage")
+        Log.d(TAG, "drawBitmap1: $rectImageDst1")
+        canvas.drawBitmap(
+            imageSound, rectImage,
+            rectImageDst2, mPaint
+        )
+    }
+
+    private fun drawTextName(canvas: Canvas, nameAudio: String) {
+
+        rectText1 = Rect()
+        mPaint4.textSize = Utils.convertDp2Px(20, context)
+        mPaint4.getTextBounds(nameAudio, 0, nameAudio.length, rectText1)
+        mPaint4.color = context.resources.getColor(R.color.colorBlack)
+        mPaint4.typeface = typeFace
+        canvas.drawText(nameAudio, RADIUS * 2, rowRect1.top + rectText1.height() + RADIUS, mPaint4)
+    }
+
+    private fun drawText(canvas: Canvas, text: String, fl: Float, mPaint: Paint) {
         mPaint.getTextBounds(text, 0, text.length, rect)
         canvas.drawText(
             text,
-            startCurrentX.toFloat() - rect.width() / 2,
+            fl,
             rect.height().toFloat(),
             mPaint
         )
-
-    }
-
-    private fun drawTextStart(canvas: Canvas, text: String) {
-        mPaint.getTextBounds(text, 0, text.length, rect)
-        canvas.drawText(
-            text,
-            0f + Utils.convertDp2Px(9, context),
-            rect.height().toFloat(),
-            mPaint
-        )
-
-    }
-
-    private fun drawTextDuration(canvas: Canvas, text: String) {
-        mPaint.getTextBounds(text, 0, text.length, rect)
-        canvas.drawText(
-            text,
-            (mWidth - rect.width()).toFloat() - Utils.convertDp2Px(9, context),
-            rect.height().toFloat(), mPaint
-        )
-
     }
 
     private fun drawTextDurationMin(canvas: Canvas, text: String) {
+        mPaint.getTextBounds(text, 0, text.length, rect)
         if (rowRect1 != null && rowRect2 != null) {
-
             val rs = rowRect1!!.width() > rowRect2!!.width()
-            if (rs) {
-                canvas.drawText(
-                    text,
-                    rowRect2!!.width(),
-                    rect.height().toFloat(), mPaint
-                )
+            textGetX = if (rs) {
+                rowRect2!!.width()
             } else {
+                rowRect1!!.width()
+            }
+
+            if (textGetX >= (mWidth - rect.width() - (RADIUS * 2))) {
+                textGetX = mWidth - rect.width() * 2.toFloat() - RADIUS
                 canvas.drawText(
-                    text,
-                    rowRect1!!.width(),
-                    rect.height().toFloat(), mPaint
+                    text, textGetX,
+                    rect.height().toFloat(), mPaint3
+                )
+            } else if (textGetX < rect.width()) {
+                textGetX = rect.width() + RADIUS * 2
+                canvas.drawText(
+                    text, textGetX,
+                    rect.height().toFloat(), mPaint3
                 )
             }
         }
@@ -205,7 +321,7 @@ class ChangeRangeView @JvmOverloads constructor(
         val x = event.x
         when (event.action) {
             MotionEvent.ACTION_MOVE -> {
-                if (isTouch) {
+                if (isTouch==1) {
                     if (x >= 0 && x <= mWidth - RADIUS) {
                         mCallback.pauseInvalid()
                         drawLineTouch(x, x)
@@ -214,7 +330,7 @@ class ChangeRangeView @JvmOverloads constructor(
                 }
             }
             MotionEvent.ACTION_UP -> {
-                isTouch = false
+                isTouch = 0
                 val mWidth = getW()
                 val pos = Utils.convertValue(
                     0.0,
@@ -227,13 +343,12 @@ class ChangeRangeView @JvmOverloads constructor(
             }
             MotionEvent.ACTION_DOWN -> {
                 return if (event.y >= mHeight - Utils.convertDp2Px(9 * 2, context) * 2) {
-                    isTouch = true
-                    isTouch
+                    isTouch = 1
+                    return true
                 } else {
-                    isTouch = false
-                    isTouch
+                    isTouch = 0
+                    return false
                 }
-
             }
         }
         return false
@@ -285,9 +400,6 @@ class ChangeRangeView @JvmOverloads constructor(
                 ))!!.toInt()
         }
 
-        Log.d("TAG", "setFileAudio: duration $duration  dur1 $durationAudio1  dur2 $durationAudio2")
-
-
     }
 
     override fun onAttachedToWindow() {
@@ -307,6 +419,12 @@ class ChangeRangeView @JvmOverloads constructor(
         numPos = Utils.longDurationMsToStringMs(posision.toLong())
         startCurrentX = pos.toInt()
         endCurrentX = pos.toInt()
+
+        if (endCurrentX >= mWidth - RADIUS) {
+            endCurrentX = mWidth - RADIUS.toInt() - 10
+            startCurrentX = mWidth - RADIUS.toInt() - 10
+        }
+
         invalidate()
     }
 
@@ -346,11 +464,16 @@ class ChangeRangeView @JvmOverloads constructor(
         invalidate()
     }
 
-    fun setDuration(duration: String) {
+    fun setDuration(rs: Boolean) {
         /**
-         setjust the parameters
+        setjust the parameters
          */
 //        this.duration = duration.toInt()
+        duration = if (rs) {
+            durationAudio1
+        } else {
+            durationAudio2
+        }
         startCurrentX = 0
         endCurrentX = 0
         mCallback.changeDuration()

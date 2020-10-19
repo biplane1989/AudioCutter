@@ -77,7 +77,7 @@
 
         <com.example.audiocutter.ui.audiochooser.mix.ChangeRangeView
             android:id="@+id/cr_change_view_mixing"
-            android:layout_height="200dp"
+            android:layout_height="300dp"
             android:layout_width="match_parent"
             android:layout_below="@id/rlt_actionbar_mixing" />
 

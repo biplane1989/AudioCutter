@@ -91,11 +91,11 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         val viewAudioFile2 =
             LayoutInflater.from(requireContext())
                 .inflate(R.layout.item_audio_mixing, null)
-
-        val tvName1 = viewAudioFile1.findViewById<TextView>(R.id.tv_name_mixing_choose_audio)
-        val tvName2 = viewAudioFile2.findViewById<TextView>(R.id.tv_name_mixing_choose_audio)
-        tvName1.text = audioFile1.fileName
-        tvName2.text = audioFile2.fileName
+//
+//        val tvName1 = viewAudioFile1.findViewById<TextView>(R.id.tv_name_mixing_choose_audio)
+//        val tvName2 = viewAudioFile2.findViewById<TextView>(R.id.tv_name_mixing_choose_audio)
+//        tvName1.text = audioFile1.fileName
+//        tvName2.text = audioFile2.fileName
         binding.lnAddItemMixing.addView(viewAudioFile1)
         binding.lnAddItemMixing.addView(viewAudioFile2)
 
@@ -163,9 +163,9 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     private fun checkCompareDuration(durAudio1: String, durAudio2: String) {
         if (isCompare) {
-            binding.crChangeViewMixing.setDuration(durAudio1)
+            binding.crChangeViewMixing.setDuration(true)
         } else {
-            binding.crChangeViewMixing.setDuration(durAudio2)
+            binding.crChangeViewMixing.setDuration(false)
         }
     }
 
