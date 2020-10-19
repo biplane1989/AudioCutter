@@ -109,13 +109,13 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     private suspend fun processItem(item: ConvertingItem) = withContext(Dispatchers.Default) {
         item.percent = 0
         notifyConvertingItemChanged(item)
-        listConvertingItems.postValue(listConvertingItemData)
+//        listConvertingItems.postValue(listConvertingItemData)
         (0..99).forEach {
             delay(100)
             item.percent++
             notifyConvertingItemChanged(item)
         }
-        listConvertingItems.postValue(listConvertingItemData)
+//        listConvertingItems.postValue(listConvertingItemData)
         item.state = ConvertingState.SUCCESS
         notifyConvertingItemChanged(item)
         processNextItem()

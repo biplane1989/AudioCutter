@@ -23,29 +23,20 @@ import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterAdapter
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterScreenCallback
 import com.example.audiocutter.functions.mystudio.adapters.ItemLoadingCallBack
-import com.example.audiocutter.functions.mystudio.adapters.MyStudioAdapterItemLoading
 import com.example.audiocutter.functions.mystudio.dialog.*
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_fragment.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
-class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, ItemLoadingCallBack {
+class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, ItemLoadingCallBack {
 
     private lateinit var binding: MyStudioFragmentBinding
     val TAG = "giangtd"
     lateinit var myStudioViewModel: MyStudioViewModel
     lateinit var audioCutterAdapter: AudioCutterAdapter
-    lateinit var loadingItemAdapter: MyStudioAdapterItemLoading
-
     var typeAudio: Int = -1
     var isDoubleDeleteClicked = true
-    var isLoading = false   // trang thai load cua progressbar
-
-    var currentView: View? = null
 
     // observer data
     val listAudioObserver = Observer<List<AudioFileView>> { listMusic ->
@@ -56,7 +47,7 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
         }
     }
 
-    val listLoadingObserver = Observer<List<ConvertingItem>> { listLoading ->
+    val listLoadingObserver = Observer<List<AudioFileView>> { listLoading ->
         listLoading?.let {
             if (!listLoading.isEmpty()) {
 //                listConverting.clear()
@@ -64,8 +55,9 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
 //                    listConverting.add(item)
 //                }
 //                binding.rvLoadingItem.visibility = View.VISIBLE
-                loadingItemAdapter.submitList(ArrayList(listLoading))
-                Log.d(TAG, "submitList listLoadingObserver: ${listLoading.size} type ${typeAudio}")
+                audioCutterAdapter.submitList(ArrayList(listLoading))
+
+//                audioCutterAdapter.submitList(myStudioViewModel.updateLoadingList(it))
             } else {
 //                binding.rvLoadingItem.visibility = View.GONE
             }
@@ -119,7 +111,7 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
     }
 
     private val progressObserver = Observer<ConvertingItem> {
-        loadingItemAdapter.submitList(myStudioViewModel.updateLoadingEditor(it))
+        audioCutterAdapter.submitList(myStudioViewModel.updateLoadingProgressbar(it))
     }
 
     // observer loading sstatus
@@ -136,10 +128,8 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
         if (it) {
             cl_delete_all.visibility = View.GONE
             binding.llNoFinishTask.visibility = View.VISIBLE
-            Log.d(TAG, "VISIBLE: ")
         } else {
             binding.llNoFinishTask.visibility = View.GONE
-            Log.d(TAG, "GONE: ")
         }
     }
 
@@ -149,8 +139,8 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
         val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
 
         @JvmStatic
-        fun newInstance(typeAudio: Int): MyStudioFragment {
-            val MyStudio = MyStudioFragment()
+        fun newInstance(typeAudio: Int): MyStudioScreen {
+            val MyStudio = MyStudioScreen()
             val bundle = Bundle()
             bundle.putInt(BUNDLE_NAME_KEY, typeAudio)
             MyStudio.arguments = bundle
@@ -162,28 +152,13 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
         rv_list_audio_cutter.layoutManager = LinearLayoutManager(context)
         rv_list_audio_cutter.setHasFixedSize(true)
         rv_list_audio_cutter.adapter = audioCutterAdapter
-
-        rv_loading_item.layoutManager = LinearLayoutManager(context)
-        //rv_loading_item.setHasFixedSize(true)
-        rv_loading_item.adapter = loadingItemAdapter
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         myStudioViewModel = ViewModelProviders.of(this).get(MyStudioViewModel::class.java)
         audioCutterAdapter = AudioCutterAdapter(this)
-        loadingItemAdapter = MyStudioAdapterItemLoading(this)
 
-        ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
-
-        ManagerFactory.getAudioEditorManager().getCurrentProcessingItem()
-            .observe(this as LifecycleOwner, progressObserver)
-
-//        ManagerFactory.getAudioEditorManager().getListCuttingItems()
-//            .observe(this as LifecycleOwner, listLoadingObserver)
-
-//        myStudioViewModel.getListLoading(typeAudio)
-//            .observe(this as LifecycleOwner, listLoadingObserver)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -191,18 +166,19 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
 
         typeAudio = requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
         runOnUI {
+
+
             val listAudioViewLiveData = myStudioViewModel.getData(typeAudio) // get data from funtion newIntance
             listAudioViewLiveData.observe(this as LifecycleOwner, listAudioObserver)
 
             myStudioViewModel.getListLoading(typeAudio)
                 .observe(this as LifecycleOwner, listLoadingObserver)
 
+            ManagerFactory.getAudioPlayer().getPlayerInfo()
+                .observe(this as LifecycleOwner, playerInfoObserver)
 
-//            ManagerFactory.getAudioEditorManager().getCurrentProcessingItem()
-//                .observe(this as LifecycleOwner, progressObserver)
-
-//            ManagerFactory.getAudioEditorManager().getListCuttingItems()
-//                .observe(this as LifecycleOwner, listLoadingObserver)
+            ManagerFactory.getAudioEditorManager().getCurrentProcessingItem()
+                .observe(this as LifecycleOwner, progressObserver)
 
             myStudioViewModel.getLoadingStatus().observe(viewLifecycleOwner, loadingStatusObserver)
 
@@ -309,6 +285,10 @@ class MyStudioFragment() : BaseFragment(), AudioCutterScreenCallback, RenameDial
 
     override fun isShowPlayingAudio(positition: Int) {
         audioCutterAdapter.submitList(myStudioViewModel.showPlayingAudio(positition))
+    }
+
+    override fun cancelLoading() {
+        Log.d(TAG, "cancelLoading: ")
     }
 
     // hanlder linterner on dialog rename

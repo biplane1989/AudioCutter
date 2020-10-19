@@ -42,7 +42,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
 //                Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
-                sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_STOP_MUSIC)
+                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_STOP_MUSIC)
                 tabPosition = tab.position
 
             }
@@ -64,7 +64,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     override fun onClick(view: View) {
         when (view) {
             binding.ivDelete -> {
-                sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_CHECK_DELETE, tabPosition)
+                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_CHECK_DELETE, tabPosition)
             }
             binding.ivClose -> {
                 cl_default.visibility = View.VISIBLE
@@ -74,7 +74,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 view_pager.setPagingEnabled(true)
                 setEnabledTablayout(false)
 
-                sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_HIDE)
+                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_HIDE)
             }
             binding.ivExtends -> {
                 cl_default.visibility = View.GONE
@@ -86,7 +86,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 view_pager.setPagingEnabled(false)
                 setEnabledTablayout(true)
 
-                sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_UNCHECK)
+                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_UNCHECK)
             }
             binding.backButton -> {
                 requireActivity().onBackPressed()
@@ -125,7 +125,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     override fun onDeleteClick() {
         Log.d(TAG, "onDeleteClick: ")
         isDeleteClicked = true
-        sendFragmentAction(MyStudioFragment::class.java.name, Constance.ACTION_DELETE_ALL, tabPosition)
+        sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_DELETE_ALL, tabPosition)
     }
 
     override fun onCancel() {

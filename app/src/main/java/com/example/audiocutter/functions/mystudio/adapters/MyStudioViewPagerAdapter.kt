@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.functions.mystudio.screens.MyStudioFragment
+import com.example.audiocutter.functions.mystudio.screens.MyStudioScreen
 
 class MyStudioViewPagerAdapter(
 
@@ -13,13 +13,13 @@ class MyStudioViewPagerAdapter(
 
     override fun getItem(position: Int): Fragment = when (position) {
         0 -> {
-            MyStudioFragment.newInstance(Constance.AUDIO_CUTTER)
+            MyStudioScreen.newInstance(Constance.AUDIO_CUTTER)
         }
         1 -> {
-            MyStudioFragment.newInstance(Constance.AUDIO_MERGER)
+            MyStudioScreen.newInstance(Constance.AUDIO_MERGER)
         }
         else -> {
-            MyStudioFragment.newInstance(Constance.AUDIO_MIXER)
+            MyStudioScreen.newInstance(Constance.AUDIO_MIXER)
         }
     }
 

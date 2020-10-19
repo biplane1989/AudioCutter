@@ -77,24 +77,20 @@ class MyStudioAdapterItemLoading(var itemloadingcallback: ItemLoadingCallBack) :
         val tvLoading: TextView = itemView.findViewById(R.id.tv_loading)
         val ivCancel: ImageView = itemView.findViewById(R.id.iv_cancel)
 
-
         fun bind() {
             val loadingItem = getItem(adapterPosition)
             pbLoading.max = 100
             pbLoading.progress = loadingItem.percent
 
             tvTitle.setText(loadingItem.audioFile.fileName)
-
 //            loadingItem.audioFile.bitmap?.let {
 //                ivAvatar.setImageBitmap(it)
 //            }
-
             Log.d(TAG, "bind: ViewHolder")
 
             tvLoading.text = loadingItem.percent.toString() + "%"
 
             ivCancel.setOnClickListener(this)
-
         }
 
         override fun onClick(view: View) {
