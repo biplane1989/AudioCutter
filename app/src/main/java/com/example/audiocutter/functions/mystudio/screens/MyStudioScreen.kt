@@ -150,7 +150,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
     fun init() {
         rv_list_audio_cutter.layoutManager = LinearLayoutManager(context)
-        rv_list_audio_cutter.setHasFixedSize(true)
         rv_list_audio_cutter.adapter = audioCutterAdapter
     }
 
@@ -158,6 +157,9 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         super.onPostCreate(savedInstanceState)
         myStudioViewModel = ViewModelProviders.of(this).get(MyStudioViewModel::class.java)
         audioCutterAdapter = AudioCutterAdapter(this)
+
+
+
 
     }
 
