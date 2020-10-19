@@ -23,16 +23,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".activities.acttest.ResultTest2"></activity>
         <activity android:name=".activities.acttest.ResultTestActivity">
-             <intent-filter>
-                 <action android:name="android.intent.action.MAIN" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-                 <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-        <activity android:name=".activities.acttest.CutActivity" >
-
-        </activity>
+        <activity android:name=".activities.acttest.CutActivity"></activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -45,10 +44,11 @@
         </provider>
 
         <activity android:name=".activities.MainActivity">
-            <!--<intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
 
         <service android:name=".functions.resultscreen.services.ResultService" />

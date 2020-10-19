@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
@@ -254,5 +255,24 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
             }
         }
+    }
+}
+
+class MusicDiffCallBack : DiffUtil.ItemCallback<AudioFileView>() {
+
+    override fun areItemsTheSame(oldItemView: AudioFileView, newItemView: AudioFileView): Boolean {
+        return oldItemView.audioFile.file.absoluteFile == newItemView.audioFile.file.absoluteFile
+    }
+
+    override fun areContentsTheSame(
+        oldItemView: AudioFileView,
+        newItemView: AudioFileView
+    ): Boolean {
+        return oldItemView == newItemView
+    }
+
+    override fun getChangePayload(oldItem: AudioFileView, newItem: AudioFileView): Any? {
+
+        return newItem.itemLoadStatus
     }
 }

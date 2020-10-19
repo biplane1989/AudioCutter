@@ -3,6 +3,7 @@ package com.example.audiocutter.functions.mystudio.adapters
 import androidx.recyclerview.widget.DiffUtil
 import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 
+/*
 class MusicDiffCallBack : DiffUtil.ItemCallback<AudioFileView>() {
 
     override fun areItemsTheSame(oldItemView: AudioFileView, newItemView: AudioFileView): Boolean {
@@ -20,4 +21,4 @@ class MusicDiffCallBack : DiffUtil.ItemCallback<AudioFileView>() {
 
         return newItem.itemLoadStatus
     }
-}
+}*/

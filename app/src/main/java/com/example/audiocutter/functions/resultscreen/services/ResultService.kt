@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer
 import com.example.audiocutter.MyApplication
 import com.example.audiocutter.R
 import com.example.audiocutter.activities.MainActivity
+import com.example.audiocutter.activities.acttest.ResultTest2
 import com.example.audiocutter.activities.acttest.ResultTestActivity
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.functions.mystudio.screens.MyAudioManagerScreen

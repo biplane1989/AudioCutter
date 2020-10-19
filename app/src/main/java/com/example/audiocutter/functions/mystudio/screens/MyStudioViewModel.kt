@@ -41,14 +41,14 @@ class MyStudioViewModel : BaseViewModel() {
          mListLoading.add(ConvertingItem(3, ConvertingState.WAITING, 1, audioFile))
          mListLoading.add(ConvertingItem(4, ConvertingState.WAITING, 1, audioFile))
          listDemo.postValue(mListLoading)*/
-        mListLoading.add(ConvertingItem(4, ConvertingState.WAITING, 1, audioFile))
+//        mListLoading.add(ConvertingItem(4, ConvertingState.WAITING, 1, audioFile))
 
 
-        mListAudioFileView.add(AudioFileView(audioFile, true, ItemLoadStatus()))
-        mListAudioFileView.add(AudioFileView(audioFile, true, ItemLoadStatus()))
-        mListAudioFileView.add(AudioFileView(audioFile, true, ItemLoadStatus()))
-        mListAudioFileView.add(AudioFileView(audioFile, true, ItemLoadStatus()))
-//        listDemo2.postValue(mListAudioFileView)
+        /* mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus()))
+         mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus()))
+         mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus()))
+         mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus()))
+         listDemo2.postValue(mListAudioFileView)*/
 
     }
 
@@ -127,6 +127,28 @@ class MyStudioViewModel : BaseViewModel() {
              mListAudioFileView
          }*/
 
+        val file = File(Environment.getExternalStorageDirectory()
+            .toString() + "/Download/doihoamattroi.mp3")
+        val audioFile = AudioFile(file, "hjhjhjh", 1000, 128, uri = Uri.parse(file.absolutePath))
+        mListAudioFileView.clear()
+        when (typeAudio) {
+            Constance.AUDIO_CUTTER -> {
+                mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
+                mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus(),ConvertingState.SUCCESS, -1, -1))
+                mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus(),ConvertingState.SUCCESS, -1, -1))
+                mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus(),ConvertingState.SUCCESS, -1, -1))
+//                listDemo2.postValue(mListAudioFileView)
+            }
+            Constance.AUDIO_MERGER -> {
+//                mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus()))
+//                mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus()))
+//                listDemo2.postValue(mListAudioFileView)
+            }
+            Constance.AUDIO_MIXER -> {
+                mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus(),ConvertingState.SUCCESS, -1, -1))
+//                listDemo2.postValue(mListAudioFileView)
+            }
+        }
         return listDemo2
     }
 
@@ -141,6 +163,7 @@ class MyStudioViewModel : BaseViewModel() {
     }
 
     fun getListLoading(typeAudio: Int): LiveData<List<ConvertingItem>> {
+
         val listLoadingItem: LiveData<List<ConvertingItem>>
 
         when (typeAudio) {
@@ -157,34 +180,35 @@ class MyStudioViewModel : BaseViewModel() {
         return Transformations.map(listLoadingItem) {
             mListLoading.clear()
             if (!it.isEmpty()) {
-                it.forEach {
-                    mListLoading.add(it)
+                for (item in it) {
+                    mListLoading.add(item)
                 }
             }
             mListLoading
         }
+
+//        return ManagerFactory.getAudioEditorManager().getListCuttingItems()
 
 //        return listDemo
     }
 
     fun updateLoadingEditor(convetingItem: ConvertingItem): List<ConvertingItem> {
 
-        if (!mListLoading.isEmpty()) {
+        val newItem = ConvertingItem(convetingItem.id, convetingItem.state, convetingItem.percent, convetingItem.audioFile)
 
-            val newItem = ConvertingItem(convetingItem.id, convetingItem.state, convetingItem.percent, convetingItem.audioFile)
-            mListLoading[0] = newItem
-        }
-        var index = 0
-        for (item in mListLoading) {
-            if (item.id == convetingItem.id) {
-                val newItem = ConvertingItem(item.id, item.state, item.percent, item.audioFile)
+        if (!mListLoading.isEmpty()) {
+            var index = 0
+            for (item in mListLoading) {
+                if (item.id == convetingItem.id) {
 //                mListLoading.set(index, convetingItem)
-                mListLoading[index] = newItem
-                Log.d(TAG, "updateLoadingEditor: "+item.percent)
+                    mListLoading[index] = newItem
+                }
+                index++
             }
-            index++
+
         }
         return mListLoading
+
     }
 
     fun getLoadingStatus(): LiveData<Boolean> {

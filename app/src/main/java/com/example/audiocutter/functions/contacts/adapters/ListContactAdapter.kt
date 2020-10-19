@@ -193,6 +193,5 @@ class ContactDiffCallBack : DiffUtil.ItemCallback<ContactItemView>() {
     override fun getChangePayload(oldItem: ContactItemView, newItem: ContactItemView): Any? {
 
         return newItem
-//        return newItem.contactItem.ringtone
     }
 }

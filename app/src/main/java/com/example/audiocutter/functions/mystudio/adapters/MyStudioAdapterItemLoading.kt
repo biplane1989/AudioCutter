@@ -60,6 +60,7 @@ class MyStudioAdapterItemLoading(var itemloadingcallback: ItemLoadingCallBack) :
 
     override fun submitList(list: List<ConvertingItem>?) {
 
+        Log.d(TAG, "submitList: "+list?.size)
         if (list != null) {
             listIteamLoading = ArrayList(list)
             super.submitList(listIteamLoading)
@@ -124,7 +125,7 @@ class ItemLoadingDiffCallBack : DiffUtil.ItemCallback<ConvertingItem>() {
     }
 
     override fun getChangePayload(oldItem: ConvertingItem, newItem: ConvertingItem): Any? {
-        Log.d(TAG, "getChangePayload: ")
+//        Log.d(TAG, "getChangePayload: ")
         return newItem
     }
 }
