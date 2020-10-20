@@ -43,9 +43,11 @@ class ResultService : LifecycleService() {
         builderNotification(it.audioFile.title.toString())
         sendNotification(1, it.percent)
 
-        if (it.state == ConvertingState.SUCCESS) {
-            builderNotification(it.audioFile.title.toString())
-            sendNotificationComplte(notificationID++)
+        if (ManagerFactory.getAudioEditorManager().getIDProcessingItem() > 1) {
+            if (it.state == ConvertingState.SUCCESS) {
+                builderNotification(it.audioFile.title.toString())
+                sendNotificationComplte(notificationID++)
+            }
         }
     }
 
@@ -59,7 +61,6 @@ class ResultService : LifecycleService() {
 
         CoroutineScope(Dispatchers.Main).launch {
             TYPE_AUDIO = intent.getIntExtra(Constance.TYPE_AUDIO, 0)
-            Log.d(TAG, "onBind: TYPE_AUDIO : " + TYPE_AUDIO)
 
             manager = NotificationManagerCompat.from(this@ResultService)
             builderForegroundService(1)
@@ -91,14 +92,15 @@ class ResultService : LifecycleService() {
     fun resultIntent(): Intent {
         val intent = Intent(this, OutputActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            setAction("demo")
+            setAction(Constance.NOTIFICATION_ACTION_EDITOR)
             putExtra(Constance.TYPE_RESULT, TYPE_AUDIO)
         }
         return intent
     }
 
     fun builderNotification(audioTitle: String) {
-        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(), 0)
+        val resultPendingIntent: PendingIntent =
+            PendingIntent.getActivity(this, 0, resultIntent(), 0)
 
 
         mBuilder = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
@@ -114,21 +116,28 @@ class ResultService : LifecycleService() {
 
     fun sendNotification(notificationID: Int, data: Int) {
 
-        mBuilder.setContentText(data.toString() + "%").setProgress(progressMax, data, false).build()
-        manager.notify(notificationID, mBuilder.build())
-
-        updateProressbar.postValue(data)
-
-        if (data >= 100) {
+        if (data > 99) {
             mBuilder.setContentText("Download complete").setProgress(0, 0, false).setOngoing(false)
             manager.notify(notificationID, mBuilder.build())
+        } else {
+            mBuilder.setContentText(data.toString() + "%").setProgress(progressMax, data, false)
+                .build()
+            manager.notify(notificationID, mBuilder.build())
+
+            updateProressbar.postValue(data)
         }
     }
 
     fun builderForegroundService(notificationID: Int) {
 
-        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(), PendingIntent.FLAG_CANCEL_CURRENT)
+        val resultPendingIntent: PendingIntent =
+            PendingIntent.getActivity(this, 0, resultIntent(), PendingIntent.FLAG_CANCEL_CURRENT)
         val progressMax = 100
+
+        /*val notification = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
+            .setContentTitle("Orange Download").setSmallIcon(R.drawable.list_contact_icon_back)
+            .setContentText(strContent).setContentIntent(resultPendingIntent).setOngoing(true)
+            .setOnlyAlertOnce(true).setProgress(progressMax, 0, true).setAutoCancel(true).build()*/
 
         val notification = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
             .setContentTitle("Orange Download").setSmallIcon(R.drawable.list_contact_icon_back)
