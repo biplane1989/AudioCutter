@@ -44,10 +44,10 @@ class ChangeRangeView @JvmOverloads constructor(
     private var mWidth = 0
     private lateinit var rowRect1: RectF
     private lateinit var rowRect2: RectF
-    private lateinit var rowRectProGress1: RectF
-    private lateinit var rowRectProGress2: RectF
-    private lateinit var rectCurrentProgress1: RectF
-    private lateinit var rectCurrentProgress2: RectF
+    private lateinit var rowRectSeekbarSound1: RectF
+    private lateinit var rowRectSeekbarSound2: RectF
+    private lateinit var rectCurrentSeekbar1: RectF
+    private lateinit var rectCurrentSeekbar2: RectF
     private var startCurrentX = 0
     private var endCurrentX = 0
     private lateinit var audioFile1: AudioFile
@@ -78,6 +78,7 @@ class ChangeRangeView @JvmOverloads constructor(
     private var maxDistance = 0.0
 
     init {
+
         typeFace = Typeface.createFromAsset(context.assets, FONT_MEDIUM)
         setPaint(mPaint5, R.color.colorAlphaGray)
         setPaint(mPaint4, R.color.colorBlack)
@@ -90,7 +91,6 @@ class ChangeRangeView @JvmOverloads constructor(
         mPaint3.textSize = Utils.convertDp2Px(15, context)
         rect = Rect()
         mHeightText = Utils.convertDp2Px(20, context).toInt()
-
     }
 
     private fun setPaint(paint: Paint, color: Int) {
@@ -115,32 +115,26 @@ class ChangeRangeView @JvmOverloads constructor(
     }
 
     private fun initRect(canvas: Canvas) {
-        maxDistance = if (!rs) {
-            Utils.convertValue(
-                0.0,
-                duration.toDouble(),
-                0.0,
-                mWidth.toDouble(),
-                durationAudio1.toDouble()
-            )
-        } else {
-            Utils.convertValue(
-                0.0,
-                duration.toDouble(),
-                0.0,
-                mWidth.toDouble(),
-                durationAudio2.toDouble()
-            )
-        }
 
-
-        Log.d(TAG, "drawLineTouch: maxdistance $maxDistance duration $duration  width $mWidth")
-
+        /** draw rect cover all view and rect
+         *  seekbar of 2 view audio file
+         *  current position seekbar Rect
+         *  draw circle move seekbar sound audio
+         *  drawtext ratio sound
+         *  draw bitmap sound audio
+         ***/
+//        Log.d(TAG, "drawLineTouch: maxdistance $maxDistance duration $duration  width $mWidth")
         textName1 = audioFile1.fileName
+
         textName2 = audioFile2.fileName
         val rs = Utils.convertDp2Px(20, context)
 
-        rowRect1 = RectF(RADIUS, mHeightText.toFloat(), currentLength1.toFloat(), mHeight / 2 - rs)
+        rowRect1 = RectF(
+            RADIUS,
+            mHeightText.toFloat(),
+            currentLength1.toFloat() + RADIUS,
+            mHeight / 2 - rs
+        )
 
         rowRect2 = RectF(
             RADIUS,
@@ -155,14 +149,14 @@ class ChangeRangeView @JvmOverloads constructor(
         drawBitmap(canvas, rowRect1.top + rectText1.height() + RANGE * 3 / 2)
         drawBitmap2(canvas, rowRect2.top + rectText2.height() + RANGE * 3 / 2)
 
-        rowRectProGress1 = RectF(
+        rowRectSeekbarSound1 = RectF(
             rectImageDst1.width() + RANGE * 2,
             rectImageDst1.top + RADIUS,
             mWidth / 1.3f + RANGE,
             rectImageDst1.top + RADIUS + 10
         )
 
-        rowRectProGress2 = RectF(
+        rowRectSeekbarSound2 = RectF(
             rectImageDst2.width() + RANGE * 2,
             rectImageDst2.top + RADIUS,
             mWidth / 1.3f + RANGE,
@@ -174,22 +168,22 @@ class ChangeRangeView @JvmOverloads constructor(
             currentXCircle2 = mWidth / 1.3f + RANGE
         }
 
-        rectCurrentProgress1 = RectF(
+        rectCurrentSeekbar1 = RectF(
             rectImageDst1.width() + RANGE * 2,
             rectImageDst1.top + RADIUS,
             currentXCircle1,
             rectImageDst1.top + RADIUS + 10
         )
-        rectCurrentProgress2 = RectF(
+        rectCurrentSeekbar2 = RectF(
             rectImageDst2.width() + RANGE * 2,
             rectImageDst2.top + RADIUS,
             currentXCircle2,
             rectImageDst2.top + RADIUS + 10
         )
-        canvas.drawRoundRect(rowRectProGress1, 5f, 5f, mPaint5)
-        canvas.drawRoundRect(rowRectProGress2, 5f, 5f, mPaint5)
-        canvas.drawRoundRect(rectCurrentProgress1, 5f, 5f, mPaint)
-        canvas.drawRoundRect(rectCurrentProgress2, 5f, 5f, mPaint)
+        canvas.drawRoundRect(rowRectSeekbarSound1, 5f, 5f, mPaint5)
+        canvas.drawRoundRect(rowRectSeekbarSound2, 5f, 5f, mPaint5)
+        canvas.drawRoundRect(rectCurrentSeekbar1, 5f, 5f, mPaint)
+        canvas.drawRoundRect(rectCurrentSeekbar2, 5f, 5f, mPaint)
 
 
         canvas.drawCircle(
@@ -211,8 +205,8 @@ class ChangeRangeView @JvmOverloads constructor(
         circleProgressGetY1 = rectImageDst1.top + RADIUS + 3
         rangeCircleProgress2 = rectImageDst2.width() + RANGE * 2
         circleProgressGetY2 = rectImageDst2.top + RADIUS + 3
-        drawTextSound(ratioSound1, canvas, rowRectProGress1.right + RANGE, rowRectProGress1)
-        drawTextSound(ratioSound2, canvas, rowRectProGress2.right + RANGE, rowRectProGress2)
+        drawTextSound(ratioSound1, canvas, rowRectSeekbarSound1.right + RANGE, rowRectSeekbarSound1)
+        drawTextSound(ratioSound2, canvas, rowRectSeekbarSound2.right + RANGE, rowRectSeekbarSound2)
     }
 
     private fun drawTextSound(ratioSound1: String, canvas: Canvas, x: Float, y: RectF) {
@@ -226,22 +220,26 @@ class ChangeRangeView @JvmOverloads constructor(
 
 
     private fun initLine(canvas: Canvas) {
-
+        /** draw line seekbar file audio custom
+         *          draw circle change folow event touchmove
+         *          draw text duration audio
+         *          draw text change position
+         **/
         canvas.drawLine(
-            startCurrentX.toFloat() + Utils.convertDp2Px(9, context),
+            startCurrentX.toFloat() + RADIUS,
             0f + Utils.convertDp2Px(15, context),
-            endCurrentX.toFloat() + Utils.convertDp2Px(9, context),
+            endCurrentX.toFloat() + RADIUS,
             mHeight * 1f,
             mPaint
         )
         canvas.drawCircle(
-            startCurrentX.toFloat() + Utils.convertDp2Px(9, context),
+            startCurrentX.toFloat() + RADIUS,
             (mHeight * 1f) - RADIUS,
             RADIUS,
             mPaint
         )
         drawText(canvas, numPos, startCurrentX.toFloat() - rect.width() / 2, mPaint)
-        drawText(canvas, "00:00", 0f + Utils.convertDp2Px(9, context), mPaint3)
+        drawText(canvas, "00:00", 0f + RADIUS, mPaint3)
         rs = durationAudio1 > durationAudio2
         if (!rs) {
             drawText(
@@ -295,6 +293,16 @@ class ChangeRangeView @JvmOverloads constructor(
         )
     }
 
+    private fun drawTextName(canvas: Canvas, nameAudio: String) {
+
+        rectText1 = Rect()
+        mPaint4.textSize = Utils.convertDp2Px(20, context)
+        mPaint4.getTextBounds(nameAudio, 0, nameAudio.length, rectText1)
+        mPaint4.color = context.resources.getColor(R.color.colorBlack)
+        mPaint4.typeface = typeFace
+        canvas.drawText(nameAudio, RADIUS * 2, rowRect1.top + rectText1.height() + RADIUS, mPaint4)
+    }
+
     private fun drawBitmap(canvas: Canvas, fl: Float) {
         val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_sound_mixing)
         rectImage = Rect(
@@ -337,16 +345,6 @@ class ChangeRangeView @JvmOverloads constructor(
             imageSound, rectImage,
             rectImageDst2, mPaint
         )
-    }
-
-    private fun drawTextName(canvas: Canvas, nameAudio: String) {
-
-        rectText1 = Rect()
-        mPaint4.textSize = Utils.convertDp2Px(20, context)
-        mPaint4.getTextBounds(nameAudio, 0, nameAudio.length, rectText1)
-        mPaint4.color = context.resources.getColor(R.color.colorBlack)
-        mPaint4.typeface = typeFace
-        canvas.drawText(nameAudio, RADIUS * 2, rowRect1.top + rectText1.height() + RADIUS, mPaint4)
     }
 
     private fun drawText(canvas: Canvas, text: String, fl: Float, mPaint: Paint) {
@@ -392,6 +390,7 @@ class ChangeRangeView @JvmOverloads constructor(
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        /**check touch event**/
         val x = event.x
 
         when (event.action) {
@@ -400,7 +399,7 @@ class ChangeRangeView @JvmOverloads constructor(
                     TOUCHITEM.SEEKBAR -> {
                         if (x >= 0 && x <= mWidth - RADIUS) {
                             mCallback.pauseInvalid()
-                            drawLineTouch(x, x)
+                            drawLineTouch(x)
                         }
                     }
                     TOUCHITEM.PROGRESS1 -> {
@@ -512,21 +511,21 @@ class ChangeRangeView @JvmOverloads constructor(
         }
     }
 
-    private fun drawLineTouch(startX: Float, endX: Float) {
+    private fun drawLineTouch(x: Float) {
         try {
-            Log.d(TAG, "drawLineTouch: drawline")
             numPos = Utils.longDurationMsToStringMs(
                 Utils.convertValue(
                     0.0,
                     mWidth.toDouble(),
                     0.0,
                     duration.toDouble(),
-                    startX.toDouble()
+                    x.toDouble()
                 ).toLong()
             )
 
-            endCurrentX = endX.toInt()
-            startCurrentX = startX.toInt()
+            endCurrentX = x.toInt()
+            startCurrentX = x.toInt()
+            Log.d(TAG, "222: prev maxdisTance $maxDistance")
             if (startCurrentX > maxDistance && endCurrentX > maxDistance) {
                 startCurrentX = maxDistance.toInt()
                 endCurrentX = maxDistance.toInt()
@@ -561,7 +560,6 @@ class ChangeRangeView @JvmOverloads constructor(
                         .METADATA_KEY_DURATION
                 ))!!.toInt()
         }
-
 
     }
 
@@ -634,15 +632,20 @@ class ChangeRangeView @JvmOverloads constructor(
         invalidate()
     }
 
-    fun setDuration(rs: Boolean) {
+    fun setDuration(duration: String) {
+        Log.d(TAG, "222: $duration")
         /**
         setjust the parameters
          */
-        duration = if (rs) {
-            durationAudio1
-        } else {
-            durationAudio2
-        }
+//        this.duration = duration.toInt()
+        maxDistance =
+            Utils.convertValue(
+                0.0,
+                this.duration.toDouble(),
+                0.0,
+                mWidth.toDouble(),
+                duration.toDouble()
+            )
 
         startCurrentX = 0
         endCurrentX = 0
@@ -650,6 +653,11 @@ class ChangeRangeView @JvmOverloads constructor(
         invalidate()
 
     }
+
+    fun setMaxdistance() {
+        maxDistance = mWidth.toDouble()
+    }
+
 
     interface OnPlayLineChange {
         fun onLineChange(audioFile1: AudioFile, audioFile2: AudioFile, pos: Int)

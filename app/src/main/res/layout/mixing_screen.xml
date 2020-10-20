@@ -96,6 +96,14 @@
                 android:layout_toLeftOf="@id/rlt_play_mixing"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_previous_audio_mixing" />
+            <ImageView
+                android:id="@+id/iv_next_mixing"
+                android:layout_width="@dimen/d_56"
+                android:layout_height="@dimen/d_56"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/rlt_play_mixing"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_next_audio_mixing" />
 
         </RelativeLayout>
 

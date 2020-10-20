@@ -23,7 +23,7 @@ import com.example.audiocutter.util.Utils
 class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPlayLineChange {
     private val mPlayer1 = ManagerFactory.newAudioPlayer()
     private val mPlayer2 = ManagerFactory.newAudioPlayer()
-    private var durAudio2: String? = ""
+    private var durAudio2: String = ""
     private var durAudio1: String = ""
     private val TAG = MixingScreen::class.java.name
     private var playerState = PlayerState.IDLE
@@ -35,6 +35,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
+        /** setting maxdistance*/
         mPlayer1.init(requireContext())
         mPlayer2.init(requireContext())
 
@@ -90,9 +91,9 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         listData.add(audioFile1)
         listData.add(audioFile2)
 
-
-
         binding.crChangeViewMixing.setFileAudio(audioFile1, audioFile2)
+        binding.crChangeViewMixing.setMaxdistance()
+
         runOnUI {
             durAudio1 = ManagerFactory.getAudioFileManager()
                 .getInfoAudioFile(
@@ -104,7 +105,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 .getInfoAudioFile(
                     audioFile2.file,
                     MediaMetadataRetriever.METADATA_KEY_DURATION
-                )
+                )!!
 
             isCompare = durAudio1.toInt() > durAudio2!!.toInt()
             binding.crChangeViewMixing.setLengthAudio(durAudio1, durAudio2)
@@ -119,7 +120,8 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         binding.playIv.setOnClickListener(this)
         binding.shortedBt.setOnClickListener(this)
         binding.longestBt.setOnClickListener(this)
-
+        binding.ivNextMixing.setOnClickListener(this)
+        binding.ivPreviousMixing.setOnClickListener(this)
 
 
     }
@@ -153,20 +155,33 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 }
             }
             binding.shortedBt -> {
-                checkCompareDuration(durAudio1, durAudio2!!)
+                checkCompareDuration(durAudio1, durAudio2)
 
             }
             binding.longestBt -> {
-                checkCompareDuration(durAudio2!!, durAudio1)
+                checkCompareDurationMin(durAudio1, durAudio2)
+            }
+            binding.ivNextMixing -> {
+
             }
         }
     }
 
-    private fun checkCompareDuration(durAudio1: String, durAudio2: String) {
-        if (isCompare) {
-            binding.crChangeViewMixing.setDuration(true)
+    private fun checkCompareDurationMin(durAudio1: String, durAudio2: String) {
+        val isCheck = durAudio1 > durAudio2
+        if (!isCheck) {
+            binding.crChangeViewMixing.setDuration(durAudio1)
         } else {
-            binding.crChangeViewMixing.setDuration(false)
+            binding.crChangeViewMixing.setDuration(durAudio2)
+        }
+    }
+
+    private fun checkCompareDuration(durAudio1: String, durAudio2: String) {
+        val isCheck = durAudio1 > durAudio2
+        if (isCheck) {
+            binding.crChangeViewMixing.setDuration(durAudio1)
+        } else {
+            binding.crChangeViewMixing.setDuration(durAudio2)
         }
     }
 
