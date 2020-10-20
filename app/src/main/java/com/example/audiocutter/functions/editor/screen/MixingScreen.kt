@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.example.audiocutter.R
@@ -19,6 +18,7 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.MixingScreenBinding
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.ui.audiochooser.mix.ChangeRangeView
+import com.example.audiocutter.util.Utils
 
 class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPlayLineChange {
     private var durAudio2: String? = ""
@@ -29,7 +29,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     private lateinit var audioFile1: AudioFile
     private lateinit var audioFile2: AudioFile
     private var isCompare = false
-    val listData = mutableListOf<AudioFile>()
+    private val listData = mutableListOf<AudioFile>()
 
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -79,7 +79,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     private fun initViews() {
         binding.lnAddItemMixing.removeAllViews()
         audioFile1 = ManagerFactory.getAudioFileManager()
-            .buildAudioFile("/storage/emulated/0/VoiceRecorder/Recording_28.m4a ")
+            .buildAudioFile("/storage/emulated/0/VoiceRecorder/Recording_27.m4a ")
         audioFile2 = ManagerFactory.getAudioFileManager()
             .buildAudioFile("/storage/emulated/0/Download/Ed Sheeran - Shape Of You [Official].mp3 ")
         listData.add(audioFile1)
@@ -116,7 +116,10 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
             isCompare = durAudio1.toInt() > durAudio2!!.toInt()
             binding.crChangeViewMixing.setLengthAudio(durAudio1, durAudio2)
-            Log.d("TAG", "setLengthAudio1 :lenggth1 $durAudio1  - length2 $durAudio2")
+            Log.d(
+                "TAG",
+                "setLengthAudio1 :lenggth1 $durAudio1  - length2 $durAudio2   iscompare $isCompare"
+            )
         }
 
 
@@ -124,6 +127,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         binding.playIv.setOnClickListener(this)
         binding.shortedBt.setOnClickListener(this)
         binding.longestBt.setOnClickListener(this)
+        ManagerFactory.getAudioPlayer().setVolume(1f)
 
 
     }
@@ -181,6 +185,18 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     override fun changeDuration() {
         ManagerFactory.getAudioPlayer().stop()
+    }
+
+    override fun setVolumeAudio1(value: Float, min: Float, max: Float) {
+        val newValueSound =
+            Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
+        ManagerFactory.getAudioPlayer().setVolume(newValueSound.toFloat())
+    }
+
+    override fun setVolumeAudio2(value: Float, min: Float, max: Float) {
+        val newValueSound =
+            Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
+        ManagerFactory.getAudioPlayer().setVolume(newValueSound.toFloat())
     }
 
 

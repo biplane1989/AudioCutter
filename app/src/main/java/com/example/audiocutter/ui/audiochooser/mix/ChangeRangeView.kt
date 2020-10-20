@@ -44,12 +44,14 @@ class ChangeRangeView @JvmOverloads constructor(
     private lateinit var rowRect2: RectF
     private lateinit var rowRectProGress1: RectF
     private lateinit var rowRectProGress2: RectF
+    private lateinit var rectCurrentProgress1: RectF
+    private lateinit var rectCurrentProgress2: RectF
     private var startCurrentX = 0
     private var endCurrentX = 0
     private lateinit var audioFile1: AudioFile
     private lateinit var audioFile2: AudioFile
     lateinit var mCallback: OnPlayLineChange
-    private var isTouch = 0
+    private var isTouch = TOUCHITEM.NONTOUCH
     private var rs = false
     private var numPos = ""
     private var RADIUS = Utils.convertDp2Px(9, context)
@@ -59,12 +61,18 @@ class ChangeRangeView @JvmOverloads constructor(
     private var currentLength1 = RADIUS.toDouble()
     private var currentLength2 = RADIUS.toDouble()
     private var textGetX = 0f
+    private var rangeCircleProgress1 = 0f
+    private var circleProgressGetY1 = 0f
+    private var rangeCircleProgress2 = 0f
+    private var circleProgressGetY2 = 0f
 
-
+    private var currentXCircle1 = 0f
+    private var currentXCircle2 = 0f
     private var textName1 = ""
     private var textName2 = ""
-    private var imageSound = 0
 
+    private var ratioSound1 = "0%"
+    private var ratioSound2 = "0%"
 
     init {
         typeFace = Typeface.createFromAsset(context.assets, FONT_MEDIUM)
@@ -132,21 +140,50 @@ class ChangeRangeView @JvmOverloads constructor(
             mWidth / 1.3f + RANGE,
             rectImageDst2.top + RADIUS + 10
         )
+
+        if (currentXCircle1 == 0f || currentXCircle2 == 0f) {
+            currentXCircle1 = mWidth / 1.3f + RANGE
+            currentXCircle2 = mWidth / 1.3f + RANGE
+        }
+
+        rectCurrentProgress1 = RectF(
+            rectImageDst1.width() + RANGE * 2,
+            rectImageDst1.top + RADIUS,
+            currentXCircle1,
+            rectImageDst1.top + RADIUS + 10
+        )
+        rectCurrentProgress2 = RectF(
+            rectImageDst2.width() + RANGE * 2,
+            rectImageDst2.top + RADIUS,
+            currentXCircle2,
+            rectImageDst2.top + RADIUS + 10
+        )
         canvas.drawRoundRect(rowRectProGress1, 5f, 5f, mPaint5)
         canvas.drawRoundRect(rowRectProGress2, 5f, 5f, mPaint5)
+        canvas.drawRoundRect(rectCurrentProgress1, 5f, 5f, mPaint)
+        canvas.drawRoundRect(rectCurrentProgress2, 5f, 5f, mPaint)
+
 
         canvas.drawCircle(
-            rectImageDst1.width() + RANGE * 2,
+//            rectImageDst1.width() + RANGE * 2 +
+            currentXCircle1,
             rectImageDst1.top + RADIUS + 3,
             RADIUS,
             mPaint
         )
         canvas.drawCircle(
-            rectImageDst2.width() + RANGE * 2,
+//            rectImageDst2.width() + RANGE * 2 +
+            currentXCircle2,
             rectImageDst2.top + RADIUS + 3,
             RADIUS,
             mPaint
         )
+
+
+        rangeCircleProgress1 = rectImageDst1.width() + RANGE * 2
+        circleProgressGetY1 = rectImageDst1.top + RADIUS + 3
+        rangeCircleProgress2 = rectImageDst2.width() + RANGE * 2
+        circleProgressGetY2 = rectImageDst2.top + RADIUS + 3
     }
 
 
@@ -319,34 +356,82 @@ class ChangeRangeView @JvmOverloads constructor(
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val x = event.x
+
         when (event.action) {
             MotionEvent.ACTION_MOVE -> {
-                if (isTouch==1) {
-                    if (x >= 0 && x <= mWidth - RADIUS) {
-                        mCallback.pauseInvalid()
-                        drawLineTouch(x, x)
+                when (isTouch) {
+                    TOUCHITEM.SEEKBAR -> {
+                        if (x >= 0 && x <= mWidth - RADIUS) {
+                            mCallback.pauseInvalid()
+                            drawLineTouch(x, x)
+                        }
                     }
-                    return true
+                    TOUCHITEM.PROGRESS1 -> {
+                        currentXCircle1 = x
+                        if (x < (rectImageDst1.width() + RANGE * 2)) {
+                            currentXCircle1 = (rectImageDst1.width() + RANGE * 2)
+                        } else
+                            if (x > (mWidth / 1.3f + RANGE)) {
+                                currentXCircle1 = (mWidth / 1.3f + RANGE)
+                            }
+                        mCallback.setVolumeAudio1(x,(rectImageDst1.width() + RANGE * 2), (mWidth / 1.3f + RANGE) )
+
+                        invalidate()
+                    }
+                    TOUCHITEM.PROGRESS2 -> {
+                        currentXCircle2 = x
+                        if (x < (rectImageDst2.width() + RANGE * 2)) {
+                            currentXCircle2 = (rectImageDst2.width() + RANGE * 2)
+                        } else
+                            if (x > (mWidth / 1.3f + RANGE)) {
+                                currentXCircle2 = (mWidth / 1.3f + RANGE)
+                            }
+                        mCallback.setVolumeAudio2(
+                            x,
+                            (rectImageDst2.width() + RANGE * 2),
+                            (mWidth / 1.3f + RANGE)
+                        )
+                        invalidate()
+                    }
                 }
+                return true
             }
             MotionEvent.ACTION_UP -> {
-                isTouch = 0
-                val mWidth = getW()
-                val pos = Utils.convertValue(
-                    0.0,
-                    mWidth.toDouble(),
-                    0.0,
-                    duration.toDouble(),
-                    x.toDouble()
-                )
-                mCallback.onLineChange(audioFile2, pos.toInt())
+                when (isTouch) {
+                    TOUCHITEM.SEEKBAR -> {
+                        isTouch = TOUCHITEM.NONTOUCH
+                        val mWidth = getW()
+                        val pos = Utils.convertValue(
+                            0.0,
+                            mWidth.toDouble(),
+                            0.0,
+                            duration.toDouble(),
+                            x.toDouble()
+                        )
+                        mCallback.onLineChange(audioFile2, pos.toInt())
+                    }
+                    TOUCHITEM.PROGRESS1 -> {
+                        isTouch = TOUCHITEM.NONTOUCH
+                    }
+                    TOUCHITEM.PROGRESS2 -> {
+                        isTouch = TOUCHITEM.NONTOUCH
+                    }
+
+                }
+
             }
             MotionEvent.ACTION_DOWN -> {
-                return if (event.y >= mHeight - Utils.convertDp2Px(9 * 2, context) * 2) {
-                    isTouch = 1
+                if (event.y >= mHeight - Utils.convertDp2Px(9 * 2, context) * 2) {
+                    isTouch = TOUCHITEM.SEEKBAR
+                    return true
+                } else if (event.y < circleProgressGetY1 + RANGE && event.y > circleProgressGetY1 - RANGE) {
+                    isTouch = TOUCHITEM.PROGRESS1
+                    return true
+                } else if (event.y < circleProgressGetY2 + RANGE && event.y > circleProgressGetY2 - RANGE) {
+                    isTouch = TOUCHITEM.PROGRESS2
                     return true
                 } else {
-                    isTouch = 0
+                    isTouch = TOUCHITEM.NONTOUCH
                     return false
                 }
             }
@@ -356,6 +441,7 @@ class ChangeRangeView @JvmOverloads constructor(
 
     private fun drawLineTouch(startX: Float, endX: Float) {
         try {
+            Log.d(TAG, "drawLineTouch: drawline")
             numPos = Utils.longDurationMsToStringMs(
                 Utils.convertValue(
                     0.0,
@@ -365,7 +451,6 @@ class ChangeRangeView @JvmOverloads constructor(
                     startX.toDouble()
                 ).toLong()
             )
-
             endCurrentX = endX.toInt()
             startCurrentX = startX.toInt()
 
@@ -485,6 +570,15 @@ class ChangeRangeView @JvmOverloads constructor(
         fun onLineChange(audioFile: AudioFile, pos: Int)
         fun pauseInvalid()
         fun changeDuration()
+        fun setVolumeAudio1(x: Float, min1: Float, max1: Float)
+        fun setVolumeAudio2(x: Float, min2: Float, max2: Float)
+    }
+
+    enum class TOUCHITEM(num: Int) {
+        NONTOUCH(0),
+        SEEKBAR(1),
+        PROGRESS1(2),
+        PROGRESS2(3)
     }
 
 }
