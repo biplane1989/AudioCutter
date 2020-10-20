@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -35,30 +36,51 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
     @SuppressLint("SetTextI18n")
     val processObserver = Observer<ConvertingItem> { data ->
 
-//        if (data.id == 1) {
-        if (data.state == ConvertingState.PROGRESSING) {
-            binding.pbLoading.progress = data.percent
-            binding.tvLoading.text = data.percent.toString() + "%"
-            binding.tvTitleMusic.text = data.audioFile.fileName
+        if (data.id == ManagerFactory.getAudioEditorManager().getIDProcessingItem()) {
+            when (data.state) {
+                ConvertingState.WAITING -> {
+                    binding.tvWait.visibility = View.VISIBLE
+                    binding.llProgressbar.visibility = View.GONE
+                    binding.llPlayMusic.visibility = View.GONE
+                    binding.clOpption.visibility = View.GONE
+                }
+                ConvertingState.PROGRESSING -> {
+                    binding.tvWait.visibility = View.GONE
+                    binding.clOpption.visibility = View.GONE
+                    binding.llProgressbar.visibility = View.VISIBLE
+                    binding.llPlayMusic.visibility = View.GONE
 
-            if (data.audioFile.size / (1024 * 1024) > 0) {
+                    binding.pbLoading.progress = data.percent
+                    binding.tvLoading.text = data.percent.toString() + "%"
+                    binding.tvTitleMusic.text = data.audioFile.fileName
 
-                binding.tvInfoMusic.setText(String.format("%.1f", (data.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + data.audioFile.bitRate.toString() + "kb/s")
-            } else {
-                binding.tvInfoMusic.setText(((data.audioFile.size) / (1024)).toString() + " KB" + " | " + data.audioFile.bitRate.toString() + "kb/s")
+                    if (data.audioFile.size / (1024 * 1024) > 0) {
+
+                        binding.tvInfoMusic.setText(String.format("%.1f", (data.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + data.audioFile.bitRate.toString() + "kb/s")
+                    } else {
+                        binding.tvInfoMusic.setText(((data.audioFile.size) / (1024)).toString() + " KB" + " | " + data.audioFile.bitRate.toString() + "kb/s")
+                    }
+
+                    data.audioFile.bitmap?.let {
+                        binding.ivAvatarMusic.setImageBitmap(it)
+                    }
+
+                }
+                ConvertingState.SUCCESS -> {
+                    binding.tvWait.visibility = View.GONE
+                    binding.llProgressbar.visibility = View.GONE
+                    binding.llPlayMusic.visibility = View.VISIBLE
+                    binding.clOpption.visibility = View.VISIBLE
+                }
             }
-
-            data.audioFile.bitmap?.let {
-                binding.ivAvatarMusic.setImageBitmap(it)
-            }
-
-        } else {
+        }else{
+            binding.tvWait.visibility = View.VISIBLE
             binding.llProgressbar.visibility = View.GONE
-            binding.llPlayMusic.visibility = View.VISIBLE
+            binding.llPlayMusic.visibility = View.GONE
+            binding.clOpption.visibility = View.GONE
         }
-//        }
-    }
 
+    }
 
     val playInfoObserver = Observer<PlayerInfo> { playInfo ->
 
@@ -97,38 +119,22 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
 
         binding.llRingtone.setOnClickListener(this)
 
-//        ManagerFactory.getAudioEditorManager().getCurrentProcessingItem()
-//            .observe(viewLifecycleOwner, processObserver)
-
-        /*
-        ManagerFactory.getAudioEditorManager().getListCuttingItems()
-            .observe(viewLifecycleOwner, listAudioObserver)
-
-        binding.pbResult.max = 100
-
-        binding.btnDelete.setOnClickListener(View.OnClickListener {
-            audioStatus?.let {
-                if (audioStatus == ConvertingState.PROGRESSING) {
-                    ManagerFactory.getAudioEditorManager().cancel(audioId)
-                }
+        binding.sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
             }
-        })*/
 
-        /* var isPlay = false
-         binding.ivPausePlayMusic.setOnClickListener(View.OnClickListener {
-             isPlay = !isPlay
-             if (isPlay) {
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+            }
 
-             } else {
-                 binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
-                 mResultViewModel.pauseAudio()
-             }
-         })*/
+            override fun onStopTrackingTouch(sb: SeekBar?) {
+                mResultViewModel.seekToAudio(sb!!.progress)
+            }
+        })
     }
 
-    override fun onPostDestroy() {
-        super.onPostDestroy()
+    override fun onDestroyView() {
         mResultViewModel.stopAudio()
+        super.onDestroyView()
     }
 
     override fun onClick(view: View?) {
@@ -152,5 +158,4 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
             }
         }
     }
-
 }

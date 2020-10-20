@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
@@ -28,13 +27,8 @@ class MainScreen : BaseFragment(), View.OnClickListener {
     private var pendingRequestingPermission = 0
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.main_screen, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.main_screen, container, false)
         PermissionManager.getAppPermission()
             .observe(this.viewLifecycleOwner, Observer<AppPermission> {
                 if (storagePermissionRequest.isPermissionGranted() && (pendingRequestingPermission and MP3_CUTTER_REQUESTING_PERMISSION) != 0) {
@@ -101,10 +95,8 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                 resetRequestingPermission()
                 pendingRequestingPermission = MP3_CUTTER_REQUESTING_PERMISSION
                 storagePermissionRequest.requestPermission()
-            }.show(
-                requireActivity().supportFragmentManager,
-                StoragePermissionDialog::class.java.name
-            )
+            }
+                .show(requireActivity().supportFragmentManager, StoragePermissionDialog::class.java.name)
         }
     }
 
@@ -117,10 +109,8 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                 resetRequestingPermission()
                 pendingRequestingPermission = AUDIO_MERGER_REQUESTING_PERMISSION
                 storagePermissionRequest.requestPermission()
-            }.show(
-                requireActivity().supportFragmentManager,
-                StoragePermissionDialog::class.java.name
-            )
+            }
+                .show(requireActivity().supportFragmentManager, StoragePermissionDialog::class.java.name)
         }
     }
 
@@ -133,10 +123,8 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                 resetRequestingPermission()
                 pendingRequestingPermission = AUDIO_MIXER_REQUESTING_PERMISSION
                 storagePermissionRequest.requestPermission()
-            }.show(
-                requireActivity().supportFragmentManager,
-                StoragePermissionDialog::class.java.name
-            )
+            }
+                .show(requireActivity().supportFragmentManager, StoragePermissionDialog::class.java.name)
         }
     }
 
@@ -148,10 +136,8 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                 resetRequestingPermission()
                 pendingRequestingPermission = CONTACTS_ITEM_REQUESTING_PERMISSION
                 contactPermissionRequest.requestPermission()
-            }.show(
-                requireActivity().supportFragmentManager,
-                ContactPermissionDialog::class.java.name
-            )
+            }
+                .show(requireActivity().supportFragmentManager, ContactPermissionDialog::class.java.name)
         }
     }
 
@@ -163,10 +149,8 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                 resetRequestingPermission()
                 pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION
                 storagePermissionRequest.requestPermission()
-            }.show(
-                requireActivity().supportFragmentManager,
-                StoragePermissionDialog::class.java.name
-            )
+            }
+                .show(requireActivity().supportFragmentManager, StoragePermissionDialog::class.java.name)
         }
     }
 

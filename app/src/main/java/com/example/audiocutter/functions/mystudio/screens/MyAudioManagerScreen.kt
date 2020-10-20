@@ -25,9 +25,16 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     val TAG = "giangtd"
     var isDeleteClicked = true
     var tabPosition = -1
-
+    var typeAudio = -1
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_screen, container, false)
+
+        arguments?.getInt("TYPE_AUDIO")?.let {
+            typeAudio = it
+        }
+//        typeAudio = arguments?.getInt("TYPE_AUDIO")!!
+
+        Log.d(TAG, "onCreateView: " + typeAudio)
         return binding.root
     }
 
@@ -44,7 +51,6 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
 //                Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
                 sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_STOP_MUSIC)
                 tabPosition = tab.position
-
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
@@ -55,6 +61,9 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
 //                Toast.makeText(baseActivity, "" + tab.position, Toast.LENGTH_SHORT).show()
             }
         })
+
+
+
         binding.backButton.setOnClickListener(this)
         binding.ivExtends.setOnClickListener(this)
         binding.ivClose.setOnClickListener(this)

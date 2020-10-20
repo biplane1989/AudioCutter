@@ -80,21 +80,13 @@ class MyStudioViewModel : BaseViewModel() {
             if (it.state == StateLoad.LOADDONE) {
                 loadingStatus.postValue(false)
             }
-
-////            if (mListAudioFileView.isEmpty()) {
-//            if (!it.listAudioFiles.isEmpty()) {
-//                isEmptyStatus.postValue(false)
-//            }
-
             // lan dau tien lay du lieu
             if (mListAudioFileView.size == 0) {
-                Log.d(TAG, "getData: mListAudioFileView.size" + mListAudioFileView.size)
                 for (item in it.listAudioFiles) {
                     mListAudioFileView.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
                 }
             } else {
-                // khi thay doi du lieu update
-                // đồng bộ hóa list cũ và mới
+                // khi thay doi du lieu update đồng bộ hóa list cũ và mới
                 val newListAudioFileView = ArrayList<AudioFileView>()
 
                 for (item in it.listAudioFiles) {
@@ -113,49 +105,48 @@ class MyStudioViewModel : BaseViewModel() {
                         }
                     }
                 }
-//                mListAudioFileView.clear()
 
                 for (item in newListAudioFileView) {
                     mListAudioFileView.add(item)
                 }
-                Log.d(TAG, "getData 1:" + mListAudioFileView.size)
-//                for (item in newList) {
-//                    mListAudioFileView.add(item)
-//                }
-                Log.d(TAG, "getData 2:" + mListAudioFileView.size)
             }
 
-//            if (!mListAudioFileView.isEmpty()) {
-//                isEmptyStatus.postValue(false)
-//                Log.d(TAG, "getData: list size: " + mListAudioFileView.size)
-//            } else {
-//                isEmptyStatus.postValue(true)
-//                Log.d(TAG, "getData: list size: " + mListAudioFileView.size)
-//            }
+            if (!mListAudioFileView.isEmpty()) {
+                isEmptyStatus.postValue(false)
+            } else {
+                isEmptyStatus.postValue(true)
+            }
             mListAudioFileView
         }
 
-/*        val file = File(Environment.getExternalStorageDirectory()
-            .toString() + "/Download/doihoamattroi.mp3")
-        val audioFile = AudioFile(file, "O r a n g e", 1000, 128, uri = Uri.parse(file.absolutePath))
-        mListAudioFileView.clear()
-        when (typeAudio) {
-            Constance.AUDIO_CUTTER -> {
-//                mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
-//                mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
-////                listDemo2.postValue(mListAudioFileView)
-            }
-            Constance.AUDIO_MERGER -> {
-//                mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus()))
-//                mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus()))
-//                listDemo2.postValue(mListAudioFileView)
-            }
-            Constance.AUDIO_MIXER -> {
-//                mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
-//                listDemo2.postValue(mListAudioFileView)
-            }
-        }
-        return listDemo2*/
+        /*  val file = File(Environment.getExternalStorageDirectory()
+              .toString() + "/Download/doihoamattroi.mp3")
+          val audioFile = AudioFile(file, "O r a n g e", 1000, 128, uri = Uri.parse(file.absolutePath))
+          mListAudioFileView.clear()
+          when (typeAudio) {
+              Constance.AUDIO_CUTTER -> {
+                  mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
+                  mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
+                  listDemo2.postValue(mListAudioFileView)
+              }
+              Constance.AUDIO_MERGER -> {
+  //                mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus()))
+  //                mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus()))
+  //                listDemo2.postValue(mListAudioFileView)
+              }
+              Constance.AUDIO_MIXER -> {
+                  mListAudioFileView.add(AudioFileView(audioFile, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
+                  listDemo2.postValue(mListAudioFileView)
+              }
+          }
+          if (!mListAudioFileView.isEmpty()) {
+              isEmptyStatus.postValue(false)
+              Log.d(TAG, "getData: list size: " + mListAudioFileView.size)
+          } else {
+              isEmptyStatus.postValue(true)
+              Log.d(TAG, "getData: list size: " + mListAudioFileView.size)
+          }
+          return listDemo2*/
     }
 
     // tìm ra những file đã tồn tại trong list cũ
@@ -169,14 +160,18 @@ class MyStudioViewModel : BaseViewModel() {
     }
 
     fun getListLoading(typeAudio: Int): LiveData<List<AudioFileView>> {
+        val newList = ArrayList<AudioFileView>()
+        for (item in mListAudioFileView) {
+            newList.add(item)
+        }
+        mListAudioFileView.clear()
 
-       
         val listLoadingItem: LiveData<List<ConvertingItem>>
 
         when (typeAudio) {
             Constance.AUDIO_CUTTER -> {
                 listLoadingItem = ManagerFactory.getAudioEditorManager().getListCuttingItems()
-               
+
             }
             Constance.AUDIO_MERGER -> {
                 listLoadingItem = ManagerFactory.getAudioEditorManager().getListMergingItems()
@@ -187,22 +182,8 @@ class MyStudioViewModel : BaseViewModel() {
         }
         return Transformations.map(listLoadingItem) {
 
-//            if (!it.isEmpty()) {
-//                isEmptyStatus.postValue(false)
-//            }
-           
-            val newList = ArrayList<AudioFileView>()
-            for (item in mListAudioFileView) {
-                newList.add(item)
-            }
-            mListAudioFileView.clear()
-
-//            mListLoading.clear()
-
             if (!it.isEmpty()) {
                 for (item in it) {
-//                    mListLoading.add(item)
-                    
                     mListAudioFileView.add(AudioFileView(item.audioFile, false, ItemLoadStatus(), item.state, item.percent, item.id))
                 }
             }
@@ -211,37 +192,14 @@ class MyStudioViewModel : BaseViewModel() {
                 mListAudioFileView.add(AudioFileView(item.audioFile, false, ItemLoadStatus(), item.convertingState, item.percent, item.id))
             }
 
-//            if (!mListAudioFileView.isEmpty()) {
-//                isEmptyStatus.postValue(false)
-//                Log.d(TAG, "getListLoading: list size: " + mListAudioFileView.size)
-//            } else {
-//                isEmptyStatus.postValue(true)
-//                Log.d(TAG, "getListLoading: list size: " + mListAudioFileView.size)
-//            }
+            if (!mListAudioFileView.isEmpty()) {
+                isEmptyStatus.postValue(false)
+            } else {
+                isEmptyStatus.postValue(true)
+            }
 
             mListAudioFileView
-//            mListLoading
         }
-    }
-
-    fun updateLoadingList(listItem: List<AudioFileView>): List<AudioFileView> {
-        Log.d(TAG, "updateLoadingList: 33333")
-        val newList = ArrayList<AudioFileView>()
-        for (item in mListAudioFileView) {
-            newList.add(item)
-        }
-        mListAudioFileView.clear()
-
-        for (item in listItem) {
-            mListAudioFileView.add(item)
-        }
-
-        for (item in newList) {
-            mListAudioFileView.add(AudioFileView(item.audioFile, false, ItemLoadStatus(), item.convertingState, item.percent, item.id))
-        }
-
-        return mListAudioFileView
-//        listDemo2.postValue(mListAudioFileView)
     }
 
     fun updateLoadingProgressbar(newItem: ConvertingItem): List<AudioFileView> {

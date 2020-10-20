@@ -1,20 +1,17 @@
 package com.example.audiocutter.functions.resultscreen.screens
 
-import android.view.View
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
-import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
-import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
-import com.example.audiocutter.functions.resultscreen.objects.CuttingConvertingItem
 
 class ResultViewModel : BaseViewModel() {
 
+    val TAG = "giangtd"
     lateinit var convertingItem: ConvertingItem
     val progressLivedata: MutableLiveData<ConvertingItem> = MutableLiveData()
 
@@ -48,15 +45,9 @@ class ResultViewModel : BaseViewModel() {
     }
 
     fun stopAudio() {
-        runOnBackground {
-            ManagerFactory.getAudioPlayer().stop()
-        }
-//        val selectItemView = mListAudioFileView.get(position).copy()
-//        val itemLoadStatus = selectItemView.selectItemStatus.copy()
-//        itemLoadStatus.playerState = PlayerState.IDLE
-//        selectItemView.selectItemStatus = itemLoadStatus
-
-//        mListAudioFileView.set(position, selectItemView)
+//        runOnBackground {
+        ManagerFactory.getAudioPlayer().stop()
+//        }
     }
 
     fun resumeAudio() {
@@ -75,4 +66,5 @@ class ResultViewModel : BaseViewModel() {
     fun getPlayerInfo(): LiveData<PlayerInfo> {
         return ManagerFactory.getAudioPlayer().getPlayerInfo()
     }
+
 }

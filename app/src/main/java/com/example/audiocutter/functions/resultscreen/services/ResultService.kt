@@ -15,12 +15,14 @@ import androidx.lifecycle.Observer
 import com.example.audiocutter.MyApplication
 import com.example.audiocutter.R
 import com.example.audiocutter.activities.MainActivity
-import com.example.audiocutter.activities.acttest.ResultTest2
-import com.example.audiocutter.activities.acttest.ResultTestActivity
 import com.example.audiocutter.core.ManagerFactory
-import com.example.audiocutter.functions.mystudio.screens.MyAudioManagerScreen
+import com.example.audiocutter.functions.mystudio.Constance
+import com.example.audiocutter.functions.mystudio.screens.OutputActivity
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ResultService : LifecycleService() {
 
@@ -28,10 +30,13 @@ class ResultService : LifecycleService() {
     private val mBinder: IBinder = MyBinder()
     private lateinit var mBuilder: NotificationCompat.Builder
     private lateinit var manager: NotificationManagerCompat
-    var strContent: String? = "tomato"
+
+    //    var strContent: String? = "tomato"
+    var strContent: String? = "Apple"
     val updateProressbar: MutableLiveData<Int> = MutableLiveData()
     val progressMax = 100
     var notificationID = 0
+    var TYPE_AUDIO = -1
 
     @RequiresApi(Build.VERSION_CODES.N)
     val processObserver = Observer<ConvertingItem> { it ->
@@ -42,21 +47,25 @@ class ResultService : LifecycleService() {
             builderNotification(it.audioFile.title.toString())
             sendNotificationComplte(notificationID++)
         }
-
     }
 
     inner class MyBinder : Binder() {
-        // Return this instance of MyService so clients can call public methods
         val service: ResultService
-            get() =// Return this instance of MyService so clients can call public methods
-                this@ResultService
+            get() = this@ResultService
     }
 
     override fun onBind(intent: Intent): IBinder? {
         super.onBind(intent)
-        manager = NotificationManagerCompat.from(this)
-        builderForegroundService(1)
-        observerData()
+
+        CoroutineScope(Dispatchers.Main).launch {
+            TYPE_AUDIO = intent.getIntExtra(Constance.TYPE_AUDIO, 0)
+            Log.d(TAG, "onBind: TYPE_AUDIO : " + TYPE_AUDIO)
+
+            manager = NotificationManagerCompat.from(this@ResultService)
+            builderForegroundService(1)
+            observerData()
+        }
+
         return mBinder
     }
 
@@ -77,16 +86,21 @@ class ResultService : LifecycleService() {
     override fun onDestroy() {
         super.onDestroy()
         stopForeground(true)
-        Log.d(TAG, "onDestroy: ")
+    }
+
+    fun resultIntent(): Intent {
+        val intent = Intent(this, OutputActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            setAction("demo")
+            putExtra(Constance.TYPE_RESULT, TYPE_AUDIO)
+        }
+        return intent
     }
 
     fun builderNotification(audioTitle: String) {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        intent.putExtra("orange", strContent)
+        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(), 0)
 
-        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+
         mBuilder = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
             .setSmallIcon(R.drawable.list_contact_icon_back).setContentTitle(audioTitle)
             .setContentText(strContent).setOngoing(true).setContentIntent(resultPendingIntent)
@@ -112,15 +126,8 @@ class ResultService : LifecycleService() {
     }
 
     fun builderForegroundService(notificationID: Int) {
-        // tao intent ve screen result
-        val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        intent.putExtra("orange", strContent)
 
-        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
-
-        //Sets the maximum progress as 100
+        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(), PendingIntent.FLAG_CANCEL_CURRENT)
         val progressMax = 100
 
         val notification = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)

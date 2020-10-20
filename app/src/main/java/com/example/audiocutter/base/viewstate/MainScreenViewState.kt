@@ -1,10 +1,12 @@
 package com.example.audiocutter.base.viewstate
 
+import android.content.Intent
 import androidx.navigation.fragment.findNavController
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateMutable
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateScreen
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
+import com.example.audiocutter.functions.mystudio.screens.OutputActivity
 
 interface MainScreenViewState {
     fun getViewStateMutable(): ViewStateMutable
@@ -40,7 +42,9 @@ interface MainScreenViewState {
     fun mainScreenOnMyAudioItemClicked(baseFragment: BaseFragment) {
         if (getViewStateMutable().getLastState() == ViewStateScreen.HOME_SCREEN) {
             getViewStateMutable().pushViewState(ViewStateScreen.MY_AUDIO_SCREEN)
-            baseFragment.findNavController().navigate(R.id.go_to_my_audio_screen)
+//            baseFragment.findNavController().navigate(R.id.go_to_my_audio_screen)
+            val intent = Intent(baseFragment.context, OutputActivity::class.java)
+            baseFragment.context?.startActivity(intent)
         }
     }
 

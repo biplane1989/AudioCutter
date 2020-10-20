@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.resultscreen.objects.*
 import com.example.audiocutter.functions.resultscreen.services.ResultService
 import com.example.audiocutter.objects.AudioFile
@@ -24,6 +25,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     fun init(context: Context) {
         mContext = context
     }
+
+    val CUT_AUDIO = 0
+    val MER_AUDIO = 1
+    val MIX_AUDIO = 2
 
     var mService: ResultService? = null
     var mIsBound: Boolean = false
@@ -66,6 +71,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
 //        if (!mIsBound) {
         Intent(mContext, ResultService::class.java).also {
+            it.putExtra(Constance.TYPE_AUDIO, CUT_AUDIO)
             mContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
             Log.d(TAG, "bindService: ")
         }
@@ -80,6 +86,44 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
         }
         listConvertingItems.postValue(listConvertingItemData)
+    }
+
+    override fun mixAudio(audioFile1: AudioFile, audioFile2: AudioFile, mixingConfig: MixingConfig, outFile: AudioFile) {
+        Intent(mContext, ResultService::class.java).also {
+            it.putExtra(Constance.TYPE_AUDIO, MIX_AUDIO)
+            mContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
+            Log.d(TAG, "bindService: ")
+        }
+        val item = MixingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, outFile, audioFile1, audioFile2, mixingConfig)
+        listConvertingItemData.add(item)
+        currConvertingId++
+        val processingItem = getProcessingItem()
+        if (processingItem == null) {
+            processNextItem()
+        } else {
+
+        }
+        listConvertingItems.postValue(listConvertingItemData)
+    }
+
+    override fun mergeAudio(listAudioFiles: List<AudioFile>, mergingConfig: MergingConfig, outFile: AudioFile) {
+        Intent(mContext, ResultService::class.java).also {
+            it.putExtra(Constance.TYPE_AUDIO, MER_AUDIO)
+            mContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
+            Log.d(TAG, "bindService: ")
+        }
+
+        val item = MergingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, outFile, listAudioFiles, mergingConfig)
+        listConvertingItemData.add(item)
+        currConvertingId++
+        val processingItem = getProcessingItem()
+        if (processingItem == null) {
+            processNextItem()
+        } else {
+
+        }
+        listConvertingItems.postValue(listConvertingItemData)
+
     }
 
     private fun processNextItem() {
@@ -121,13 +165,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         processNextItem()
     }
 
-    override fun mixAudio(audioFile1: AudioFile, audioFile2: AudioFile, mixingConfig: MixingConfig, outFile: File) {
-        TODO("Not yet implemented")
-    }
-
-    override fun mergeAudio(listAudioFiles: List<AudioFile>, mergingConfig: MergingConfig, outFile: File) {
-        TODO("Not yet implemented")
-    }
 
     override fun cancel(int: Int) {
         when (listConvertingItemData.get(int).state) {
@@ -139,7 +176,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             }
         }
     }
-
 
     override fun getCurrentProcessingItem(): LiveData<ConvertingItem> { // tra ra live data cho update progressbar
         return currentProcessingItem

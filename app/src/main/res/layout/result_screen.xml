@@ -159,14 +159,26 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/ll_progressbar"
+        <TextView
+            android:id="@+id/tv_wait"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="34dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:gravity="center_vertical"
-            android:visibility="visible"
+            android:text="wait task..."
+            android:textColor="#2E3041"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@+id/ll_audio_item" />
+
+        <LinearLayout
+            android:id="@+id/ll_progressbar"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center_vertical"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@+id/ll_audio_item">
 
             <ProgressBar
@@ -239,11 +251,12 @@
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_marginTop="20dp"
             android:id="@+id/cl_opption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:paddingTop="32dp"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/ll_progressbar">
 
             <LinearLayout
