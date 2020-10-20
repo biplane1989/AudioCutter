@@ -24,6 +24,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     private val mPlayer1 = ManagerFactory.newAudioPlayer()
     private val mPlayer2 = ManagerFactory.newAudioPlayer()
     private var durAudio2: String = ""
+    private var durAudioMax: String = ""
     private var durAudio1: String = ""
     private val TAG = MixingScreen::class.java.name
     private var playerState = PlayerState.IDLE
@@ -31,6 +32,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     private lateinit var audioFile1: AudioFile
     private lateinit var audioFile2: AudioFile
     private var isCompare = false
+    private var pos = 0
     private val listData = mutableListOf<AudioFile>()
 
 
@@ -70,6 +72,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 }
                 PlayerState.PLAYING -> {
                     binding.crChangeViewMixing.setPosition(it.posision)
+                    pos = it.posision
                     binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
                     playerState = PlayerState.PLAYING
                 }
@@ -85,7 +88,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     @SuppressLint("ClickableViewAccessibility", "InflateParams")
     private fun initViews() {
         audioFile1 = ManagerFactory.getAudioFileManager()
-            .buildAudioFile("/storage/emulated/0/VoiceRecorder/Recording_27.m4a")
+            .buildAudioFile("/storage/emulated/0/Download/ChauLenBa-BeXuanMai_n6m9.mp3 ")
         audioFile2 = ManagerFactory.getAudioFileManager()
             .buildAudioFile("/storage/emulated/0/Download/Ed Sheeran - Shape Of You [Official].mp3 ")
         listData.add(audioFile1)
@@ -107,7 +110,12 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                     MediaMetadataRetriever.METADATA_KEY_DURATION
                 )!!
 
-            isCompare = durAudio1.toInt() > durAudio2!!.toInt()
+            isCompare = durAudio1.toInt() > durAudio2.toInt()
+            durAudioMax = if (isCompare) {
+                durAudio1
+            } else {
+                durAudio2
+            }
             binding.crChangeViewMixing.setLengthAudio(durAudio1, durAudio2)
             Log.d(
                 "TAG",
@@ -162,7 +170,10 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 checkCompareDurationMin(durAudio1, durAudio2)
             }
             binding.ivNextMixing -> {
-
+                showToast("next 5s")
+            }
+            binding.ivPreviousMixing -> {
+                showToast("prev 5s")
             }
         }
     }
@@ -206,6 +217,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         val newValueSound =
             Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
         Log.d(TAG, "setVolumeAudio1: $newValueSound")
+
         mPlayer1.setVolume(newValueSound.toFloat())
     }
 

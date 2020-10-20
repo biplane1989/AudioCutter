@@ -18,7 +18,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
 
     private lateinit var appContext: Context
-    private lateinit var mPlayer1: MediaPlayer
+    private lateinit var mPlayer: MediaPlayer
     private val mainScope = MainScope()
     private var isStopped = false
     private var isSeekTo = 0
@@ -34,9 +34,9 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
     override fun init(appContext: Context) {
         this.appContext = appContext
-        mPlayer1 = MediaPlayer()
+        mPlayer = MediaPlayer()
         audioManager = this.appContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        mPlayer1.setOnCompletionListener(listener)
+        mPlayer.setOnCompletionListener(listener)
     }
 
     private val listener = MediaPlayer.OnCompletionListener {
@@ -81,7 +81,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                     notifyPlayerDataChanged()
                 }
                 playInfoData.currentAudio = audioFile
-                mPlayer1.reset()
+                mPlayer.reset()
                 isSeekTo = 0
                 prepare(audioFile)
                 isStopped = false;
@@ -111,7 +111,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                     notifyPlayerDataChanged()
                 }
                 playInfoData.currentAudio = audioFile
-                mPlayer1.reset()
+                mPlayer.reset()
                 prepare(audioFile)
                 isStopped = false;
             }
@@ -120,7 +120,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         } catch (e: Exception) {
             e.printStackTrace()
             Log.d(TAG, "exception: ${e.printStackTrace()}")
-            mPlayer1.stop()
+            mPlayer.stop()
             return false
         }
     }
@@ -130,7 +130,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
     private fun prepare(audioFile: AudioFile) {
         playInfoData.playerState = PlayerState.PREPARING
-        mPlayer1.apply {
+        mPlayer.apply {
             setOnPreparedListener(this@AudioPlayerImpl)
             setDataSource(appContext, audioFile.uri!!)
             prepareAsync()
@@ -158,14 +158,14 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
     override fun pause() {
         if (playInfoData.playerState == PlayerState.PLAYING) {
-            mPlayer1.pause()
+            mPlayer.pause()
         }
     }
 
 
     override fun resume() {
         if (playInfoData.playerState == PlayerState.PAUSE) {
-            mPlayer1.start()
+            mPlayer.start()
         }
     }
 
@@ -173,14 +173,17 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     override fun stop() {
         Log.d("check", "stop")
         if (playInfoData.playerState == PlayerState.PAUSE || playInfoData.playerState == PlayerState.PLAYING) {
-            mPlayer1.stop()
+            mPlayer.stop()
             isStopped = true;
         }
     }
 
     override fun seek(position: Int) {
         try {
-            mPlayer1.seekTo(position)
+            if (position >= mPlayer.duration) {
+                mPlayer.stop()
+            }
+            mPlayer.seekTo(position)
             Log.d(TAG, "PlayToPosition seekto: ${position} duration " + getTotalPos())
         } catch (e: Exception) {
             e.printStackTrace()
@@ -193,12 +196,12 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     }
 
     override fun setVolume(volume: Float) {
-        mPlayer1.setVolume(volume, volume)
+        mPlayer.setVolume(volume, volume)
         playInfoData.volume = volume
     }
 
     fun getTotalPos(): Int {
-        return mPlayer1.duration
+        return mPlayer.duration
     }
 
 
@@ -207,12 +210,12 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
             while (mainScope.isActive) {
                 var changed = false
                 delay(200)
-                playInfoData.duration = mPlayer1.duration
-                var currentPosition = mPlayer1.currentPosition
-                if (currentPosition >= mPlayer1.duration) {
+                playInfoData.duration = mPlayer.duration
+                var currentPosition = mPlayer.currentPosition
+                if (currentPosition >= mPlayer.duration) {
                     currentPosition = 0
                     playInfoData.posision = currentPosition
-                    mPlayer1.stop()
+                    mPlayer.stop()
 
                     if (playInfoData.playerState != PlayerState.IDLE) {
                         playInfoData.playerState = PlayerState.IDLE
@@ -225,7 +228,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                     changed = false
                 }
 
-                if (mPlayer1.isPlaying) {
+                if (mPlayer.isPlaying) {
                     if (playInfoData.playerState != PlayerState.PLAYING) {
                         playInfoData.playerState = PlayerState.PLAYING
                         changed = true

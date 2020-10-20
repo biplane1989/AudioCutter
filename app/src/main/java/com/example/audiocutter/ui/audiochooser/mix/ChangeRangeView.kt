@@ -41,7 +41,7 @@ class ChangeRangeView @JvmOverloads constructor(
     private val mPaint5 = Paint(Paint.ANTI_ALIAS_FLAG)
     private val mPaint6 = Paint(Paint.ANTI_ALIAS_FLAG)
     private var mHeight = 0
-    private var mWidth = 0
+    var mWidth = 0
     private lateinit var rowRect1: RectF
     private lateinit var rowRect2: RectF
     private lateinit var rowRectSeekbarSound1: RectF
@@ -58,14 +58,13 @@ class ChangeRangeView @JvmOverloads constructor(
     private var numPos = ""
     private var RADIUS = Utils.convertDp2Px(9, context)
     private var RANGE = Utils.convertDp2Px(20, context)
-    private var SIZE_IMAGE = Utils.convertDp2Px(30, context)
     private var mHeightText = 0
     private var currentLength1 = RADIUS.toDouble()
     private var currentLength2 = RADIUS.toDouble()
     private var textGetX = 0f
     private var rangeCircleProgress1 = 0f
-    private var circleProgressGetY1 = 0f
     private var rangeCircleProgress2 = 0f
+    private var circleProgressGetY1 = 0f
     private var circleProgressGetY2 = 0f
 
     private var currentXCircle1 = 0f
@@ -185,16 +184,14 @@ class ChangeRangeView @JvmOverloads constructor(
         canvas.drawRoundRect(rectCurrentSeekbar1, 5f, 5f, mPaint)
         canvas.drawRoundRect(rectCurrentSeekbar2, 5f, 5f, mPaint)
 
-
+        /**draw circle of seekbar audio file**/
         canvas.drawCircle(
-//            rectImageDst1.width() + RANGE * 2 +
             currentXCircle1,
             rectImageDst1.top + RADIUS + 3,
             RADIUS,
             mPaint
         )
         canvas.drawCircle(
-//            rectImageDst2.width() + RANGE * 2 +
             currentXCircle2,
             rectImageDst2.top + RADIUS + 3,
             RADIUS,
@@ -202,8 +199,8 @@ class ChangeRangeView @JvmOverloads constructor(
         )
 
         rangeCircleProgress1 = rectImageDst1.width() + RANGE * 2
-        circleProgressGetY1 = rectImageDst1.top + RADIUS + 3
         rangeCircleProgress2 = rectImageDst2.width() + RANGE * 2
+        circleProgressGetY1 = rectImageDst1.top + RADIUS + 3
         circleProgressGetY2 = rectImageDst2.top + RADIUS + 3
         drawTextSound(ratioSound1, canvas, rowRectSeekbarSound1.right + RANGE, rowRectSeekbarSound1)
         drawTextSound(ratioSound2, canvas, rowRectSeekbarSound2.right + RANGE, rowRectSeekbarSound2)
@@ -218,6 +215,30 @@ class ChangeRangeView @JvmOverloads constructor(
         )
     }
 
+    private fun drawTextName2(canvas: Canvas, nameAudio: String) {
+
+        rectText2 = Rect()
+        mPaint4.textSize = Utils.convertDp2Px(20, context)
+        mPaint4.getTextBounds(nameAudio, 0, nameAudio.length, rectText2)
+        mPaint4.color = context.resources.getColor(R.color.colorBlack)
+        mPaint4.typeface = typeFace
+        canvas.drawText(
+            nameAudio,
+            RADIUS * 2,
+            rowRect2.top + rectText2.height() + RADIUS,
+            mPaint4
+        )
+    }
+
+    private fun drawTextName(canvas: Canvas, nameAudio: String) {
+
+        rectText1 = Rect()
+        mPaint4.textSize = Utils.convertDp2Px(20, context)
+        mPaint4.getTextBounds(nameAudio, 0, nameAudio.length, rectText1)
+        mPaint4.color = context.resources.getColor(R.color.colorBlack)
+        mPaint4.typeface = typeFace
+        canvas.drawText(nameAudio, RADIUS * 2, rowRect1.top + rectText1.height() + RADIUS, mPaint4)
+    }
 
     private fun initLine(canvas: Canvas) {
         /** draw line seekbar file audio custom
@@ -276,31 +297,6 @@ class ChangeRangeView @JvmOverloads constructor(
 
 
 
-    }
-
-    private fun drawTextName2(canvas: Canvas, nameAudio: String) {
-
-        rectText2 = Rect()
-        mPaint4.textSize = Utils.convertDp2Px(20, context)
-        mPaint4.getTextBounds(nameAudio, 0, nameAudio.length, rectText2)
-        mPaint4.color = context.resources.getColor(R.color.colorBlack)
-        mPaint4.typeface = typeFace
-        canvas.drawText(
-            nameAudio,
-            RADIUS * 2,
-            rowRect2.top + rectText2.height() + RADIUS,
-            mPaint4
-        )
-    }
-
-    private fun drawTextName(canvas: Canvas, nameAudio: String) {
-
-        rectText1 = Rect()
-        mPaint4.textSize = Utils.convertDp2Px(20, context)
-        mPaint4.getTextBounds(nameAudio, 0, nameAudio.length, rectText1)
-        mPaint4.color = context.resources.getColor(R.color.colorBlack)
-        mPaint4.typeface = typeFace
-        canvas.drawText(nameAudio, RADIUS * 2, rowRect1.top + rectText1.height() + RADIUS, mPaint4)
     }
 
     private fun drawBitmap(canvas: Canvas, fl: Float) {
@@ -657,6 +653,12 @@ class ChangeRangeView @JvmOverloads constructor(
     fun setMaxdistance() {
         maxDistance = mWidth.toDouble()
     }
+
+//    fun setCurrentPos(posChange5s: Double) {
+//        startCurrentX += posChange5s.toInt()
+//        endCurrentX += posChange5s.toInt()
+//        invalidate()
+//    }
 
 
     interface OnPlayLineChange {
