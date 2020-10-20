@@ -18,6 +18,7 @@ class ChangeRangeView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
+    private var ratio: Int = 0
     private lateinit var rectImageDst2: Rect
     private lateinit var rectImageDst1: Rect
     private lateinit var rectImage: Rect
@@ -38,6 +39,7 @@ class ChangeRangeView @JvmOverloads constructor(
     private val mPaint3 = Paint(Paint.ANTI_ALIAS_FLAG)
     private val mPaint4 = Paint(Paint.ANTI_ALIAS_FLAG)
     private val mPaint5 = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val mPaint6 = Paint(Paint.ANTI_ALIAS_FLAG)
     private var mHeight = 0
     private var mWidth = 0
     private lateinit var rowRect1: RectF
@@ -71,8 +73,9 @@ class ChangeRangeView @JvmOverloads constructor(
     private var textName1 = ""
     private var textName2 = ""
 
-    private var ratioSound1 = "0%"
-    private var ratioSound2 = "0%"
+    private var ratioSound1 = "100%"
+    private var ratioSound2 = "100%"
+    private var maxDistance = 0.0
 
     init {
         typeFace = Typeface.createFromAsset(context.assets, FONT_MEDIUM)
@@ -81,6 +84,7 @@ class ChangeRangeView @JvmOverloads constructor(
         setPaint(mPaint3, R.color.colorBlack)
         setPaint(mPaint2, R.color.colorYelowAlpha)
         setPaint(mPaint, R.color.colorYelowDark)
+        setPaint(mPaint6, R.color.colorgrayAlpha)
         mPaint.textSize = Utils.convertDp2Px(15, context)
         mPaint2.textSize = Utils.convertDp2Px(15, context)
         mPaint3.textSize = Utils.convertDp2Px(15, context)
@@ -98,7 +102,7 @@ class ChangeRangeView @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         mHeight = h
-        mWidth = w - 20
+        mWidth = w - 32
     }
 
 
@@ -108,11 +112,34 @@ class ChangeRangeView @JvmOverloads constructor(
         initLine(canvas)
         canvas.drawRoundRect(rowRect1, 10f, 10f, mPaint2)
         canvas.drawRoundRect(rowRect2, 10f, 10f, mPaint2)
-
     }
 
     private fun initRect(canvas: Canvas) {
+        maxDistance = if (!rs) {
+            Utils.convertValue(
+                0.0,
+                duration.toDouble(),
+                0.0,
+                mWidth.toDouble(),
+                durationAudio1.toDouble()
+            )
+        } else {
+            Utils.convertValue(
+                0.0,
+                duration.toDouble(),
+                0.0,
+                mWidth.toDouble(),
+                durationAudio2.toDouble()
+            )
+        }
+
+
+        Log.d(TAG, "drawLineTouch: maxdistance $maxDistance duration $duration  width $mWidth")
+
+        textName1 = audioFile1.fileName
+        textName2 = audioFile2.fileName
         val rs = Utils.convertDp2Px(20, context)
+
         rowRect1 = RectF(RADIUS, mHeightText.toFloat(), currentLength1.toFloat(), mHeight / 2 - rs)
 
         rowRect2 = RectF(
@@ -123,8 +150,8 @@ class ChangeRangeView @JvmOverloads constructor(
         )
 
 
-        drawTextName(canvas, "day la bai hat 1")
-        drawTextName2(canvas, "day la bai hat 2")
+        drawTextName(canvas, textName1)
+        drawTextName2(canvas, textName2)
         drawBitmap(canvas, rowRect1.top + rectText1.height() + RANGE * 3 / 2)
         drawBitmap2(canvas, rowRect2.top + rectText2.height() + RANGE * 3 / 2)
 
@@ -134,6 +161,7 @@ class ChangeRangeView @JvmOverloads constructor(
             mWidth / 1.3f + RANGE,
             rectImageDst1.top + RADIUS + 10
         )
+
         rowRectProGress2 = RectF(
             rectImageDst2.width() + RANGE * 2,
             rectImageDst2.top + RADIUS,
@@ -179,11 +207,21 @@ class ChangeRangeView @JvmOverloads constructor(
             mPaint
         )
 
-
         rangeCircleProgress1 = rectImageDst1.width() + RANGE * 2
         circleProgressGetY1 = rectImageDst1.top + RADIUS + 3
         rangeCircleProgress2 = rectImageDst2.width() + RANGE * 2
         circleProgressGetY2 = rectImageDst2.top + RADIUS + 3
+        drawTextSound(ratioSound1, canvas, rowRectProGress1.right + RANGE, rowRectProGress1)
+        drawTextSound(ratioSound2, canvas, rowRectProGress2.right + RANGE, rowRectProGress2)
+    }
+
+    private fun drawTextSound(ratioSound1: String, canvas: Canvas, x: Float, y: RectF) {
+        canvas.drawText(
+            ratioSound1,
+            x,
+            y.top + RADIUS / 2.1f,
+            mPaint3
+        )
     }
 
 
@@ -238,7 +276,6 @@ class ChangeRangeView @JvmOverloads constructor(
             )
         }
 
-//        canvas.drawTopRoundRectRadius(rowRectProGress2, 5f, mPaint)
 
 
     }
@@ -367,6 +404,7 @@ class ChangeRangeView @JvmOverloads constructor(
                         }
                     }
                     TOUCHITEM.PROGRESS1 -> {
+                        Log.d(TAG, "onTouchEvent: progress 1 ")
                         currentXCircle1 = x
                         if (x < (rectImageDst1.width() + RANGE * 2)) {
                             currentXCircle1 = (rectImageDst1.width() + RANGE * 2)
@@ -374,11 +412,26 @@ class ChangeRangeView @JvmOverloads constructor(
                             if (x > (mWidth / 1.3f + RANGE)) {
                                 currentXCircle1 = (mWidth / 1.3f + RANGE)
                             }
-                        mCallback.setVolumeAudio1(x,(rectImageDst1.width() + RANGE * 2), (mWidth / 1.3f + RANGE) )
-
+                        mCallback.setVolumeAudio1(
+                            x,
+                            (rectImageDst1.width() + RANGE * 2),
+                            (mWidth / 1.3f + RANGE)
+                        )
+                        val newValueSound =
+                            Utils.convertValue(
+                                (rectImageDst1.width() + RANGE * 2).toDouble(),
+                                (mWidth / 1.3f + RANGE).toDouble(),
+                                0.0,
+                                1.0,
+                                x.toDouble()
+                            )
+                        ratio = ((newValueSound / 1.0) * 100).toInt()
+                        checkRangeRatio(ratio)
+                        ratioSound1 = "${ratio}%"
                         invalidate()
                     }
                     TOUCHITEM.PROGRESS2 -> {
+                        Log.d(TAG, "onTouchEvent: progress 2 ")
                         currentXCircle2 = x
                         if (x < (rectImageDst2.width() + RANGE * 2)) {
                             currentXCircle2 = (rectImageDst2.width() + RANGE * 2)
@@ -391,6 +444,18 @@ class ChangeRangeView @JvmOverloads constructor(
                             (rectImageDst2.width() + RANGE * 2),
                             (mWidth / 1.3f + RANGE)
                         )
+                        val newValueSound =
+                            Utils.convertValue(
+                                (rectImageDst2.width() + RANGE * 2).toDouble(),
+                                (mWidth / 1.3f + RANGE).toDouble(),
+                                0.0,
+                                1.0,
+                                x.toDouble()
+                            )
+                        ratio = ((newValueSound / 1.0) * 100).toInt()
+                        checkRangeRatio(ratio)
+                        ratioSound2 = "${ratio}%"
+
                         invalidate()
                     }
                 }
@@ -408,7 +473,7 @@ class ChangeRangeView @JvmOverloads constructor(
                             duration.toDouble(),
                             x.toDouble()
                         )
-                        mCallback.onLineChange(audioFile2, pos.toInt())
+                        mCallback.onLineChange(audioFile1, audioFile2, pos.toInt())
                     }
                     TOUCHITEM.PROGRESS1 -> {
                         isTouch = TOUCHITEM.NONTOUCH
@@ -439,6 +504,14 @@ class ChangeRangeView @JvmOverloads constructor(
         return false
     }
 
+    private fun checkRangeRatio(ratio: Int) {
+        if (ratio > 100) {
+            this.ratio = 100
+        } else if (ratio < 0) {
+            this.ratio = 0
+        }
+    }
+
     private fun drawLineTouch(startX: Float, endX: Float) {
         try {
             Log.d(TAG, "drawLineTouch: drawline")
@@ -451,9 +524,13 @@ class ChangeRangeView @JvmOverloads constructor(
                     startX.toDouble()
                 ).toLong()
             )
+
             endCurrentX = endX.toInt()
             startCurrentX = startX.toInt()
-
+            if (startCurrentX > maxDistance && endCurrentX > maxDistance) {
+                startCurrentX = maxDistance.toInt()
+                endCurrentX = maxDistance.toInt()
+            }
             invalidate()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -485,6 +562,7 @@ class ChangeRangeView @JvmOverloads constructor(
                 ))!!.toInt()
         }
 
+
     }
 
     override fun onAttachedToWindow() {
@@ -501,13 +579,20 @@ class ChangeRangeView @JvmOverloads constructor(
             mWidth.toDouble(),
             posision.toDouble()
         )
+
         numPos = Utils.longDurationMsToStringMs(posision.toLong())
         startCurrentX = pos.toInt()
         endCurrentX = pos.toInt()
 
+        if (startCurrentX > maxDistance && endCurrentX > maxDistance) {
+            startCurrentX = maxDistance.toInt()
+            endCurrentX = maxDistance.toInt()
+            mCallback.endAudioBecauseMaxdistance()
+        }
+
         if (endCurrentX >= mWidth - RADIUS) {
-            endCurrentX = mWidth - RADIUS.toInt() - 10
-            startCurrentX = mWidth - RADIUS.toInt() - 10
+            endCurrentX = mWidth - RADIUS.toInt()
+            startCurrentX = mWidth - RADIUS.toInt()
         }
 
         invalidate()
@@ -553,12 +638,12 @@ class ChangeRangeView @JvmOverloads constructor(
         /**
         setjust the parameters
          */
-//        this.duration = duration.toInt()
         duration = if (rs) {
             durationAudio1
         } else {
             durationAudio2
         }
+
         startCurrentX = 0
         endCurrentX = 0
         mCallback.changeDuration()
@@ -567,11 +652,12 @@ class ChangeRangeView @JvmOverloads constructor(
     }
 
     interface OnPlayLineChange {
-        fun onLineChange(audioFile: AudioFile, pos: Int)
+        fun onLineChange(audioFile1: AudioFile, audioFile2: AudioFile, pos: Int)
         fun pauseInvalid()
         fun changeDuration()
         fun setVolumeAudio1(x: Float, min1: Float, max1: Float)
         fun setVolumeAudio2(x: Float, min2: Float, max2: Float)
+        fun endAudioBecauseMaxdistance()
     }
 
     enum class TOUCHITEM(num: Int) {

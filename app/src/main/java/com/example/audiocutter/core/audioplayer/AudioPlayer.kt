@@ -13,19 +13,18 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.coroutines.*
 
-object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
+class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     val TAG = AudioPlayerImpl::class.java.name
 
 
     private lateinit var appContext: Context
     private lateinit var mPlayer1: MediaPlayer
-    private var mPlayer2: MediaPlayer? = null
     private val mainScope = MainScope()
     private var isStopped = false
     private var isSeekTo = 0
 
     private var _mPlayInfo = MutableLiveData<PlayerInfo>()
-    private val playInfoData = PlayerInfo(null, 0, PlayerState.IDLE, 0, 0)
+    private val playInfoData = PlayerInfo(null, 0, PlayerState.IDLE, 0, 0f)
     private val mPlayInfo: LiveData<PlayerInfo>
         get() = _mPlayInfo
 
@@ -33,10 +32,9 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     lateinit var audioManager: AudioManager
 
 
-    fun init(appContext: Context) {
+    override fun init(appContext: Context) {
         this.appContext = appContext
         mPlayer1 = MediaPlayer()
-        mPlayer2 = MediaPlayer()
         audioManager = this.appContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         mPlayer1.setOnCompletionListener(listener)
     }
@@ -93,7 +91,7 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         } catch (e: Exception) {
             e.printStackTrace()
             Log.d(TAG, "exception: ${e.printStackTrace()}")
-            mPlayer1.stop()
+//            mPlayer1.stop()
             return false
         }
 
@@ -128,81 +126,7 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     }
 
 
-    override suspend fun play(audioFile1: AudioFile, audioFile2: AudioFile): Boolean {
-        try {
-            withContext(Dispatchers.IO) {
-                if (mPlayer2 != null) {
-                    stop()
-                    if (playInfoData.playerState != PlayerState.IDLE) {
-                        playInfoData.playerState = PlayerState.IDLE
-                        notifyPlayerDataChanged()
-                    } else if (playInfoData.currentAudio != null) {
-                        playInfoData.playerState = PlayerState.IDLE
-                        notifyPlayerDataChanged()
-                    }
-                    playInfoData.currentAudio = audioFile1
-                    mPlayer1.reset()
-                    mPlayer2!!.reset()
-                    mPlayer1.setDataSource(appContext, audioFile1.uri!!)
-                    mPlayer2!!.setDataSource(appContext, audioFile2.uri!!)
-                    mPlayer1.prepare()
-                    mPlayer2!!.prepare()
-                    mPlayer1.start()
-                    mPlayer2!!.start()
-                    isStopped = false;
-                    startTimerIfReady()
-                }
-            }
 
-            return true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.d(TAG, "exception: ${e.printStackTrace()}")
-            mPlayer1.stop()
-            return false
-        }
-    }
-
-    override suspend fun play(
-        audioFile1: AudioFile,
-        audioFile2: AudioFile,
-        currentPos: Int
-    ): Boolean {
-        try {
-            withContext(Dispatchers.IO) {
-                if (mPlayer2 != null) {
-                    stop()
-                    if (playInfoData.playerState != PlayerState.IDLE) {
-                        playInfoData.playerState = PlayerState.IDLE
-                        notifyPlayerDataChanged()
-                    } else if (playInfoData.currentAudio != null) {
-                        playInfoData.playerState = PlayerState.IDLE
-                        notifyPlayerDataChanged()
-                    }
-                    playInfoData.currentAudio = audioFile1
-                    mPlayer1.reset()
-                    mPlayer2!!.reset()
-                    mPlayer1.setDataSource(appContext, audioFile1.uri!!)
-                    mPlayer2!!.setDataSource(appContext, audioFile2.uri!!)
-                    mPlayer1.prepare()
-                    mPlayer2!!.prepare()
-                    mPlayer1.start()
-                    mPlayer2!!.start()
-                    mPlayer1.seekTo(currentPos)
-                    mPlayer2!!.seekTo(currentPos)
-
-                    isStopped = false;
-                    startTimerIfReady()
-                }
-            }
-            return true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.d(TAG, "exception: ${e.printStackTrace()}")
-            mPlayer1.stop()
-            return false
-        }
-    }
 
     private fun prepare(audioFile: AudioFile) {
         playInfoData.playerState = PlayerState.PREPARING
@@ -235,21 +159,13 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     override fun pause() {
         if (playInfoData.playerState == PlayerState.PLAYING) {
             mPlayer1.pause()
-            mPlayer2?.let {
-                mPlayer2!!.pause()
-            }
-
         }
-
     }
 
 
     override fun resume() {
         if (playInfoData.playerState == PlayerState.PAUSE) {
             mPlayer1.start()
-            mPlayer2?.let {
-                mPlayer2!!.start()
-            }
         }
     }
 
@@ -258,20 +174,13 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         Log.d("check", "stop")
         if (playInfoData.playerState == PlayerState.PAUSE || playInfoData.playerState == PlayerState.PLAYING) {
             mPlayer1.stop()
-            mPlayer2?.let {
-                mPlayer2!!.stop()
-            }
             isStopped = true;
         }
-
     }
 
     override fun seek(position: Int) {
         try {
             mPlayer1.seekTo(position)
-            mPlayer2?.let {
-                mPlayer2!!.seekTo(position)
-            }
             Log.d(TAG, "PlayToPosition seekto: ${position} duration " + getTotalPos())
         } catch (e: Exception) {
             e.printStackTrace()
@@ -285,6 +194,7 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
     override fun setVolume(volume: Float) {
         mPlayer1.setVolume(volume, volume)
+        playInfoData.volume = volume
     }
 
     fun getTotalPos(): Int {

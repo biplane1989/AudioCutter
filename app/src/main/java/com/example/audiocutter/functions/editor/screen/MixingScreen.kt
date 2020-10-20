@@ -21,6 +21,8 @@ import com.example.audiocutter.ui.audiochooser.mix.ChangeRangeView
 import com.example.audiocutter.util.Utils
 
 class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPlayLineChange {
+    private val mPlayer1 = ManagerFactory.newAudioPlayer()
+    private val mPlayer2 = ManagerFactory.newAudioPlayer()
     private var durAudio2: String? = ""
     private var durAudio1: String = ""
     private val TAG = MixingScreen::class.java.name
@@ -33,6 +35,9 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
+        mPlayer1.init(requireContext())
+        mPlayer2.init(requireContext())
+
         super.onPostCreate(savedInstanceState)
     }
 
@@ -49,7 +54,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ManagerFactory.getAudioPlayer().getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
+        mPlayer2.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
     }
 
 
@@ -72,32 +77,19 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                     playerState = PlayerState.PAUSE
                 }
             }
+            mPlayer1.setVolume(it.volume)
         }
     }
 
     @SuppressLint("ClickableViewAccessibility", "InflateParams")
     private fun initViews() {
-        binding.lnAddItemMixing.removeAllViews()
         audioFile1 = ManagerFactory.getAudioFileManager()
-            .buildAudioFile("/storage/emulated/0/VoiceRecorder/Recording_27.m4a ")
+            .buildAudioFile("/storage/emulated/0/VoiceRecorder/Recording_27.m4a")
         audioFile2 = ManagerFactory.getAudioFileManager()
             .buildAudioFile("/storage/emulated/0/Download/Ed Sheeran - Shape Of You [Official].mp3 ")
         listData.add(audioFile1)
         listData.add(audioFile2)
-        val viewAudioFile1 =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.item_audio_mixing, null)
 
-        val viewAudioFile2 =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.item_audio_mixing, null)
-//
-//        val tvName1 = viewAudioFile1.findViewById<TextView>(R.id.tv_name_mixing_choose_audio)
-//        val tvName2 = viewAudioFile2.findViewById<TextView>(R.id.tv_name_mixing_choose_audio)
-//        tvName1.text = audioFile1.fileName
-//        tvName2.text = audioFile2.fileName
-        binding.lnAddItemMixing.addView(viewAudioFile1)
-        binding.lnAddItemMixing.addView(viewAudioFile2)
 
 
         binding.crChangeViewMixing.setFileAudio(audioFile1, audioFile2)
@@ -127,7 +119,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         binding.playIv.setOnClickListener(this)
         binding.shortedBt.setOnClickListener(this)
         binding.longestBt.setOnClickListener(this)
-        ManagerFactory.getAudioPlayer().setVolume(1f)
+
 
 
     }
@@ -138,7 +130,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     override fun onPause() {
         super.onPause()
-        ManagerFactory.getAudioPlayer().pause()
+        mPlayer1.pause()
     }
 
 
@@ -147,11 +139,16 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
             binding.playIv -> {
                 runOnUI {
                     if (playerState == PlayerState.PLAYING) {
-                        ManagerFactory.getAudioPlayer().pause()
+                        mPlayer1.pause()
+                        mPlayer2.pause()
                     } else {
                         if (playerState == PlayerState.IDLE) {
-                            ManagerFactory.getAudioPlayer().play(audioFile2)
-                        } else ManagerFactory.getAudioPlayer().resume()
+                            mPlayer1.play(audioFile1)
+                            mPlayer2.play(audioFile2)
+                        } else {
+                            mPlayer2.resume()
+                            mPlayer1.resume()
+                        }
                     }
                 }
             }
@@ -173,30 +170,39 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         }
     }
 
-    override fun onLineChange(audioFile1: AudioFile, pos: Int) {
+    override fun onLineChange(audioFile1: AudioFile, audioFile2: AudioFile, pos: Int) {
         runOnUI {
-            ManagerFactory.getAudioPlayer().play(audioFile1, pos)
+            mPlayer1.play(audioFile1, pos)
+            mPlayer2.play(audioFile2, pos)
         }
     }
 
     override fun pauseInvalid() {
-        ManagerFactory.getAudioPlayer().pause()
+        mPlayer1.pause()
+        mPlayer2.pause()
     }
 
     override fun changeDuration() {
-        ManagerFactory.getAudioPlayer().stop()
+        mPlayer1.stop()
+        mPlayer2.stop()
     }
 
     override fun setVolumeAudio1(value: Float, min: Float, max: Float) {
         val newValueSound =
             Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
-        ManagerFactory.getAudioPlayer().setVolume(newValueSound.toFloat())
+        Log.d(TAG, "setVolumeAudio1: $newValueSound")
+        mPlayer1.setVolume(newValueSound.toFloat())
     }
 
     override fun setVolumeAudio2(value: Float, min: Float, max: Float) {
         val newValueSound =
             Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
-        ManagerFactory.getAudioPlayer().setVolume(newValueSound.toFloat())
+        mPlayer2.setVolume(newValueSound.toFloat())
+    }
+
+    override fun endAudioBecauseMaxdistance() {
+        mPlayer1.stop()
+        mPlayer2.stop()
     }
 
 

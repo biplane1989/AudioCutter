@@ -1,5 +1,6 @@
 package com.example.audiocutter.core.manager
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import com.example.audiocutter.objects.AudioFile
 
@@ -15,14 +16,13 @@ class PlayerInfo(
     var posision: Int,
     var playerState: PlayerState,
     var duration: Int,
-    var volume: Int
+    var volume: Float
 )
 
 interface AudioPlayer {
+    fun init(context: Context)
     suspend fun play(audioFile: AudioFile): Boolean
     suspend fun play(audioFile: AudioFile, currentPosition: Int): Boolean
-    suspend fun play(audioFile1: AudioFile, audioFile2: AudioFile): Boolean
-    suspend fun play(audioFile1: AudioFile, audioFile2: AudioFile, currentPos: Int): Boolean
     fun pause()
     fun resume()
     fun stop()
