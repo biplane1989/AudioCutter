@@ -16,6 +16,7 @@
                 android:layout_height="@dimen/d_56">
 
                 <ImageView
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:id="@+id/iv_back_mixing"
                     android:layout_width="?actionBarSize"
                     android:layout_height="?actionBarSize"
@@ -35,6 +36,8 @@
                     android:textSize="@dimen/d_18" />
 
                 <ImageView
+                    android:id="@+id/iv_done_mixing"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:layout_width="?actionBarSize"
                     android:layout_height="?actionBarSize"
                     android:layout_alignParentRight="true"
@@ -52,7 +55,7 @@
 
 
         <com.example.audiocutter.ui.audiochooser.mix.ChangeRangeView
-            android:layout_marginTop="@dimen/d_16"
+            android:layout_marginTop="16dp"
             android:id="@+id/cr_change_view_mixing"
             android:layout_height="300dp"
             android:layout_width="match_parent"
@@ -125,6 +128,7 @@
                 android:textColor="@color/colorWhite" />
 
             <Button
+                android:id="@+id/longest_bt"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
@@ -133,7 +137,6 @@
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:paddingHorizontal="@dimen/d_10"
                 android:text="@string/longgest_audio_mixing"
-                android:id="@+id/longest_bt"
                 android:textColor="@color/colorgray" />
 
         </RelativeLayout>

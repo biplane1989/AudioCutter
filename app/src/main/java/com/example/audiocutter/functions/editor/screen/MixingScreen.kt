@@ -95,7 +95,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 //        audioFile2 = listData[1]
 
         audioFile1 = ManagerFactory.getAudioFileManager()
-            .buildAudioFile("/storage/emulated/0/Download/ChauLenBa-BeXuanMai_n6m9.mp3 ")
+            .buildAudioFile("/storage/emulated/0/Download/Ed Sheeran - Shape Of You [Official].mp3  ")
         audioFile2 = ManagerFactory.getAudioFileManager()
             .buildAudioFile("/storage/emulated/0/Download/Lalala-LilKnight_3hy9.mp3")
         durAudio1 = ManagerFactory.getAudioFileManager()
@@ -116,7 +116,6 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
 
         binding.crChangeViewMixing.setFileAudio(audioFile1, audioFile2)
-        binding.crChangeViewMixing.setMaxdistance()
 
         runOnUI {
             isCompare = durAudio1.toInt() > durAudio2.toInt()
@@ -139,6 +138,8 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         binding.longestBt.setOnClickListener(this)
         binding.ivNextMixing.setOnClickListener(this)
         binding.ivPreviousMixing.setOnClickListener(this)
+        binding.ivBackMixing.setOnClickListener(this)
+        binding.ivDoneMixing.setOnClickListener(this)
 
 
     }
@@ -150,6 +151,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     override fun onPause() {
         super.onPause()
         mPlayer1.pause()
+        mPlayer2.pause()
     }
 
 
@@ -180,10 +182,16 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 checkCompareDurationMin(durAudio1, durAudio2)
             }
             binding.ivNextMixing -> {
-                showToast("next 5s")
+                binding.crChangeViewMixing.seekNext5S(5000)
             }
             binding.ivPreviousMixing -> {
-                showToast("prev 5s")
+                binding.crChangeViewMixing.seekPrev5S(5000)
+            }
+            binding.ivBackMixing ->{
+                showToast("back frg")
+            }
+            binding.ivDoneMixing->{
+                showToast("show frg mix")
             }
         }
     }
