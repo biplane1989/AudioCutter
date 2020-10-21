@@ -29,6 +29,7 @@ interface AudioPlayer {
     fun seek(position: Int)
     fun setVolume(volume: Float)
     fun getMaxVolume(): Int
+    fun getAudioIsPlaying(): Boolean
     fun getPlayerInfo(): LiveData<PlayerInfo>
     fun getPlayerInfoData(): PlayerInfo
 }

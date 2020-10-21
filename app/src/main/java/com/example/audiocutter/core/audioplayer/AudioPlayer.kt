@@ -198,10 +198,15 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     override fun setVolume(volume: Float) {
         mPlayer.setVolume(volume, volume)
         playInfoData.volume = volume
+
     }
 
     fun getTotalPos(): Int {
         return mPlayer.duration
+    }
+
+    override fun getAudioIsPlaying(): Boolean {
+        return mPlayer.isPlaying
     }
 
 

@@ -57,7 +57,11 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+//                mPlayer1.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
+
         mPlayer2.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
+        mPlayer1.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
+
     }
 
 
@@ -81,35 +85,40 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                     playerState = PlayerState.PAUSE
                 }
             }
-            mPlayer1.setVolume(it.volume)
+
         }
     }
 
     @SuppressLint("ClickableViewAccessibility", "InflateParams")
     private fun initViews() {
+//        audioFile1 = listData[0]
+//        audioFile2 = listData[1]
+
         audioFile1 = ManagerFactory.getAudioFileManager()
             .buildAudioFile("/storage/emulated/0/Download/ChauLenBa-BeXuanMai_n6m9.mp3 ")
         audioFile2 = ManagerFactory.getAudioFileManager()
-            .buildAudioFile("/storage/emulated/0/Download/Ed Sheeran - Shape Of You [Official].mp3 ")
+            .buildAudioFile("/storage/emulated/0/Download/Lalala-LilKnight_3hy9.mp3")
+        durAudio1 = ManagerFactory.getAudioFileManager()
+            .getInfoAudioFile(
+                audioFile1.file,
+                MediaMetadataRetriever.METADATA_KEY_DURATION
+            )!!
+
+        durAudio2 = ManagerFactory.getAudioFileManager()
+            .getInfoAudioFile(
+                audioFile2.file,
+                MediaMetadataRetriever.METADATA_KEY_DURATION
+            )!!
         listData.add(audioFile1)
         listData.add(audioFile2)
+
+
+
 
         binding.crChangeViewMixing.setFileAudio(audioFile1, audioFile2)
         binding.crChangeViewMixing.setMaxdistance()
 
         runOnUI {
-            durAudio1 = ManagerFactory.getAudioFileManager()
-                .getInfoAudioFile(
-                    audioFile1.file,
-                    MediaMetadataRetriever.METADATA_KEY_DURATION
-                )!!
-
-            durAudio2 = ManagerFactory.getAudioFileManager()
-                .getInfoAudioFile(
-                    audioFile2.file,
-                    MediaMetadataRetriever.METADATA_KEY_DURATION
-                )!!
-
             isCompare = durAudio1.toInt() > durAudio2.toInt()
             durAudioMax = if (isCompare) {
                 durAudio1
@@ -155,6 +164,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                         if (playerState == PlayerState.IDLE) {
                             mPlayer1.play(audioFile1)
                             mPlayer2.play(audioFile2)
+
                         } else {
                             mPlayer2.resume()
                             mPlayer1.resume()
@@ -214,22 +224,35 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     }
 
     override fun setVolumeAudio1(value: Float, min: Float, max: Float) {
-        val newValueSound =
+        var newValueSound =
             Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
-        Log.d(TAG, "setVolumeAudio1: $newValueSound")
-
+        Log.d(TAG, "setVolumeAudio1: ${newValueSound.toFloat()}")
+        if (newValueSound > 1) {
+            newValueSound = 1.0
+        }
+        if (newValueSound < 0) {
+            newValueSound = 0.0
+        }
         mPlayer1.setVolume(newValueSound.toFloat())
     }
 
     override fun setVolumeAudio2(value: Float, min: Float, max: Float) {
-        val newValueSound =
+        var newValueSound =
             Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
+        Log.d(TAG, "setVolumeAudio2: value $newValueSound")
+        if (newValueSound > 1) {
+            newValueSound = 1.0
+        }
+        if (newValueSound < 0) {
+            newValueSound = 0.0
+        }
+        Log.d(TAG, "setVolumeAudio2: editValue ${newValueSound.toFloat()}")
         mPlayer2.setVolume(newValueSound.toFloat())
     }
 
     override fun endAudioBecauseMaxdistance() {
-        mPlayer1.stop()
         mPlayer2.stop()
+        mPlayer1.stop()
     }
 
 
