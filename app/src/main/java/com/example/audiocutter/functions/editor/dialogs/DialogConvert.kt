@@ -99,7 +99,8 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
     }
 
     private fun getData() {
-        audioFile = ManagerFactory.getAudioFileManager().buildAudioFile(requireArguments().getString(Utils.KEY_SEND_AUDIO)!!)
+        audioFile = ManagerFactory.getAudioFileManager()
+            .buildAudioFile(requireArguments().getString(Utils.KEY_SEND_AUDIO)!!)
         AudioFormat.values().forEach { listFormat.add(it.name) }
         BitRate.values().forEach { listBitrate.add(it.name.replaceFirstCharacter()) }
         positionFormat =

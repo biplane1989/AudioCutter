@@ -108,8 +108,6 @@ object AudioFileManagerImpl : AudioFileManager {
                     val clAlbum = cursor.getColumnIndex(projection[4])
                     val clArtist = cursor.getColumnIndex(projection[5])
                     val clDateAdded = cursor.getColumnIndex(projection[6])
-
-
                     cursor.moveToFirst()
                     while (!cursor.isAfterLast) {
                         var mimeType: String = ""
@@ -132,6 +130,7 @@ object AudioFileManagerImpl : AudioFileManager {
                             mimeType = preName.substring(preName.lastIndexOf("."), preName.length)
                         }
                         val date = getDateByDateAdded(cursor.getLong(clDateAdded))
+                        //val duration1 = cursor.getLong(durationIndex)
                         var genre: String? = "Unknown"
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             genre =
