@@ -73,7 +73,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                     binding.clOpption.visibility = View.VISIBLE
                 }
             }
-        }else{
+        } else {
             binding.tvWait.visibility = View.VISIBLE
             binding.llProgressbar.visibility = View.GONE
             binding.llPlayMusic.visibility = View.GONE
@@ -118,6 +118,11 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.ivPausePlayMusic.setOnClickListener(this)
 
         binding.llRingtone.setOnClickListener(this)
+        binding.llAlarm.setOnClickListener(this)
+        binding.llNotification.setOnClickListener(this)
+        binding.llShare.setOnClickListener(this)
+        binding.llContact.setOnClickListener(this)
+        binding.llOpenwith.setOnClickListener(this)
 
         binding.sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
@@ -155,6 +160,26 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                         mResultViewModel.pauseAudio()
                     }
                 }
+            }
+            binding.llRingtone -> {
+
+            }
+
+            binding.llAlarm -> {
+
+            }
+
+            binding.llNotification -> {
+
+            }
+            binding.llShare -> {
+
+            }
+            binding.llContact -> {
+
+            }
+            binding.llOpenwith -> {
+
             }
         }
     }

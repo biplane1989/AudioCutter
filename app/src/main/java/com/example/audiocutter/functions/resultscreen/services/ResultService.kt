@@ -14,7 +14,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.example.audiocutter.MyApplication
 import com.example.audiocutter.R
-import com.example.audiocutter.activities.MainActivity
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.screens.OutputActivity
@@ -32,23 +31,33 @@ class ResultService : LifecycleService() {
     private lateinit var manager: NotificationManagerCompat
 
     //    var strContent: String? = "tomato"
-    var strContent: String? = "Apple"
-    val updateProressbar: MutableLiveData<Int> = MutableLiveData()
+    var strContent: String? = ""
+
+    //    val updateProressbarLivedata: MutableLiveData<Int> = MutableLiveData()
     val progressMax = 100
     var notificationID = 0
+    var serviceForegroundID = 1
     var TYPE_AUDIO = -1
 
     @RequiresApi(Build.VERSION_CODES.N)
     val processObserver = Observer<ConvertingItem> { it ->
-        builderNotification(it.audioFile.title.toString())
-        sendNotification(1, it.percent)
+        if(it != null){
+            Log.d(TAG, "percent : " + it.percent)
 
-        if (ManagerFactory.getAudioEditorManager().getIDProcessingItem() > 1) {
+            builderNotification(it.audioFile.fileName.toString())
+            sendNotification(serviceForegroundID, it.percent, it.state)
+
+            Log.d(TAG, "status : " + it.state)
             if (it.state == ConvertingState.SUCCESS) {
-                builderNotification(it.audioFile.title.toString())
+                Log.d(TAG, "status : " + it.state)
+//            builderNotification(it.audioFile.fileName.toString())
                 sendNotificationComplte(notificationID++)
             }
+//        if (ManagerFactory.getAudioEditorManager().getIDProcessingItem() < notificationID) {
+//            stopForeground(true)
+//        }
         }
+
     }
 
     inner class MyBinder : Binder() {
@@ -63,8 +72,9 @@ class ResultService : LifecycleService() {
             TYPE_AUDIO = intent.getIntExtra(Constance.TYPE_AUDIO, 0)
 
             manager = NotificationManagerCompat.from(this@ResultService)
-            builderForegroundService(1)
             observerData()
+
+            builderForegroundService()
         }
 
         return mBinder
@@ -99,9 +109,7 @@ class ResultService : LifecycleService() {
     }
 
     fun builderNotification(audioTitle: String) {
-        val resultPendingIntent: PendingIntent =
-            PendingIntent.getActivity(this, 0, resultIntent(), 0)
-
+        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(), 0)
 
         mBuilder = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
             .setSmallIcon(R.drawable.list_contact_icon_back).setContentTitle(audioTitle)
@@ -110,29 +118,28 @@ class ResultService : LifecycleService() {
     }
 
     fun sendNotificationComplte(notificationID: Int) {
-        mBuilder.setContentText("Download complete").setProgress(0, 0, false).setOngoing(false)
+        mBuilder.setContentText("Loading complete").setProgress(0, 0, false).setOngoing(false)
         manager.notify(notificationID, mBuilder.build())
     }
 
-    fun sendNotification(notificationID: Int, data: Int) {
+    fun sendNotification(notificationID: Int, data: Int, convertingState: ConvertingState) {
 
-        if (data > 99) {
-            mBuilder.setContentText("Download complete").setProgress(0, 0, false).setOngoing(false)
+//        if (data == 100) {
+        if (convertingState == ConvertingState.SUCCESS) {
+            Log.d(TAG, "sendNotification: data : " + data)
+            mBuilder.setContentText("Loading 5555complete").setProgress(0, 0, false).setOngoing(false)
             manager.notify(notificationID, mBuilder.build())
         } else {
             mBuilder.setContentText(data.toString() + "%").setProgress(progressMax, data, false)
                 .build()
             manager.notify(notificationID, mBuilder.build())
 
-            updateProressbar.postValue(data)
+//            updateProressbarLivedata.postValue(data)
         }
     }
 
-    fun builderForegroundService(notificationID: Int) {
-
-        val resultPendingIntent: PendingIntent =
-            PendingIntent.getActivity(this, 0, resultIntent(), PendingIntent.FLAG_CANCEL_CURRENT)
-        val progressMax = 100
+    fun builderForegroundService() {
+        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(), PendingIntent.FLAG_CANCEL_CURRENT)
 
         /*val notification = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
             .setContentTitle("Orange Download").setSmallIcon(R.drawable.list_contact_icon_back)
@@ -140,11 +147,11 @@ class ResultService : LifecycleService() {
             .setOnlyAlertOnce(true).setProgress(progressMax, 0, true).setAutoCancel(true).build()*/
 
         val notification = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
-            .setContentTitle("Orange Download").setSmallIcon(R.drawable.list_contact_icon_back)
+            .setContentTitle("Audio Cutter Loading").setSmallIcon(R.drawable.list_contact_icon_back)
             .setContentText(strContent).setContentIntent(resultPendingIntent).setOngoing(true)
             .setOnlyAlertOnce(true).setProgress(progressMax, 0, true).setAutoCancel(true).build()
 
-        startForeground(notificationID, notification)
+        startForeground(serviceForegroundID, notification)
     }
 
 }

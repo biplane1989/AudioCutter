@@ -1,8 +1,5 @@
 package com.example.audiocutter.functions.mystudio.screens
 
-import android.net.Uri
-import android.os.Environment
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -20,7 +17,6 @@ import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
-import java.io.File
 
 class MyStudioViewModel : BaseViewModel() {
 
@@ -29,10 +25,6 @@ class MyStudioViewModel : BaseViewModel() {
     private var mListLoading = ArrayList<AudioFileView>()
 
     var statusResultDelete: MutableLiveData<Boolean> = MutableLiveData()
-
-    //    var listDemo: MutableLiveData<List<ConvertingItem>> = MutableLiveData()
-    var listDemo2: MutableLiveData<List<AudioFileView>> = MutableLiveData()
-
 
     fun getStatusResultDelete(): LiveData<Boolean> {
         return statusResultDelete
@@ -95,12 +87,10 @@ class MyStudioViewModel : BaseViewModel() {
                         newListAudioFileView.add(audioFileView)
                     } else {
                         if (isDeleteStatus) {
-//                            val newAudioFileView = AudioFileView(it)
                             val newAudioFileView = AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1)
                             newAudioFileView.itemLoadStatus.deleteState = DeleteState.UNCHECK
                             newListAudioFileView.add(newAudioFileView)
                         } else {
-//                            newListAudioFileView.add(AudioFileView(it))
                             newListAudioFileView.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
                         }
                     }
