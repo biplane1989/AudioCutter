@@ -46,6 +46,11 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
 
     }
 
+    override fun onPause() {
+        super.onPause()
+        audioMerModel.pause()
+    }
+
     private val playerInfoObserver = Observer<PlayerInfo> {
         audioMerAdapter.submitList(audioMerModel.updateMediaInfo(it))
     }

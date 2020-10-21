@@ -37,7 +37,7 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
-        <activity android:name=".activities.acttest.TestAct">
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

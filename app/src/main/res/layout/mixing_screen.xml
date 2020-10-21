@@ -92,14 +92,19 @@
             </RelativeLayout>
 
             <ImageView
+                android:layout_marginRight="@dimen/d_16"
                 android:id="@+id/iv_previous_mixing"
                 android:layout_width="@dimen/d_56"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_height="@dimen/d_56"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@id/rlt_play_mixing"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_previous_audio_mixing" />
+
             <ImageView
+                android:layout_marginLeft="@dimen/d_16"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:id="@+id/iv_next_mixing"
                 android:layout_width="@dimen/d_56"
                 android:layout_height="@dimen/d_56"

@@ -90,7 +90,8 @@ object AudioFileManagerImpl : AudioFileManager {
                 MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.ALBUM,
                 MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.DATE_ADDED
+                MediaStore.Audio.Media.DATE_ADDED,
+                MediaStore.Audio.Media.DURATION
             )
 
             val cursor =
@@ -108,6 +109,7 @@ object AudioFileManagerImpl : AudioFileManager {
                     val clAlbum = cursor.getColumnIndex(projection[4])
                     val clArtist = cursor.getColumnIndex(projection[5])
                     val clDateAdded = cursor.getColumnIndex(projection[6])
+                    val clDuration = cursor.getColumnIndex(projection[7])
 
 
                     cursor.moveToFirst()
@@ -139,10 +141,10 @@ object AudioFileManagerImpl : AudioFileManager {
                         }
 
 
-                        val bitRate = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_BITRATE)
-//                    val bitRate = 128
-                        val duration = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_DURATION)
-//                    val duration = 1000
+//                        val bitRate = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_BITRATE)
+                        val bitRate = 128
+//                        val duration = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_DURATION)
+                        val duration = cursor.getString(clDuration)
                         val uri = getUriFromFile(id, resolver, file)
                         Log.d(
                             "TAG",

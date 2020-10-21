@@ -49,7 +49,7 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
 
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        if (listMusic.isEmpty()) {
+        if (listMusic.isEmpty() ) {
             showEmptyView()
         }
         audioCutterAdapter.submitList(ArrayList(listMusic))
@@ -59,6 +59,10 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
         audioCutterAdapter.submitList(audioCutterModel.updateMediaInfo(it))
     }
 
+    override fun onPause() {
+        super.onPause()
+        audioCutterModel.pause()
+    }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)

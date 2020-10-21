@@ -24,15 +24,16 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     private val mPlayer1 = ManagerFactory.newAudioPlayer()
     private val mPlayer2 = ManagerFactory.newAudioPlayer()
     private var durAudio2: String = ""
-    private var durAudioMax: String = ""
     private var durAudio1: String = ""
+    private var durAudioMax: String = ""
     private val TAG = MixingScreen::class.java.name
     private var playerState = PlayerState.IDLE
     private lateinit var binding: MixingScreenBinding
     private lateinit var audioFile1: AudioFile
     private lateinit var audioFile2: AudioFile
     private var isCompare = false
-    private var pos = 0
+
+
     private val listData = mutableListOf<AudioFile>()
 
 
@@ -76,7 +77,6 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 }
                 PlayerState.PLAYING -> {
                     binding.crChangeViewMixing.setPosition(it.posision)
-                    pos = it.posision
                     binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
                     playerState = PlayerState.PLAYING
                 }
@@ -142,10 +142,6 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         binding.ivDoneMixing.setOnClickListener(this)
 
 
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
     }
 
     override fun onPause() {

@@ -54,6 +54,11 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         audioMixAdapter.submitList(audioMixModel.updateMediaInfo(it))
     }
 
+    override fun onPause() {
+        super.onPause()
+        audioMixModel.pause()
+    }
+
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
