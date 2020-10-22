@@ -327,6 +327,7 @@ object AudioFileManagerImpl : AudioFileManager {
         if (abSolutePath.contains(".")) {
             mimeType = abSolutePath.substring(abSolutePath.lastIndexOf("."), abSolutePath.length)
         }
+
         var bitrate =
             getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_BITRATE)!!.toInt()
 //        val bitrate = 128

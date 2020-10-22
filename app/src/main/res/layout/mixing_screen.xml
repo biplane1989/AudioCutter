@@ -117,6 +117,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
+            android:paddingVertical="@dimen/d_5"
             android:layout_height="@dimen/d_56"
             android:layout_above="@id/rlt_controller"
             android:layout_marginBottom="@dimen/d_10"
@@ -126,12 +127,13 @@
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:background="@drawable/bg_next_audio_enabled"
+                android:background="@drawable/bg_next_audio_disabled"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:paddingHorizontal="@dimen/d_10"
                 android:text="@string/shorted_audio_mixing"
                 android:id="@+id/shorted_tv"
-                android:textColor="@color/colorWhite" />
+                android:textColor="@color/colorgray"
+                />
 
             <TextView
                 android:gravity="center"
@@ -140,11 +142,13 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:layout_gravity="right"
-                android:background="@drawable/bg_next_audio_disabled"
+                android:background="@drawable/bg_next_audio_enabled"
+
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:paddingHorizontal="@dimen/d_10"
                 android:text="@string/longgest_audio_mixing"
-                android:textColor="@color/colorgray" />
+                android:textColor="@color/colorWhite"
+                 />
 
         </RelativeLayout>
 

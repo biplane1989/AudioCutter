@@ -22,7 +22,7 @@ import com.example.audiocutter.ui.audiochooser.mix.ChangeRangeView
 import com.example.audiocutter.util.Utils
 
 class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPlayLineChange {
-    private var isCheckClick: Int = 1
+    private var isCheckClick: Int = 2
     private val mPlayer1 = ManagerFactory.newAudioPlayer()
     private val mPlayer2 = ManagerFactory.newAudioPlayer()
     private var durAudio2: String = ""
@@ -166,7 +166,6 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                         if (playerState == PlayerState.IDLE) {
                             mPlayer1.play(audioFile1)
                             mPlayer2.play(audioFile2)
-
                         } else {
                             mPlayer2.resume()
                             mPlayer1.resume()

@@ -36,7 +36,6 @@ class ChangeRangeView @JvmOverloads constructor(
     private var duration: Int = 0
     private val mPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val mPaint2 = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val mPaint3 = Paint(Paint.ANTI_ALIAS_FLAG)
     private val mPaint4 = Paint(Paint.ANTI_ALIAS_FLAG)
     private val mPaint5 = Paint(Paint.ANTI_ALIAS_FLAG)
     private val mPaint6 = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -83,13 +82,11 @@ class ChangeRangeView @JvmOverloads constructor(
         setPaint(mPaint5, R.color.colorGraySeekbar)
         setPaint(mPaint6, R.color.colorgray)
         setPaint(mPaint4, R.color.colorBlack)
-        setPaint(mPaint3, R.color.colorBlack)
         setPaint(mPaint2, R.color.colorYelowAlpha)
         setPaint(mPaint, R.color.colorYelowDark)
         mPaint6.textSize = Utils.convertDp2Px(15, context)
         mPaint.textSize = Utils.convertDp2Px(15, context)
         mPaint2.textSize = Utils.convertDp2Px(15, context)
-        mPaint3.textSize = Utils.convertDp2Px(15, context)
         rect = Rect()
         mHeightText = Utils.convertDp2Px(20, context).toInt()
     }
@@ -215,7 +212,7 @@ class ChangeRangeView @JvmOverloads constructor(
             ratioSound1,
             x,
             y.top + RADIUS / 2.1f,
-            mPaint3
+            mPaint6
         )
     }
 
@@ -666,7 +663,6 @@ class ChangeRangeView @JvmOverloads constructor(
         endCurrentX = 0
         mCallback.changeDuration()
         invalidate()
-
     }
 
 
