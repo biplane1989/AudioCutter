@@ -16,10 +16,10 @@ import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.ResultScreenBinding
-import com.example.audiocutter.functions.contacts.screens.ListContactViewModel
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import java.text.SimpleDateFormat
+
 
 class ResultScreen : BaseFragment(), View.OnClickListener {
 
@@ -36,50 +36,55 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
     @SuppressLint("SetTextI18n")
     val processObserver = Observer<ConvertingItem> { data ->
 
-        if (data.id == ManagerFactory.getAudioEditorManager().getIDProcessingItem()) {
-            when (data.state) {
-                ConvertingState.WAITING -> {
-                    binding.tvWait.visibility = View.VISIBLE
-                    binding.llProgressbar.visibility = View.GONE
-                    binding.llPlayMusic.visibility = View.GONE
-                    binding.clOpption.visibility = View.GONE
-                }
-                ConvertingState.PROGRESSING -> {
-                    binding.tvWait.visibility = View.GONE
-                    binding.clOpption.visibility = View.GONE
-                    binding.llProgressbar.visibility = View.VISIBLE
-                    binding.llPlayMusic.visibility = View.GONE
-
-                    binding.pbLoading.progress = data.percent
-                    binding.tvLoading.text = data.percent.toString() + "%"
-                    binding.tvTitleMusic.text = data.audioFile.fileName
-
-                    if (data.audioFile.size / (1024 * 1024) > 0) {
-
-                        binding.tvInfoMusic.setText(String.format("%.1f", (data.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + data.audioFile.bitRate.toString() + "kb/s")
-                    } else {
-                        binding.tvInfoMusic.setText(((data.audioFile.size) / (1024)).toString() + " KB" + " | " + data.audioFile.bitRate.toString() + "kb/s")
+        Log.d(TAG, "id : " + data.id + " core.id : " + ManagerFactory.getAudioEditorManager()
+            .getIDProcessingItem())
+        data?.let {
+            if (it.id == ManagerFactory.getAudioEditorManager().getIDProcessingItem()) {
+                when (it.state) {
+                    ConvertingState.WAITING -> {
+                        binding.tvWait.visibility = View.VISIBLE
+                        binding.llProgressbar.visibility = View.GONE
+                        binding.llPlayMusic.visibility = View.GONE
+                        binding.clOpption.visibility = View.GONE
                     }
+                    ConvertingState.PROGRESSING -> {
+                        binding.tvWait.visibility = View.GONE
+                        binding.clOpption.visibility = View.GONE
+                        binding.llProgressbar.visibility = View.VISIBLE
+                        binding.llPlayMusic.visibility = View.GONE
 
-                    data.audioFile.bitmap?.let {
-                        binding.ivAvatarMusic.setImageBitmap(it)
+                        binding.pbLoading.progress = data.percent
+                        binding.tvLoading.text = data.percent.toString() + "%"
+                        binding.tvTitleMusic.text = data.audioFile.fileName
+
+                        if (data.audioFile.size / (1024 * 1024) > 0) {
+
+                            binding.tvInfoMusic.setText(String.format("%.1f", (data.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + data.audioFile.bitRate.toString() + "kb/s")
+                        } else {
+                            binding.tvInfoMusic.setText(((data.audioFile.size) / (1024)).toString() + " KB" + " | " + data.audioFile.bitRate.toString() + "kb/s")
+                        }
+
+                        data.audioFile.bitmap?.let {
+                            binding.ivAvatarMusic.setImageBitmap(it)
+                        }
+
                     }
-
+                    ConvertingState.SUCCESS -> {
+                        binding.tvWait.visibility = View.GONE
+                        binding.llProgressbar.visibility = View.GONE
+                        binding.llPlayMusic.visibility = View.VISIBLE
+                        binding.clOpption.visibility = View.VISIBLE
+                    }
+                    else -> {
+                    }
                 }
-                ConvertingState.SUCCESS -> {
-                    binding.tvWait.visibility = View.GONE
-                    binding.llProgressbar.visibility = View.GONE
-                    binding.llPlayMusic.visibility = View.VISIBLE
-                    binding.clOpption.visibility = View.VISIBLE
-                }
+            } else {
+                binding.tvWait.visibility = View.VISIBLE
+                binding.llProgressbar.visibility = View.GONE
+                binding.llPlayMusic.visibility = View.GONE
+                binding.clOpption.visibility = View.GONE
             }
-        } else {
-            binding.tvWait.visibility = View.VISIBLE
-            binding.llProgressbar.visibility = View.GONE
-            binding.llPlayMusic.visibility = View.GONE
-            binding.clOpption.visibility = View.GONE
         }
-
     }
 
     val playInfoObserver = Observer<PlayerInfo> { playInfo ->
@@ -90,10 +95,6 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.tvTimeLife.text = simpleDateFormat.format(playInfo.posision)
 
         playerState = playInfo.playerState
-    }
-
-    val listAudioObserver = Observer<List<ConvertingItem>> { it ->
-        Log.d(TAG, "audio size : " + it.size)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -123,6 +124,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.llShare.setOnClickListener(this)
         binding.llContact.setOnClickListener(this)
         binding.llOpenwith.setOnClickListener(this)
+        binding.backButton.setOnClickListener(this)
 
         binding.sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
@@ -161,6 +163,12 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                     }
                 }
             }
+
+            binding.backButton -> {
+                ManagerFactory.getAudioEditorManager()
+                    .cancel(ManagerFactory.getAudioEditorManager().getIDProcessingItem())
+                requireActivity().onBackPressed()
+            }
             binding.llRingtone -> {
 
             }
@@ -183,4 +191,5 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
             }
         }
     }
+
 }

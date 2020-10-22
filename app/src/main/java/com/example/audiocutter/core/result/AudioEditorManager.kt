@@ -19,5 +19,4 @@ interface AudioEditorManager {
     fun getListMixingItems(): LiveData<List<ConvertingItem>>
     fun getIDProcessingItem(): Int
     fun getConvertingItem(): ConvertingItem
-
 }

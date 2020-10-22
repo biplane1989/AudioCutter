@@ -22,14 +22,13 @@ import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterAdapter
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterScreenCallback
-import com.example.audiocutter.functions.mystudio.adapters.ItemLoadingCallBack
 import com.example.audiocutter.functions.mystudio.dialog.*
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_fragment.*
 
 
-class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, ItemLoadingCallBack {
+class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener {
 
     private lateinit var binding: MyStudioFragmentBinding
     val TAG = "giangtd"
@@ -38,21 +37,10 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     var typeAudio: Int = -1
     var isDoubleDeleteClicked = true
 
-    // observer data
-    val listAudioObserver = Observer<List<AudioFileView>> { listMusic ->
-        listMusic?.let {
-            if (!listMusic.isEmpty()) {
-                audioCutterAdapter.submitList(ArrayList(listMusic))
-            }
-        }
-    }
+    val listAudioObserver = Observer<List<AudioFileView>> { listAudio ->
 
-    val listLoadingObserver = Observer<List<AudioFileView>> { listLoading ->
-        listLoading?.let {
-            if (!listLoading.isEmpty()) {
-                audioCutterAdapter.submitList(ArrayList(listLoading))
-            } else {
-            }
+        if (!listAudio.isNullOrEmpty()) {
+            audioCutterAdapter.submitList(ArrayList(listAudio))
         }
     }
 
@@ -86,7 +74,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         }
     }
 
-
     companion object {
         val TAG = "FragmentMyStudio"
         val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
@@ -112,8 +99,8 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         audioCutterAdapter = AudioCutterAdapter(this)
 
         runOnUI {
-            myStudioViewModel.getListLoading(typeAudio)
-                .observe(this as LifecycleOwner, listLoadingObserver)
+            myStudioViewModel.getListAudioFile(typeAudio)
+                .observe(this as LifecycleOwner, listAudioObserver)
         }
     }
 
@@ -122,10 +109,9 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
         typeAudio = requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
 
-
         runOnUI {
-            val listAudioViewLiveData = myStudioViewModel.getData(typeAudio) // get data from funtion newIntance
-            listAudioViewLiveData.observe(this as LifecycleOwner, listAudioObserver)
+//            myStudioViewModel.getListAudioFile(typeAudio)
+//                .observe(this as LifecycleOwner, listAudioObserver)
 
             ManagerFactory.getAudioPlayer().getPlayerInfo()
                 .observe(this as LifecycleOwner, playerInfoObserver)
@@ -149,7 +135,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         })
     }
 
-
     override fun play(position: Int) {
         myStudioViewModel.playingAudioAndchangeStatus(position)
     }
@@ -170,7 +155,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     override fun seekTo(cusorPos: Int) {
         myStudioViewModel.seekToAudio(cusorPos)
     }
-
 
     override fun showMenu(view: View, audioFile: AudioFile) { // click item setting
         val popup = android.widget.PopupMenu(context, view)
@@ -240,7 +224,8 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         audioCutterAdapter.submitList(myStudioViewModel.showPlayingAudio(positition))
     }
 
-    override fun cancelLoading() {
+    override fun cancelLoading(id: Int) {      // cancel loading item
+        myStudioViewModel.cancelLoading(id)
         Log.d(TAG, "cancelLoading: ")
     }
 
@@ -281,7 +266,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         isDoubleDeleteClicked = true
     }
 
-
     // nhận listernner từ fragment khác truyền đến
     override fun onReceivedAction(fragmentMeta: FragmentMeta) {
         // nếu typeAudio không bằng data của fragment thoát
@@ -307,13 +291,10 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                 if (myStudioViewModel.isAllChecked()) {   // check nếu tất cả đã xóa thì ẩn nút selectall
                     cl_delete_all.visibility = View.GONE
                 }
-
                 runOnUI {
                     if (myStudioViewModel.deleteAllItemSelected(requireArguments().getInt(BUNDLE_NAME_KEY))) { // nếu delete thành công thì sẽ hiện dialog thành công
                         val dialog = DeleteSuccessfullyDialog()
                         dialog.show(childFragmentManager, DeleteSuccessfullyDialog.TAG)
-
-
                     } else {
                         Toast.makeText(context, getString(R.string.my_studio_delete_fail), Toast.LENGTH_SHORT)
                             .show()
@@ -326,7 +307,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     myStudioViewModel.stopMediaPlayerWhenTabSelect()
                 }
             }
-
             Constance.ACTION_CHECK_DELETE -> {
                 if (!myStudioViewModel.isChecked()) {
                     sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_CHECK_DELETE, false)
@@ -336,10 +316,4 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             }
         }
     }
-
-    // cancel loading item
-    override fun cancel(id: Int) {
-        Log.d(TAG, "cancel: canelllllllllll")
-    }
-
 }

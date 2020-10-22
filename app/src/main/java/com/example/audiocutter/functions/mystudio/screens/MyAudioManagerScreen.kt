@@ -26,11 +26,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     var isDeleteClicked = true
     var tabPosition = -1
     var typeAudio = -1
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_screen, container, false)
 
         arguments?.getInt("TYPE_AUDIO")?.let {
@@ -71,11 +67,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     override fun onClick(view: View) {
         when (view) {
             binding.ivDelete -> {
-                sendFragmentAction(
-                    MyStudioScreen::class.java.name,
-                    Constance.ACTION_CHECK_DELETE,
-                    tabPosition
-                )
+                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_CHECK_DELETE, tabPosition)
             }
             binding.ivClose -> {
                 cl_default.visibility = View.VISIBLE
@@ -124,11 +116,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                         isDeleteClicked = false
                     }
                 } else {
-                    Toast.makeText(
-                        context,
-                        getString(R.string.my_studio_notification_chose_item_delete),
-                        Toast.LENGTH_SHORT
-                    )
+                    Toast.makeText(context, getString(R.string.my_studio_notification_chose_item_delete), Toast.LENGTH_SHORT)
                         .show()
                 }
             }
@@ -138,11 +126,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     override fun onDeleteClick() {
         Log.d(TAG, "onDeleteClick: ")
         isDeleteClicked = true
-        sendFragmentAction(
-            MyStudioScreen::class.java.name,
-            Constance.ACTION_DELETE_ALL,
-            tabPosition
-        )
+        sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_DELETE_ALL, tabPosition)
     }
 
     override fun onCancel() {

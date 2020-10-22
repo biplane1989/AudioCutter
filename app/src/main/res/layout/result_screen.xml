@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -185,7 +186,7 @@
                 android:id="@+id/pb_loading"
                 style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                 android:layout_width="0dp"
-                android:layout_height="8dp"
+                android:layout_height="5dp"
                 android:layout_weight="0.94"
                 android:progress="30"
                 android:progressDrawable="@drawable/result_bg_progressbar" />
@@ -205,15 +206,14 @@
             android:layout_height="34dp"
             android:gravity="center"
             android:orientation="horizontal"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintTop_toBottomOf="@+id/ll_audio_item">
 
             <ImageView
                 android:id="@+id/iv_pause_play_music"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="10dp"
-                android:layout_weight="0.1"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="center"
                 android:src="@drawable/common_ic_play" />
@@ -222,31 +222,29 @@
                 android:id="@+id/sb_music"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.7"
+                android:layout_weight="1"
                 android:progressTint="#FDAA74"
                 android:thumbTint="#FDAA74" />
 
             <TextView
                 android:id="@+id/tv_time_life"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.1"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:gravity="end"
                 android:text="00:00"
                 android:textColor="#9C9C9C"
-                android:textSize="12sp" />
+                android:textSize="12dp" />
 
             <TextView
                 android:id="@+id/tv_time_total"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
-                android:layout_weight="0.1"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:text="/08:05"
                 android:textColor="#9C9C9C"
-                android:textSize="12sp" />
+                android:textSize="12dp" />
 
         </LinearLayout>
 

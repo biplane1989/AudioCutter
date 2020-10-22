@@ -79,9 +79,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 Log.d(TAG, "bindService: ")
             }
         }
+        currConvertingId++
         val item = CuttingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile, cuttingConfig)
         listConvertingItemData.add(item)
-        currConvertingId++
+
         val processingItem = getProcessingItem()
         if (processingItem == null) {
             processNextItem()
@@ -89,6 +90,11 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
         }
         listConvertingItems.postValue(listConvertingItemData)
+
+        Log.d(TAG, "currConvertingId: " + currConvertingId)
+        for (item in listConvertingItemData) {
+            Log.d(TAG, "item : " + item.id + " size: " + listConvertingItemData.size)
+        }
     }
 
     override fun mixAudio(audioFile1: AudioFile, audioFile2: AudioFile, mixingConfig: MixingConfig, outFile: AudioFile) {
@@ -101,10 +107,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 Log.d(TAG, "bindService: ")
             }
         }
-
+        currConvertingId++
         val item = MixingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, outFile, audioFile1, audioFile2, mixingConfig)
         listConvertingItemData.add(item)
-        currConvertingId++
+
         val processingItem = getProcessingItem()
         if (processingItem == null) {
             processNextItem()
@@ -124,10 +130,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 Log.d(TAG, "bindService: ")
             }
         }
-
+        currConvertingId++
         val item = MergingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, outFile, listAudioFiles, mergingConfig)
         listConvertingItemData.add(item)
-        currConvertingId++
+
         val processingItem = getProcessingItem()
         if (processingItem == null) {
             processNextItem()
@@ -135,20 +141,17 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
         }
         listConvertingItems.postValue(listConvertingItemData)
-
     }
 
     private fun processNextItem() {
         val waitingItem = getWaitingItem()
         if (waitingItem == null) {      // khi khong con item nao thi bo service di
-
-            if (mIsBound) {
+            if (isMyServiceRunning(ResultService::class.java)) {
                 Intent(mContext, ResultService::class.java).also { intent ->
                     mContext.unbindService(serviceConnection)
                 }
                 Log.d(TAG, "unbindService: ")
             }
-
         } else {
             waitingItem.state = ConvertingState.PROGRESSING
             mainScope.launch {
@@ -171,12 +174,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             item.percent = index
             notifyConvertingItemChanged(item)
         }
-        /* (0..99).forEach {
-             delay(100)
-             item.percent++
-             notifyConvertingItemChanged(item)
-         }*/
-//        listConvertingItems.postValue(listConvertingItemData)
         item.state = ConvertingState.SUCCESS
         notifyConvertingItemChanged(item)
 
@@ -184,15 +181,29 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     }
 
 
-    override fun cancel(int: Int) {
-        when (listConvertingItemData.get(int).state) {
-            ConvertingState.WAITING -> {
-                listConvertingItemData.drop(int)
-            }
-            ConvertingState.PROGRESSING -> {
-                mService?.cancelNotidication()
+    override fun cancel(id: Int) {
+        for (item in listConvertingItemData) {
+            if (item.id == id) {
+                when (item.state) {
+                    ConvertingState.WAITING -> {
+                        for (item in listConvertingItemData) {
+                            if (item.id == id) {
+                                listConvertingItemData.remove(item)
+                            }
+                        }
+                    }
+                    ConvertingState.PROGRESSING -> {
+                        for (item in listConvertingItemData) {
+                            if (item.id == id) {
+                                listConvertingItemData.remove(item)
+                            }
+                        }
+                        mService?.cancelNotidication(id)
+                    }
+                }
             }
         }
+        listConvertingItems.postValue(listConvertingItemData)
     }
 
     override fun getCurrentProcessingItem(): LiveData<ConvertingItem> { // tra ra live data cho update progressbar
@@ -236,7 +247,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     }
 
     override fun getIDProcessingItem(): Int {
-        return listConvertingItemData.size - 1
+        return currConvertingId
     }
 
     override fun getConvertingItem(): ConvertingItem {
@@ -252,4 +263,5 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         }
         return false
     }
+
 }

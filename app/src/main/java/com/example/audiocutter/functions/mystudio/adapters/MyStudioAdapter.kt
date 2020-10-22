@@ -34,7 +34,7 @@ interface AudioCutterScreenCallback {
     fun showMenu(view: View, audioFile: AudioFile)
     fun checkDeletePos(position: Int)
     fun isShowPlayingAudio(positition: Int)
-    fun cancelLoading()
+    fun cancelLoading(id: Int)
 }
 
 class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallback) : ListAdapter<AudioFileView, RecyclerView.ViewHolder>(MusicDiffCallBack()) {
@@ -42,12 +42,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     private val TAG = "giangtd"
     private var listAudios = ArrayList<AudioFileView>()
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
-
-    /*   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SuccessViewHolder {
-           val itemView = LayoutInflater.from(parent.context)
-               .inflate(R.layout.my_studio_screen_item, parent, false)
-           return SuccessViewHolder(itemView)
-       }*/
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == SUCCESS_VIEW) {
@@ -342,7 +336,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             val loadingItem = listAudios.get(adapterPosition)
             when (view.id) {
                 R.id.iv_cancel -> {
-                    audioCutterScreenCallback.cancelLoading()
+                    audioCutterScreenCallback.cancelLoading(loadingItem.id)
                     Log.d(TAG, "onClick: ")
                 }
             }
