@@ -80,13 +80,13 @@ class ChangeRangeView @JvmOverloads constructor(
     init {
 
         typeFace = Typeface.createFromAsset(context.assets, FONT_MEDIUM)
-        setPaint(mPaint5, R.color.colorAlphaGray)
+        setPaint(mPaint5, R.color.colorGraySeekbar)
+        setPaint(mPaint6, R.color.colorgray)
         setPaint(mPaint4, R.color.colorBlack)
         setPaint(mPaint3, R.color.colorBlack)
         setPaint(mPaint2, R.color.colorYelowAlpha)
         setPaint(mPaint, R.color.colorYelowDark)
-        setPaint(mPaint6, R.color.colorgrayAlpha)
-        mPaint5.textSize = Utils.convertDp2Px(15, context)
+        mPaint6.textSize = Utils.convertDp2Px(15, context)
         mPaint.textSize = Utils.convertDp2Px(15, context)
         mPaint2.textSize = Utils.convertDp2Px(15, context)
         mPaint3.textSize = Utils.convertDp2Px(15, context)
@@ -142,8 +142,8 @@ class ChangeRangeView @JvmOverloads constructor(
             currentLength2.toFloat() + RADIUS,
             (mHeight / 2 - rs) * 2 - Utils.convertDp2Px(10, context)
         )
-        canvas.drawRoundRect(rowRect1, 10f, 10f, mPaint2)
-        canvas.drawRoundRect(rowRect2, 10f, 10f, mPaint2)
+        canvas.drawRoundRect(rowRect1, 15f, 15f, mPaint2)
+        canvas.drawRoundRect(rowRect2, 15f, 15f, mPaint2)
 
         drawTextName(canvas, textName1)
         drawTextName2(canvas, textName2)
@@ -220,14 +220,18 @@ class ChangeRangeView @JvmOverloads constructor(
     }
 
     private fun drawTextName2(canvas: Canvas, nameAudio: String) {
-
+        val name: String = if (nameAudio.length > 20) {
+            "${nameAudio.substring(0, 20)}...."
+        } else {
+            nameAudio
+        }
         rectText2 = Rect()
         mPaint4.textSize = Utils.convertDp2Px(20, context)
         mPaint4.getTextBounds(nameAudio, 0, nameAudio.length, rectText2)
         mPaint4.color = context.resources.getColor(R.color.colorBlack)
         mPaint4.typeface = typeFace
         canvas.drawText(
-            nameAudio,
+            name,
             RADIUS * 2,
             rowRect2.top + rectText2.height() + RADIUS,
             mPaint4
@@ -235,13 +239,18 @@ class ChangeRangeView @JvmOverloads constructor(
     }
 
     private fun drawTextName(canvas: Canvas, nameAudio: String) {
-
+        val name: String = if (nameAudio.length > 20) {
+            "${nameAudio.substring(0, 20)}...."
+        } else {
+            nameAudio
+        }
         rectText1 = Rect()
         mPaint4.textSize = Utils.convertDp2Px(20, context)
         mPaint4.getTextBounds(nameAudio, 0, nameAudio.length, rectText1)
         mPaint4.color = context.resources.getColor(R.color.colorBlack)
         mPaint4.typeface = typeFace
-        canvas.drawText(nameAudio, RADIUS * 2, rowRect1.top + rectText1.height() + RADIUS, mPaint4)
+
+        canvas.drawText(name, RADIUS * 2, rowRect1.top + rectText1.height() + RADIUS, mPaint4)
     }
 
     private fun initLine(canvas: Canvas) {
@@ -263,42 +272,44 @@ class ChangeRangeView @JvmOverloads constructor(
             RADIUS,
             mPaint
         )
-        drawText(canvas, "00:00", 0f + RADIUS, mPaint5)
-        rs = durationAudio1 > durationAudio2
-        if (!rs) {
-            drawText(
-                canvas,
-                Utils.convertTime(durationAudio2),
-                (mWidth - RANGE - RADIUS * 2),
-                mPaint5
-            )
-            drawTextDurationMin(
-                canvas,
-                Utils.convertTime(
-                    ManagerFactory.getAudioFileManager().getInfoAudioFile(
-                        audioFile1.file, MediaMetadataRetriever.METADATA_KEY_DURATION
-                    )!!.toInt()
+        drawText(canvas, "00:00", 0f + RADIUS, mPaint6)
+        try {
+            rs = durationAudio1 > durationAudio2
+            if (!rs) {
+                drawText(
+                    canvas,
+                    Utils.convertTime(durationAudio2),
+                    (mWidth - RANGE - RADIUS * 2),
+                    mPaint6
                 )
-            )
-        } else {
-            drawText(
-                canvas,
-                Utils.convertTime(durationAudio1),
-                (mWidth - RANGE - RADIUS * 2),
-                mPaint5
-            )
-            drawTextDurationMin(
-                canvas,
-                Utils.convertTime(
-                    ManagerFactory.getAudioFileManager().getInfoAudioFile(
-                        audioFile2.file,
-                        MediaMetadataRetriever.METADATA_KEY_DURATION
-                    )!!.toInt()
+                drawTextDurationMin(
+                    canvas,
+                    Utils.convertTime(
+                        ManagerFactory.getAudioFileManager().getInfoAudioFile(
+                            audioFile1.file, MediaMetadataRetriever.METADATA_KEY_DURATION
+                        )!!.toInt()
+                    )
                 )
-            )
+            } else {
+                drawText(
+                    canvas,
+                    Utils.convertTime(durationAudio1),
+                    (mWidth - RANGE - RADIUS * 2), mPaint6
+                )
+                drawTextDurationMin(
+                    canvas,
+                    Utils.convertTime(
+                        ManagerFactory.getAudioFileManager().getInfoAudioFile(
+                            audioFile2.file,
+                            MediaMetadataRetriever.METADATA_KEY_DURATION
+                        )!!.toInt()
+                    )
+                )
+            }
+        } catch (e: NumberFormatException) {
+            e.printStackTrace()
         }
         drawText(canvas, numPos, startCurrentX.toFloat() - rect.width() / 2, mPaint)
-
 
 
     }
@@ -367,7 +378,7 @@ class ChangeRangeView @JvmOverloads constructor(
             rowRect1.width()
         }
         rect = Rect()
-        mPaint5.getTextBounds(text, 0, text.length, rect)
+        mPaint6.getTextBounds(text, 0, text.length, rect)
 
         if (textGetX < rect.width()) {
             textGetX = rect.width() + RADIUS * 2
@@ -377,7 +388,7 @@ class ChangeRangeView @JvmOverloads constructor(
             }
         canvas.drawText(
             text, textGetX,
-            rect.height().toFloat(), mPaint5
+            rect.height().toFloat(), mPaint6
         )
     }
 
@@ -665,19 +676,22 @@ class ChangeRangeView @JvmOverloads constructor(
         endCurrentX += distanceSeek.toInt()
 
 
-        if (startCurrentX > maxDistance) {
+        if (startCurrentX > maxDistance && endCurrentX > maxDistance) {
             startCurrentX = maxDistance.toInt()
-            if (endCurrentX > maxDistance) {
-                endCurrentX = maxDistance.toInt()
-            }
+            endCurrentX = maxDistance.toInt()
+            position = duration
+            numPos = Utils.longDurationMsToStringMs(position.toLong())
         } else {
             position += moreDuration
             numPos = Utils.longDurationMsToStringMs(position.toLong())
         }
-
+        if (position > duration) {
+            position = duration
+            numPos = Utils.longDurationMsToStringMs(position.toLong())
+        }
 
         mCallback.onLineChange(audioFile1, audioFile2, position)
-        Log.d(TAG, "seekNext5S: $distanceSeek  - mWidth $mWidth")
+        Log.d(TAG, "seekNext5S: $distanceSeek  - mWidth $mWidth  pos $position")
         invalidate()
     }
 
@@ -688,11 +702,12 @@ class ChangeRangeView @JvmOverloads constructor(
         if (startCurrentX <= RADIUS || endCurrentX <= RADIUS) {
             startCurrentX = RADIUS.toInt()
             endCurrentX = RADIUS.toInt()
-            return
+            Log.d(TAG, "seekPrev5S: if")
         } else {
             position -= preDuration
             numPos = Utils.longDurationMsToStringMs(position.toLong())
         }
+
 
         mCallback.onLineChange(audioFile1, audioFile2, position)
         Log.d(TAG, "seekNext5S: $distanceSeek  - mWidth $mWidth")

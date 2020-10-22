@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.example.audiocutter.R
@@ -21,6 +22,7 @@ import com.example.audiocutter.ui.audiochooser.mix.ChangeRangeView
 import com.example.audiocutter.util.Utils
 
 class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPlayLineChange {
+    private var isCheckClick: Int = 1
     private val mPlayer1 = ManagerFactory.newAudioPlayer()
     private val mPlayer2 = ManagerFactory.newAudioPlayer()
     private var durAudio2: String = ""
@@ -36,12 +38,10 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     private val listData = mutableListOf<AudioFile>()
 
-
     override fun onPostCreate(savedInstanceState: Bundle?) {
         /** setting maxdistance*/
         mPlayer1.init(requireContext())
         mPlayer2.init(requireContext())
-
         super.onPostCreate(savedInstanceState)
     }
 
@@ -91,13 +91,17 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     @SuppressLint("ClickableViewAccessibility", "InflateParams")
     private fun initViews() {
+        /** handle data receive from mixChooserScreen**/
+        //listData = ?data receive from mixChooserScreen
 //        audioFile1 = listData[0]
 //        audioFile2 = listData[1]
 
+        /**mock data handle function
+         * if change device you need change path file then run function success**/
         audioFile1 = ManagerFactory.getAudioFileManager()
-            .buildAudioFile("/storage/emulated/0/Download/Ed Sheeran - Shape Of You [Official].mp3  ")
+            .buildAudioFile("/storage/emulated/0/Download/Tướng Quân.flac ")
         audioFile2 = ManagerFactory.getAudioFileManager()
-            .buildAudioFile("/storage/emulated/0/Download/Lalala-LilKnight_3hy9.mp3")
+            .buildAudioFile("/storage/emulated/0/Downloads/facebook/IncredibleSpiderCar!\uD83D\uDE33_270_audio.aac ")
         durAudio1 = ManagerFactory.getAudioFileManager()
             .getInfoAudioFile(
                 audioFile1.file,
@@ -134,8 +138,8 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
         binding.crChangeViewMixing.mCallback = this
         binding.playIv.setOnClickListener(this)
-        binding.shortedBt.setOnClickListener(this)
-        binding.longestBt.setOnClickListener(this)
+        binding.shortedTv.setOnClickListener(this)
+        binding.longestTv.setOnClickListener(this)
         binding.ivNextMixing.setOnClickListener(this)
         binding.ivPreviousMixing.setOnClickListener(this)
         binding.ivBackMixing.setOnClickListener(this)
@@ -170,12 +174,19 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                     }
                 }
             }
-            binding.shortedBt -> {
-                checkCompareDuration(durAudio1, durAudio2)
-
+            binding.shortedTv -> {
+                if (isCheckClick == 2) {
+                    changeBackgroundTextView(binding.shortedTv, binding.longestTv)
+                    checkCompareDurationMin(durAudio1, durAudio2)
+                    isCheckClick = 1
+                }
             }
-            binding.longestBt -> {
-                checkCompareDurationMin(durAudio1, durAudio2)
+            binding.longestTv -> {
+                if (isCheckClick == 1) {
+                    changeBackgroundTextView(binding.longestTv, binding.shortedTv)
+                    checkCompareDuration(durAudio1, durAudio2)
+                    isCheckClick = 2
+                }
             }
             binding.ivNextMixing -> {
                 binding.crChangeViewMixing.seekNext5S(5000)
@@ -183,13 +194,20 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
             binding.ivPreviousMixing -> {
                 binding.crChangeViewMixing.seekPrev5S(5000)
             }
-            binding.ivBackMixing ->{
+            binding.ivBackMixing -> {
                 showToast("back frg")
             }
-            binding.ivDoneMixing->{
+            binding.ivDoneMixing -> {
                 showToast("show frg mix")
             }
         }
+    }
+
+    private fun changeBackgroundTextView(tv1: TextView, tv2: TextView) {
+        tv1.setBackgroundResource(R.drawable.bg_next_audio_enabled)
+        tv1.setTextColor(resources.getColor(R.color.colorWhite))
+        tv2.setBackgroundResource(R.drawable.bg_next_audio_disabled)
+        tv2.setTextColor(resources.getColor(R.color.colorgray))
     }
 
     private fun checkCompareDurationMin(durAudio1: String, durAudio2: String) {

@@ -214,7 +214,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         mainScope.launch {
             while (mainScope.isActive) {
                 var changed = false
-                delay(200)
+                delay(500)
                 playInfoData.duration = mPlayer.duration
                 var currentPosition = mPlayer.currentPosition
                 if (currentPosition >= mPlayer.duration) {

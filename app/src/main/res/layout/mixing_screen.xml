@@ -122,18 +122,20 @@
             android:layout_marginBottom="@dimen/d_10"
             android:paddingHorizontal="@dimen/d_16">
 
-            <Button
+            <TextView
+                android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/bg_next_audio_enabled"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:paddingHorizontal="@dimen/d_10"
                 android:text="@string/shorted_audio_mixing"
-                android:id="@+id/shorted_bt"
+                android:id="@+id/shorted_tv"
                 android:textColor="@color/colorWhite" />
 
-            <Button
-                android:id="@+id/longest_bt"
+            <TextView
+                android:gravity="center"
+                android:id="@+id/longest_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"

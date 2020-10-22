@@ -153,8 +153,9 @@ class AudiocutterAdapter(val mContext: Context) :
             val itemAudio = getItem(adapterPosition)
             when (p0.id) {
                 R.id.iv_controller_audio -> controllerAudio()
-                R.id.ln_item_audio_cutter_screen -> controllerAudio()
-                R.id.ln_menu -> showPopupMenu(itemAudio)
+                R.id.ln_item_audio_cutter_screen -> mCallBack.cutAudioFile(itemAudio)
+                R.id.ln_menu
+                -> showPopupMenu(itemAudio)
             }
         }
 
@@ -214,6 +215,7 @@ class AudiocutterAdapter(val mContext: Context) :
         fun pause(pos: Int)
         fun resume(pos: Int)
         fun showDialogSetAs(itemAudio: AudioCutterView)
+        fun cutAudioFile(pos: AudioCutterView)
     }
 }
 

@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#FDAA74</color>
     <color name="colorBlack">#000000</color>
-    <color name="colorGray">#FAFAFA</color>
+    <color name="colorGray">#F6F6F6</color>
     <color name="colorgray">#8C8C8C</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorAlpha">#00FFFFFF</color>
@@ -32,4 +32,5 @@
     <color name="dialog_advanced_ok_color">#FDAA74</color>
     <color name="dialog_advanced_text_sniper_color">#2E3041</color>
     <color name="dialog_convert_seekbar_color">#FDAA74</color>
+    <color name="colorGraySeekbar">#E0E0E0</color>
 </resources>

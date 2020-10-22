@@ -44,7 +44,8 @@ class AudioCutterModel : BaseViewModel() {
     fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(
             ManagerFactory.getAudioFileManager().findAllAudioFiles()
-        ) {
+        ) { it ->
+            Log.d(TAG, "getAllAudioFile: checkList stateLoading ${it.state}")
             if (it.state == StateLoad.LOADING) {
                 _stateLoadProgress.postValue(true)
             } else {

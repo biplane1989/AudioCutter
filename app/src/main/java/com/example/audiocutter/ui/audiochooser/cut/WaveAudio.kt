@@ -41,31 +41,26 @@ class WaveAudio @JvmOverloads constructor(
         super.onDraw(canvas)
         initRectRow()
 
-        canvas.drawTopRoundRect(
+        canvas.drawRoundRect(
             rowRect1,
-            Utils.convertDp2Px(BORDER_ROW, context), rowPain
-
+            Utils.convertDp2Px(BORDER_ROW, context),
+            Utils.convertDp2Px(BORDER_ROW, context),
+            rowPain
         )
-        canvas.drawTopRoundRect(
+        canvas.drawRoundRect(
             rowRect2,
-            Utils.convertDp2Px(BORDER_ROW, context), rowPain
+            Utils.convertDp2Px(BORDER_ROW, context),
+            Utils.convertDp2Px(BORDER_ROW, context),
+            rowPain
         )
-        canvas.drawTopRoundRect(
+        canvas.drawRoundRect(
             rowRect3,
-            Utils.convertDp2Px(BORDER_ROW, context), rowPain
+            Utils.convertDp2Px(BORDER_ROW, context),
+            Utils.convertDp2Px(BORDER_ROW, context),
+            rowPain
         )
     }
 
-    private fun Canvas.drawTopRoundRect(rect: RectF, radius: Float, paint: Paint) {
-        drawRoundRect(rect, radius, radius, paint)
-        drawRect(
-            rect.left,
-            rect.top + radius,
-            rect.right,
-            rect.bottom + radius,
-            paint
-        )
-    }
 
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {

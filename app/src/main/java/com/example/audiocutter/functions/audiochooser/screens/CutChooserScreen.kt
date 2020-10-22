@@ -26,7 +26,10 @@ import com.example.audiocutter.functions.audiochooser.dialogs.SetAsDialog
 import com.example.audiocutter.functions.audiochooser.dialogs.SetAsDoneDialog
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.objects.TypeAudioSetAs
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
     SetAsDialog.setAsListener, View.OnClickListener {
@@ -49,7 +52,9 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
 
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        if (listMusic.isEmpty() ) {
+
+        if (listMusic.isEmpty()) {
+            Log.d(TAG, "checkList: ${listMusic.size}")
             showEmptyView()
         }
         audioCutterAdapter.submitList(ArrayList(listMusic))
@@ -98,6 +103,7 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
     }
 
     private fun showProgressBar(b: Boolean) {
+        Log.d(TAG, "checkList: $b")
         if (b) {
             binding.pgrAudioCutter.visibility = View.VISIBLE
         } else {
@@ -198,7 +204,7 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
 
 
     override fun play(pos: Int) {
-        runOnUI {
+       runOnUI{
             currentPos = pos
             audioCutterModel.play(pos)
         }
@@ -222,6 +228,9 @@ class CutChooserScreen : BaseFragment(), AudiocutterAdapter.AudioCutterListener,
         dialog.show()
     }
 
+    override fun cutAudioFile(item: AudioCutterView) {
+        showToast("item ${item.audioFile.fileName}")
+    }
 
 
     override fun setAudioAs(typeAudioSetAs: TypeAudioSetAs) {

@@ -47,17 +47,17 @@ object AudioFileManagerImpl : AudioFileManager {
     private var initialized = false
     private var pathParent = ""
     private var nameTmp = ""
-
     private var _listAllAudioFile = MutableLiveData<AudioFileScans>()
+
     val listAllAudioFile: LiveData<AudioFileScans>
         get() = _listAllAudioFile
-
     private var _listAudioByType = MutableLiveData<AudioFileScans>()
+
     val listAudioByType: LiveData<AudioFileScans>
         get() = _listAudioByType
-
-
     private val audioFileObserver = AudioFileObserver(Handler())
+
+
     private var listData = mutableListOf<AudioFile>()
     private var backgroundScope = CoroutineScope(Dispatchers.Default)
 
@@ -79,6 +79,7 @@ object AudioFileManagerImpl : AudioFileManager {
 
 
     private fun scanAllFile() {
+
         backgroundScope.launch {
             _listAllAudioFile.postValue(AudioFileScans(ArrayList(), StateLoad.LOADING))
             val resolver = mContext.contentResolver
@@ -126,7 +127,10 @@ object AudioFileManagerImpl : AudioFileManager {
                         }
                         val id = cursor.getString(clID)
 //                        val bitmap = getBitmapByPath(data)
-                        val bitmap = BitmapFactory.decodeResource(mContext.resources, R.drawable.ic_play_mixing_audio)
+                        val bitmap = BitmapFactory.decodeResource(
+                            mContext.resources,
+                            R.drawable.ic_play_mixing_audio
+                        )
                         val title = cursor.getString(clTitle)
                         val album = cursor.getString(clAlbum)
                         val artist = cursor.getString(clArtist)
@@ -140,11 +144,12 @@ object AudioFileManagerImpl : AudioFileManager {
                                 cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.GENRE))
                         }
 
-
-//                        val bitRate = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_BITRATE)
-                        val bitRate = 128
-//                        val duration = getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_DURATION)
-                        val duration = cursor.getString(clDuration)
+                        val bitRate =
+                            getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_BITRATE)
+//                        val bitRate = 128
+                        val duration =
+                            getInfoAudioFile(file, MediaMetadataRetriever.METADATA_KEY_DURATION)
+//                        val duration = cursor.getString(clDuration)
                         val uri = getUriFromFile(id, resolver, file)
                         Log.d(
                             "TAG",
@@ -196,17 +201,15 @@ object AudioFileManagerImpl : AudioFileManager {
                 cursor?.close()
             }
         }
-
-
     }
 
 
-    override fun getInfoAudioFile(itemFile: File?, type: Int): String? {
+    override fun getInfoAudioFile(file: File?, type: Int): String? {
         try {
-            if (itemFile != null) {
+            if (file != null) {
                 val mediaMetadataRetriever = MediaMetadataRetriever()
-                mediaMetadataRetriever.setDataSource(itemFile.absolutePath)
 
+                mediaMetadataRetriever.setDataSource(file.absolutePath)
                 return mediaMetadataRetriever.extractMetadata(type)!!
             }
         } catch (e: Exception) {
@@ -317,6 +320,8 @@ object AudioFileManagerImpl : AudioFileManager {
         val fileAudio = File(filePath.trim())
         var mimeType = ""
         val abSolutePath = fileAudio.absolutePath.toString()
+
+
         val uri = getUriByPath(fileAudio)
         val duration = getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_DURATION)
         if (abSolutePath.contains(".")) {
@@ -325,9 +330,15 @@ object AudioFileManagerImpl : AudioFileManager {
         var bitrate =
             getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_BITRATE)!!.toInt()
 //        val bitrate = 128
+        var name = fileAudio.name
+        name = if (name.contains(".")) {
+            (name.substring(0, name.lastIndexOf(".")))
+        } else {
+            name
+        }
         return AudioFile(
             fileAudio,
-            fileAudio.name,
+            name,
             fileAudio.length(),
             bitrate,
             duration!!.toLong(),
