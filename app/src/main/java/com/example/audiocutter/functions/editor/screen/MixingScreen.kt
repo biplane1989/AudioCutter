@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.navArgs
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
@@ -34,7 +35,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     private lateinit var audioFile1: AudioFile
     private lateinit var audioFile2: AudioFile
     private var isCompare = false
-
+    private val safeArg: MixingScreenArgs by navArgs()
 
     private val listData = mutableListOf<AudioFile>()
 
@@ -58,8 +59,6 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//                mPlayer1.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
-
         mPlayer2.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
         mPlayer1.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
 
@@ -91,17 +90,11 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     @SuppressLint("ClickableViewAccessibility", "InflateParams")
     private fun initViews() {
-        /** handle data receive from mixChooserScreen**/
-        //listData = ?data receive from mixChooserScreen
-//        audioFile1 = listData[0]
-//        audioFile2 = listData[1]
 
-        /**mock data handle function
-         * if change device you need change path file then run function success**/
         audioFile1 = ManagerFactory.getAudioFileManager()
-            .buildAudioFile("/storage/emulated/0/Download/Tướng Quân.flac ")
+            .buildAudioFile(safeArg.pathAudio1)
         audioFile2 = ManagerFactory.getAudioFileManager()
-            .buildAudioFile("/storage/emulated/0/Downloads/facebook/IncredibleSpiderCar!\uD83D\uDE33_270_audio.aac ")
+            .buildAudioFile(safeArg.pathAudio2)
         durAudio1 = ManagerFactory.getAudioFileManager()
             .getInfoAudioFile(
                 audioFile1.file,

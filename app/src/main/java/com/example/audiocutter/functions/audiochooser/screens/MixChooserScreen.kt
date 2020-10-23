@@ -40,8 +40,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         }
     }
 
-    var isChangeList = true
-
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
         if (listMusic.isEmpty()) {
             showEmptyView()
@@ -255,9 +253,12 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
     private fun handleAudiofile() {
         val listItemHandle = audioMixModel.getListItemChoose()
-        listItemHandle.forEach {
-            Log.d(TAG, "handleAudiofile: ${it.audioFile.fileName}")
+        if(listItemHandle.size == 2){
+            viewStateManager.mixingOnSelected(this, listItemHandle[0].audioFile, listItemHandle[1].audioFile)
         }
+       /* listItemHandle.forEach {
+            Log.d(TAG, "handleAudiofile: ${it.audioFile.fileName}")
+        }*/
 
 
         /**place handle listItem choose*/
