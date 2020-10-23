@@ -28,7 +28,7 @@ class ResultTestActivity : AppCompatActivity() {
 
     val TAG = "giangtd"
     val file = File(Environment.getExternalStorageDirectory()
-        .toString() + "/Download/doihoamattroi.mp3")
+        .toString() + "/Music/lonely.mp3")
     val audioFile = AudioFile(file, "T o m a t o", 100000, 128, uri = Uri.parse(file.absolutePath))
 
     //    val audioFile = ManagerFactory.getAudioFileManager().buildAudioFile(file.absolutePath)

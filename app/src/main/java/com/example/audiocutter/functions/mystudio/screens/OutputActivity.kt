@@ -3,20 +3,23 @@ package com.example.audiocutter.functions.mystudio.screens
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.example.audiocutter.R
+import com.example.audiocutter.base.BaseActivity
+import com.example.audiocutter.databinding.ActivityMainBinding
+import com.example.audiocutter.databinding.ActivityOutputScreenBinding
 import com.example.audiocutter.functions.mystudio.Constance
 
 
-class OutputActivity : AppCompatActivity() {
+class OutputActivity : BaseActivity() {
 
     val TAG = "giangtd"
     var typeAudio = -1
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_output_screen)
-
+    lateinit var binding: ActivityOutputScreenBinding
+    override fun createView(savedInstanceState: Bundle?) {
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_output_screen)
         val intent = getIntent()
 
         if (intent?.action == Constance.NOTIFICATION_ACTION_EDITOR) {
