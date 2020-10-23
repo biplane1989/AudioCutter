@@ -66,7 +66,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         cuttingViewModel = ViewModelProvider(this).get(CuttingViewModel::class.java)
-        audioPath = requireArguments().getString(Utils.KEY_SEND_PATH)!!
+        audioPath = safeArg.pathAudio
         cuttingViewModel.restore(audioPath)
     }
 
@@ -96,6 +96,11 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
         ratioVolume()
     }
 
+    override fun onPause() {
+        super.onPause()
+        cuttingViewModel.pauseAudio()
+    }
+
     private fun initView() {
         mEditView = binding.waveEditView
 
@@ -103,14 +108,6 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
             setListener(this@CuttingEditorScreen)
             setDataSource(audioPath)
         }
-        var layoutParams1 = LinearLayout.LayoutParams(
-            Utils.getWidthText(context = requireContext()).toInt(),
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        layoutParams1.gravity = Gravity.CENTER
-        binding.startTimeTv.apply { layoutParams = layoutParams1 }
-        binding.endTimeTv.apply { layoutParams = layoutParams1 }
-
         cuttingViewModel.getAudioPlayerInfo().observe(viewLifecycleOwner, observerAudio())
     }
 
@@ -165,6 +162,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
         binding.preIv.setOnClickListener(this)
         binding.nextIv.setOnClickListener(this)
         binding.playRl.setOnClickListener(this)
+        binding.closeIv.setOnClickListener(this)
 
         binding.increaseStartTimeIv.setOnLongClickListener(this)
         binding.reductionStartTimeIv.setOnLongClickListener(this)
@@ -175,8 +173,16 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
 
 
     override fun onStartTimeChanged(startTimeMs: Long) {
-        binding.startTimeTv.text =
-            Utils.longDurationMsToStringMs(startTimeMs)
+        val startTimeStr = Utils.longDurationMsToStringMs(startTimeMs)
+        val textWidth = binding.startTimeTv.paint.measureText(startTimeStr)
+        if (binding.startTimeTv.width < textWidth) {
+            val layoutParams = binding.startTimeTv.layoutParams
+            layoutParams.width = binding.startTimeTv.paint.measureText("a${startTimeStr}").toInt()
+            binding.startTimeTv.gravity = Gravity.CENTER_HORIZONTAL
+            binding.startTimeTv.layoutParams = layoutParams
+        }
+        binding.startTimeTv.text = startTimeStr
+
         cuttingViewModel.changeStartPos(startTimeMs.toInt())
         if (cuttingViewModel.getCuttingCurrPos() < startTimeMs) {
             mEditView.setPlayPositionMs(startTimeMs.toInt(), true)
@@ -184,6 +190,14 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
     }
 
     override fun onEndTimeChanged(endTimeMs: Long) {
+        val endTimeStr = Utils.longDurationMsToStringMs(endTimeMs)
+        val textWidth = binding.endTimeTv.paint.measureText(endTimeStr)
+        if (binding.endTimeTv.width < textWidth) {
+            val layoutParams = binding.endTimeTv.layoutParams
+            layoutParams.width = binding.endTimeTv.paint.measureText("a${endTimeStr}").toInt()
+            binding.endTimeTv.gravity = Gravity.CENTER_HORIZONTAL
+            binding.endTimeTv.layoutParams = layoutParams
+        }
         binding.endTimeTv.text = Utils.longDurationMsToStringMs(endTimeMs)
         cuttingViewModel.changeEndPos(endTimeMs.toInt())
         if (cuttingViewModel.getCuttingCurrPos() >= cuttingViewModel.getCuttingEndPos()) {
@@ -243,7 +257,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
     override fun onClick(v: View?) {
         when (v) {
             binding.closeIv -> {
-
+                activity?.onBackPressed()
             }
             binding.optionIv -> {
                 DialogAdvanced.showDialogAdvanced(requireContext(), this)

@@ -24,6 +24,7 @@ class AudioCutterModel : BaseViewModel() {
     private var mListAudio = ArrayList<AudioCutterView>()
     private var mListAudioSearch = ArrayList<AudioCutterView>()
     var duration: Long? = 0L
+    var audioPlayer = ManagerFactory.getAudioPlayer()
     private lateinit var mcallBack: OnActionCallback
 
     private var _stateLoadProgress = MutableLiveData<Boolean>()
@@ -64,15 +65,18 @@ class AudioCutterModel : BaseViewModel() {
 
     suspend fun play(pos: Int) {
         val audioItem = mListAudio[pos]
-        ManagerFactory.getAudioPlayer().play(audioItem.audioFile)
+        audioPlayer.play(audioItem.audioFile)
     }
 
     fun pause() {
-        ManagerFactory.getAudioPlayer().pause()
+        if(audioPlayer.getPlayerInfoData().playerState == PlayerState.PLAYING){
+            audioPlayer.pause()
+        }
+
     }
 
     fun resume() {
-        ManagerFactory.getAudioPlayer().resume()
+        audioPlayer.resume()
     }
 
 

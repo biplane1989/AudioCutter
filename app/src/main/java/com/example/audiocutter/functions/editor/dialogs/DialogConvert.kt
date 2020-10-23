@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentManager
 import com.example.audiocutter.R
 import com.example.audiocutter.activities.acttest.CoreTestActivity
 import com.example.audiocutter.base.BaseDialog
+import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
 import com.example.audiocutter.util.PreferencesHelper
@@ -50,7 +51,7 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
             audioFile: AudioFile
         ) {
             val bundle = Bundle()
-            //bundle.putSerializable(Utils.KEY_SEND_AUDIO, audioFile)
+            bundle.putString(Utils.KEY_SEND_AUDIO, audioFile.file.absolutePath)
             val dialogConvert =
                 DialogConvert()
             dialogConvert.arguments = bundle
@@ -98,7 +99,8 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
     }
 
     private fun getData() {
-        audioFile = arguments?.getSerializable(Utils.KEY_SEND_AUDIO) as AudioFile
+        audioFile = ManagerFactory.getAudioFileManager()
+            .buildAudioFile(requireArguments().getString(Utils.KEY_SEND_AUDIO)!!)
         AudioFormat.values().forEach { listFormat.add(it.name) }
         BitRate.values().forEach { listBitrate.add(it.name.replaceFirstCharacter()) }
         positionFormat =

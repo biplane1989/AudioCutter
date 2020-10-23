@@ -15,9 +15,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.*
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
@@ -64,8 +62,16 @@ class ListSelectAudioScreen() : BaseFragment(),
                     val fileName = safeArg.uri            // tam thoi comment
 //
                     if (fileName != null) {
-                        mListSelectAdapter.submitList(mListSelectAudioViewModel.setSelectRingtone(fileName))
-                        rv_list_select_audio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))
+                        mListSelectAdapter.submitList(
+                            mListSelectAudioViewModel.setSelectRingtone(
+                                fileName
+                            )
+                        )
+                        rv_list_select_audio.scrollToPosition(
+                            mListSelectAudioViewModel.getIndexSelectRingtone(
+                                fileName
+                            )
+                        )
                     }
                 }
             }
@@ -88,8 +94,13 @@ class ListSelectAudioScreen() : BaseFragment(),
         rv_list_select_audio.adapter = mListSelectAdapter
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.list_contact_select_screen, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding =
+            DataBindingUtil.inflate(inflater, R.layout.list_contact_select_screen, container, false)
         listSelectAudio?.observe(this.viewLifecycleOwner, listAudioObserver)
         return binding.root
     }
@@ -106,10 +117,12 @@ class ListSelectAudioScreen() : BaseFragment(),
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
         isLoading = true
         runOnUI {
-            listSelectAudio = mListSelectAudioViewModel.getData() // get data from funtion newIntance
+            listSelectAudio =
+                mListSelectAudioViewModel.getData() // get data from funtion newIntance
             listSelectAudio?.observe(this.viewLifecycleOwner, listAudioObserver)
             isLoading = false
-            currentView?.findViewById<ProgressBar>(R.id.pb_select)?.visibility = View.GONE    // tai day ham onCreateView da chay xong r do runOnUI
+            currentView?.findViewById<ProgressBar>(R.id.pb_select)?.visibility =
+                View.GONE    // tai day ham onCreateView da chay xong r do runOnUI
 
         }
     }
@@ -138,7 +151,12 @@ class ListSelectAudioScreen() : BaseFragment(),
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
 
-            override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
+            override fun onTextChanged(
+                textChange: CharSequence,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
                 if (mListSelectAudioViewModel.searchAudioFile(textChange.toString()).size <= 0) {
                     cl_select.visibility = View.GONE
                     cl_bottom.visibility = View.GONE
@@ -147,7 +165,11 @@ class ListSelectAudioScreen() : BaseFragment(),
                     cl_select.visibility = View.VISIBLE
                     cl_bottom.visibility = View.VISIBLE
                     cl_no_audio.visibility = View.GONE
-                    mListSelectAdapter.submitList(mListSelectAudioViewModel.searchAudioFile(textChange.toString()))
+                    mListSelectAdapter.submitList(
+                        mListSelectAudioViewModel.searchAudioFile(
+                            textChange.toString()
+                        )
+                    )
                 }
             }
         })
@@ -225,7 +247,10 @@ class ListSelectAudioScreen() : BaseFragment(),
                 intent.type = "audio/*"
 //                intent.type = "audio/mp3"
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                startActivityForResult(Intent.createChooser(intent, "Select a File "), REQ_CODE_PICK_SOUNDFILE)
+                startActivityForResult(
+                    Intent.createChooser(intent, "Select a File "),
+                    REQ_CODE_PICK_SOUNDFILE
+                )
 
             }
             binding.backButton -> {
