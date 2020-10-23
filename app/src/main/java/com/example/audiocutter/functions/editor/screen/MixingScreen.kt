@@ -59,7 +59,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mPlayer2.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
+        //mPlayer2.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
         mPlayer1.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
 
     }
