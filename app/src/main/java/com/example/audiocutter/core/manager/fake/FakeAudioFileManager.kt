@@ -39,12 +39,16 @@ class FakeAudioFileManager : AudioFileManager {
         listAudioFile = ArrayList<AudioFile>()
         listAudioFile.add(AudioFile(file1, "file_name1", 10000, 128, uri = Uri.parse(file1.absolutePath)))
         listAudioFile.add(AudioFile(file2, "file_name2", 10000, 128, uri = Uri.parse(file2.absolutePath)))
+        listAudioFile.add(AudioFile(file2, "file_name2", 10000, 128, uri = Uri.parse(file2.absolutePath)))
+        listAudioFile.add(AudioFile(file2, "file_name2", 10000, 128, uri = Uri.parse(file2.absolutePath)))
         val audioFileScans = AudioFileScans(listAudioFile, StateLoad.LOADDONE)
         audioFileLiveData.postValue(audioFileScans)
 
         listAudioFile1 = ArrayList<AudioFile>()
-//        listAudioFile1.add(AudioFile(file3, "file_name3", 10000, 128,uri =  Uri.parse(file3.absolutePath)))
-//        listAudioFile1.add(AudioFile(file4, "file_name4", 10000, 128,uri =  Uri.parse(file4.absolutePath)))
+        listAudioFile1.add(AudioFile(file3, "file_name3", 10000, 128, uri = Uri.parse(file3.absolutePath)))
+        listAudioFile1.add(AudioFile(file4, "file_name4", 10000, 128, uri = Uri.parse(file4.absolutePath)))
+        listAudioFile1.add(AudioFile(file4, "file_name4", 10000, 128, uri = Uri.parse(file4.absolutePath)))
+        listAudioFile1.add(AudioFile(file4, "file_name4", 10000, 128, uri = Uri.parse(file4.absolutePath)))
         val audioFileScans1 = AudioFileScans(listAudioFile1, StateLoad.LOADDONE)
         audioFileLiveData1.postValue(audioFileScans1)
 

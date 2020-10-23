@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
                 android:fontFamily="@font/sanfranciscodisplay_regular"
-                android:text="No finished task"
+                android:text="@string/my_studio_no_finished_task"
                 android:textColor="#9C9C9C"
                 android:textSize="14sp" />
 

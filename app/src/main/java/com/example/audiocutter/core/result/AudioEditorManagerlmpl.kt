@@ -162,13 +162,11 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
     private fun notifyConvertingItemChanged(item: ConvertingItem?) {
         currentProcessingItem.postValue(item)
-//        listConvertingItems.postValue(listConvertingItemData)
     }
 
     private suspend fun processItem(item: ConvertingItem) = withContext(Dispatchers.Default) {
         item.percent = 0
         notifyConvertingItemChanged(item)
-//        listConvertingItems.postValue(listConvertingItemData)
         for (index in 0..100) {
             delay(100)
             item.percent = index
@@ -177,9 +175,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         item.state = ConvertingState.SUCCESS
         notifyConvertingItemChanged(item)
 
+        listConvertingItemData.remove(item)                             // demo dong bo data voi luu tru thu muc
+        listConvertingItems.postValue(listConvertingItemData)
         processNextItem()
     }
-
 
     override fun cancel(id: Int) {
         for (item in listConvertingItemData) {
@@ -263,5 +262,4 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         }
         return false
     }
-
 }

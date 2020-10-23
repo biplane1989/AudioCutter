@@ -39,7 +39,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
     val listAudioObserver = Observer<List<AudioFileView>> { listAudio ->
 
-        if (!listAudio.isNullOrEmpty()) {
+        listAudio?.let {
             audioCutterAdapter.submitList(ArrayList(listAudio))
         }
     }
@@ -89,8 +89,8 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     fun init() {
-        rv_list_audio_cutter.layoutManager = LinearLayoutManager(context)
-        rv_list_audio_cutter.adapter = audioCutterAdapter
+        binding.rvListAudioCutter.layoutManager = LinearLayoutManager(context)
+        binding.rvListAudioCutter.adapter = audioCutterAdapter
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -129,7 +129,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
-        iv_check.setOnClickListener(View.OnClickListener {
+        binding.ivCheck.setOnClickListener(View.OnClickListener {
             audioCutterAdapter.submitList(myStudioViewModel.clickSelectAllBtn())
             checkAllItemSelected()
         })
@@ -144,7 +144,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     override fun resume(position: Int) {
-
         myStudioViewModel.resumeAudioAndChangeStatus(position)
     }
 

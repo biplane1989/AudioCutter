@@ -36,8 +36,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
     @SuppressLint("SetTextI18n")
     val processObserver = Observer<ConvertingItem> { data ->
 
-        Log.d(TAG, "id : " + data.id + " core.id : " + ManagerFactory.getAudioEditorManager()
-            .getIDProcessingItem())
+//        Log.d(TAG, "id : " + data.id + " core.id : " + ManagerFactory.getAudioEditorManager()
+//            .getIDProcessingItem())
         data?.let {
             if (it.id == ManagerFactory.getAudioEditorManager().getIDProcessingItem()) {
                 when (it.state) {

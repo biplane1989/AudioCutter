@@ -29,9 +29,7 @@ interface SelectAudioScreenCallback {
     fun isSelect(position: Int)
 }
 
-class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback) : ListAdapter<SelectItemView, ListSelectAdapter.ViewHolder>(
-    SelectAudioDiffCallBack()
-) {
+class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback) : ListAdapter<SelectItemView, ListSelectAdapter.ViewHolder>(SelectAudioDiffCallBack()) {
     private val TAG = "giangtd"
     private var listAudios = ArrayList<SelectItemView>()
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
@@ -54,12 +52,10 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         } else {
             val newItem = payloads.firstOrNull() as SelectItemView
             val selectItemView = getItem(position)
-            holder.tvTotal.text = "/" + simpleDateFormat.format(selectItemView.selectItemStatus.duration)
+//            holder.tvTotal.text = "/" + simpleDateFormat.format(selectItemView.selectItemStatus.duration)
             holder.sbMusic.max = selectItemView.selectItemStatus.duration
             holder.tvTimeLife.text = simpleDateFormat.format(selectItemView.selectItemStatus.currPos)
             holder.sbMusic.progress = selectItemView.selectItemStatus.currPos
-
-//            holder.tvTotal.text = "/" + selectItemView.audioFile.time.toString()
 
             when (newItem.selectItemStatus.playerState) {
                 PlayerState.PLAYING -> {
@@ -141,7 +137,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
             if (selectItemView.isRingtoneDefault) {
                 cvCarview.visibility = View.VISIBLE
-            }else{
+            } else {
                 cvCarview.visibility = View.GONE
             }
 
@@ -156,12 +152,12 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 PlayerState.IDLE -> {
                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
                     tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
-                    tvTotal.text = Constance.TIME_TOTAL_DEFAULT
+//                    tvTotal.text = Constance.TIME_TOTAL_DEFAULT
                     sbMusic.progress = 0
                 }
             }
 
-            tvTotal.text = "/" + simpleDateFormat.format(selectItemView.selectItemStatus.duration)
+//            tvTotal.text = "/" + simpleDateFormat.format(selectItemView.selectItemStatus.duration)
 
             sbMusic.max = selectItemView.selectItemStatus.duration
             tvTimeLife.text = simpleDateFormat.format(selectItemView.selectItemStatus.currPos)
@@ -191,6 +187,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 R.id.ll_audio_item_header -> {
                     selectAudioScreenCallback.isShowPlayingAudio(adapterPosition)
                     selectAudioScreenCallback.isSelect(adapterPosition)
+                    tvTotal.text = "/" + simpleDateFormat.format(audioFileView.duration.toInt())
                 }
                 R.id.iv_pause_play_music -> {
 

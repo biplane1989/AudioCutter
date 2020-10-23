@@ -85,4 +85,5 @@
     <string name="storage_permission_to_convert_files_please_allow_mp3_cutter_to_access_files_on_your_device">To convert files, please allow MP3 Cutter to access files on your device.</string>
     <string name="storage_permission_allow">ALLOW</string>
     <string name="contact_permission_to_set_ringtone_we_need_the_permission_to_access_your_contacts">To set ringtone, we need the permission to access your contacts.</string>
+    <string name="my_studio_no_finished_task">No finished task</string>
 </resources>

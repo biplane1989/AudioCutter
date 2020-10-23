@@ -1,6 +1,8 @@
 package com.example.audiocutter.functions.contacts.screens
 
 import android.app.Application
+import android.media.MediaMetadata
+import android.media.MediaMetadataRetriever
 import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -10,6 +12,7 @@ import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
+import com.example.audiocutter.functions.contacts.objects.SelectItemStatus
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.util.Utils
 
@@ -27,21 +30,32 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
             Log.d("nmcode", "live data size: " + listAudio.listAudioFiles.size)
             // lan dau tien lay du lieu
             if (mListAudioFileView.size == 0) {
-                listAudio.listAudioFiles.forEach {
-                    mListAudioFileView.add(SelectItemView(it))
-                }
-                mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
+
+                    listAudio.listAudioFiles.forEach { audioFile ->
+                        val duration = ManagerFactory.getAudioFileManager()
+                            .getInfoAudioFile(audioFile.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
+                        duration?.let {
+                            mListAudioFileView.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false, duration))
+                        }
+                    }
+                    mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
+
 //                mListAudioFileView
 
             } else { // khi thay doi du lieu update
                 // dong bo hoa du lieu list cu va moi
                 val newListSelectItemView = ArrayList<SelectItemView>()
-                listAudio.listAudioFiles.forEach {
-                    val audioFileView = getAudioFileView(it.file.absolutePath)
+                listAudio.listAudioFiles.forEach {audioFile ->
+                    val audioFileView = getAudioFileView(audioFile.file.absolutePath)
                     if (audioFileView != null) {
                         newListSelectItemView.add(audioFileView)
                     } else {
-                        newListSelectItemView.add(SelectItemView(it))
+                        val duration = ManagerFactory.getAudioFileManager()
+                            .getInfoAudioFile(audioFile.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
+                        duration?.let {
+                            newListSelectItemView.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false, duration))
+                        }
+//                        newListSelectItemView.add(SelectItemView(audioFile))
                     }
                 }
 

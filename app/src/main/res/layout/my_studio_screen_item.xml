@@ -108,27 +108,26 @@
 
         <ImageView
             android:id="@+id/iv_pause_play_music"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
-            android:layout_weight="0.1"
             android:background="?attr/selectableItemBackgroundBorderless"
+
+            android:scaleType="centerInside"
             android:src="@drawable/my_studio_item_icon_play" />
 
         <androidx.appcompat.widget.AppCompatSeekBar
             android:id="@+id/sb_music"
             android:layout_width="0dp"
-            android:thumbTint="#FDAA74"
-           android:progressTint="#FDAA74"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.6"
-          />
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:progressTint="#FDAA74"
+            android:thumbTint="#FDAA74" />
 
         <TextView
             android:id="@+id/tv_time_life"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.1"
             android:fontFamily="@font/sanfranciscodisplay_medium"
             android:gravity="end"
             android:text="00:00"
@@ -137,10 +136,9 @@
 
         <TextView
             android:id="@+id/tv_time_total"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
-            android:layout_weight="0.1"
             android:fontFamily="@font/sanfranciscodisplay_medium"
             android:text="/08:05"
             android:textColor="#9C9C9C"
