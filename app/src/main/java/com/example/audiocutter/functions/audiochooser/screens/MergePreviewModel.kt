@@ -3,7 +3,7 @@ package com.example.audiocutter.functions.audiochooser.screens
 
 import android.util.Log
 import com.example.audiocutter.base.BaseViewModel
-import com.example.audiocutter.core.ManagerFactory
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView

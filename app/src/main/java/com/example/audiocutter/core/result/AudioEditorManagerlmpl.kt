@@ -7,14 +7,16 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.core.manager.AudioEditorManager
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.resultscreen.objects.*
 import com.example.audiocutter.functions.resultscreen.services.ResultService
 import com.example.audiocutter.objects.AudioFile
+import com.example.core.core.AudioCore
 import kotlinx.coroutines.*
 import java.io.File
 
@@ -25,6 +27,9 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     val TAG = "giangtd"
     fun init(context: Context) {
         mContext = context
+        ManagerFactory.getAudioCutter().getAudioMergingInfo().observeForever {
+            Log.e(TAG, "init: ${it.percent}")
+        }
     }
 
     val CUT_AUDIO = 0
@@ -165,6 +170,13 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     }
 
     private suspend fun processItem(item: ConvertingItem) = withContext(Dispatchers.Default) {
+        if (item is MergingConvertingItem){
+            var listAudioCore= ArrayList<AudioCore>()
+            item.listAudioFiles.forEach {
+                listAudioCore.add(AudioCore(it.file,it.fileName,it.size,it.bitRate,it.time,it.mimeType))
+            }
+            ManagerFactory.getAudioCutter().merge(listAudioCore,item.audioFile.fileName,item.mergingConfig.audioFormat,item.audioFile.file.parent)
+        }
         item.percent = 0
         notifyConvertingItemChanged(item)
         for (index in 0..100) {

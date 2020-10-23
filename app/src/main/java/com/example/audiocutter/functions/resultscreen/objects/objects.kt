@@ -1,12 +1,13 @@
 package com.example.audiocutter.functions.resultscreen.objects
 
 import com.example.audiocutter.objects.AudioFile
+import com.example.core.core.AudioFormat
 
 data class CuttingConfig(val a: Int)
 
 data class MixingConfig(val a: Int)
 
-data class MergingConfig(val a: Int)
+data class MergingConfig(val audioFormat:AudioFormat)
 
 enum class ConvertingState {
     WAITING, PROGRESSING, SUCCESS, ERROR

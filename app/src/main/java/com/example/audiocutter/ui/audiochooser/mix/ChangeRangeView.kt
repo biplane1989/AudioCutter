@@ -8,7 +8,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import com.example.audiocutter.R
-import com.example.audiocutter.core.ManagerFactory
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
 

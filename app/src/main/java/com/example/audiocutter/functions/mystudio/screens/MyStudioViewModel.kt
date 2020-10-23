@@ -1,13 +1,10 @@
 package com.example.audiocutter.functions.mystudio.screens
 
-import android.media.MediaMetadataRetriever
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseViewModel
-import com.example.audiocutter.core.ManagerFactory
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
@@ -19,8 +16,6 @@ import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
-import com.example.audiocutter.objects.StateLoad
-import java.io.File
 
 class MyStudioViewModel : BaseViewModel() {
 

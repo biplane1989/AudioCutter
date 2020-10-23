@@ -13,8 +13,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.example.audiocutter.R
+import com.example.audiocutter.activities.acttest.ResultTestActivity
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.core.ManagerFactory
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.MixingScreenBinding
@@ -190,7 +191,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 showToast("back frg")
             }
             binding.ivDoneMixing -> {
-                showToast("show frg mix")
+                ResultTestActivity.startActivity(requireContext(), audioFile1.file.absolutePath, audioFile2.file.absolutePath)
             }
         }
     }

@@ -9,9 +9,8 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.util.Log
-import com.example.audiocutter.core.manager.ContactManagerImpl
+import com.example.audiocutter.core.manager.RingtonManager
 import com.example.audiocutter.objects.AudioFile
-import com.example.audiocutter.objects.ContactItem
 import java.io.File
 
 object RingtonManagerImpl : RingtonManager {

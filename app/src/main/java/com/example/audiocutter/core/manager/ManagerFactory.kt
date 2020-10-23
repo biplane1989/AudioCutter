@@ -1,17 +1,10 @@
-package com.example.audiocutter.core
+package com.example.audiocutter.core.manager
 
 import android.content.Context
 import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.audioplayer.AudioPlayerImpl
-import com.example.audiocutter.core.manager.AudioFileManager
-import com.example.audiocutter.core.manager.AudioPlayer
-import com.example.audiocutter.core.manager.ContactManager
-import com.example.audiocutter.core.manager.ContactManagerImpl
-import com.example.audiocutter.core.manager.fake.FakeAudioCutter
-import com.example.audiocutter.core.manager.fake.FakeAudioFileManager
-import com.example.audiocutter.core.result.AudioEditorManager
+import com.example.audiocutter.core.contact.ContactManagerImpl
 import com.example.audiocutter.core.result.AudioEditorManagerlmpl
-import com.example.audiocutter.core.rington.RingtonManager
 import com.example.audiocutter.core.rington.RingtonManagerImpl
 import com.example.core.core.AudioCutter
 import com.example.core.core.AudioCutterImpl
@@ -65,5 +58,6 @@ object ManagerFactory {
     fun getAudioEditorManager(): AudioEditorManager {
         return AudioEditorManagerlmpl
     }
+
 
 }

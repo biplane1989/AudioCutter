@@ -1,4 +1,4 @@
-package com.example.audiocutter.core.result
+package com.example.audiocutter.core.manager
 
 import androidx.lifecycle.LiveData
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem

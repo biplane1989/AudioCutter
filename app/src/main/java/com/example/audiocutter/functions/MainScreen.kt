@@ -10,7 +10,7 @@ import androidx.lifecycle.Observer
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.core.ManagerFactory
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MainScreenBinding
 import com.example.audiocutter.functions.common.ContactPermissionDialog
 import com.example.audiocutter.functions.common.StoragePermissionDialog

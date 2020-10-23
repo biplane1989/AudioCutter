@@ -1,4 +1,4 @@
-package com.example.audiocutter.core.rington
+package com.example.audiocutter.core.manager
 
 import android.content.Context
 import android.net.Uri

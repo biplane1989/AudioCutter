@@ -1,4 +1,4 @@
-package com.example.audiocutter.core.manager
+package com.example.audiocutter.core.contact
 
 import android.content.Context
 import android.database.ContentObserver
@@ -12,7 +12,8 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.audiocutter.core.ManagerFactory
+import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.core.manager.ContactManager
 import com.example.audiocutter.functions.contacts.objects.GetContactResult
 import com.example.audiocutter.objects.ContactItem
 import kotlinx.coroutines.*

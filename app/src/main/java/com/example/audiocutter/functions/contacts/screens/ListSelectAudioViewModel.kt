@@ -1,7 +1,6 @@
 package com.example.audiocutter.functions.contacts.screens
 
 import android.app.Application
-import android.media.MediaMetadata
 import android.media.MediaMetadataRetriever
 import android.text.TextUtils
 import android.util.Log
@@ -9,7 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseAndroidViewModel
-import com.example.audiocutter.core.ManagerFactory
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.contacts.objects.SelectItemStatus
