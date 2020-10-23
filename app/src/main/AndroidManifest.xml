@@ -27,11 +27,11 @@
         <activity android:name=".functions.mystudio.screens.OutputActivity" />
         <activity android:name=".activities.acttest.ResultTest2" />
         <activity android:name=".activities.acttest.ResultTestActivity">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity android:name=".activities.acttest.CutActivity" />
 
@@ -47,10 +47,10 @@
 
         <activity android:name=".activities.MainActivity">
 
-             <intent-filter>
-             <action android:name="android.intent.action.MAIN" />
-             <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
+<!--             <intent-filter>-->
+<!--             <action android:name="android.intent.action.MAIN" />-->
+<!--             <category android:name="android.intent.category.LAUNCHER" />-->
+<!--             </intent-filter>-->
         </activity>
 
         <service android:name=".functions.resultscreen.services.ResultService" />

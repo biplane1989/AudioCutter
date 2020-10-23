@@ -46,8 +46,12 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                         binding.llProgressbar.visibility = View.GONE
                         binding.llPlayMusic.visibility = View.GONE
                         binding.clOpption.visibility = View.GONE
+                        binding.btnBack.visibility = View.GONE
+                        binding.ivHome.visibility = View.GONE
                     }
                     ConvertingState.PROGRESSING -> {
+                        binding.btnBack.visibility = View.GONE
+                        binding.ivHome.visibility = View.GONE
                         binding.tvWait.visibility = View.GONE
                         binding.clOpption.visibility = View.GONE
                         binding.llProgressbar.visibility = View.VISIBLE
@@ -56,13 +60,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                         binding.pbLoading.progress = data.percent
                         binding.tvLoading.text = data.percent.toString() + "%"
                         binding.tvTitleMusic.text = data.audioFile.fileName
-
-                        if (data.audioFile.size / (1024 * 1024) > 0) {
-
-                            binding.tvInfoMusic.setText(String.format("%.1f", (data.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + data.audioFile.bitRate.toString() + "kb/s")
-                        } else {
-                            binding.tvInfoMusic.setText(((data.audioFile.size) / (1024)).toString() + " KB" + " | " + data.audioFile.bitRate.toString() + "kb/s")
-                        }
+                        binding.tvInfoMusic.text = data.audioFile.bitRate.toString() + "kb/s"
 
                         data.audioFile.bitmap?.let {
                             binding.ivAvatarMusic.setImageBitmap(it)
@@ -70,10 +68,19 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
 
                     }
                     ConvertingState.SUCCESS -> {
+                        binding.btnBack.visibility = View.VISIBLE
+                        binding.ivHome.visibility = View.VISIBLE
+                        binding.btnCancel.visibility = View.INVISIBLE
                         binding.tvWait.visibility = View.GONE
                         binding.llProgressbar.visibility = View.GONE
                         binding.llPlayMusic.visibility = View.VISIBLE
                         binding.clOpption.visibility = View.VISIBLE
+
+                        if (it.audioFile.size / (1024 * 1024) > 0) {
+                            binding.tvInfoMusic.setText(String.format("%.1f", (it.audioFile.size) / (1024 * 1024)) + " MB" + " | " + it.audioFile.bitRate.toString() + "kb/s")
+                        } else {
+                            binding.tvInfoMusic.setText(((it.audioFile.size) / (1024)).toString() + " KB" + " | " + it.audioFile.bitRate.toString() + "kb/s")
+                        }
                     }
                     else -> {
                     }
@@ -124,7 +131,10 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.llShare.setOnClickListener(this)
         binding.llContact.setOnClickListener(this)
         binding.llOpenwith.setOnClickListener(this)
-        binding.backButton.setOnClickListener(this)
+        binding.btnCancel.setOnClickListener(this)
+        binding.btnBack.setOnClickListener(this)
+        binding.ivHome.setOnClickListener(this)
+        binding.btnOrigin.setOnClickListener(this)
 
         binding.sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
@@ -164,10 +174,22 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                 }
             }
 
-            binding.backButton -> {
+            binding.btnCancel -> {
                 ManagerFactory.getAudioEditorManager()
                     .cancel(ManagerFactory.getAudioEditorManager().getIDProcessingItem())
                 requireActivity().onBackPressed()
+            }
+
+            binding.btnBack -> {
+                requireActivity().onBackPressed()
+            }
+
+            binding.ivHome -> {
+
+            }
+
+            binding.btnOrigin -> {
+
             }
             binding.llRingtone -> {
 

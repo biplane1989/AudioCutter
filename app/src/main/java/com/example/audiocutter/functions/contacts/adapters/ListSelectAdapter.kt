@@ -187,6 +187,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 R.id.ll_audio_item_header -> {
                     selectAudioScreenCallback.isShowPlayingAudio(adapterPosition)
                     selectAudioScreenCallback.isSelect(adapterPosition)
+
                     tvTotal.text = "/" + simpleDateFormat.format(audioFileView.duration.toInt())
                 }
                 R.id.iv_pause_play_music -> {
