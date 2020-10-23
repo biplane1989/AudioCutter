@@ -46,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
-                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:singleLine="true"
                 android:text="Audio Name"
                 android:textColor="@color/colorBlack"
@@ -65,7 +65,7 @@
                     android:layout_marginRight="@dimen/d_5"
                     android:fontFamily="@font/sanfranciscodisplay_regular"
                     android:gravity="bottom"
-                    android:text="2.1 MB"
+                    android:text="@string/_2_1_mb_default"
                     android:textSize="@dimen/d_13" />
 
                 <View
@@ -81,7 +81,7 @@
                     android:layout_marginLeft="@dimen/d_5"
                     android:fontFamily="@font/sanfranciscodisplay_regular"
                     android:gravity="bottom"
-                    android:text="128kb/s"
+                    android:text="@string/_128kb_s_default"
                     android:textSize="@dimen/d_13" />
             </TableRow>
 
@@ -98,7 +98,6 @@
     </LinearLayout>
 
         <LinearLayout
-            android:layout_marginRight="@dimen/d_16"
             android:id="@+id/ln_menu_recent"
             android:layout_width="50dp"
             android:layout_height="match_parent"

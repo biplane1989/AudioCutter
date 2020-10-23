@@ -17,10 +17,10 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MergePreviewScreenBinding
-import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.adapters.MergePreviewAdapter
 import com.example.audiocutter.functions.audiochooser.dialogs.MergeDialog
 import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.ui.audiochooser.merge.MyItemTouchHelper
 import com.example.audiocutter.ui.audiochooser.merge.WrapContentLinearLayoutManager
 
@@ -34,14 +34,13 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     private lateinit var mCallback: OnActionCallback
 
     private lateinit var mergeDialog: MergeDialog
-
-
-    fun setOnCalBack(event: OnActionCallback) {
-        mCallback = event
-    }
-
     private val playerInfoObserver = Observer<PlayerInfo> {
         audioMerAdapter.submitList(audioMerModel.updateMediaInfo(it))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        audioMerModel.pause()
     }
 
 

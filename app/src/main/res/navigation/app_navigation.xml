@@ -121,6 +121,25 @@
     <fragment
         android:id="@+id/mix_chooser_screen"
         android:name="com.example.audiocutter.functions.audiochooser.screens.MixChooserScreen"
-        tools:layout="@layout/mix_chooser_screen" />
+        tools:layout="@layout/mix_chooser_screen">
+        <action
+            android:id="@+id/go_to_mixing_screen"
+            app:destination="@id/mixing_screen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/mixing_screen"
+        android:name="com.example.audiocutter.functions.editor.screen.MixingScreen"
+        tools:layout="@layout/mixing_screen">
+        <argument
+            android:name="pathAudio1"
+            app:argType="string" />
+        <argument
+            android:name="pathAudio2"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

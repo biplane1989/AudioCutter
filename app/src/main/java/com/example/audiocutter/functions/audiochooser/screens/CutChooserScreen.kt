@@ -56,7 +56,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         super.onPostCreate(savedInstanceState)
         audioCutterAdapter = CutChooserAdapter(requireContext())
         audioCutterModel = ViewModelProvider(this).get(AudioCutterModel::class.java)
-        audioCutterModel.setOnCallback(this)
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 

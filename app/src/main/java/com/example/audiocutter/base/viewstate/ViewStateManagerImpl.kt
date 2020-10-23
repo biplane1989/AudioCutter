@@ -1,7 +1,11 @@
 package com.example.a0025antivirusapplockclean.base.viewstate
 
+import android.util.Log
+import java.lang.StringBuilder
 
-object ViewStateManagerImpl : ViewStateManager, ViewStateMutable{
+
+object ViewStateManagerImpl : ViewStateManager, ViewStateMutable {
+    private var isWaitingForFinishingScreen = false
     private val viewStateList: MutableList<ViewStateScreen> = mutableListOf()
     override fun initState(viewStateScreen: ViewStateScreen) {
         viewStateList.clear()
@@ -34,11 +38,30 @@ object ViewStateManagerImpl : ViewStateManager, ViewStateMutable{
         return viewStateList.contains(viewStateScreen)
     }
 
-    override fun onBackPressed() {
+    override fun onBackPressed(): Boolean {
+        if (isWaitingForFinishingScreen) {
+            return false
+        }
+        isWaitingForFinishingScreen = true
         popViewState()
+        logState()
+        return true
+    }
+
+    override fun onScreenFinished() {
+        isWaitingForFinishingScreen = false
     }
 
     override fun getViewStateMutable(): ViewStateMutable {
-       return this
+        return this
     }
+
+    private fun logState() {
+        val str = StringBuilder()
+        viewStateList.forEach {
+            str.append(it.name).append("->")
+        }
+        Log.d("ViewStateManagerImpl", str.toString() + " ${viewStateList.size}")
+    }
+
 }

@@ -2,13 +2,14 @@ package com.example.audiocutter.functions.audiochooser.screens
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.objects.StateLoad
 import java.io.File
 import java.util.*
 import kotlin.Comparator
@@ -19,9 +20,12 @@ class MixModel : BaseViewModel() {
     private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
     private var mListAudioSearch = ArrayList<AudioCutterView>()
+    private var _stateLoadProgress = MutableLiveData<Boolean>()
+    val stateLoadProgress: LiveData<Boolean>
+        get() = _stateLoadProgress
+
     var isChooseItem = false
 
-    private lateinit var mcallBack: OnActionCallback
 
     private val sortListByName: Comparator<AudioCutterView> =
         Comparator { m1, m2 ->
@@ -29,25 +33,27 @@ class MixModel : BaseViewModel() {
                 .compareTo(m2!!.audioFile.fileName.substring(0, 1).toUpperCase())
         }
 
-    fun setOnCallback(event: OnActionCallback) {
-        mcallBack = event
-    }
 
 
     fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
+            if (it.state == StateLoad.LOADING) {
+                _stateLoadProgress.postValue(true)
+            } else {
+                _stateLoadProgress.postValue(false)
+            }
             mListAudio.clear()
             it.listAudioFiles.forEach {
                 mListAudio.add(AudioCutterView(it))
             }
-            if (mListAudio.size == 0) {
-                mcallBack.showEmptyCallback()
-            } else {
-                mcallBack.hideProgress()
-            }
+
             Collections.sort(mListAudio, sortListByName)
             mListAudio
         }
+    }
+
+    fun getStateLoading(): LiveData<Boolean> {
+        return stateLoadProgress
     }
 
 

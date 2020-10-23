@@ -45,7 +45,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="marquee"
-                    android:fontFamily="@font/sanfranciscodisplay_bold"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:singleLine="true"
                     android:text="Audio Name"
                     android:textColor="@color/colorBlack"
@@ -99,7 +99,6 @@
         <LinearLayout
             android:id="@+id/ln_menu_merger"
             android:layout_width="50dp"
-            android:layout_marginRight="@dimen/d_16"
             android:layout_height="match_parent"
             android:gravity="center">
 

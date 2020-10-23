@@ -31,7 +31,7 @@ class WaveAudio @JvmOverloads constructor(
 
 
     companion object {
-        private const val BORDER_ROW = 1
+        private const val BORDER_ROW = 2
         private const val MID_POINT = 2
         private val START_COLOR = Color.parseColor("#FCB674")
         private val END_COLOR = Color.parseColor("#FF9292")
@@ -41,31 +41,26 @@ class WaveAudio @JvmOverloads constructor(
         super.onDraw(canvas)
         initRectRow()
 
-        canvas.drawTopRoundRect(
+        canvas.drawRoundRect(
             rowRect1,
-            Utils.convertDp2Px(BORDER_ROW, context), rowPain
-
+            Utils.convertDp2Px(BORDER_ROW, context),
+            Utils.convertDp2Px(BORDER_ROW, context),
+            rowPain
         )
-        canvas.drawTopRoundRect(
+        canvas.drawRoundRect(
             rowRect2,
-            Utils.convertDp2Px(BORDER_ROW, context), rowPain
+            Utils.convertDp2Px(BORDER_ROW, context),
+            Utils.convertDp2Px(BORDER_ROW, context),
+            rowPain
         )
-        canvas.drawTopRoundRect(
+        canvas.drawRoundRect(
             rowRect3,
-            Utils.convertDp2Px(BORDER_ROW, context), rowPain
+            Utils.convertDp2Px(BORDER_ROW, context),
+            Utils.convertDp2Px(BORDER_ROW, context),
+            rowPain
         )
     }
 
-    private fun Canvas.drawTopRoundRect(rect: RectF, radius: Float, paint: Paint) {
-        drawRoundRect(rect, radius, radius, paint)
-        drawRect(
-            rect.left,
-            rect.top + radius,
-            rect.right,
-            rect.bottom,
-            paint
-        )
-    }
 
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -87,8 +82,8 @@ class WaveAudio @JvmOverloads constructor(
         createAnim1(0f, mHeightView.toFloat())
         handler.postDelayed({
             createAnim2(0f, mHeightView.toFloat())
-            postDelayed({ createAnim3(0f, mHeightView.toFloat()) }, 100)
-        }, 100)
+            postDelayed({ createAnim3(0f, mHeightView.toFloat()) }, 150)
+        }, 150)
 
     }
 

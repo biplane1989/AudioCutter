@@ -85,5 +85,15 @@
     <string name="storage_permission_to_convert_files_please_allow_mp3_cutter_to_access_files_on_your_device">To convert files, please allow MP3 Cutter to access files on your device.</string>
     <string name="storage_permission_allow">ALLOW</string>
     <string name="contact_permission_to_set_ringtone_we_need_the_permission_to_access_your_contacts">To set ringtone, we need the permission to access your contacts.</string>
+    <string name="audio_mixer_name_actionbar">Audio Mixer</string>
+    <string name="search_hint_text">Search...</string>
+    <string name="next_mix_screen">Next</string>
+    <string name="_2_1_mb_default">2.1 MB</string>
+    <string name="_128kb_s_default">128kb/s</string>
+    <string name="shorted_audio_mixing">SHORTED AUDIO</string>
+    <string name="longgest_audio_mixing">LONGGEST AUDIO</string>
+    <string name="audio_cutter_name_actionbar">Audio Cutter</string>
+    <string name="no_result_empty">No result.</string>
+    <string name="audio_merge_name_actionbar">Audio Merge</string>
     <string name="my_studio_no_finished_task">No finished task</string>
 </resources>

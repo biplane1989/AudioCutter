@@ -26,7 +26,7 @@
                     android:layout_height="match_parent"
                     android:background="@color/colorWhite"
                     android:focusableInTouchMode="true"
-                    android:hint="Search..."
+                    android:hint="@string/search_hint_text"
                     android:paddingStart="40dp"
                     android:singleLine="true"
                     android:visibility="gone">
@@ -50,7 +50,7 @@
                     android:layout_toRightOf="@+id/iv_mer_screen_back"
                     android:fontFamily="@font/sanfranciscodisplay_bold"
                     android:gravity="center_vertical"
-                    android:text="Audio Merge"
+                    android:text="@string/audio_merge_name_actionbar"
                     android:textColor="@color/colorBlack"
                     android:textIsSelectable="true"
                     android:textSize="@dimen/d_18" />
@@ -141,7 +141,7 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:fontFamily="@font/sanfranciscodisplay_regular"
-            android:text="No result."
+            android:text="@string/no_result_empty"
             android:textColor="@color/colorgray"
             android:textSize="@dimen/d_18"
             android:visibility="gone" />
@@ -194,7 +194,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/sanfranciscodisplay_bold"
-                        android:text="Next"
+                        android:text="@string/next_mix_screen"
                         android:textColor="@color/colorgray"
                         android:textSize="@dimen/d_18" />
 

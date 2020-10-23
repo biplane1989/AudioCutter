@@ -20,11 +20,11 @@ object ManagerFactory {
     private val mAudioFileManager = AudioFileManagerImpl
     private val mAudioCutter: AudioCutter = AudioCutterImpl()
     private val mRingtons = RingtonManagerImpl
-
-    val fakeAudioFileManager = FakeAudioFileManager()
+    private val defaultAudioPlayer = AudioPlayerImpl()
+//    private val defaultAudioPlayer = AudioPlayerImpl
 
     fun init(appContext: Context) {
-        AudioPlayerImpl.init(appContext)
+        defaultAudioPlayer.init(appContext)
         AudioFileManagerImpl.init(appContext)
         ContactManagerImpl.init(appContext)
         RingtonManagerImpl.init(appContext)
@@ -37,8 +37,6 @@ object ManagerFactory {
     }
 
     fun getAudioFileManager(): AudioFileManager {
-
-//        return fakeAudioFileManager
         return mAudioFileManager
     }
 
@@ -52,7 +50,12 @@ object ManagerFactory {
     }
 
     fun getAudioPlayer(): AudioPlayer {
-        return AudioPlayerImpl
+        return defaultAudioPlayer
+    }
+
+    fun newAudioPlayer(): AudioPlayer {
+//        return AudioPlayerImpl
+        return AudioPlayerImpl()
     }
 
     fun getRingtoneManager(): RingtonManager {

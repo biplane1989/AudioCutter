@@ -59,13 +59,15 @@ abstract class BaseActivity : AppCompatActivity() {
     protected abstract fun createView(savedInstanceState: Bundle?)
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        viewStateManager.onBackPressed()
+        if (viewStateManager.onBackPressed()) {
+            super.onBackPressed()
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mainScope.cancel()
+        viewStateManager.onScreenFinished()
     }
 
 }
@@ -184,6 +186,7 @@ abstract class BaseFragment : Fragment() {
         onPostDestroy()
         FragmentChannel.getFragmentMeta().removeObserver(fragmentChannelObserver)
         mainScope.cancel()
+        viewStateManager.onScreenFinished()
     }
 
     protected open fun onPostDestroy() {
@@ -192,13 +195,6 @@ abstract class BaseFragment : Fragment() {
 
     protected open fun onReceivedAction(fragmentMeta: FragmentMeta) {
 
-    }
-
-    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            isEnabled = false
-            Log.d("taih", "BaseFragment handleOnBackPressed")
-        }
     }
 
 }

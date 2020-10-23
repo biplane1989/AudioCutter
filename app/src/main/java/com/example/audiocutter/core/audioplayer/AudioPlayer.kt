@@ -13,7 +13,7 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.coroutines.*
 
-object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
+class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     val TAG = AudioPlayerImpl::class.java.name
 
 
@@ -24,7 +24,7 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     private var isSeekTo = 0
 
     private var _mPlayInfo = MutableLiveData<PlayerInfo>()
-    private val playInfoData = PlayerInfo(null, 0, PlayerState.IDLE, 0, 0)
+    private val playInfoData = PlayerInfo(null, 0, PlayerState.IDLE, 0, 0f)
     private val mPlayInfo: LiveData<PlayerInfo>
         get() = _mPlayInfo
 
@@ -32,7 +32,7 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     lateinit var audioManager: AudioManager
 
 
-    fun init(appContext: Context) {
+    override fun init(appContext: Context) {
         this.appContext = appContext
         mPlayer = MediaPlayer()
         audioManager = this.appContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -91,7 +91,7 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         } catch (e: Exception) {
             e.printStackTrace()
             Log.d(TAG, "exception: ${e.printStackTrace()}")
-            mPlayer.stop()
+//            mPlayer1.stop()
             return false
         }
 
@@ -125,6 +125,9 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         }
     }
 
+
+
+
     private fun prepare(audioFile: AudioFile) {
         playInfoData.playerState = PlayerState.PREPARING
         mPlayer.apply {
@@ -157,7 +160,6 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         if (playInfoData.playerState == PlayerState.PLAYING) {
             mPlayer.pause()
         }
-
     }
 
 
@@ -174,13 +176,15 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
             mPlayer.stop()
             isStopped = true;
         }
-
     }
 
     override fun seek(position: Int) {
         try {
-            Log.d(TAG, "PlayToPosition seekto: ${position} duration " + getTotalPos())
+            if (position >= mPlayer.duration) {
+                mPlayer.stop()
+            }
             mPlayer.seekTo(position)
+            Log.d(TAG, "PlayToPosition seekto: ${position} duration " + getTotalPos())
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -193,11 +197,18 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
     override fun setVolume(volume: Float) {
         mPlayer.setVolume(volume, volume)
+        playInfoData.volume = volume
+
     }
 
     fun getTotalPos(): Int {
         return mPlayer.duration
     }
+
+    override fun getAudioIsPlaying(): Boolean {
+        return mPlayer.isPlaying
+    }
+
 
     private suspend fun startTimerIfReady() {
         mainScope.launch {
@@ -259,5 +270,6 @@ object AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         return mPlayInfo
     }
 
-
 }
+
+

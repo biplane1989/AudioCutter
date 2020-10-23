@@ -2,13 +2,14 @@ package com.example.audiocutter.functions.audiochooser.screens
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.objects.StateLoad
 import java.io.File
 import java.util.*
 import kotlin.Comparator
@@ -20,29 +21,33 @@ class MergeChooserModel : BaseViewModel() {
     private var mListAudio = ArrayList<AudioCutterView>()
     private var mListAudioSearch = ArrayList<AudioCutterView>()
 
-    private lateinit var mCallBack: OnActionCallback
+    private var _stateLoadProgress = MutableLiveData<Boolean>()
+    val stateLoadProgress: LiveData<Boolean>
+        get() = _stateLoadProgress
+
 
     private val sortListByName: Comparator<AudioCutterView> =
         Comparator { m1, m2 ->
-            m1!!.audioFile.fileName.substring(0, 1).toUpperCase()
-                .compareTo(m2!!.audioFile.fileName.substring(0, 1).toUpperCase())
+            m1!!.audioFile.fileName.substring(0, 1).toUpperCase(Locale.getDefault())
+                .compareTo(m2!!.audioFile.fileName.substring(0, 1).toUpperCase(Locale.getDefault()))
         }
 
-    fun setOnCallBack(event: OnActionCallback) {
-        mCallBack = event
+
+    fun getStateLoading(): LiveData<Boolean> {
+        return stateLoadProgress
     }
 
 
-    suspend fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
+    fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
+            if (it.state == StateLoad.LOADING) {
+                _stateLoadProgress.postValue(true)
+            } else {
+                _stateLoadProgress.postValue(false)
+            }
             mListAudio.clear()
             it.listAudioFiles.forEach {
                 mListAudio.add(AudioCutterView(it))
-            }
-            if (mListAudio.size == 0) {
-                mCallBack.showEmptyCallback()
-            } else {
-                mCallBack.hideProgress()
             }
             Collections.sort(mListAudio, sortListByName)
             mListAudio
@@ -109,7 +114,11 @@ class MergeChooserModel : BaseViewModel() {
     ): ArrayList<AudioCutterView> {
         mListAudioSearch.clear()
         listTmp.forEach {
-            val rs = it.audioFile.fileName.toLowerCase().contains(yourTextSearch.toLowerCase())
+            val rs = it.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
+                yourTextSearch.toLowerCase(
+                    Locale.getDefault()
+                )
+            )
             if (rs) {
                 mListAudioSearch.add(it)
             }
