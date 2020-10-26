@@ -7,7 +7,7 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.functions.contacts.screens.ListContactScreenDirections
 
 
-interface ContactScreenViewState {
+interface ContactScreenViewStateManager {
     fun getViewStateMutable(): ViewStateMutable
     fun contactScreenOnItemClicked(baseFragment: BaseFragment, phoneNumber: String, fileName: String) {
         if (getViewStateMutable().getLastState() == ViewStateScreen.LIST_CONTACT_SCREEN) {

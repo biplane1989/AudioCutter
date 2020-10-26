@@ -28,10 +28,12 @@ object ViewStateManagerImpl : ViewStateManager, ViewStateMutable {
         if (viewStateList.size > 0) {
             viewStateList.remove(getLastState())
         }
+        logState()
     }
 
     override fun pushViewState(viewStateScreen: ViewStateScreen) {
         viewStateList.add(viewStateScreen)
+        logState()
     }
 
     override fun existViewState(viewStateScreen: ViewStateScreen): Boolean {

@@ -381,7 +381,8 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
         audioConfig.endPosition =
             (cuttingViewModel.getCuttingEndPos().toFloat() / 1000) - audioConfig.startPosition
         Log.e(TAG, "onAcceptConvert: ")
-        runOnUI {
+
+        /*runOnUI {
             ManagerFactory.getAudioCutter().cut(
                 AudioCore(
                     audioFile.file,
@@ -392,7 +393,11 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
                     audioFile.mimeType
                 ), audioCutConfig
             )
-        }
+        }*/
+
+        viewStateManager.editorSaveCutingAudio(requireContext(), audioFile)
+
+        Log.d(TAG, "onAcceptConvert: ssssssss")
     }
 
 }

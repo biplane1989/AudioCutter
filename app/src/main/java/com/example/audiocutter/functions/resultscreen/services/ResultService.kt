@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -44,7 +45,7 @@ class ResultService : LifecycleService() {
             builderNotification(it.audioFile.fileName.toString())
             sendNotification(serviceForegroundID, it.percent, it.state)
 
-//            Log.d(TAG, "status : " + it.state)
+            Log.d(TAG, " ResultService status : " + it.state)
             if (it.state == ConvertingState.SUCCESS) {
 //                Log.d(TAG, "status : " + it.state)
 //            builderNotification(it.audioFile.fileName.toString())
@@ -117,7 +118,7 @@ class ResultService : LifecycleService() {
 
         if (convertingState == ConvertingState.SUCCESS) {
 //            Log.d(TAG, "sendNotification: data : " + data)
-            mBuilder.setContentText("Loading 5555complete").setProgress(0, 0, false)
+            mBuilder.setContentText("Loading complete").setProgress(0, 0, false)
                 .setOngoing(false)
             manager.notify(notificationID, mBuilder.build())
         } else {

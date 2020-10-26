@@ -34,9 +34,6 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
 
     @SuppressLint("SetTextI18n")
     val processObserver = Observer<ConvertingItem> { data ->
-
-//        Log.d(TAG, "id : " + data.id + " core.id : " + ManagerFactory.getAudioEditorManager()
-//            .getIDProcessingItem())
         data?.let {
             if (it.id == ManagerFactory.getAudioEditorManager().getIDProcessingItem()) {
                 when (it.state) {
@@ -75,10 +72,10 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                         binding.llPlayMusic.visibility = View.VISIBLE
                         binding.clOpption.visibility = View.VISIBLE
 
-                        if (it.audioFile.size / (1024 * 1024) > 0) {
-                            binding.tvInfoMusic.setText(String.format("%.1f", (it.audioFile.size) / (1024 * 1024)) + " MB" + " | " + it.audioFile.bitRate.toString() + "kb/s")
+                        if (it.audioFile.size / (1024f * 1024) > 0) {
+                            binding.tvInfoMusic.setText(String.format("%.1f", (it.audioFile.size) / (1024f * 1024)) + " MB" + " | " + it.audioFile.bitRate.toString() + "kb/s")
                         } else {
-                            binding.tvInfoMusic.setText(((it.audioFile.size) / (1024)).toString() + " KB" + " | " + it.audioFile.bitRate.toString() + "kb/s")
+                            binding.tvInfoMusic.setText(((it.audioFile.size) / (1024f)).toString() + " KB" + " | " + it.audioFile.bitRate.toString() + "kb/s")
                         }
                     }
                     else -> {

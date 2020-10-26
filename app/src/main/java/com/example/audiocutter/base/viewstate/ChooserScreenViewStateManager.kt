@@ -9,11 +9,11 @@ import com.example.audiocutter.functions.audiochooser.screens.CutChooserScreenDi
 import com.example.audiocutter.functions.audiochooser.screens.MixChooserScreenDirections
 import com.example.audiocutter.objects.AudioFile
 
-interface ChooserScreenViewState {
+interface ChooserScreenViewStateManager {
     fun getViewStateMutable(): ViewStateMutable
     fun mixingOnSelected(baseFragment: BaseFragment, audioFile1: AudioFile, audioFile2: AudioFile) {
         if(getViewStateMutable().getLastState() == ViewStateScreen.MP3_MIX_CHOOSER_SCREEN){
-            getViewStateMutable().pushViewState(ViewStateScreen.MP3_MIXING_SCREEN)
+            getViewStateMutable().pushViewState(ViewStateScreen.MIXING_EDITOR_SCREEN)
             val action = MixChooserScreenDirections.goToMixingScreen(
                 audioFile1.file.absolutePath,
                 audioFile2.file.absolutePath

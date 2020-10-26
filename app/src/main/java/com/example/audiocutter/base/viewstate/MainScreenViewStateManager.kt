@@ -8,7 +8,7 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.functions.mystudio.screens.OutputActivity
 
-interface MainScreenViewState {
+interface MainScreenViewStateManager {
     fun getViewStateMutable(): ViewStateMutable
     fun mainScreenOnContactItemClicked(baseFragment: BaseFragment) {
         if (getViewStateMutable().getLastState() == ViewStateScreen.HOME_SCREEN) {
