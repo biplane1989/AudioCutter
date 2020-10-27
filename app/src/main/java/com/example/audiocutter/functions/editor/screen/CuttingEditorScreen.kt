@@ -29,9 +29,7 @@ import com.example.core.core.AudioCore
 import com.example.core.core.AudioCutConfig
 import com.example.core.core.Effect
 
-class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListener,
-    View.OnClickListener, View.OnLongClickListener,
-    OnDialogAdvanceListener, DialogConvert.OnDialogConvertListener {
+class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListener, View.OnClickListener, View.OnLongClickListener, OnDialogAdvanceListener, DialogConvert.OnDialogConvertListener {
 
     val safeArg: CuttingEditorScreenArgs by navArgs()
     private var playerState = PlayerState.IDLE
@@ -56,8 +54,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
         fun newInstance(pathAudio: String): CuttingEditorScreen {
             val args = Bundle()
             args.putString(Utils.KEY_SEND_PATH, pathAudio)
-            val fragment =
-                CuttingEditorScreen()
+            val fragment = CuttingEditorScreen()
             fragment.arguments = args
             return fragment
         }
@@ -69,12 +66,8 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
         cuttingViewModel.restore(audioPath)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.cutting_editor_screen, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.cutting_editor_screen, container, false)
         return binding.root
     }
 
@@ -139,10 +132,8 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
                 cuttingViewModel.setVolume(1f)
             } else if (it.posision >= cuttingViewModel.getCuttingEndPos() - (fadeOut.time * 1000)) {
                 if (fadeOut != Effect.OFF) {
-                    cuttingViewModel.setVolume(
-                        ((cuttingViewModel.getCuttingEndPos()
-                            .toFloat() - it.posision.toFloat()) / 1000) * ratioVolumeFadeout
-                    )
+                    cuttingViewModel.setVolume(((cuttingViewModel.getCuttingEndPos()
+                        .toFloat() - it.posision.toFloat()) / 1000) * ratioVolumeFadeout)
                 }
             }
             binding.waveEditView.setPlayPositionMs(it.posision, false)
@@ -229,10 +220,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
                 }
 
                 if (isPress && positionMs >= cuttingViewModel.getCuttingEndPos()) {
-                    mEditView.setPlayPositionMs(
-                        if (cuttingViewModel.getCuttingCurrPos() == 0) RESET_AUDIO_VALUE else cuttingViewModel.getCuttingCurrPos(),
-                        false
-                    )
+                    mEditView.setPlayPositionMs(if (cuttingViewModel.getCuttingCurrPos() == 0) RESET_AUDIO_VALUE else cuttingViewModel.getCuttingCurrPos(), false)
                 }
 
             }
@@ -247,10 +235,8 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
 
     override fun onCountAudioSelected(positionMs: Long, isFirstTime: Boolean) {
         val longDurationMsToStringMs = Utils.longDurationMsToStringMs(positionMs)
-        binding.timeAudioTv.text =
-            longDurationMsToStringMs
-        if (isFirstTime)
-            binding.endTimeTv.text = longDurationMsToStringMs
+        binding.timeAudioTv.text = longDurationMsToStringMs
+        if (isFirstTime) binding.endTimeTv.text = longDurationMsToStringMs
     }
 
     override fun onClick(v: View?) {
@@ -264,11 +250,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
                 cuttingViewModel.pauseAudio()
             }
             binding.tickIv -> {
-                DialogConvert.showDialogConvert(
-                    childFragmentManager,
-                    this,
-                    cuttingViewModel.getAudioFile()
-                )
+                DialogConvert.showDialogConvert(childFragmentManager, this, cuttingViewModel.getAudioFile())
             }
             binding.increaseStartTimeIv -> {
                 mEditView.setStartTimeMs(mEditView.getTimeStart() + Utils.TIME_CHANGE)
@@ -289,10 +271,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
                 binding.waveEditView.zoomInt()
             }
             binding.preIv -> {
-                mEditView.setPlayPositionMs(
-                    if ((cuttingViewModel.getCuttingCurrPos() - Utils.FIVE_SECOND) <= 0) RESET_AUDIO_VALUE else cuttingViewModel.getCuttingCurrPos() - Utils.FIVE_SECOND,
-                    true
-                )
+                mEditView.setPlayPositionMs(if ((cuttingViewModel.getCuttingCurrPos() - Utils.FIVE_SECOND) <= 0) RESET_AUDIO_VALUE else cuttingViewModel.getCuttingCurrPos() - Utils.FIVE_SECOND, true)
             }
             binding.playRl -> {
                 runOnUI {
@@ -300,10 +279,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
                 }
             }
             binding.nextIv -> {
-                mEditView.setPlayPositionMs(
-                    cuttingViewModel.getCuttingCurrPos() + Utils.FIVE_SECOND,
-                    true
-                )
+                mEditView.setPlayPositionMs(cuttingViewModel.getCuttingCurrPos() + Utils.FIVE_SECOND, true)
             }
         }
     }
@@ -311,32 +287,16 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
     override fun onLongClick(v: View?): Boolean {
         when (v) {
             binding.increaseEndTimeIv -> {
-                updateTimeWaveView(
-                    isIncrease = true,
-                    isStart = false,
-                    view = binding.increaseEndTimeIv
-                )
+                updateTimeWaveView(isIncrease = true, isStart = false, view = binding.increaseEndTimeIv)
             }
             binding.increaseStartTimeIv -> {
-                updateTimeWaveView(
-                    isIncrease = true,
-                    isStart = true,
-                    view = binding.increaseStartTimeIv
-                )
+                updateTimeWaveView(isIncrease = true, isStart = true, view = binding.increaseStartTimeIv)
             }
             binding.reductionStartTimeIv -> {
-                updateTimeWaveView(
-                    isIncrease = false,
-                    isStart = true,
-                    view = binding.reductionStartTimeIv
-                )
+                updateTimeWaveView(isIncrease = false, isStart = true, view = binding.reductionStartTimeIv)
             }
             binding.reductionEndTimeIv -> {
-                updateTimeWaveView(
-                    isIncrease = false,
-                    isStart = false,
-                    view = binding.reductionEndTimeIv
-                )
+                updateTimeWaveView(isIncrease = false, isStart = false, view = binding.reductionEndTimeIv)
             }
         }
         return true
@@ -378,8 +338,8 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
         audioConfig.inEffect = fadeIn
         audioConfig.outEffect = fadeOut
         audioConfig.startPosition = cuttingViewModel.getCuttingStartPos().toFloat() / 1000
-        audioConfig.endPosition =
-            (cuttingViewModel.getCuttingEndPos().toFloat() / 1000) - audioConfig.startPosition
+        audioConfig.endPosition = (cuttingViewModel.getCuttingEndPos()
+            .toFloat() / 1000) - audioConfig.startPosition
         Log.e(TAG, "onAcceptConvert: ")
 
         /*runOnUI {
@@ -395,7 +355,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
             )
         }*/
 
-        viewStateManager.editorSaveCutingAudio(requireContext(), audioFile)
+        viewStateManager.editorSaveCutingAudio(requireContext(), audioFile, audioCutConfig)
 
         Log.d(TAG, "onAcceptConvert: ssssssss")
     }

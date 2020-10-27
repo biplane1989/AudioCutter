@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.resultscreen.screens
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,9 +14,10 @@ import com.example.audiocutter.functions.resultscreen.objects.MixingConvertingIt
 import com.example.audiocutter.objects.AudioFile
 
 class ResultViewModel : BaseViewModel() {
+    private val audioPlayer = ManagerFactory.newAudioPlayer()
 
     val TAG = "giangtd"
-    lateinit var convertingItem: ConvertingItem
+//    lateinit var convertingItem: ConvertingItem
 
     fun getData(): LiveData<ConvertingItem> {
         return ManagerFactory.getAudioEditorManager().getCurrentProcessingItem()
@@ -26,11 +28,12 @@ class ResultViewModel : BaseViewModel() {
     }
 
     // chuyen trang thai play nhac
-    fun playAudio() {
+    fun playAudio(convertingItem: ConvertingItem) {
         runOnBackground {
-            convertingItem = ManagerFactory.getAudioEditorManager().getConvertingItem()
-            ManagerFactory.getAudioPlayer()
-                .play(AudioFile(convertingItem.audioFile.file, convertingItem.audioFile.fileName, convertingItem.audioFile.size, convertingItem.audioFile.bitRate, convertingItem.audioFile.time, Uri.parse(convertingItem.audioFile.file.absolutePath)))
+            stopAudio()
+//            convertingItem = ManagerFactory.getAudioEditorManager().getConvertingItem()
+            Log.d("009", "convertingItem : " + convertingItem.audioFile.fileName + " file path: " + convertingItem.audioFile.file.absoluteFile)
+            ManagerFactory.getAudioPlayer().play(AudioFile(convertingItem.audioFile.file, convertingItem.audioFile.fileName, convertingItem.audioFile.size, convertingItem.audioFile.bitRate, convertingItem.audioFile.time, Uri.parse(convertingItem.audioFile.file.absolutePath)))
         }
     }
 
@@ -47,7 +50,6 @@ class ResultViewModel : BaseViewModel() {
     }
 
     fun resumeAudio() {
-
         runOnBackground {
             ManagerFactory.getAudioPlayer().resume()
         }
@@ -61,6 +63,11 @@ class ResultViewModel : BaseViewModel() {
 
     fun getPlayerInfo(): LiveData<PlayerInfo> {
         return ManagerFactory.getAudioPlayer().getPlayerInfo()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        ManagerFactory.getAudioPlayer().stop()
     }
 
 }

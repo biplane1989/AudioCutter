@@ -16,9 +16,7 @@ import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.resultscreen.objects.*
 import com.example.audiocutter.functions.resultscreen.services.ResultService
 import com.example.audiocutter.objects.AudioFile
-import com.example.core.core.AudioCore
-import com.example.core.core.AudioMixConfig
-import com.example.core.core.FFMpegState
+import com.example.core.core.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -44,29 +42,28 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                     }
                     FFMpegState.RUNNING -> {
                         convertingState = ConvertingState.PROGRESSING
-                        if (audioMering.percent == 100) {
-                            convertingState = ConvertingState.SUCCESS
-                        }
                     }
                     FFMpegState.CANCEL -> {
 //                        convertingState = ConvertingState.SUCCESS
+                        Log.d(TAG, "init: cancelllllllllllllllllllllllllllllllllllllllllll")
                     }
                     FFMpegState.FAIL -> {
                         convertingState = ConvertingState.ERROR
                     }
                 }
-                Log.e(TAG, "init: ${audioMering.percent}")
+                Log.e(TAG, "init: ${audioMering.percent}" + " convertingState: " + audioMering.state + " listConvertingItemData size: " + listConvertingItemData.size)
                 audioMering.audioFile?.let {
-                    for (item in listConvertingItemData) {
-                        if (item.state == ConvertingState.PROGRESSING) {
+                    for (item in listCopyConvertingItemData) {
+                        Log.d(TAG, "init: currentProcessingItem :    item status :" + item.state)
+                        if (item.state != ConvertingState.SUCCESS) {
                             item.state = convertingState
                             item.percent = audioMering.percent
                             item.audioFile = AudioFile(it.file, it.fileName, it.size, it.bitRate)
 
                             currentProcessingItem.postValue(item)
+                            break
                         }
                     }
-//                currentProcessingItem.postValue(ConvertingItem(currConvertingId, convertingState, audioMering.percent, AudioFile(it.file, it.fileName, it.size, it.bitRate)))
                 }
             }
         }
@@ -85,6 +82,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     private var currConvertingId = 0
     private val mainScope = MainScope()
     private val currentProcessingItem = MutableLiveData<ConvertingItem>()
+    private val itemConvertingItem = MutableLiveData<ConvertingItem>()
 
 
     val serviceConnection = object : ServiceConnection {
@@ -115,7 +113,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         return null
     }
 
-    override fun cutAudio(audioFile: AudioFile, cuttingConfig: CuttingConfig, outFile: File) {
+    override fun cutAudio(audioFile: AudioFile, cuttingConfig: AudioCutConfig, outFile: File) {
 
         if (!isMyServiceRunning(ResultService::class.java)) {
             notifyConvertingItemChanged(null)
@@ -131,6 +129,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         listConvertingItemData.add(item)
         listCopyConvertingItemData.add(item)
 
+
         val processingItem = getProcessingItem()
         if (processingItem == null) {
             processNextItem()
@@ -138,11 +137,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
         }
         listConvertingItems.postValue(listConvertingItemData)
-
-        Log.d(TAG, "currConvertingId: " + currConvertingId)
-        for (item in listConvertingItemData) {
-            Log.d(TAG, "item : " + item.id + " size: " + listConvertingItemData.size)
-        }
+        itemConvertingItem.postValue(item)
     }
 
     override fun mixAudio(audioFile1: AudioFile, audioFile2: AudioFile, mixingConfig: AudioMixConfig, outFile: AudioFile) {
@@ -167,9 +162,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
         }
         listConvertingItems.postValue(listConvertingItemData)
+        itemConvertingItem.postValue(item)
     }
 
-    override fun mergeAudio(listAudioFiles: List<AudioFile>, mergingConfig: MergingConfig, outFile: AudioFile) {
+    override fun mergeAudio(listAudioFiles: List<AudioFile>, audioFormat: AudioFormat, outFile: AudioFile) {
 
         if (!isMyServiceRunning(ResultService::class.java)) {
             notifyConvertingItemChanged(null)
@@ -180,7 +176,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             }
         }
         currConvertingId++
-        val item = MergingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, outFile, listAudioFiles, mergingConfig)
+        val item = MergingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, outFile, listAudioFiles, audioFormat)
         listConvertingItemData.add(item)
         listCopyConvertingItemData.add(item)
 
@@ -191,6 +187,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
         }
         listConvertingItems.postValue(listConvertingItemData)
+        itemConvertingItem.postValue(item)
     }
 
     private fun processNextItem() {
@@ -214,7 +211,8 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         currentProcessingItem.postValue(item)
     }
 
-    private suspend fun processItem(item: ConvertingItem) = withContext(Dispatchers.Default) {
+
+    private suspend fun processItem(item: ConvertingItem)  = withContext(Dispatchers.Default) {
 
         mainScope.launch {
             notifyConvertingItemChanged(null)
@@ -228,7 +226,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                     listAudioCore.add(AudioCore(it.file, it.fileName, it.size, it.bitRate, it.time, it.mimeType))
                 }
                 ManagerFactory.getAudioCutter()
-                    .merge(listAudioCore, item.audioFile.fileName, item.mergingConfig.audioFormat, item.audioFile.file.parent)
+                    .merge(listAudioCore, item.audioFile.fileName, item.audioFormat, item.audioFile.file.parent)
             }
 
             if (item is MixingConvertingItem) {
@@ -241,7 +239,8 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             }
 
             if (item is CuttingConvertingItem) {
-
+                val audioFile = AudioCore(item.audioFile.file, item.audioFile.fileName, item.audioFile.size, item.audioFile.bitRate, item.audioFile.time, item.audioFile.mimeType)
+                ManagerFactory.getAudioCutter().cut(audioFile, item.cuttingConfig)
             }
 
             item.state = ConvertingState.SUCCESS
@@ -250,6 +249,8 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             listConvertingItemData.remove(item)                             // demo dong bo data voi luu tru thu muc
             listConvertingItems.postValue(listConvertingItemData)
             processNextItem()
+
+            return@launch
         }
     }
 
@@ -304,6 +305,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         return currentProcessingItem
     }
 
+
     override fun getListCuttingItems(): LiveData<List<ConvertingItem>> {  // tra live data cho list pending cho cutting
         return Transformations.map(listConvertingItems) {
             val listItem = ArrayList<ConvertingItem>()
@@ -344,8 +346,9 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         return currConvertingId
     }
 
-    override fun getConvertingItem(): ConvertingItem {
-        return listCopyConvertingItemData.get(listCopyConvertingItemData.size - 1)
+    override fun getConvertingItem(): LiveData<ConvertingItem> {
+//        return listCopyConvertingItemData.get(listCopyConvertingItemData.size - 1)
+        return itemConvertingItem
     }
 
     private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {

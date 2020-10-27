@@ -115,7 +115,13 @@
     <fragment
         android:id="@+id/merge_preview_screen"
         android:name="com.example.audiocutter.functions.audiochooser.screens.MergePreviewScreen"
-        tools:layout="@layout/merge_preview_screen" />
+        tools:layout="@layout/merge_preview_screen">
+
+        <argument
+            android:name="listaudio"
+            app:argType="string[]" />
+
+    </fragment>
 
 
     <fragment
@@ -128,7 +134,7 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/mixing_screen"

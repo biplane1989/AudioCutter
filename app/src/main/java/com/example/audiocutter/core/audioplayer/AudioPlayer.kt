@@ -13,7 +13,7 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.coroutines.*
 
-class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
+class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     val TAG = AudioPlayerImpl::class.java.name
 
 

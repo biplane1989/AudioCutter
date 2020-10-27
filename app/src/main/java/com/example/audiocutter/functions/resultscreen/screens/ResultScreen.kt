@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.resultscreen.screens
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
+import com.example.audiocutter.core.result.AudioEditorManagerlmpl
 import com.example.audiocutter.databinding.ResultScreenBinding
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
@@ -30,12 +32,14 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
     var idProgress = -1
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
     var playerState: PlayerState = PlayerState.IDLE
-
+    lateinit var convertingItem: ConvertingItem
 
     @SuppressLint("SetTextI18n")
     val processObserver = Observer<ConvertingItem> { data ->
         data?.let {
             if (it.id == ManagerFactory.getAudioEditorManager().getIDProcessingItem()) {
+                Log.d(TAG, "ConvertingState : " + it.state + " ID : " + it.id + " IDProcessingItem " + ManagerFactory.getAudioEditorManager()
+                    .getIDProcessingItem())
                 when (it.state) {
                     ConvertingState.WAITING -> {
                         binding.tvWait.visibility = View.VISIBLE
@@ -71,6 +75,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                         binding.llProgressbar.visibility = View.GONE
                         binding.llPlayMusic.visibility = View.VISIBLE
                         binding.clOpption.visibility = View.VISIBLE
+                        binding.btnOrigin.visibility = View.GONE
 
                         if (it.audioFile.size / (1024f * 1024) > 0) {
                             binding.tvInfoMusic.setText(String.format("%.1f", (it.audioFile.size) / (1024f * 1024)) + " MB" + " | " + it.audioFile.bitRate.toString() + "kb/s")
@@ -90,6 +95,11 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         }
     }
 
+    val itemConvertingItemObserver = Observer<ConvertingItem> { it ->       // observer 1 item tu core
+        convertingItem = ConvertingItem(it.id, it.state, it.percent, it.audioFile)
+        Log.d("009", "ConvertingItem Observer path: " + it.audioFile.file.absoluteFile)
+    }
+
     val playInfoObserver = Observer<PlayerInfo> { playInfo ->
 
         binding.sbMusic.max = playInfo.duration
@@ -98,21 +108,29 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.tvTimeLife.text = simpleDateFormat.format(playInfo.posision)
 
         playerState = playInfo.playerState
+        Log.d(TAG, "playerState: " + playerState)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.result_screen, container, false)
 
-        mResultViewModel.getData().observe(viewLifecycleOwner, processObserver)
+//        mResultViewModel.getData().observe(viewLifecycleOwner, processObserver)
+        AudioEditorManagerlmpl.getCurrentProcessingItem()
+            .observe(viewLifecycleOwner, processObserver)
+        AudioEditorManagerlmpl.getConvertingItem()
+            .observe(viewLifecycleOwner, itemConvertingItemObserver)
         mResultViewModel.getPlayerInfo().observe(viewLifecycleOwner, playInfoObserver)
         return binding.root
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
+
         mResultViewModel = ViewModelProviders.of(this).get(ResultViewModel::class.java)
 
-        idProgress = mResultViewModel.getIDProgressItem()
+//        idProgress = mResultViewModel.getIDProgressItem()
+        idProgress = ManagerFactory.getAudioEditorManager().getIDProcessingItem()
+        Log.d(TAG, "idProgress: " + idProgress)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -156,7 +174,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                 when (playerState) {
                     PlayerState.IDLE -> {
                         binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_pause)
-                        mResultViewModel.playAudio()
+                        mResultViewModel.playAudio(convertingItem)
+                        Log.d("009", "onClick: convertingItem : " + convertingItem.audioFile.file.absoluteFile)
                     }
                     PlayerState.PAUSE -> {
                         binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_pause)

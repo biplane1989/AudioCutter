@@ -36,6 +36,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     private lateinit var audioFile1: AudioFile
     private lateinit var audioFile2: AudioFile
     private var isCompare = false
+
     private val safeArg: MixingScreenArgs by navArgs()
 
     private val listData = mutableListOf<AudioFile>()

@@ -23,8 +23,7 @@ import com.example.audiocutter.functions.audiochooser.adapters.MergeChooserAdapt
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import kotlinx.coroutines.delay
 
-class MergeChooserScreen : BaseFragment(), View.OnClickListener,
-    MergeChooserAdapter.AudioMergeListener {
+class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAdapter.AudioMergeListener {
     private lateinit var binding: MergeChooserScreenBinding
 
     private lateinit var audioMerAdapter: MergeChooserAdapter
@@ -58,19 +57,12 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioMerAdapter =
-            MergeChooserAdapter(
-                requireContext()
-            )
+        audioMerAdapter = MergeChooserAdapter(requireContext())
         audioMerModel = ViewModelProvider(this).get(MergeChooserModel::class.java)
         ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.merge_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
@@ -141,8 +133,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     }
 
     private fun showKeybroad() {
-        val imm =
-            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm = requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
 
@@ -246,8 +237,15 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
 
     private fun handleAudiofile() {
         ManagerFactory.getAudioPlayer().stop()
+
         val listItemHandle = audioMerModel.getListItemChoose()
-//handler
+        val arrayAudio: Array<String> = Array(listItemHandle.size) { "" }
+        var index = 0
+        for (item in listItemHandle) {
+            arrayAudio[index] = item.audioFile.file.absolutePath
+            index++
+        }
+        viewStateManager.onMergingItemClicked(this, arrayAudio)
     }
 
 
