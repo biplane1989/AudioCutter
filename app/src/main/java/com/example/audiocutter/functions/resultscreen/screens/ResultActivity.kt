@@ -94,8 +94,8 @@ class ResultActivity : BaseActivity() {
                 }
             }
             MER -> {
-                ManagerFactory.getAudioEditorManager()
-                    .mergeAudio(newListPathAudio, audioFormat, file2.absolutePath)
+//                ManagerFactory.getAudioEditorManager()
+//                    .mergeAudio(newListPathAudio, audioFormat, file2.absolutePath)
             }
 
         }
