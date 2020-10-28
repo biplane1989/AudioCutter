@@ -16,17 +16,17 @@ import com.example.core.core.AudioMixConfig
 
 interface AudioEditorViewStateManager {
     fun getViewStateMutable(): ViewStateMutable
-    fun editorSaveMixingAudio(context: Context, audioFile1: AudioFile, audioFile2: AudioFile, filePath: String, audioMixConfig: AudioMixConfig) {
+    fun editorSaveMixingAudio(context: Context, audioFile1: AudioFile, audioFile2: AudioFile, fileName: String, filePath: String, audioMixConfig: AudioMixConfig) {
         if (getViewStateMutable().getLastState() == ViewStateScreen.MIXING_EDITOR_SCREEN) {
             getViewStateMutable().pushViewState(ViewStateScreen.RESULT_SCREEN)
-            ResultActivity.startActivity(context, audioFile1.file.absolutePath, audioFile2.file.absolutePath, ResultActivity.MIX, null, audioMixConfig, null, null, filePath, null)
+            ResultActivity.startActivity(context, audioFile1.file.absolutePath, audioFile2.file.absolutePath, ResultActivity.MIX, null, audioMixConfig, null, fileName, filePath, null)
         }
     }
 
-    fun editorSaveCutingAudio(context: Context, audioFile: AudioFile, audioCutConfig: AudioCutConfig, filePath: String, audioFormat: String) {
+    fun editorSaveCutingAudio(context: Context, audioFile: AudioFile, audioCutConfig: AudioCutConfig, fileName: String, filePath: String, audioFormat: String) {
         if (getViewStateMutable().getLastState() == ViewStateScreen.CUTTING_EDITOR_SCREEN) {
             getViewStateMutable().pushViewState(ViewStateScreen.RESULT_SCREEN)
-            ResultActivity.startActivity(context, audioFile.file.absolutePath, "", ResultActivity.CUT, audioCutConfig, null, null, null, filePath, audioFormat)
+            ResultActivity.startActivity(context, audioFile.file.absolutePath, "", ResultActivity.CUT, audioCutConfig, null, null, fileName, filePath, audioFormat)
         }
     }
 

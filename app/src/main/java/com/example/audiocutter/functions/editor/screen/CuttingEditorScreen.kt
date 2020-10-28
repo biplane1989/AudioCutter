@@ -365,7 +365,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
             )
         }*/
 
-        viewStateManager.editorSaveCutingAudio(requireContext(), audioFile, audioCutConfig, "/AudioCutter/cutter", AudioFormat.MP3.toString())
+        viewStateManager.editorSaveCutingAudio(requireContext(), audioFile, audioCutConfig, "Cutting1", "/AudioCutter/cutter", AudioFormat.MP3.toString())
 
     }
 
