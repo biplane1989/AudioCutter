@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Activity
+import android.media.AudioFormat
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -164,7 +165,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     override fun mergeAudioFile(filename: String) {
         Log.d(TAG, "mergeAudioFile: $filename size list ${audioMerModel.getListAudio().size}")
 
-        viewStateManager.editorSaveMergingAudio(requireContext(), listPath)
+        viewStateManager.editorSaveMergingAudio(requireContext(), listPath, filename, "/AudioCutter/merger", com.example.core.core.AudioFormat.MP3.toString())
     }
 
     override fun cancalKeybroad() {

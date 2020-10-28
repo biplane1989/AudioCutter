@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/ll_audio_loading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -71,6 +70,7 @@
                     app:layout_constraintStart_toEndOf="@id/cv_avatar" />
 
                 <LinearLayout
+                    android:layout_marginRight="10dp"
                     android:id="@+id/ll_progressbar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
                         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                         android:layout_width="0dp"
                         android:layout_height="4dp"
-                        android:layout_weight="0.94"
+                        android:layout_weight="1"
                         android:progress="30"
                         android:progressDrawable="@drawable/result_bg_progressbar" />
 
@@ -94,7 +94,7 @@
                         android:id="@+id/tv_loading"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.06"
+                        android:layout_marginLeft="10dp"
                         android:gravity="end"
                         android:text="45%" />
                 </LinearLayout>
@@ -106,7 +106,7 @@
                     android:layout_marginRight="10dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
-                    android:src="@drawable/common_ic_close"
+                    android:src="@drawable/my_studio_screen_ic_cancel_loading"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

@@ -15,27 +15,33 @@ import java.io.File
 class ResultActivity : BaseActivity() {
     val TAG = "giangtd"
 
-    val file = File(Environment.getExternalStorageDirectory().toString() + "/Music/lonely.mp3")
-    val file2 = File(Environment.getExternalStorageDirectory().toString() + "/Music")
-
     companion object {
         const val AUDIO_FILE_PATH_KEY1 = "AUDIO_FILE_PATH_KEY1"
         const val AUDIO_FILE_PATH_KEY2 = "AUDIO_FILE_PATH_KEY2"
         const val AUDIO_FILE_TYPE_MERGING = "AUDIO_FILE_TYPE_MERGING"
-        const val AUDIO_FILE_AUDIO_CONFIG = "AUDIO_FILE_TYPE_MERGING"
+        const val AUDIO_CUTCONFIG = "AUDIO_CUTCONFIG"
+        const val AUDIO_MIXCONFIG = "AUDIO_MIXCONFIG"
         const val LIST_AUDIO_FILE_MERGING = "AUDIO_FILE_AUDIO_CUT_CONFIG"
+        const val AUDIO_FILE_NAME = "AUDIO_FILE_NAME"
+        const val AUDIO_FILE_PATH = "AUDIO_FILE_PATH"
+        const val AUDIO_FORMAT = "AUDIO_FORMAT"
 
         const val MIX = 3
         const val MER = 2
         const val CUT = 1
 
-        fun startActivity(context: Context, audioPath1: String?, audioPath2: String?, typeMerging: Int, audioCutConfig: AudioCutConfig?, listAudio: ArrayList<String>?) {
+        fun startActivity(context: Context, audioPath1: String?, audioPath2: String?, typeMerging: Int, audioCutConfig: AudioCutConfig?, audioMixConfig: AudioMixConfig?, listAudio: ArrayList<String>?, fileName: String?, filePath: String, audioFormat: String?) {
             val intent = Intent(context, ResultActivity::class.java)
             intent.putExtra(AUDIO_FILE_PATH_KEY1, audioPath1)
             intent.putExtra(AUDIO_FILE_PATH_KEY2, audioPath2)
             intent.putExtra(AUDIO_FILE_TYPE_MERGING, typeMerging)
             intent.putStringArrayListExtra(LIST_AUDIO_FILE_MERGING, listAudio)
-//            intent.putExtra(AUDIO_FILE_AUDIO_CUT_CONFIG, audioCutConfig)
+            intent.putExtra(AUDIO_FILE_NAME, fileName)
+            intent.putExtra(AUDIO_FILE_PATH, filePath)
+            intent.putExtra(AUDIO_CUTCONFIG, audioCutConfig)
+            intent.putExtra(AUDIO_MIXCONFIG, audioMixConfig)
+            intent.putExtra(AUDIO_FORMAT, audioFormat)
+
             context.startActivity(intent)
         }
     }
@@ -56,9 +62,16 @@ class ResultActivity : BaseActivity() {
         val audioPath1 = intent.getStringExtra(AUDIO_FILE_PATH_KEY1)
         val audioPath2 = intent.getStringExtra(AUDIO_FILE_PATH_KEY2)
         val typeMerging = intent.getIntExtra(AUDIO_FILE_TYPE_MERGING, 0)
-        val outFile = File(Environment.getExternalStorageDirectory().toString() + "/Music/orange")
-        val output = AudioFile(outFile, outFile.name, file.length())
         val listPathAudio = intent.getStringArrayListExtra(LIST_AUDIO_FILE_MERGING)
+        val fileName = intent.getStringExtra(AUDIO_FILE_NAME)
+        val filePath = intent.getStringExtra(AUDIO_FILE_PATH)
+        val audioCutConfig = intent.getParcelableExtra<AudioCutConfig>(AUDIO_CUTCONFIG)
+        val audioMixConfig = intent.getParcelableExtra<AudioMixConfig>(AUDIO_MIXCONFIG)
+        val audioFormat = intent.getStringExtra(AUDIO_FORMAT)
+
+        val file = File(Environment.getExternalStorageDirectory().toString() + filePath)
+        val output = AudioFile(file, file.name, file.length())
+        val outFile = File(Environment.getExternalStorageDirectory().toString() + filePath)
 
         val newListPathAudio = ArrayList<AudioFile>()
 
@@ -67,21 +80,15 @@ class ResultActivity : BaseActivity() {
                 newListPathAudio.add(ManagerFactory.getAudioFileManager().buildAudioFile(item))
             }
         }
-
-//        val audioCutConfig = intent.getParcelableExtra<AudioCutConfig>(AUDIO_FILE_AUDIO_CUT_CONFIG)
-
-        val audioCutConfig = AudioCutConfig(1.0f, 100f, 300, "lemon", Effect.OFF, Effect.OFF, BitRate._128kb, AudioFormat.MP3, file2.absolutePath)
-
-        val audioFormat = AudioFormat.MP3
-        val mixingConfig = AudioMixConfig(outFile.name, MixSelector.LONGEST, 100, 100, AudioFormat.MP3, file2.absolutePath)
-
         when (typeMerging) {
             MIX -> {
                 if (!audioPath2.isNullOrBlank() && !audioPath1.isNullOrBlank()) {
                     val audioFile1 = ManagerFactory.getAudioFileManager().buildAudioFile(audioPath1)
                     val audioFile2 = ManagerFactory.getAudioFileManager().buildAudioFile(audioPath2)
-                    ManagerFactory.getAudioEditorManager()
-                        .mixAudio(audioFile1, audioFile2, mixingConfig, output)
+                    audioMixConfig?.let {
+                        ManagerFactory.getAudioEditorManager()
+                            .mixAudio(audioFile1, audioFile2, audioMixConfig, output)
+                    }
                 }
             }
             CUT -> {
@@ -94,39 +101,20 @@ class ResultActivity : BaseActivity() {
                 }
             }
             MER -> {
-//                ManagerFactory.getAudioEditorManager()
-//                    .mergeAudio(newListPathAudio, audioFormat, file2.absolutePath)
-            }
-
-        }
-
-        /*if (!audioPath2.isNullOrBlank() && !audioPath1.isNullOrBlank()) {
-            val audioFile1 = ManagerFactory.getAudioFileManager().buildAudioFile(audioPath1)
-            val audioFile2 = ManagerFactory.getAudioFileManager().buildAudioFile(audioPath2)
-            when (typeMerging) {
-                MIX -> {
-                    ManagerFactory.getAudioEditorManager()
-                        .mixAudio(audioFile1, audioFile2, mixingConfig, output)
-                }
-            }
-        }
-        if (!audioPath1.isNullOrBlank()) {
-            val audioFile1 = ManagerFactory.getAudioFileManager().buildAudioFile(audioPath1)
-            when (typeMerging) {
-                CUT -> {
-                    audioCutConfig?.let {
+                if (fileName != null) {
+                    audioFormat?.let {
+                        var format = AudioFormat.MP3
+                        if (audioFormat == AudioFormat.MP3.toString()) {
+                            format = AudioFormat.MP3
+                        } else {
+                            format = AudioFormat.ACC
+                        }
                         ManagerFactory.getAudioEditorManager()
-                            .cutAudio(audioFile1, audioCutConfig, outFile)
+                            .mergeAudio(newListPathAudio, format, output, fileName)
                     }
                 }
             }
         }
-        when (typeMerging) {
-            MER -> {
-                ManagerFactory.getAudioEditorManager()
-                    .mergeAudio(newListPathAudio, mergingConfig, output)
-            }
-        }*/
     }
 
     override fun onBackPressed() {

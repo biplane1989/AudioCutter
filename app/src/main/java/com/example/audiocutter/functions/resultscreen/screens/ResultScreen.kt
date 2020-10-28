@@ -1,15 +1,18 @@
 package com.example.audiocutter.functions.resultscreen.screens
 
 import android.annotation.SuppressLint
+import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.ManagerFactory
@@ -62,9 +65,9 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                         binding.tvTitleMusic.text = data.audioFile.fileName
                         binding.tvInfoMusic.text = data.audioFile.bitRate.toString() + "kb/s"
 
-                        data.audioFile.bitmap?.let {
-                            binding.ivAvatarMusic.setImageBitmap(it)
-                        }
+//                        data.audioFile.bitmap?.let {
+//                            binding.ivAvatarMusic.setImageBitmap(it)
+//                        }
 
                     }
                     ConvertingState.SUCCESS -> {
@@ -77,11 +80,18 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                         binding.clOpption.visibility = View.VISIBLE
                         binding.btnOrigin.visibility = View.GONE
 
-                        if (it.audioFile.size / (1024f * 1024) > 0) {
-                            binding.tvInfoMusic.setText(String.format("%.1f", (it.audioFile.size) / (1024f * 1024)) + " MB" + " | " + it.audioFile.bitRate.toString() + "kb/s")
-                        } else {
-                            binding.tvInfoMusic.setText(((it.audioFile.size) / (1024f)).toString() + " KB" + " | " + it.audioFile.bitRate.toString() + "kb/s")
-                        }
+//                        binding.tvTitleMusic.text = convertingItem.audioFile.fileName
+//                        binding.tvInfoMusic.text = convertingItem.audioFile.bitRate.toString() + "kb/s"
+//                        binding.tvTimeTotal.text = "/" + simpleDateFormat.format(convertingItem.audioFile.size)
+//                        data.audioFile.bitmap?.let {
+//                            binding.ivAvatarMusic.setImageBitmap(it)
+//                        }
+
+//                        if (it.audioFile.size / (1024f * 1024) > 0) {
+//                            binding.tvInfoMusic.setText(String.format("%.1f", (it.audioFile.size) / (1024f * 1024)) + " MB" + " | " + it.audioFile.bitRate.toString() + "kb/s")
+//                        } else {
+//                            binding.tvInfoMusic.setText(((it.audioFile.size) / (1024f)).toString() + " KB" + " | " + it.audioFile.bitRate.toString() + "kb/s")
+//                        }
                     }
                     else -> {
                     }
@@ -98,6 +108,25 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
     val itemConvertingItemObserver = Observer<ConvertingItem> { it ->       // observer 1 item tu core
         convertingItem = ConvertingItem(it.id, it.state, it.percent, it.audioFile)
         Log.d("009", "ConvertingItem Observer path: " + it.audioFile.file.absoluteFile)
+        if (convertingItem.state == ConvertingState.SUCCESS) {
+            binding.tvTitleMusic.text = convertingItem.audioFile.fileName
+            binding.tvInfoMusic.text = convertingItem.audioFile.bitRate.toString() + "kb/s"
+
+            val duration = ManagerFactory.getAudioFileManager()
+                .getInfoAudioFile(convertingItem.audioFile.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
+            if (!duration.isNullOrBlank()) {
+                binding.tvTimeTotal.text = "/" + simpleDateFormat.format(duration.toInt())
+            }
+            convertingItem.audioFile.bitmap?.let {
+                binding.ivAvatarMusic.setImageBitmap(it)
+            }
+
+            if (convertingItem.audioFile.size / (1024f * 1024) > 0) {
+                binding.tvInfoMusic.setText(String.format("%.1f", (convertingItem.audioFile.size) / (1024f * 1024)) + " MB" + " | " + convertingItem.audioFile.bitRate.toString() + "kb/s")
+            } else {
+                binding.tvInfoMusic.setText(((convertingItem.audioFile.size) / (1024f)).toString() + " KB" + " | " + convertingItem.audioFile.bitRate.toString() + "kb/s")
+            }
+        }
     }
 
     val playInfoObserver = Observer<PlayerInfo> { playInfo ->
@@ -163,6 +192,11 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         })
     }
 
+    override fun onPostDestroy() {
+        super.onPostDestroy()
+        mResultViewModel.stopAudio()
+    }
+
     override fun onDestroyView() {
         mResultViewModel.stopAudio()
         super.onDestroyView()
@@ -200,22 +234,40 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
             }
 
             binding.ivHome -> {
-
+                viewStateManager.resultScreenGoToHome(requireContext())
             }
 
             binding.btnOrigin -> {
-
+                viewStateManager.resultScreenGoToHome(requireContext())
             }
             binding.llRingtone -> {
-
+                if (ManagerFactory.getRingtoneManager().setRingTone(convertingItem.audioFile)) {
+                    Toast.makeText(requireContext(), "Set Ringtone Successful !", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(requireContext(), "Set Ringtone Fail !", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
 
             binding.llAlarm -> {
-
+                if (ManagerFactory.getRingtoneManager().setAlarmManager(convertingItem.audioFile)) {
+                    Toast.makeText(requireContext(), "Set Alarm Successful !", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(requireContext(), "Set Alarm Fail !", Toast.LENGTH_SHORT).show()
+                }
             }
 
             binding.llNotification -> {
-
+                if (ManagerFactory.getRingtoneManager()
+                        .setNotificationSound(convertingItem.audioFile)) {
+                    Toast.makeText(requireContext(), "Set Notification Successful !", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(requireContext(), "Set Notification Fail !", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
             binding.llShare -> {
 

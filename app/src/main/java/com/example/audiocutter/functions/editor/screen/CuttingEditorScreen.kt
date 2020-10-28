@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.editor.screen
 
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -27,7 +28,9 @@ import com.example.audiocutter.util.PreferencesHelper
 import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioCore
 import com.example.core.core.AudioCutConfig
+import com.example.core.core.AudioFormat
 import com.example.core.core.Effect
+import java.io.File
 
 class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListener, View.OnClickListener, View.OnLongClickListener, OnDialogAdvanceListener, DialogConvert.OnDialogConvertListener {
 
@@ -338,9 +341,16 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
         audioConfig.inEffect = fadeIn
         audioConfig.outEffect = fadeOut
         audioConfig.startPosition = cuttingViewModel.getCuttingStartPos().toFloat() / 1000
+
         audioConfig.endPosition = (cuttingViewModel.getCuttingEndPos()
             .toFloat() / 1000) - audioConfig.startPosition
-        Log.e(TAG, "onAcceptConvert: ")
+
+        audioConfig.fileName = audioFile.fileName + "cut"
+
+        val outFile = File(Environment.getExternalStorageDirectory()
+            .toString() + "/AudioCutter/cutter")
+
+        audioConfig.pathFolder = outFile.absolutePath
 
         /*runOnUI {
             ManagerFactory.getAudioCutter().cut(
@@ -355,9 +365,8 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
             )
         }*/
 
-        viewStateManager.editorSaveCutingAudio(requireContext(), audioFile, audioCutConfig)
+        viewStateManager.editorSaveCutingAudio(requireContext(), audioFile, audioCutConfig, "/AudioCutter/cutter", AudioFormat.MP3.toString())
 
-        Log.d(TAG, "onAcceptConvert: ssssssss")
     }
 
 }

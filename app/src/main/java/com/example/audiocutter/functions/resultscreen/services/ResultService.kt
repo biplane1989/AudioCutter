@@ -40,16 +40,16 @@ class ResultService : LifecycleService() {
     @RequiresApi(Build.VERSION_CODES.N)
     val processObserver = Observer<ConvertingItem> { it ->
         if (it != null) {
-//            Log.d(TAG, "percent : " + it.percent)
-
             builderNotification(it.audioFile.fileName.toString())
             sendNotification(serviceForegroundID, it.percent, it.state)
 
             Log.d(TAG, " ResultService status : " + it.state)
             if (it.state == ConvertingState.SUCCESS) {
-//                Log.d(TAG, "status : " + it.state)
-//            builderNotification(it.audioFile.fileName.toString())
-                sendNotificationComplte(it.id)
+                if (it.percent >= 100) {
+                    sendNotificationComplte(it.id)
+                } else {
+//                    sendNotificationFail(it.id)
+                }
             }
         }
     }
@@ -83,7 +83,7 @@ class ResultService : LifecycleService() {
 
     fun cancelNotidication(id: Int) {
         manager.cancel(id)
-//        stopForeground(true)
+        stopForeground(true)
     }
 
     override fun onDestroy() {
@@ -114,13 +114,22 @@ class ResultService : LifecycleService() {
         manager.notify(notificationID, mBuilder.build())
     }
 
+    fun sendNotificationFail(notificationID: Int) {
+        mBuilder.setContentText("Fail").setProgress(0, 0, false).setOngoing(false)
+        manager.notify(notificationID, mBuilder.build())
+    }
+
     fun sendNotification(notificationID: Int, data: Int, convertingState: ConvertingState) {
 
         if (convertingState == ConvertingState.SUCCESS) {
-//            Log.d(TAG, "sendNotification: data : " + data)
-            mBuilder.setContentText("Loading complete").setProgress(0, 0, false)
-                .setOngoing(false)
-            manager.notify(notificationID, mBuilder.build())
+            if (data >= 99) {
+                mBuilder.setContentText("Loading complete").setProgress(0, 0, false)
+                    .setOngoing(false)
+                manager.notify(notificationID, mBuilder.build())
+            } else {
+                mBuilder.setContentText("Fail").setProgress(0, 0, false).setOngoing(false)
+                manager.notify(notificationID, mBuilder.build())
+            }
         } else {
             mBuilder.setContentText(data.toString() + "%").setProgress(progressMax, data, false)
                 .build()
