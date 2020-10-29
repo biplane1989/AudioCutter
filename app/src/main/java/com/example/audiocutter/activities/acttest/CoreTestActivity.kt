@@ -89,7 +89,7 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
             }
             test_mix -> {
                 runOnUI {
-                    audioCutterImpl.mix(listAudio[0], listAudio[1], AudioMixConfig("testMix", MixSelector.LONGEST, 100, 100, AudioFormat.ACC, PATH_MIXER_FOLDER))
+                    //audioCutterImpl.mix(listAudio[0], listAudio[1], AudioMixConfig("testMix", MixSelector.LONGEST, 100, 100, AudioFormat.ACC, PATH_MIXER_FOLDER))
                 }
             }
         }

@@ -97,16 +97,15 @@
         <argument
             android:name="pathAudio"
             app:argType="string" />
+        <action
+            android:id="@+id/go_to_cutting_editor_result_screen"
+            app:destination="@id/editor_result_screen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
-    <fragment
-        android:id="@+id/cutting_editor_result_screen"
-        android:name="com.example.audiocutter.functions.resultscreen.screens.ResultScreen"
-        tools:layout="@layout/result_screen">
-        <argument
-            android:name="">
-        </argument>
-    </fragment>
 
     <fragment
         android:id="@+id/merge_chooser_screen"
@@ -129,9 +128,15 @@
         <argument
             android:name="listaudio"
             app:argType="string[]" />
+        <action
+            android:id="@+id/go_to_merging_editor_result_screen"
+            app:destination="@+id/editor_result_screen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
 
     </fragment>
-
 
     <fragment
         android:id="@+id/mix_chooser_screen"
@@ -155,19 +160,37 @@
         <argument
             android:name="pathAudio2"
             app:argType="string" />
+        <action
+            android:id="@+id/go_to_mixing_editor_result_screen"
+            app:destination="@+id/editor_result_screen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+    <fragment
+        android:id="@+id/editor_result_screen"
+        android:name="com.example.audiocutter.functions.resultscreen.screens.ResultScreen"
+        tools:layout="@layout/result_screen">
+        <argument
+            android:name="type"
+            app:argType="integer" />
+        <argument
+            android:name="listAudioPath"
+            app:argType="string[]" />
 
-<!--    <fragment-->
-<!--        android:id="@+id/result_screen"-->
-<!--        android:name="com.example.audiocutter.functions.resultscreen.screens.ResultScreen"-->
-<!--        tools:layout="@layout/result_screen">-->
-<!--        <action-->
-<!--            android:id="@+id/go_to_main_screen"-->
-<!--            app:destination="@id/main_screen"-->
-<!--            app:enterAnim="@anim/slide_in_right"-->
-<!--            app:exitAnim="@anim/slide_out_left"-->
-<!--            app:popEnterAnim="@anim/slide_in_left"-->
-<!--            app:popExitAnim="@anim/slide_out_right" />-->
-<!--    </fragment>-->
+        <argument
+            android:name="mixingConfig"
+            app:argType="com.example.core.core.AudioMixConfig"
+            app:nullable="true"/>
+        <argument
+            android:name="cuttingConfig"
+            app:argType="com.example.core.core.AudioCutConfig"
+            app:nullable="true"/>
+        <argument
+            android:name="mergingConfig"
+            app:argType="com.example.core.core.AudioMergingConfig"
+            app:nullable="true"/>
+    </fragment>
 
 </navigation>

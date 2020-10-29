@@ -1,8 +1,8 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Activity
-import android.media.AudioFormat
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,10 +25,14 @@ import com.example.audiocutter.functions.audiochooser.dialogs.MergeDialog
 import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.functions.editor.screen.CuttingEditorScreenArgs
+import com.example.audiocutter.functions.resultscreen.objects.MergingConvertingItem
 import com.example.audiocutter.ui.audiochooser.merge.MyItemTouchHelper
 import com.example.audiocutter.ui.audiochooser.merge.WrapContentLinearLayoutManager
+import com.example.core.core.AudioFormat
+import com.example.core.core.AudioMergingConfig
 
-class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseListener, View.OnClickListener, MergeDialog.MergeDialogListener {
+class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseListener,
+    View.OnClickListener, MergeDialog.MergeDialogListener {
 
     private val safeArg: MergePreviewScreenArgs by navArgs()
     private lateinit var listAudioPath: Array<String>
@@ -64,13 +68,21 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
         for (item in listAudioPath) {
             listPath.add(item)
-            newListAudio.add(AudioCutterView(ManagerFactory.getAudioFileManager()
-                .buildAudioFile(item), PlayerState.IDLE, false, 0L, 0L, false))
+            newListAudio.add(
+                AudioCutterView(
+                    ManagerFactory.getAudioFileManager()
+                        .buildAudioFile(item), PlayerState.IDLE, false, 0L, 0L, false
+                )
+            )
         }
         receiveData(newListAudio)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.merge_preview_screen, container, false)
         initViews()
         return binding.root
@@ -100,7 +112,8 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         binding.rvMergeChoose.adapter = audioMerAdapter
         itemTouchHelper.attachToRecyclerView(binding.rvMergeChoose)
         binding.rvMergeChoose.setHasFixedSize(true)
-        binding.rvMergeChoose.layoutManager = WrapContentLinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.rvMergeChoose.layoutManager =
+            WrapContentLinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
     }
 
@@ -164,8 +177,12 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     override fun mergeAudioFile(filename: String) {
         Log.d(TAG, "mergeAudioFile: $filename size list ${audioMerModel.getListAudio().size}")
-
-        viewStateManager.editorSaveMergingAudio(requireContext(), listPath, filename, "/AudioCutter/merger", com.example.core.core.AudioFormat.MP3.toString())
+        val mergingConfig = AudioMergingConfig(
+            AudioFormat.MP3,
+            filename,
+            "${Environment.getExternalStorageDirectory()}/AudioCutter/merger"
+        )
+        viewStateManager.editorSaveMergingAudio(this, audioMerModel.getListAudio(), mergingConfig)
     }
 
     override fun cancalKeybroad() {
@@ -173,7 +190,8 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     }
 
     private fun hideKeyBroad() {
-        val imm = requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         var view = requireActivity().currentFocus
         if (view == null) {
             view = View(activity)
@@ -183,7 +201,8 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     private fun showKeybroad() {
 
-        val imm = requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
 

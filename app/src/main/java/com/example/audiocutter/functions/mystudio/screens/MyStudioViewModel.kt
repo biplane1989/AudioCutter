@@ -123,7 +123,7 @@ class MyStudioViewModel : BaseViewModel() {
 //                    } else {
 //                        mListFileLoading.add(AudioFileView(item.audioFile, false, ItemLoadStatus(), item.state, -1, item.id))
 //                    }
-                    mListFileLoading.add(AudioFileView(item.audioFile, false, ItemLoadStatus(), item.state, item.percent, item.id))
+                    //mListFileLoading.add(AudioFileView(item.audioFile, false, ItemLoadStatus(), item.state, item.percent, item.id)) // TODO
                 }
             }
             mergeList()
@@ -160,7 +160,8 @@ class MyStudioViewModel : BaseViewModel() {
 
     // update loading item khi editor
     fun updateLoadingProgressbar(newItem: ConvertingItem): List<AudioFileView> {
-        var newItemConverting = AudioFileView(newItem.audioFile, false, ItemLoadStatus(), newItem.state, newItem.percent, newItem.id)
+        TODO()
+       /* var newItemConverting = AudioFileView(newItem.audioFile, false, ItemLoadStatus(), newItem.state, newItem.percent, newItem.id)
         if (!mListAudio.isEmpty()) {
             var index = 0
             for (item in mListAudio) {
@@ -169,7 +170,7 @@ class MyStudioViewModel : BaseViewModel() {
                 }
                 index++
             }
-        }
+        }*/
       /*  if (!mListFileLoading.isNullOrEmpty()) {
             var index = 0
             for (item in mListFileLoading) {

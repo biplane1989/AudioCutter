@@ -53,7 +53,11 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         super.onPostCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.mixing_screen, container, false)
         initViews()
         return binding.root
@@ -117,7 +121,10 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 durAudio2
             }
             binding.crChangeViewMixing.setLengthAudio(durAudio1, durAudio2)
-            Log.d("TAG", "setLengthAudio1 :lenggth1 $durAudio1  - length2 $durAudio2   iscompare $isCompare")
+            Log.d(
+                "TAG",
+                "setLengthAudio1 :lenggth1 $durAudio1  - length2 $durAudio2   iscompare $isCompare"
+            )
         }
 
 
@@ -182,14 +189,18 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 showToast("back frg")
             }
             binding.ivDoneMixing -> {
+                val mixingConfig = AudioMixConfig(
+                    "mixing",
+                    "${Environment.getExternalStorageDirectory()}/AudioCutter/mixer",
+                    MixSelector.LONGEST,
+                    100,
+                    100,
+                    AudioFormat.MP3
+                )
 
-                val file = File(Environment.getExternalStorageDirectory()
-                    .toString() + "/AudioCutter/mixer")
-                val mixingConfig = AudioMixConfig("mixing", MixSelector.LONGEST, 100, 100, AudioFormat.MP3, file.absolutePath)
 
 
-
-                viewStateManager.editorSaveMixingAudio(requireContext(), audioFile1, audioFile2, "Mixing1", "/AudioCutter/mixer", mixingConfig)
+                viewStateManager.editorSaveMixingAudio(this, audioFile1, audioFile2, mixingConfig)
             }
         }
     }
@@ -237,7 +248,8 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     }
 
     override fun setVolumeAudio1(value: Float, min: Float, max: Float) {
-        var newValueSound = Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
+        var newValueSound =
+            Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
         Log.d(TAG, "setVolumeAudio1: ${newValueSound.toFloat()}")
         if (newValueSound > 1) {
             newValueSound = 1.0
@@ -249,7 +261,8 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     }
 
     override fun setVolumeAudio2(value: Float, min: Float, max: Float) {
-        var newValueSound = Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
+        var newValueSound =
+            Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
         Log.d(TAG, "setVolumeAudio2: value $newValueSound")
         if (newValueSound > 1) {
             newValueSound = 1.0

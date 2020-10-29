@@ -2,60 +2,126 @@ package com.example.audiocutter.functions.resultscreen.screens
 
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.*
+import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
+import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
-import com.example.audiocutter.functions.resultscreen.objects.MixingConvertingItem
+import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import com.example.audiocutter.objects.AudioFile
 
 class ResultViewModel : BaseViewModel() {
     private val audioPlayer = ManagerFactory.newAudioPlayer()
+    private val audioEditorManager = ManagerFactory.getAudioEditorManager()
+    private val processDoneLiveData = MutableLiveData<AudioFile>()
+    private val processingLiveData = MutableLiveData<ConvertingItem>()
+    private val pendingProcessLiveData = MutableLiveData<String>()
+    private val editProcessObserver = Observer<ConvertingItem> { convertingItem ->
+        convertingItem?.let {
+            Log.d("taih", "STATE ${it.state}")
+            when (it.state) {
+                ConvertingState.PROGRESSING -> {
+                    processingLiveData.postValue(it)
+                }
+                ConvertingState.SUCCESS -> {
+                    val latestConvertingItem = audioEditorManager.getLatestConvertingItem().value
+                    latestConvertingItem?.let {
+                        if (it.id == it.id) {
+                            processDoneLiveData.postValue(it.outputAudioFile)
+                        }
+                    }
 
-    val TAG = "giangtd"
+                }
+                ConvertingState.WAITING -> {
+                    pendingProcessLiveData.postValue(it.getFileName())
+                }
+                ConvertingState.ERROR -> {
 
-    fun getData(): LiveData<ConvertingItem> {
-        return ManagerFactory.getAudioEditorManager().getCurrentProcessingItem()
+                }
+            }
+        }
     }
 
-    fun getIDProgressItem(): Int {
-        return ManagerFactory.getAudioEditorManager().getIDProcessingItem()
+    init {
+        audioEditorManager.getCurrentProcessingItem().observeForever(editProcessObserver)
+    }
+
+    fun init(arg: ResultScreenArgs) {
+
+        when (arg.type) {
+            ResultScreen.CUT -> {
+                if (arg.listAudioPath.size == 1) {
+                    val audioFile =
+                        ManagerFactory.getAudioFileManager().buildAudioFile(arg.listAudioPath[0])
+                    ManagerFactory.getAudioEditorManager()
+                        .cutAudio(audioFile, arg.cuttingConfig!!)
+                }
+            }
+            /* ResultScreen.MER -> {
+                 if (arg.listAudioPath.size == 1) {
+                     val audioFile =
+                         ManagerFactory.getAudioFileManager().buildAudioFile(arg.listAudioPath[0])
+                     ManagerFactory.getAudioEditorManager()
+                         .mergeAudio(audioFile, arg.cuttingConfig!!)
+                 }
+             }
+             ResultScreen.MIX -> {
+                 if (arg.listAudioPath.size == 2) {
+                     val audioFile1 =
+                         ManagerFactory.getAudioFileManager().buildAudioFile(arg.listAudioPath[0])
+                     val audioFile2 =
+                         ManagerFactory.getAudioFileManager().buildAudioFile(arg.listAudioPath[1])
+                     ManagerFactory.getAudioEditorManager()
+                         .mixAudio(audioFile1, audioFile2, arg.mixingConfig!!)
+                 }
+             }*/
+        }
+    }
+
+    fun getProcessDoneLiveData(): LiveData<AudioFile> {
+        return processDoneLiveData
+    }
+
+    fun getProcessingLiveData(): LiveData<ConvertingItem> {
+        return processingLiveData
+    }
+
+    fun getPendingProcessLiveData(): LiveData<String> {
+        return pendingProcessLiveData
     }
 
     // chuyen trang thai play nhac
-    fun playAudio(convertingItem: ConvertingItem) {
-        runOnBackground {
-            stopAudio()
-//            convertingItem = ManagerFactory.getAudioEditorManager().getConvertingItem()
-            Log.d("009", "convertingItem : " + convertingItem.audioFile.fileName + " file path: " + convertingItem.audioFile.file.absoluteFile)
-            audioPlayer.play(AudioFile(convertingItem.audioFile.file, convertingItem.audioFile.fileName, convertingItem.audioFile.size, convertingItem.audioFile.bitRate, convertingItem.audioFile.time, Uri.parse(convertingItem.audioFile.file.absolutePath)))
-        }
-    }
+    suspend fun playAudio() {
+        processDoneLiveData.value.let { audioFile ->
+            audioFile?.let {
+                when (audioPlayer.getPlayerInfoData().playerState) {
+                    PlayerState.IDLE -> {
+                        audioPlayer.play(
+                            AudioFile(
+                                it.file,
+                                it.fileName,
+                                it.size,
+                                it.bitRate,
+                                it.time,
+                                Uri.parse(it.file.absolutePath)
+                            )
+                        )
+                    }
+                    PlayerState.PAUSE -> {
+                        audioPlayer.resume()
+                    }
 
-    fun pauseAudio() {
-        runOnBackground {
-//            ManagerFactory.getAudioPlayer().pause()
-            audioPlayer.pause()
-        }
-    }
+                    PlayerState.PLAYING -> {
+                        audioPlayer.pause()
+                    }
+                    PlayerState.PREPARING -> {
 
-    fun stopAudio() {
-//        runOnBackground {
-//        ManagerFactory.getAudioPlayer().stop()
-        if (audioPlayer.getAudioIsPlaying()) {
-            audioPlayer.stop()
-        }
-//        }
-    }
+                    }
+                }
+            }
 
-    fun resumeAudio() {
-        runOnBackground {
-//            ManagerFactory.getAudioPlayer().resume()
-            audioPlayer.resume()
         }
     }
 
@@ -73,11 +139,8 @@ class ResultViewModel : BaseViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-//        ManagerFactory.getAudioPlayer().stop()
-        if (audioPlayer.getAudioIsPlaying()) {
-            audioPlayer.stop()
-        }
-        Log.d("009", "onCleared: ")
+        audioPlayer.stop()
+        audioEditorManager.getCurrentProcessingItem().removeObserver(editProcessObserver)
     }
 
 }

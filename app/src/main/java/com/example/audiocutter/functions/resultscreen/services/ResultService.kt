@@ -16,8 +16,7 @@ import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.screens.OutputActivity
-import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
-import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
+import com.example.audiocutter.functions.resultscreen.objects.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,7 +39,7 @@ class ResultService : LifecycleService() {
     @RequiresApi(Build.VERSION_CODES.N)
     val processObserver = Observer<ConvertingItem> { it ->
         if (it != null) {
-            builderNotification(it.fileName)
+            builderNotification(it.getFileName())
             sendNotification(serviceForegroundID, it.percent, it.state)
             Log.d(TAG, "ResultService percent : " + it.percent)
             Log.d(TAG, " ResultService status : " + it.state)
@@ -101,7 +100,8 @@ class ResultService : LifecycleService() {
     }
 
     fun builderNotification(audioTitle: String) {
-        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(), 0)
+        val resultPendingIntent: PendingIntent =
+            PendingIntent.getActivity(this, 0, resultIntent(), 0)
 
         mBuilder = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
             .setSmallIcon(R.drawable.list_contact_icon_back).setContentTitle(audioTitle)
@@ -138,7 +138,8 @@ class ResultService : LifecycleService() {
     }
 
     fun builderForegroundService() {
-        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(), PendingIntent.FLAG_CANCEL_CURRENT)
+        val resultPendingIntent: PendingIntent =
+            PendingIntent.getActivity(this, 0, resultIntent(), PendingIntent.FLAG_CANCEL_CURRENT)
 
         val notification = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
             .setContentTitle("Audio Cutter Loading").setSmallIcon(R.drawable.list_contact_icon_back)
