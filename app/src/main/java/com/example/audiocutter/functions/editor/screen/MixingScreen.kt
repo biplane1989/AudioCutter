@@ -189,7 +189,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
 
 
-                viewStateManager.editorSaveMixingAudio(requireContext(), audioFile1, audioFile2, "/AudioCutter/mixer", mixingConfig)
+                viewStateManager.editorSaveMixingAudio(requireContext(), audioFile1, audioFile2, "Mixing1", "/AudioCutter/mixer", mixingConfig)
             }
         }
     }

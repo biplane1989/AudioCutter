@@ -62,8 +62,9 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
 
                         binding.pbLoading.progress = data.percent
                         binding.tvLoading.text = data.percent.toString() + "%"
-                        binding.tvTitleMusic.text = data.audioFile.fileName
+                        binding.tvTitleMusic.text = data.fileName
                         binding.tvInfoMusic.text = data.audioFile.bitRate.toString() + "kb/s"
+
 
 //                        data.audioFile.bitmap?.let {
 //                            binding.ivAvatarMusic.setImageBitmap(it)
@@ -106,7 +107,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
     }
 
     val itemConvertingItemObserver = Observer<ConvertingItem> { it ->       // observer 1 item tu core
-        convertingItem = ConvertingItem(it.id, it.state, it.percent, it.audioFile)
+        convertingItem = ConvertingItem(it.id, it.state, it.percent, it.audioFile, it.fileName)
         Log.d("009", "ConvertingItem Observer path: " + it.audioFile.file.absoluteFile)
         if (convertingItem.state == ConvertingState.SUCCESS) {
             binding.tvTitleMusic.text = convertingItem.audioFile.fileName

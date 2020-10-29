@@ -9,8 +9,8 @@ import com.example.core.core.AudioMixConfig
 import java.io.File
 
 interface AudioEditorManager {
-    fun cutAudio(audioFile: AudioFile, cuttingConfig: AudioCutConfig, outFile: File)
-    fun mixAudio(audioFile1: AudioFile, audioFile2: AudioFile, mixingConfig: AudioMixConfig, outFile: AudioFile)
+    fun cutAudio(audioFile: AudioFile, cuttingConfig: AudioCutConfig, outFile: File, fileName: String)
+    fun mixAudio(audioFile1: AudioFile, audioFile2: AudioFile, mixingConfig: AudioMixConfig, outFile: AudioFile, fileName: String)
     fun mergeAudio(listAudioFiles: List<AudioFile>, autoFormat: AudioFormat, outFilePath: AudioFile, fileName: String)
     fun cancel(int: Int)
     fun getCurrentProcessingItem(): LiveData<ConvertingItem>

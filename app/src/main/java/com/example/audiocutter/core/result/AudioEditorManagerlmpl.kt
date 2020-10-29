@@ -113,7 +113,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         return null
     }
 
-    override fun cutAudio(audioFile: AudioFile, cuttingConfig: AudioCutConfig, outFile: File) {
+    override fun cutAudio(audioFile: AudioFile, cuttingConfig: AudioCutConfig, outFile: File, fileName: String) {
 
         if (!isMyServiceRunning(ResultService::class.java)) {
             notifyConvertingItemChanged(null)
@@ -125,7 +125,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             }
         }
         currConvertingId++
-        val item = CuttingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile, cuttingConfig)
+        val item = CuttingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile, cuttingConfig, fileName)
         listConvertingItemData.add(item)
 
         listCopyConvertingItemData.add(item)
@@ -140,7 +140,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
     }
 
-    override fun mixAudio(audioFile1: AudioFile, audioFile2: AudioFile, mixingConfig: AudioMixConfig, outFile: AudioFile) {
+    override fun mixAudio(audioFile1: AudioFile, audioFile2: AudioFile, mixingConfig: AudioMixConfig, outFile: AudioFile, fileName: String) {
 
         if (!isMyServiceRunning(ResultService::class.java)) {
             notifyConvertingItemChanged(null)
@@ -151,7 +151,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             }
         }
         currConvertingId++
-        val item = MixingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, outFile, audioFile1, audioFile2, mixingConfig)
+        val item = MixingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, outFile, audioFile1, audioFile2, mixingConfig, fileName)
         listConvertingItemData.add(item)
 
         listCopyConvertingItemData.add(item)
