@@ -29,44 +29,47 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
     lateinit var mContext: Context
     val TAG = "giangtd"
-
+    var audioState = ConvertingState.WAITING
     fun init(context: Context) {
         mContext = context
-
         ManagerFactory.getAudioCutter().getAudioMergingInfo().observeForever { audioMering ->
 
-            mainScope.launch {
-                var convertingState: ConvertingState = ConvertingState.WAITING
-                when (audioMering.state) {
-                    FFMpegState.IDE -> {
-                        convertingState = ConvertingState.WAITING
-                    }
-                    FFMpegState.RUNNING -> {
-                        convertingState = ConvertingState.PROGRESSING
-                    }
-                    FFMpegState.CANCEL -> {
-                        convertingState = ConvertingState.ERROR
-                    }
-                    FFMpegState.FAIL -> {
-                        convertingState = ConvertingState.ERROR
-                    }
+//            mainScope.launch {
+            var convertingState: ConvertingState = ConvertingState.WAITING
+            when (audioMering.state) {
+                FFMpegState.IDE -> {
+                    convertingState = ConvertingState.WAITING
+                    audioState = ConvertingState.WAITING
                 }
-                Log.e(TAG, "init: ${audioMering.percent}" + " convertingState: " + audioMering.state + " listConvertingItemData size: " + listConvertingItemData.size)
-                audioMering.audioFile?.let {
-                    for (item in listCopyConvertingItemData) {
-                        Log.d(TAG, "init: currentProcessingItem : item status :" + item.state)
-                        if (item.state != ConvertingState.SUCCESS) {
-                            item.state = convertingState
-                            item.percent = audioMering.percent
+                FFMpegState.RUNNING -> {
+                    convertingState = ConvertingState.PROGRESSING
+                    audioState = ConvertingState.PROGRESSING
+                }
+                FFMpegState.CANCEL -> {
+                    convertingState = ConvertingState.ERROR
+                    audioState = ConvertingState.ERROR
+                }
+                FFMpegState.FAIL -> {
+                    convertingState = ConvertingState.ERROR
+                    audioState = ConvertingState.ERROR
+                }
+            }
+            Log.e(TAG, "init: ${audioMering.percent}" + " convertingState: " + audioMering.state + " listConvertingItemData size: " + listConvertingItemData.size)
+            audioMering.audioFile?.let {
+                for (item in listCopyConvertingItemData) {
+                    if (item.state != ConvertingState.SUCCESS) {
+                        item.state = convertingState
+                        item.percent = audioMering.percent
 //                            item.audioFile = AudioFile(it.file, it.fileName, it.size, it.bitRate)
 
-                            currentProcessingItem.postValue(item)
-                            break
-                        }
+                        Log.d(TAG, "init: currentProcessingItem : item status :" + item.state)
+                        currentProcessingItem.postValue(item)
+                        break
                     }
                 }
             }
         }
+//        }
     }
 
     val CUT_AUDIO = 0

@@ -42,8 +42,7 @@ class ResultService : LifecycleService() {
         if (it != null) {
             builderNotification(it.fileName)
             sendNotification(serviceForegroundID, it.percent, it.state)
-            Log.d(TAG, "ResultService percent : " + it.percent)
-            Log.d(TAG, " ResultService status : " + it.state)
+            Log.d(TAG, "ResultService percent : " + it.percent+ "status : "+ it.state)
             if (it.state == ConvertingState.SUCCESS) {
                 if (it.percent >= 100) {
                     sendNotificationComplte(it.id)

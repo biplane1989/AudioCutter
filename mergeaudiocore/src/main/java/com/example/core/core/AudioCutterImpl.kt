@@ -37,8 +37,10 @@ class AudioCutterImpl : AudioCutter {
             }
             audioFileCore.size = it.size * 1204
             mainScope.launch {
-                Log.e(TAG, "percent: $percent   time: ${it.time}   timeVideo: $timeVideo")
-                updateItemLiveData(audioFileCore, ((it.time * 100) / timeVideo).toInt(), FFMpegState.RUNNING)
+                Log.e(TAG, "percent: $percent status : ${itemMergeInfo.state}  time: ${it.time}   timeVideo: $timeVideo")
+                if (itemMergeInfo.state != FFMpegState.CANCEL && itemMergeInfo.state != FFMpegState.FAIL) {
+                    updateItemLiveData(audioFileCore, ((it.time * 100) / timeVideo).toInt(), FFMpegState.RUNNING)
+                }
             }
         }
     }
@@ -92,7 +94,7 @@ class AudioCutterImpl : AudioCutter {
     override suspend fun mix(audioFile1: AudioCore, audioFile2: AudioCore, audioMixConfig: AudioMixConfig): AudioCore {
         withContext(Dispatchers.Default) {
             updateItemLiveData(audioFileCore, 0, FFMpegState.IDE)
-            
+
             val fileName = audioMixConfig.fileName
             val mimeType = if (audioMixConfig.format == AudioFormat.MP3) AudioFormat.MP3.type else AudioFormat.ACC.type
             val codec = if (audioMixConfig.format == AudioFormat.MP3) CODEC_MP3 else CODEC_AAC
@@ -127,12 +129,13 @@ class AudioCutterImpl : AudioCutter {
     }
 
     override suspend fun cancelTask(): Boolean {
+        Log.d(TAG, "cancelTask: ")
         FFmpeg.cancel()
         return true
     }
 
     override suspend fun merge(listAudioFile: List<AudioCore>, fileName: String, audioFormat: AudioFormat, pathFolder: String): AudioCore {
-        timeVideo =0
+        timeVideo = 0
 
         withContext(Dispatchers.Default) {
 
@@ -180,6 +183,7 @@ class AudioCutterImpl : AudioCutter {
         itemMergeInfo.percent = percent
         itemMergeInfo.state = state
         audioFileUpdate.postValue(itemMergeInfo)
+        Log.d(TAG, "updateItemLiveData: status " + itemMergeInfo.state)
     }
 
     private fun updateAudioFile(path: String, name: String, bitRate: Int, fileTime: Long, fileType: String) {
