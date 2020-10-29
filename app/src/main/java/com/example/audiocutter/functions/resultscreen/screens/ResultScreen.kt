@@ -56,13 +56,9 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
 
         val duration = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(
-                it.file,
-                MediaMetadataRetriever.METADATA_KEY_DURATION
-            )
+            .getInfoAudioFile(it.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
         if (!duration.isNullOrBlank()) {
-            binding.tvTimeTotal.text =
-                String.format("/%s", simpleDateFormat.format(duration.toInt()))
+            binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(duration.toInt()))
         }
         binding.tvInfoMusic.setText(convertAudioSizeToString(it))
 
@@ -193,22 +189,32 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
     }
 
     val playInfoObserver = Observer<PlayerInfo> { playInfo ->
-
+        playInfo.playerState
         binding.sbMusic.max = playInfo.duration
         binding.sbMusic.progress = playInfo.posision
         binding.tvTimeTotal.text = "/" + simpleDateFormat.format(playInfo.duration)
         binding.tvTimeLife.text = simpleDateFormat.format(playInfo.posision)
+
+        when (playInfo.playerState) {
+            PlayerState.IDLE -> {
+                binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
+            }
+            PlayerState.PAUSE -> {
+                binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
+            }
+            PlayerState.PLAYING -> {
+//                binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
+                binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_pause)
+            }
+        }
+
 
         playerState = playInfo.playerState
         Log.d("009", "playInfoObserver playerState: " + playerState)
     }
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.result_screen, container, false)
         mResultViewModel.getPendingProcessLiveData()
             .observe(viewLifecycleOwner, pendingProcessObserver)

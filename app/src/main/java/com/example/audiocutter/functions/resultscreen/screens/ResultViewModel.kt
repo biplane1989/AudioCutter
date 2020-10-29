@@ -24,17 +24,17 @@ class ResultViewModel : BaseViewModel() {
             when (it.state) {
                 ConvertingState.PROGRESSING -> {
                     val latestConvertingItem = audioEditorManager.getLatestConvertingItem().value
-                    latestConvertingItem?.let {item->
+                    latestConvertingItem?.let { item ->
                         if (item.id == it.id) {
                             processingLiveData.postValue(it)
-                        }else{
+                        } else {
                             pendingProcessLiveData.postValue(item.getFileName())
                         }
                     }
                 }
                 ConvertingState.SUCCESS -> {
                     val latestConvertingItem = audioEditorManager.getLatestConvertingItem().value
-                    latestConvertingItem?.let {item->
+                    latestConvertingItem?.let { item ->
                         if (item.id == it.id) {
                             processDoneLiveData.postValue(it.outputAudioFile)
                         }
@@ -60,30 +60,38 @@ class ResultViewModel : BaseViewModel() {
         when (arg.type) {
             ResultScreen.CUT -> {
                 if (arg.listAudioPath.size == 1) {
-                    val audioFile =
-                        ManagerFactory.getAudioFileManager().buildAudioFile(arg.listAudioPath[0])
-                    ManagerFactory.getAudioEditorManager()
-                        .cutAudio(audioFile, arg.cuttingConfig!!)
+                    val audioFile = ManagerFactory.getAudioFileManager()
+                        .buildAudioFile(arg.listAudioPath[0])
+                    ManagerFactory.getAudioEditorManager().cutAudio(audioFile, arg.cuttingConfig!!)
                 }
             }
-            /* ResultScreen.MER -> {
-                 if (arg.listAudioPath.size == 1) {
-                     val audioFile =
-                         ManagerFactory.getAudioFileManager().buildAudioFile(arg.listAudioPath[0])
-                     ManagerFactory.getAudioEditorManager()
-                         .mergeAudio(audioFile, arg.cuttingConfig!!)
-                 }
-             }
-             ResultScreen.MIX -> {
-                 if (arg.listAudioPath.size == 2) {
-                     val audioFile1 =
-                         ManagerFactory.getAudioFileManager().buildAudioFile(arg.listAudioPath[0])
-                     val audioFile2 =
-                         ManagerFactory.getAudioFileManager().buildAudioFile(arg.listAudioPath[1])
-                     ManagerFactory.getAudioEditorManager()
-                         .mixAudio(audioFile1, audioFile2, arg.mixingConfig!!)
-                 }
-             }*/
+            ResultScreen.MER -> {
+                val listAudio = ArrayList<AudioFile>()
+                for (item in arg.listAudioPath) {
+                    listAudio.add(ManagerFactory.getAudioFileManager().buildAudioFile(item))
+                }
+                    /*   if (arg.listAudioPath.size == 2) {
+                           val audioFile = ManagerFactory.getAudioFileManager()
+                               .buildAudioFile(arg.listAudioPath[0])
+                           val audioFile2 = ManagerFactory.getAudioFileManager()
+                               .buildAudioFile(arg.listAudioPath[1])
+
+                           listAudio.add(audioFile)
+                           listAudio.add(audioFile2)*/
+                    ManagerFactory.getAudioEditorManager()
+                        .mergeAudio(listAudio, arg.mergingConfig!!)
+//                }
+            }
+            ResultScreen.MIX -> {
+                if (arg.listAudioPath.size == 2) {
+                    val audioFile1 = ManagerFactory.getAudioFileManager()
+                        .buildAudioFile(arg.listAudioPath[0])
+                    val audioFile2 = ManagerFactory.getAudioFileManager()
+                        .buildAudioFile(arg.listAudioPath[1])
+                    ManagerFactory.getAudioEditorManager()
+                        .mixAudio(audioFile1, audioFile2, arg.mixingConfig!!)
+                }
+            }
         }
     }
 
@@ -105,16 +113,7 @@ class ResultViewModel : BaseViewModel() {
             audioFile?.let {
                 when (audioPlayer.getPlayerInfoData().playerState) {
                     PlayerState.IDLE -> {
-                        audioPlayer.play(
-                            AudioFile(
-                                it.file,
-                                it.fileName,
-                                it.size,
-                                it.bitRate,
-                                it.time,
-                                Uri.parse(it.file.absolutePath)
-                            )
-                        )
+                        audioPlayer.play(AudioFile(it.file, it.fileName, it.size, it.bitRate, it.time, Uri.parse(it.file.absolutePath)))
                     }
                     PlayerState.PAUSE -> {
                         audioPlayer.resume()

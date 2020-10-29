@@ -30,18 +30,7 @@ class ResultActivity : BaseActivity() {
         const val MER = 2
         const val CUT = 1
 
-        fun startActivity(
-            context: Context,
-            audioPath1: String?,
-            audioPath2: String?,
-            typeMerging: Int,
-            audioCutConfig: AudioCutConfig?,
-            audioMixConfig: AudioMixConfig?,
-            listAudio: ArrayList<String>?,
-            fileName: String?,
-            filePath: String,
-            audioFormat: String?
-        ) {
+        fun startActivity(context: Context, audioPath1: String?, audioPath2: String?, typeMerging: Int, audioCutConfig: AudioCutConfig?, audioMixConfig: AudioMixConfig?, listAudio: ArrayList<String>?, fileName: String?, filePath: String, audioFormat: String?) {
             val intent = Intent(context, ResultActivity::class.java)
             intent.putExtra(AUDIO_FILE_PATH_KEY1, audioPath1)
             intent.putExtra(AUDIO_FILE_PATH_KEY2, audioPath2)
@@ -95,42 +84,42 @@ class ResultActivity : BaseActivity() {
 //        val audioCutConfig = AudioCutConfig(1f, 100f, 300, "Cuting1", Effect.OFF, Effect.OFF, BitRate._128kb, AudioFormat.MP3, file.absolutePath)
 //        val audioMixConfig = AudioMixConfig("mixing1", MixSelector.LONGEST, 100, 100, AudioFormat.MP3, file.absolutePath)
 
-       /* when (typeMerging) {
-            MIX -> {
-                if (!audioPath2.isNullOrBlank() && !audioPath1.isNullOrBlank()) {
-                    val audioFile1 = ManagerFactory.getAudioFileManager().buildAudioFile(audioPath1)
-                    val audioFile2 = ManagerFactory.getAudioFileManager().buildAudioFile(audioPath2)
-                    if (audioMixConfig != null && fileName != null) {
-                        ManagerFactory.getAudioEditorManager()
-                            .mixAudio(audioFile1, audioFile2, audioMixConfig, output, fileName)
-                    }
-                }
-            }
-            CUT -> {
-                if (!audioPath1.isNullOrBlank()) {
-                    val audioFile1 = ManagerFactory.getAudioFileManager().buildAudioFile(audioPath1)
-                    if (audioCutConfig != null && fileName != null) {
-                        ManagerFactory.getAudioEditorManager()
-                            .cutAudio(audioFile1, audioCutConfig, output, fileName)
-                    }
+        /* when (typeMerging) {
+             MIX -> {
+                 if (!audioPath2.isNullOrBlank() && !audioPath1.isNullOrBlank()) {
+                     val audioFile1 = ManagerFactory.getAudioFileManager().buildAudioFile(audioPath1)
+                     val audioFile2 = ManagerFactory.getAudioFileManager().buildAudioFile(audioPath2)
+                     if (audioMixConfig != null && fileName != null) {
+                         ManagerFactory.getAudioEditorManager()
+                             .mixAudio(audioFile1, audioFile2, audioMixConfig, output, fileName)
+                     }
+                 }
+             }
+             CUT -> {
+                 if (!audioPath1.isNullOrBlank()) {
+                     val audioFile1 = ManagerFactory.getAudioFileManager().buildAudioFile(audioPath1)
+                     if (audioCutConfig != null && fileName != null) {
+                         ManagerFactory.getAudioEditorManager()
+                             .cutAudio(audioFile1, audioCutConfig, output, fileName)
+                     }
 
-                }
-            }
-            MER -> {
-                if (fileName != null) {
-                    audioFormat?.let {
-                        var format = AudioFormat.MP3
-                        if (audioFormat == AudioFormat.MP3.toString()) {
-                            format = AudioFormat.MP3
-                        } else {
-                            format = AudioFormat.ACC
-                        }
-                        ManagerFactory.getAudioEditorManager()
-                            .mergeAudio(newListPathAudio, format, output, fileName)
-                    }
-                }
-            }
-        }*/
+                 }
+             }
+             MER -> {
+                 if (fileName != null) {
+                     audioFormat?.let {
+                         var format = AudioFormat.MP3
+                         if (audioFormat == AudioFormat.MP3.toString()) {
+                             format = AudioFormat.MP3
+                         } else {
+                             format = AudioFormat.ACC
+                         }
+                         ManagerFactory.getAudioEditorManager()
+                             .mergeAudio(newListPathAudio, format, output, fileName)
+                     }
+                 }
+             }
+         }*/
     }
 
     override fun onBackPressed() {

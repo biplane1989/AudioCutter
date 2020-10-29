@@ -175,6 +175,7 @@
                     </androidx.cardview.widget.CardView>
 
                     <TextView
+                        android:gravity="bottom"
                         android:id="@+id/tv_info_music"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
