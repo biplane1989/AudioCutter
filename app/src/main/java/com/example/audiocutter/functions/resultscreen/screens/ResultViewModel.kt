@@ -23,19 +23,26 @@ class ResultViewModel : BaseViewModel() {
             Log.d("taih", "STATE ${it.state}")
             when (it.state) {
                 ConvertingState.PROGRESSING -> {
-                    processingLiveData.postValue(it)
+                    val latestConvertingItem = audioEditorManager.getLatestConvertingItem().value
+                    latestConvertingItem?.let {item->
+                        if (item.id == it.id) {
+                            processingLiveData.postValue(it)
+                        }else{
+                            pendingProcessLiveData.postValue(item.getFileName())
+                        }
+                    }
                 }
                 ConvertingState.SUCCESS -> {
                     val latestConvertingItem = audioEditorManager.getLatestConvertingItem().value
-                    latestConvertingItem?.let {
-                        if (it.id == it.id) {
+                    latestConvertingItem?.let {item->
+                        if (item.id == it.id) {
                             processDoneLiveData.postValue(it.outputAudioFile)
                         }
                     }
 
                 }
                 ConvertingState.WAITING -> {
-                    pendingProcessLiveData.postValue(it.getFileName())
+
                 }
                 ConvertingState.ERROR -> {
 
