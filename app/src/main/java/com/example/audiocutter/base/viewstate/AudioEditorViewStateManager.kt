@@ -39,8 +39,9 @@ interface AudioEditorViewStateManager {
 
     fun resultScreenGoToHome(context: Context) {
         if (getViewStateMutable().getLastState() == ViewStateScreen.RESULT_SCREEN) {
-//            getViewStateMutable().pushViewState(ViewStateScreen.HOME_SCREEN)
+            getViewStateMutable().popViewStateTo(ViewStateScreen.HOME_SCREEN)
             val intent = Intent(context, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             context.startActivity(intent)

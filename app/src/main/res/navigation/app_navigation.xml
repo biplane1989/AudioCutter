@@ -100,6 +100,15 @@
     </fragment>
 
     <fragment
+        android:id="@+id/cutting_editor_result_screen"
+        android:name="com.example.audiocutter.functions.resultscreen.screens.ResultScreen"
+        tools:layout="@layout/result_screen">
+        <argument
+            android:name="">
+        </argument>
+    </fragment>
+
+    <fragment
         android:id="@+id/merge_chooser_screen"
         android:name="com.example.audiocutter.functions.audiochooser.screens.MergeChooserScreen"
         tools:layout="@layout/merge_chooser_screen">

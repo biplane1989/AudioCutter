@@ -40,6 +40,15 @@ object ViewStateManagerImpl : ViewStateManager, ViewStateMutable {
         return viewStateList.contains(viewStateScreen)
     }
 
+    override fun popViewStateTo(viewStateScreen: ViewStateScreen) {
+        if(viewStateList.contains(viewStateScreen)){
+            while (getLastState() != viewStateScreen){
+                popViewState()
+            }
+        }
+        logState()
+    }
+
     override fun onBackPressed(): Boolean {
         if (isWaitingForFinishingScreen) {
             return false

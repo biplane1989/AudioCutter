@@ -17,7 +17,6 @@ class ResultViewModel : BaseViewModel() {
     private val audioPlayer = ManagerFactory.newAudioPlayer()
 
     val TAG = "giangtd"
-//    lateinit var convertingItem: ConvertingItem
 
     fun getData(): LiveData<ConvertingItem> {
         return ManagerFactory.getAudioEditorManager().getCurrentProcessingItem()
@@ -33,41 +32,52 @@ class ResultViewModel : BaseViewModel() {
             stopAudio()
 //            convertingItem = ManagerFactory.getAudioEditorManager().getConvertingItem()
             Log.d("009", "convertingItem : " + convertingItem.audioFile.fileName + " file path: " + convertingItem.audioFile.file.absoluteFile)
-            ManagerFactory.getAudioPlayer().play(AudioFile(convertingItem.audioFile.file, convertingItem.audioFile.fileName, convertingItem.audioFile.size, convertingItem.audioFile.bitRate, convertingItem.audioFile.time, Uri.parse(convertingItem.audioFile.file.absolutePath)))
+            audioPlayer.play(AudioFile(convertingItem.audioFile.file, convertingItem.audioFile.fileName, convertingItem.audioFile.size, convertingItem.audioFile.bitRate, convertingItem.audioFile.time, Uri.parse(convertingItem.audioFile.file.absolutePath)))
         }
     }
 
     fun pauseAudio() {
         runOnBackground {
-            ManagerFactory.getAudioPlayer().pause()
+//            ManagerFactory.getAudioPlayer().pause()
+            audioPlayer.pause()
         }
     }
 
     fun stopAudio() {
 //        runOnBackground {
-        ManagerFactory.getAudioPlayer().stop()
+//        ManagerFactory.getAudioPlayer().stop()
+        if (audioPlayer.getAudioIsPlaying()) {
+            audioPlayer.stop()
+        }
 //        }
     }
 
     fun resumeAudio() {
         runOnBackground {
-            ManagerFactory.getAudioPlayer().resume()
+//            ManagerFactory.getAudioPlayer().resume()
+            audioPlayer.resume()
         }
     }
 
     fun seekToAudio(cusorPos: Int) {
         runOnBackground {
-            ManagerFactory.getAudioPlayer().seek(cusorPos)
+//            ManagerFactory.getAudioPlayer().seek(cusorPos)
+            audioPlayer.seek(cusorPos)
         }
     }
 
     fun getPlayerInfo(): LiveData<PlayerInfo> {
-        return ManagerFactory.getAudioPlayer().getPlayerInfo()
+//        return ManagerFactory.getAudioPlayer().getPlayerInfo()
+        return audioPlayer.getPlayerInfo()
     }
 
     override fun onCleared() {
         super.onCleared()
-        ManagerFactory.getAudioPlayer().stop()
+//        ManagerFactory.getAudioPlayer().stop()
+        if (audioPlayer.getAudioIsPlaying()) {
+            audioPlayer.stop()
+        }
+        Log.d("009", "onCleared: ")
     }
 
 }

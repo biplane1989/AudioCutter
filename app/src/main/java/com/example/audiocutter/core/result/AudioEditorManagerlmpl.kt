@@ -261,8 +261,8 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             }
             listConvertingItemData.remove(item)                             // demo dong bo data voi luu tru thu muc
             listConvertingItems.postValue(listConvertingItemData)
-            processNextItem()
 
+            processNextItem()
         }
     }
 

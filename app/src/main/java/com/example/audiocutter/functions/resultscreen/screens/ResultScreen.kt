@@ -50,11 +50,11 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                         binding.llPlayMusic.visibility = View.GONE
                         binding.clOpption.visibility = View.GONE
                         binding.btnBack.visibility = View.GONE
-                        binding.ivHome.visibility = View.GONE
+                        binding.ivHome.visibility = View.INVISIBLE
                     }
                     ConvertingState.PROGRESSING -> {
                         binding.btnBack.visibility = View.GONE
-                        binding.ivHome.visibility = View.GONE
+                        binding.ivHome.visibility = View.INVISIBLE
                         binding.tvWait.visibility = View.GONE
                         binding.clOpption.visibility = View.GONE
                         binding.llProgressbar.visibility = View.VISIBLE
@@ -66,9 +66,9 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                         binding.tvInfoMusic.text = data.audioFile.bitRate.toString() + "kb/s"
 
 
-//                        data.audioFile.bitmap?.let {
-//                            binding.ivAvatarMusic.setImageBitmap(it)
-//                        }
+                        data.audioFile.bitmap?.let {
+                            binding.ivAvatarMusic.setImageBitmap(it)
+                        }
 
                     }
                     ConvertingState.SUCCESS -> {
@@ -80,6 +80,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                         binding.llPlayMusic.visibility = View.VISIBLE
                         binding.clOpption.visibility = View.VISIBLE
                         binding.btnOrigin.visibility = View.GONE
+                        binding.tvTitleResult.visibility = View.VISIBLE
+                        binding.tvTitleLoading.visibility = View.GONE
 
 //                        binding.tvTitleMusic.text = convertingItem.audioFile.fileName
 //                        binding.tvInfoMusic.text = convertingItem.audioFile.bitRate.toString() + "kb/s"
@@ -138,7 +140,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.tvTimeLife.text = simpleDateFormat.format(playInfo.posision)
 
         playerState = playInfo.playerState
-        Log.d(TAG, "playerState: " + playerState)
+        Log.d("009", "playInfoObserver playerState: " + playerState)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -194,11 +196,13 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
     }
 
     override fun onPostDestroy() {
-        super.onPostDestroy()
         mResultViewModel.stopAudio()
+        super.onPostDestroy()
+        Log.d("009", "onPostDestroy: ")
     }
 
     override fun onDestroyView() {
+        Log.d("009", "onDestroyView: ")
         mResultViewModel.stopAudio()
         super.onDestroyView()
     }
@@ -206,11 +210,11 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view) {
             binding.ivPausePlayMusic -> {
+                Log.d("009", "onClick: onClick "+ " Status: "+ playerState + "  file path : "+ convertingItem.audioFile.file.absoluteFile )
                 when (playerState) {
                     PlayerState.IDLE -> {
                         binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_pause)
                         mResultViewModel.playAudio(convertingItem)
-                        Log.d("009", "onClick: convertingItem : " + convertingItem.audioFile.file.absoluteFile)
                     }
                     PlayerState.PAUSE -> {
                         binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_pause)

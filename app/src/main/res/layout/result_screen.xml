@@ -42,16 +42,32 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tv_contacts"
+                android:id="@+id/tv_title_loading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:fontFamily="@font/sanfranciscodisplay_bold"
-                android:text="Converting..."
+                android:text="@string/result_screen_title_loading"
                 android:textColor="#2E3041"
                 android:textSize="18dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@id/btn_cancel"
+                app:layout_constraintStart_toEndOf="@id/btn_cancel"
+                app:layout_constraintTop_toTopOf="@id/btn_cancel" />
+
+            <TextView
+                android:id="@+id/tv_title_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:text="@string/result_screen_title_result"
+                android:textColor="#2E3041"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/btn_cancel"
+                app:layout_constraintEnd_toStartOf="@id/iv_home"
                 app:layout_constraintStart_toEndOf="@id/btn_cancel"
                 app:layout_constraintTop_toTopOf="@id/btn_cancel" />
 
@@ -63,7 +79,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/result_ic_home"
-                android:visibility="gone"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -162,9 +178,8 @@
                         android:id="@+id/tv_info_music"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         android:fontFamily="@font/sanfranciscodisplay_light"
-                        android:text="128kb/s"
+                        android:text="@string/result_screen_size_default"
                         android:textColor="#9C9C9C"
                         android:textSize="14sp" />
 
@@ -181,7 +196,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:gravity="center_vertical"
-            android:text="wait task..."
+            android:text="@string/result_scren_wait_task"
             android:textColor="#2E3041"
             android:textSize="16sp"
             app:layout_constraintTop_toBottomOf="@+id/ll_audio_item" />
@@ -246,7 +261,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:gravity="end"
-                android:text="00:00"
+                android:text="@string/result_screen_timelife_default"
                 android:textColor="#9C9C9C"
                 android:textSize="12dp" />
 
@@ -256,7 +271,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
-                android:text="/08:05"
+                android:text="@string/result_screen_timetotal_default"
                 android:textColor="#9C9C9C"
                 android:textSize="12dp" />
 
@@ -297,7 +312,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="Ringtone"
+                    android:text="@string/result_screen_title_ringtone"
                     android:textColor="#2E3041"
                     android:textSize="14dp" />
 
@@ -329,7 +344,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="Alarm"
+                    android:text="@string/result_screen_title_alarm"
                     android:textColor="#2E3041"
                     android:textSize="14dp" />
 
@@ -361,7 +376,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="notification"
+                    android:text="@string/result_screen_title_notification"
                     android:textColor="#2E3041"
                     android:textSize="14dp" />
 
@@ -396,7 +411,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="Share"
+                    android:text="@string/result_screen_title_share"
                     android:textColor="#2E3041"
                     android:textSize="14dp" />
             </LinearLayout>
@@ -428,7 +443,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="Contacts"
+                    android:text="@string/result_screen_title_contacts"
                     android:textColor="#2E3041"
                     android:textSize="14dp" />
 
@@ -461,7 +476,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="Open With"
+                    android:text="@string/result_screen_title_open_with"
                     android:textColor="#2E3041"
                     android:textSize="14dp" />
 
@@ -493,7 +508,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/sanfranciscodisplay_bold"
-                android:text="BACKGROUND CONVERT"
+                android:text="@string/result_screen_btn_background_convert"
                 android:textColor="#FFFFFF"
                 android:textSize="14dp"
                 app:layout_constraintBottom_toBottomOf="@id/btn_origin"

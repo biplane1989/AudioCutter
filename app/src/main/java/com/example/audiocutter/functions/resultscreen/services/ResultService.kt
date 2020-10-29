@@ -40,9 +40,9 @@ class ResultService : LifecycleService() {
     @RequiresApi(Build.VERSION_CODES.N)
     val processObserver = Observer<ConvertingItem> { it ->
         if (it != null) {
-            builderNotification(it.audioFile.fileName.toString())
+            builderNotification(it.fileName)
             sendNotification(serviceForegroundID, it.percent, it.state)
-
+            Log.d(TAG, "ResultService percent : " + it.percent)
             Log.d(TAG, " ResultService status : " + it.state)
             if (it.state == ConvertingState.SUCCESS) {
                 if (it.percent >= 100) {
@@ -122,7 +122,7 @@ class ResultService : LifecycleService() {
     fun sendNotification(notificationID: Int, data: Int, convertingState: ConvertingState) {
 
         if (convertingState == ConvertingState.SUCCESS) {
-            if (data >= 99) {
+            if (data >= 100) {
                 mBuilder.setContentText("Loading complete").setProgress(0, 0, false)
                     .setOngoing(false)
                 manager.notify(notificationID, mBuilder.build())

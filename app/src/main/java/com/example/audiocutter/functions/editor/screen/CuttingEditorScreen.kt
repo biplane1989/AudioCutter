@@ -345,7 +345,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
         audioConfig.endPosition = (cuttingViewModel.getCuttingEndPos()
             .toFloat() / 1000) - audioConfig.startPosition
 
-        audioConfig.fileName = audioFile.fileName + "cut"
+        audioConfig.fileName = audioFile.fileName
 
         val outFile = File(Environment.getExternalStorageDirectory()
             .toString() + "/AudioCutter/cutter")
@@ -365,7 +365,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
             )
         }*/
 
-        viewStateManager.editorSaveCutingAudio(requireContext(), audioFile, audioCutConfig, "Cutting1", "/AudioCutter/cutter", AudioFormat.MP3.toString())
+        viewStateManager.editorSaveCutingAudio(requireContext(), audioFile, audioCutConfig, audioFile.fileName, "/AudioCutter/cutter", AudioFormat.MP3.toString())
 
     }
 

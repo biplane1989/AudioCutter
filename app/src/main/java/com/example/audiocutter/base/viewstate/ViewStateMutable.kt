@@ -5,6 +5,7 @@ interface ViewStateMutable {
     fun getLastState(): ViewStateScreen?
     fun getPrevState(): ViewStateScreen?
     fun popViewState()
+    fun popViewStateTo(viewStateScreen: ViewStateScreen)
     fun pushViewState(viewStateScreen: ViewStateScreen)
     fun existViewState(viewStateScreen: ViewStateScreen): Boolean
 

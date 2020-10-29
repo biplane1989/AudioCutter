@@ -39,8 +39,8 @@ class ResultActivity : BaseActivity() {
             intent.putStringArrayListExtra(LIST_AUDIO_FILE_MERGING, listAudio)
             intent.putExtra(AUDIO_FILE_NAME, fileName)
             intent.putExtra(AUDIO_FILE_PATH, filePath)
-//            intent.putExtra(AUDIO_CUTCONFIG, audioCutConfig)
-//            intent.putExtra(AUDIO_MIXCONFIG, audioMixConfig)
+            intent.putExtra(AUDIO_CUTCONFIG, audioCutConfig)
+            intent.putExtra(AUDIO_MIXCONFIG, audioMixConfig)
             intent.putExtra(AUDIO_FORMAT, audioFormat)
 
             context.startActivity(intent)
@@ -66,8 +66,8 @@ class ResultActivity : BaseActivity() {
         val listPathAudio = intent.getStringArrayListExtra(LIST_AUDIO_FILE_MERGING)
         val fileName = intent.getStringExtra(AUDIO_FILE_NAME)
         val filePath = intent.getStringExtra(AUDIO_FILE_PATH)
-//        val audioCutConfig = intent.getParcelableExtra<AudioCutConfig>(AUDIO_CUTCONFIG)
-//        val audioMixConfig = intent.getParcelableExtra<AudioMixConfig>(AUDIO_MIXCONFIG)
+        val audioCutConfig = intent.getParcelableExtra<AudioCutConfig>(AUDIO_CUTCONFIG)
+        val audioMixConfig = intent.getParcelableExtra<AudioMixConfig>(AUDIO_MIXCONFIG)
         val audioFormat = intent.getStringExtra(AUDIO_FORMAT)
 
         val file = File(Environment.getExternalStorageDirectory().toString() + filePath)
@@ -82,8 +82,8 @@ class ResultActivity : BaseActivity() {
             }
         }
 
-        val audioCutConfig = AudioCutConfig(1f, 100f, 300, "Cuting1", Effect.OFF, Effect.OFF, BitRate._128kb, AudioFormat.MP3, file.absolutePath)
-        val audioMixConfig = AudioMixConfig("mixing1", MixSelector.LONGEST, 100, 100, AudioFormat.MP3, file.absolutePath)
+//        val audioCutConfig = AudioCutConfig(1f, 100f, 300, "Cuting1", Effect.OFF, Effect.OFF, BitRate._128kb, AudioFormat.MP3, file.absolutePath)
+//        val audioMixConfig = AudioMixConfig("mixing1", MixSelector.LONGEST, 100, 100, AudioFormat.MP3, file.absolutePath)
 
         when (typeMerging) {
             MIX -> {
