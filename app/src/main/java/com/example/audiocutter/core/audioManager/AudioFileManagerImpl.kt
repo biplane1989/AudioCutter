@@ -433,6 +433,7 @@ object AudioFileManagerImpl : AudioFileManager {
 
     private fun getListByType(listData: MutableList<AudioFile>, text: String): List<AudioFile> {
         val listDataTmp = mutableListOf<AudioFile>()
+//        Log.d("giangtd", "getListByType: path : ${Environment.getExternalStorageDirectory()}" + text)
         listData.forEach {
             if (it.file.toString().contains(text)) {
                 listDataTmp.add(it)
@@ -443,10 +444,10 @@ object AudioFileManagerImpl : AudioFileManager {
 
     override fun getListAudioFileByType(typeFile: Folder): LiveData<AudioFileScans> {
         listData = scanListAudioFileByType(typeFile) as MutableList<AudioFile>
+        Log.d("giangtd", "getListAudioFileByType: type: " + typeFile + "--- list size : " + listData.size)
         _listAudioByType.postValue(AudioFileScans(listData, StateLoad.LOADDONE))
         return listAudioByType
     }
-
 
     private fun getUriByPath(itemFile: File): Uri? {
 

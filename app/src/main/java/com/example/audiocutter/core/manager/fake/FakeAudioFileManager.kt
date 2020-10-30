@@ -1,8 +1,10 @@
 package com.example.audiocutter.core.manager.fake
 
 import android.content.Context
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.core.audioManager.Folder
@@ -11,69 +13,99 @@ import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
-import kotlinx.coroutines.*
 import java.io.File
 
-class FakeAudioFileManager : AudioFileManager {
+object FakeAudioFileManager : AudioFileManager {
 
-    private val audioFileLiveData = MutableLiveData<AudioFileScans>()
-    private val audioFileLiveData1 = MutableLiveData<AudioFileScans>()
-    private val audioFileLiveData2 = MutableLiveData<AudioFileScans>()
+    private val liveDataCut = MutableLiveData<AudioFileScans>()
+    private val liveDataMix = MutableLiveData<AudioFileScans>()
+    private val liveDataMer = MutableLiveData<AudioFileScans>()
 
-    private var listAudioFile: ArrayList<AudioFile>
-    private var listAudioFile1: ArrayList<AudioFile>
-    private var listAudioFile2: ArrayList<AudioFile>
+    private var listCut: ArrayList<AudioFile>
+    private var listMix: ArrayList<AudioFile>
+    private var listMer: ArrayList<AudioFile>
 
 //    val file = File(Environment.getExternalStorageDirectory().toString() + "/Music/Lonely.mp3")
 
     val file3 = File(Environment.getExternalStorageDirectory().toString() + "/Download/lonely.mp3")
-    val file4 = File(Environment.getExternalStorageDirectory().toString() + "/Download/aloha.mp3")
+    val file4 = File(Environment.getExternalStorageDirectory().toString() + "/Download/lonely.mp3")
 
     val file1 = File(Environment.getExternalStorageDirectory()
         .toString() + "/Download/doihoamattroi.mp3")
     val file2 = File(Environment.getExternalStorageDirectory().toString() + "/Download/xaodong.mp3")
+    val fileMapTime = HashMap<String, Int>()
 
-
-    init {
-
-        listAudioFile = ArrayList<AudioFile>()
-        listAudioFile.add(AudioFile(file1, "file_name1", 10000, 128, uri = Uri.parse(file1.absolutePath)))
-        listAudioFile.add(AudioFile(file2, "file_name2", 10000, 128, uri = Uri.parse(file2.absolutePath)))
-        listAudioFile.add(AudioFile(file2, "file_name2", 10000, 128, uri = Uri.parse(file2.absolutePath)))
-        listAudioFile.add(AudioFile(file2, "file_name2", 10000, 128, uri = Uri.parse(file2.absolutePath)))
-        val audioFileScans = AudioFileScans(listAudioFile, StateLoad.LOADDONE)
-        audioFileLiveData.postValue(audioFileScans)
-
-        listAudioFile1 = ArrayList<AudioFile>()
-        listAudioFile1.add(AudioFile(file3, "file_name3", 10000, 128, uri = Uri.parse(file3.absolutePath)))
-        listAudioFile1.add(AudioFile(file4, "file_name4", 10000, 128, uri = Uri.parse(file4.absolutePath)))
-        listAudioFile1.add(AudioFile(file4, "file_name4", 10000, 128, uri = Uri.parse(file4.absolutePath)))
-        listAudioFile1.add(AudioFile(file4, "file_name4", 10000, 128, uri = Uri.parse(file4.absolutePath)))
-        val audioFileScans1 = AudioFileScans(listAudioFile1, StateLoad.LOADDONE)
-        audioFileLiveData1.postValue(audioFileScans1)
-
-        listAudioFile2 = ArrayList<AudioFile>()
-        listAudioFile2.add(AudioFile(file1, "file_name5", 10000, 128, uri = Uri.parse(file1.absolutePath)))
-        listAudioFile2.add(AudioFile(file2, "file_name6", 10000, 128, uri = Uri.parse(file2.absolutePath)))
-        val audioFileScans2 = AudioFileScans(listAudioFile2, StateLoad.LOADDONE)
-        audioFileLiveData2.postValue(audioFileScans2)
-
-
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(10000)
-            listAudioFile.add(AudioFile(file3, "Apple", 10000, 128, uri = Uri.parse(file3.absolutePath)))
-//            listAudioFile.removeAt(0)
-            val audioFileScans = AudioFileScans(listAudioFile, StateLoad.LOADDONE)
-            audioFileLiveData.postValue(audioFileScans)
+    fun getTime(file: File): Long {
+        if (fileMapTime.contains(file.absolutePath)) {
+            return fileMapTime.get(file.absolutePath)!!.toLong()
         }
+        val mediaPlayer = MediaPlayer()
+        mediaPlayer.setDataSource(file.absolutePath)
+        mediaPlayer.prepare()
+        fileMapTime.put(file.absolutePath, mediaPlayer.duration)
+        mediaPlayer.release()
+        return getTime(file)
     }
 
+    init {
+        listCut = ArrayList<AudioFile>()
+        listCut.add(AudioFile(file1, "file_name1", 10000, 128, uri = Uri.parse(file1.absolutePath), time = getTime(file1).toLong()))
+        listCut.add(AudioFile(file2, "file_name2", 10000, 128, uri = Uri.parse(file2.absolutePath), time = getTime(file2).toLong()))
+        listCut.add(AudioFile(file2, "file_name2", 10000, 128, uri = Uri.parse(file2.absolutePath), time = getTime(file2).toLong()))
+        listCut.add(AudioFile(file2, "file_name2", 10000, 128, uri = Uri.parse(file2.absolutePath), time = getTime(file2).toLong()))
+        val audioFileScans = AudioFileScans(listCut, StateLoad.LOADDONE)
+        liveDataCut.postValue(audioFileScans)
+
+        listMix = ArrayList<AudioFile>()
+        listMix.add(AudioFile(file3, "file_name3", 10000, 128, uri = Uri.parse(file3.absolutePath), time = getTime(file3).toLong()))
+        listMix.add(AudioFile(file4, "file_name4", 10000, 128, uri = Uri.parse(file4.absolutePath), time = getTime(file4).toLong()))
+        listMix.add(AudioFile(file4, "file_name4", 10000, 128, uri = Uri.parse(file4.absolutePath), time = getTime(file4).toLong()))
+        listMix.add(AudioFile(file4, "file_name4", 10000, 128, uri = Uri.parse(file4.absolutePath), time = getTime(file4).toLong()))
+        val audioFileScans1 = AudioFileScans(listMix, StateLoad.LOADDONE)
+        liveDataMix.postValue(audioFileScans1)
+
+        listMer = ArrayList<AudioFile>()
+        listMer.add(AudioFile(file1, "file_name5", 10000, 128, uri = Uri.parse(file1.absolutePath), time = getTime(file1).toLong()))
+        listMer.add(AudioFile(file2, "file_name6", 10000, 128, uri = Uri.parse(file2.absolutePath), time = getTime(file2).toLong()))
+        val audioFileScans2 = AudioFileScans(listMer, StateLoad.LOADDONE)
+        liveDataMer.postValue(audioFileScans2)
+
+
+//        CoroutineScope(Dispatchers.Main).launch {
+//            delay(10000)
+//            listAudioFile.add(AudioFile(file3, "Apple", 10000, 128, uri = Uri.parse(file3.absolutePath)))
+////            listAudioFile.removeAt(0)
+//            val audioFileScans = AudioFileScans(listAudioFile, StateLoad.LOADDONE)
+//            audioFileLiveData.postValue(audioFileScans)
+//        }
+    }
+
+    fun addCut(audioFile: AudioFile) {
+        listCut.add(audioFile)
+        val audioFileScans = AudioFileScans(listCut, StateLoad.LOADDONE)
+        liveDataCut.postValue(audioFileScans)
+    }
+
+    fun addMix(audioFile: AudioFile) {
+        listMix.add(audioFile)
+        val audioFileScans = AudioFileScans(listMix, StateLoad.LOADDONE)
+        Log.d("giangtd", "addMix: list Fake size: " + listMix.size)
+        liveDataMix.postValue(audioFileScans)
+    }
+
+    fun addMer(audioFile: AudioFile) {
+        listMer.add(audioFile)
+        val audioFileScans = AudioFileScans(listMer, StateLoad.LOADDONE)
+        liveDataMer.postValue(audioFileScans)
+    }
+
+
     override fun init(appContext: Context) {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
     }
 
     override fun findAllAudioFiles(): LiveData<AudioFileScans> {
-        return audioFileLiveData
+        return liveDataCut
     }
 
     override fun buildAudioFile(filePath: String): AudioFile {
@@ -88,26 +120,26 @@ class FakeAudioFileManager : AudioFileManager {
         when (typeFile) {
             Folder.TYPE_CUTTER -> {
                 items.forEach {
-                    listAudioFile.remove(it)
+                    listCut.remove(it)
                 }
-                val audioFileScans = AudioFileScans(listAudioFile)
-                audioFileLiveData.postValue(audioFileScans)
+                val audioFileScans = AudioFileScans(listCut)
+                liveDataCut.postValue(audioFileScans)
                 return true
             }
             Folder.TYPE_MERGER -> {
                 items.forEach {
-                    listAudioFile1.remove(it)
+                    listMix.remove(it)
                 }
-                val audioFileScans = AudioFileScans(listAudioFile1)
-                audioFileLiveData1.postValue(audioFileScans)
+                val audioFileScans = AudioFileScans(listMix)
+                liveDataMix.postValue(audioFileScans)
                 return true
             }
             Folder.TYPE_MIXER -> {
                 items.forEach {
-                    listAudioFile2.remove(it)
+                    listMer.remove(it)
                 }
-                val audioFileScans = AudioFileScans(listAudioFile2)
-                audioFileLiveData2.postValue(audioFileScans)
+                val audioFileScans = AudioFileScans(listMer)
+                liveDataMer.postValue(audioFileScans)
                 return true
             }
             else -> return false
@@ -117,32 +149,32 @@ class FakeAudioFileManager : AudioFileManager {
     override fun getListAudioFileByType(typeFile: Folder): LiveData<AudioFileScans> {
         when (typeFile) {
             Folder.TYPE_CUTTER -> {
-                return audioFileLiveData
+                return liveDataCut
             }
             Folder.TYPE_MERGER -> {
-                return audioFileLiveData1
+                return liveDataMer
             }
             Folder.TYPE_MIXER -> {
-                return audioFileLiveData2
+                return liveDataMix
             }
         }
-        return audioFileLiveData
+        return liveDataCut
     }
 
     override fun getInfoAudioFile(itemFile: File?, type: Int): String? {
-        TODO("Not yet implemented")
+        return "1236598"
     }
 
     override fun getDateCreatFile(file: File?): String? {
-        TODO("Not yet implemented")
+        return "orange"
     }
 
     override fun getParentFile(typeFile: Folder): String {
-        TODO("Not yet implemented")
+        return "orange"
     }
 
     override fun getPathParentFileByName(name: String, typeFile: Folder): String {
-        TODO("Not yet implemented")
+        return "orange"
     }
 
     fun getDurationByPath(itemFile: File?): String {

@@ -1,5 +1,7 @@
 package com.example.audiocutter.functions.mystudio.screens
 
+import android.os.Environment
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,6 +18,8 @@ import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
+import com.example.audiocutter.objects.StateLoad
+import java.io.File
 
 class MyStudioViewModel : BaseViewModel() {
 
@@ -76,6 +80,7 @@ class MyStudioViewModel : BaseViewModel() {
 //                loadingStatus.postValue(false)
 //            }
             // lan dau tien lay du lieu
+
             if (mListAudioFileScans.size == 0) {
                 for (item in it.listAudioFiles) {
                     if (isDeleteStatus) {
@@ -123,22 +128,24 @@ class MyStudioViewModel : BaseViewModel() {
 //                    } else {
 //                        mListFileLoading.add(AudioFileView(item.audioFile, false, ItemLoadStatus(), item.state, -1, item.id))
 //                    }
-                    //mListFileLoading.add(AudioFileView(item.audioFile, false, ItemLoadStatus(), item.state, item.percent, item.id)) // TODO
+
+                    mListFileLoading.add(AudioFileView(AudioFile(File("${Environment.getExternalStorageDirectory()}/AudioCutter/mixer"), item.getFileName(), 100), false, ItemLoadStatus(), item.state, item.percent, item.id)) // TODO
                 }
             }
             mergeList()
             mAudioMediatorLiveData.postValue(mListAudio)
         }
+
         return mAudioMediatorLiveData
     }
 
     private fun mergeList() {
         mListAudio.clear()
         if (!mListFileLoading.isNullOrEmpty()) {
-            mListAudio.addAll(mListFileLoading)
+        mListAudio.addAll(mListFileLoading)
         }
         if (!mListAudioFileScans.isNullOrEmpty()) {
-            mListAudio.addAll(mListAudioFileScans)
+        mListAudio.addAll(mListAudioFileScans)
         }
 
         if (!mListAudio.isEmpty()) {
@@ -160,8 +167,8 @@ class MyStudioViewModel : BaseViewModel() {
 
     // update loading item khi editor
     fun updateLoadingProgressbar(newItem: ConvertingItem): List<AudioFileView> {
-        TODO()
-       /* var newItemConverting = AudioFileView(newItem.audioFile, false, ItemLoadStatus(), newItem.state, newItem.percent, newItem.id)
+        //  TODO()
+        var newItemConverting = AudioFileView(AudioFile(File("${Environment.getExternalStorageDirectory()}/AudioCutter/mixer"), newItem.getFileName(), 100), false, ItemLoadStatus(), newItem.state, newItem.percent, newItem.id)
         if (!mListAudio.isEmpty()) {
             var index = 0
             for (item in mListAudio) {
@@ -170,15 +177,15 @@ class MyStudioViewModel : BaseViewModel() {
                 }
                 index++
             }
-        }*/
-      /*  if (!mListFileLoading.isNullOrEmpty()) {
+        }
+        if (!mListFileLoading.isNullOrEmpty()) {
             var index = 0
             for (item in mListFileLoading) {
                 if (item.id == newItem.id) {
                     mListFileLoading[index] = newItemConverting
                 }
             }
-        }*/
+        }
         return mListAudio
     }
 

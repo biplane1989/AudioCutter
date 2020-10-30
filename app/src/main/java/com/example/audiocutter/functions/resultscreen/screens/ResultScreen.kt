@@ -38,9 +38,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
     private lateinit var binding: ResultScreenBinding
     lateinit var mResultViewModel: ResultViewModel
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
-    var playerState: PlayerState = PlayerState.IDLE
 
-    val processDoneObserver = Observer<AudioFile> {
+    val processDoneObserver = Observer<AudioFile> {         // observer trang thai done
         binding.btnBack.visibility = View.VISIBLE
         binding.ivHome.visibility = View.VISIBLE
         binding.btnCancel.visibility = View.INVISIBLE
@@ -63,21 +62,23 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.tvInfoMusic.setText(convertAudioSizeToString(it))
 
     }
-    val pendingProcessObserver = Observer<String> {
+    val pendingProcessObserver = Observer<String> {     // observer trang thai pending
         binding.tvWait.visibility = View.VISIBLE
         binding.llProgressbar.visibility = View.GONE
         binding.llPlayMusic.visibility = View.GONE
         binding.clOpption.visibility = View.GONE
         binding.btnBack.visibility = View.GONE
         binding.ivHome.visibility = View.INVISIBLE
+        binding.btnCancel.visibility = View.VISIBLE
     }
-    val processingObserver = Observer<ConvertingItem> {
+    val processingObserver = Observer<ConvertingItem> {     // observer trang thai processing
         binding.btnBack.visibility = View.GONE
         binding.ivHome.visibility = View.INVISIBLE
         binding.tvWait.visibility = View.GONE
         binding.clOpption.visibility = View.GONE
         binding.llProgressbar.visibility = View.VISIBLE
         binding.llPlayMusic.visibility = View.GONE
+        binding.btnCancel.visibility = View.VISIBLE
 
         binding.pbLoading.progress = it.percent
         binding.tvLoading.text = it.percent.toString() + "%"
@@ -85,89 +86,6 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.tvInfoMusic.text = it.bitRate.toString() + "kb/s"
     }
 
-
-    /* val processObserver = Observer<ConvertingItem> { data ->
-         data?.let {
-             if (it.id == ManagerFactory.getAudioEditorManager().getIDProcessingItem()) {
-                 when (it.state) {
-                     ConvertingState.WAITING -> {
-                         binding.tvWait.visibility = View.VISIBLE
-                         binding.llProgressbar.visibility = View.GONE
-                         binding.llPlayMusic.visibility = View.GONE
-                         binding.clOpption.visibility = View.GONE
-                         binding.btnBack.visibility = View.GONE
-                         binding.ivHome.visibility = View.INVISIBLE
-                     }
-                     ConvertingState.PROGRESSING -> {
-                         binding.btnBack.visibility = View.GONE
-                         binding.ivHome.visibility = View.INVISIBLE
-                         binding.tvWait.visibility = View.GONE
-                         binding.clOpption.visibility = View.GONE
-                         binding.llProgressbar.visibility = View.VISIBLE
-                         binding.llPlayMusic.visibility = View.GONE
-
-                         binding.pbLoading.progress = data.percent
-                         binding.tvLoading.text = data.percent.toString() + "%"
-                         binding.tvTitleMusic.text = data.fileName
-                         binding.tvInfoMusic.text = data.+ "kb/s"
-
-                     }
-                     ConvertingState.SUCCESS -> {
-                         binding.btnBack.visibility = View.VISIBLE
-                         binding.ivHome.visibility = View.VISIBLE
-                         binding.btnCancel.visibility = View.INVISIBLE
-                         binding.tvWait.visibility = View.GONE
-                         binding.llProgressbar.visibility = View.GONE
-                         binding.llPlayMusic.visibility = View.VISIBLE
-                         binding.clOpption.visibility = View.VISIBLE
-                         binding.btnOrigin.visibility = View.GONE
-                         binding.tvTitleResult.visibility = View.VISIBLE
-                         binding.tvTitleLoading.visibility = View.GONE
-
- //                        binding.tvTitleMusic.text = convertingItem.audioFile.fileName
- //                        binding.tvInfoMusic.text = convertingItem.audioFile.bitRate.toString() + "kb/s"
- //                        binding.tvTimeTotal.text = "/" + simpleDateFormat.format(convertingItem.audioFile.size)
- //                        data.audioFile.bitmap?.let {
- //                            binding.ivAvatarMusic.setImageBitmap(it)
- //                        }
-
- //                        if (it.audioFile.size / (1024f * 1024) > 0) {
- //                            binding.tvInfoMusic.setText(String.format("%.1f", (it.audioFile.size) / (1024f * 1024)) + " MB" + " | " + it.audioFile.bitRate.toString() + "kb/s")
- //                        } else {
- //                            binding.tvInfoMusic.setText(((it.audioFile.size) / (1024f)).toString() + " KB" + " | " + it.audioFile.bitRate.toString() + "kb/s")
- //                        }
-                     }
-                     else -> {
-                     }
-                 }
-             } else {
-                 binding.tvWait.visibility = View.VISIBLE
-                 binding.llProgressbar.visibility = View.GONE
-                 binding.llPlayMusic.visibility = View.GONE
-                 binding.clOpption.visibility = View.GONE
-             }
-         }
-     }*/
-
-    /*  val itemProcessingObserver =
-          Observer<AudioFile?> { it -> // observer 1 item tu core
-              if (convertingItem.state == ConvertingState.SUCCESS) {
-                  binding.tvTitleMusic.text = it.fileName
-                  binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
-
-                  val duration = ManagerFactory.getAudioFileManager()
-                      .getInfoAudioFile(
-                          it.file,
-                          MediaMetadataRetriever.METADATA_KEY_DURATION
-                      )
-                  if (!duration.isNullOrBlank()) {
-                      binding.tvTimeTotal.text =
-                          String.format("/%s", simpleDateFormat.format(duration.toInt()))
-                  }
-                  binding.tvInfoMusic.setText(convertAudioSizeToString(it))
-              }
-          }
-  */
     private fun convertAudioSizeToString(audioFile: AudioFile): String {
         var formatSize = "MB"
         var sizeValue = 0f
@@ -188,7 +106,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         return str.toString()
     }
 
-    val playInfoObserver = Observer<PlayerInfo> { playInfo ->
+    val playInfoObserver = Observer<PlayerInfo> { playInfo ->       // observer info play music
         playInfo.playerState
         binding.sbMusic.max = playInfo.duration
         binding.sbMusic.progress = playInfo.posision
@@ -203,14 +121,9 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                 binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
             }
             PlayerState.PLAYING -> {
-//                binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
                 binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_pause)
             }
         }
-
-
-        playerState = playInfo.playerState
-        Log.d("009", "playInfoObserver playerState: " + playerState)
     }
 
 
@@ -229,10 +142,6 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
 
         mResultViewModel = ViewModelProviders.of(this).get(ResultViewModel::class.java)
         mResultViewModel.init(safeArg)
-//        idProgress = mResultViewModel.getIDProgressItem()
-        /*  idProgress = ManagerFactory.getAudioEditorManager().getIDProcessingItem()
-          Log.d(TAG, "idProgress: " + idProgress)
-  */
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -240,7 +149,6 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.pbLoading.max = 100
 
         binding.ivPausePlayMusic.setOnClickListener(this)
-
         binding.llRingtone.setOnClickListener(this)
         binding.llAlarm.setOnClickListener(this)
         binding.llNotification.setOnClickListener(this)
@@ -273,12 +181,13 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                 }
             }
 
-            /*  binding.btnCancel -> {
-                  ManagerFactory.getAudioEditorManager()
-                      .cancel(ManagerFactory.getAudioEditorManager().getIDProcessingItem())
-                  requireActivity().onBackPressed()
-              }
-  */
+            binding.btnCancel -> {
+                ManagerFactory.getAudioEditorManager().getLatestConvertingItem()?.let {
+                    ManagerFactory.getAudioEditorManager().cancel(it.id)
+                }
+                requireActivity().onBackPressed()
+            }
+
             binding.btnBack -> {
                 requireActivity().onBackPressed()
             }
@@ -290,61 +199,35 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
             binding.btnOrigin -> {
                 viewStateManager.resultScreenGoToHome(requireContext())
             }
-            /*  binding.llRingtone -> {
-                  convertingItem.outputAudioFile?.let {
-                      if (ManagerFactory.getRingtoneManager().setRingTone(it)) {
-                          Toast.makeText(
-                              requireContext(),
-                              "Set Ringtone Successful !",
-                              Toast.LENGTH_SHORT
-                          )
-                              .show()
-                      } else {
-                          Toast.makeText(requireContext(), "Set Ringtone Fail !", Toast.LENGTH_SHORT)
-                              .show()
-                      }
-                  }
+            binding.llRingtone -> {
+                if (mResultViewModel.setRingTone()) {
+                    Toast.makeText(requireContext(), "Set Ringtone Successful !", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(requireContext(), "Set Ringtone Fail !", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+            binding.llAlarm -> {
 
-              }
-              binding.llAlarm -> {
-                  convertingItem.outputAudioFile?.let {
-                      if (ManagerFactory.getRingtoneManager()
-                              .setAlarmManager(it)
-                      ) {
-                          Toast.makeText(
-                              requireContext(),
-                              "Set Alarm Successful !",
-                              Toast.LENGTH_SHORT
-                          )
-                              .show()
-                      } else {
-                          Toast.makeText(requireContext(), "Set Alarm Fail !", Toast.LENGTH_SHORT)
-                              .show()
-                      }
-                  }
-              }
+                if (mResultViewModel.setAlarm()) {
+                    Toast.makeText(requireContext(), "Set Alarm Successful !", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(requireContext(), "Set Alarm Fail !", Toast.LENGTH_SHORT).show()
+                }
 
-              binding.llNotification -> {
-                  convertingItem.outputAudioFile?.let {
-                      if (ManagerFactory.getRingtoneManager()
-                              .setNotificationSound(it)
-                      ) {
-                          Toast.makeText(
-                              requireContext(),
-                              "Set Notification Successful !",
-                              Toast.LENGTH_SHORT
-                          )
-                              .show()
-                      } else {
-                          Toast.makeText(
-                              requireContext(),
-                              "Set Notification Fail !",
-                              Toast.LENGTH_SHORT
-                          )
-                              .show()
-                      }
-                  }
-              }*/
+            }
+
+            binding.llNotification -> {
+                if (mResultViewModel.setNotification()) {
+                    Toast.makeText(requireContext(), "Set Notification Successful !", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(requireContext(), "Set Notification Fail !", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
             binding.llShare -> {
 
             }

@@ -16,8 +16,9 @@ interface AudioFileManager {
     fun deleteFile(listAudioFile: List<AudioFile>, typeFile: Folder): Boolean
     fun getListAudioFileByType(typeFile: Folder): LiveData<AudioFileScans>
     fun getInfoAudioFile(itemFile: File?, type: Int): String?
-    fun getDateCreatFile(file:File?): String?
+    fun getDateCreatFile(file: File?): String?
     fun getParentFile(typeFile: Folder): String
-    fun getPathParentFileByName(name:String, typeFile: Folder): String
+    fun getPathParentFileByName(name: String, typeFile: Folder): String
+
 
 }

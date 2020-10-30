@@ -15,17 +15,21 @@ import com.example.audiocutter.objects.AudioFile
 class ResultViewModel : BaseViewModel() {
     private val audioPlayer = ManagerFactory.newAudioPlayer()
     private val audioEditorManager = ManagerFactory.getAudioEditorManager()
+
+    // tao ra 3 live data cho 3 truong hop status cua ConvertingItem
     private val processDoneLiveData = MutableLiveData<AudioFile>()
     private val processingLiveData = MutableLiveData<ConvertingItem>()
     private val pendingProcessLiveData = MutableLiveData<String>()
+
     private val editProcessObserver = Observer<ConvertingItem> { convertingItem ->
         convertingItem?.let {
-            Log.d("taih", "STATE ${it.state}")
+            Log.d("giangtd", " ResultViewModel  :  STATE ${it.state}")
+
             when (it.state) {
                 ConvertingState.PROGRESSING -> {
-                    val latestConvertingItem = audioEditorManager.getLatestConvertingItem().value
+                    val latestConvertingItem = audioEditorManager.getLatestConvertingItem()
                     latestConvertingItem?.let { item ->
-                        if (item.id == it.id) {
+                        if (item.id == it.id) {         // neu id item loading = item cuoi cung
                             processingLiveData.postValue(it)
                         } else {
                             pendingProcessLiveData.postValue(item.getFileName())
@@ -33,7 +37,7 @@ class ResultViewModel : BaseViewModel() {
                     }
                 }
                 ConvertingState.SUCCESS -> {
-                    val latestConvertingItem = audioEditorManager.getLatestConvertingItem().value
+                    val latestConvertingItem = audioEditorManager.getLatestConvertingItem()
                     latestConvertingItem?.let { item ->
                         if (item.id == it.id) {
                             processDoneLiveData.postValue(it.outputAudioFile)
@@ -55,7 +59,7 @@ class ResultViewModel : BaseViewModel() {
         audioEditorManager.getCurrentProcessingItem().observeForever(editProcessObserver)
     }
 
-    fun init(arg: ResultScreenArgs) {
+    fun init(arg: ResultScreenArgs) {       // nhan du lieu tu screen khac truyen den
 
         when (arg.type) {
             ResultScreen.CUT -> {
@@ -66,21 +70,14 @@ class ResultViewModel : BaseViewModel() {
                 }
             }
             ResultScreen.MER -> {
-                val listAudio = ArrayList<AudioFile>()
-                for (item in arg.listAudioPath) {
-                    listAudio.add(ManagerFactory.getAudioFileManager().buildAudioFile(item))
-                }
-                    /*   if (arg.listAudioPath.size == 2) {
-                           val audioFile = ManagerFactory.getAudioFileManager()
-                               .buildAudioFile(arg.listAudioPath[0])
-                           val audioFile2 = ManagerFactory.getAudioFileManager()
-                               .buildAudioFile(arg.listAudioPath[1])
-
-                           listAudio.add(audioFile)
-                           listAudio.add(audioFile2)*/
+                if (arg.listAudioPath.size >= 2) {
+                    val listAudio = ArrayList<AudioFile>()
+                    for (item in arg.listAudioPath) {
+                        listAudio.add(ManagerFactory.getAudioFileManager().buildAudioFile(item))
+                    }
                     ManagerFactory.getAudioEditorManager()
                         .mergeAudio(listAudio, arg.mergingConfig!!)
-//                }
+                }
             }
             ResultScreen.MIX -> {
                 if (arg.listAudioPath.size == 2) {
@@ -133,15 +130,46 @@ class ResultViewModel : BaseViewModel() {
 
     fun seekToAudio(cusorPos: Int) {
         runOnBackground {
-//            ManagerFactory.getAudioPlayer().seek(cusorPos)
             audioPlayer.seek(cusorPos)
         }
     }
 
     fun getPlayerInfo(): LiveData<PlayerInfo> {
-//        return ManagerFactory.getAudioPlayer().getPlayerInfo()
         return audioPlayer.getPlayerInfo()
     }
+
+    fun setRingTone(): Boolean {
+        ManagerFactory.getAudioEditorManager().getLatestConvertingItem()?.outputAudioFile?.let {
+            return ManagerFactory.getRingtoneManager().setRingTone(it)
+        }
+        return false
+    }
+
+    fun setAlarm(): Boolean {
+        ManagerFactory.getAudioEditorManager().getLatestConvertingItem()?.outputAudioFile?.let {
+            return ManagerFactory.getRingtoneManager().setAlarmManager(it)
+        }
+        return false
+    }
+
+    fun setNotification(): Boolean {
+        ManagerFactory.getAudioEditorManager().getLatestConvertingItem()?.outputAudioFile?.let {
+            return ManagerFactory.getRingtoneManager().setNotificationSound(it)
+        }
+        return false
+    }
+
+    fun share() {
+
+    }
+
+    fun setContact() {
+    }
+
+    fun openWith() {
+
+    }
+
 
     override fun onCleared() {
         super.onCleared()

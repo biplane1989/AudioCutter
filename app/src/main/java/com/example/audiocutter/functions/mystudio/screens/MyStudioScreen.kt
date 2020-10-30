@@ -39,6 +39,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
     val listAudioObserver = Observer<List<AudioFileView>> { listAudio ->
 
+        Log.d(TAG, "listAudioObserver size : " + listAudio.size)
         listAudio?.let {
             audioCutterAdapter.submitList(ArrayList(listAudio))
         }
