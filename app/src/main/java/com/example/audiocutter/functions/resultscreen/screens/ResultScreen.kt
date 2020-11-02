@@ -51,15 +51,20 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.tvTitleResult.visibility = View.VISIBLE
         binding.tvTitleLoading.visibility = View.GONE
 
-        binding.tvTitleMusic.text = it.fileName
-        binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
-
-        val duration = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(it.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
-        if (!duration.isNullOrBlank()) {
-            binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(duration.toInt()))
+        it?.let {
+            binding.tvTitleMusic.text = it.fileName
+            binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
+            val duration = ManagerFactory.getAudioFileManager()
+                .getInfoAudioFile(it.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
+            if (duration != null){
+                binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(duration.toInt()))
+            }
+            binding.tvInfoMusic.setText(convertAudioSizeToString(it))
         }
-        binding.tvInfoMusic.setText(convertAudioSizeToString(it))
+
+//        if (!duration.isNullOrBlank()) {
+//            binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(duration.toInt()))
+//        }
 
     }
     val pendingProcessObserver = Observer<String> {     // observer trang thai pending
@@ -72,6 +77,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.btnCancel.visibility = View.VISIBLE
     }
     val processingObserver = Observer<ConvertingItem> {     // observer trang thai processing
+
         binding.btnBack.visibility = View.GONE
         binding.ivHome.visibility = View.INVISIBLE
         binding.tvWait.visibility = View.GONE

@@ -66,6 +66,9 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 FFMpegState.FAIL -> {
                     convertingState = ConvertingState.ERROR
                 }
+                FFMpegState.SUCCESS -> {
+                    convertingState = ConvertingState.SUCCESS
+                }
             }
             Log.e(TAG, "init: ${audioMering.percent}" + " convertingState: " + audioMering.state + " listConvertingItemData size: " + listConvertingItemData.size)
             currentProcessingItem.value?.let {
@@ -140,50 +143,51 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 item.listAudioFiles.forEach {
                     listAudioCore.add(AudioCore(it.file, it.fileName, it.size, it.bitRate, it.time, it.mimeType))
                 }
+
+                var audioloading = AudioFile(File(item.mergingConfig.pathFolder + File.separator + item.mergingConfig.fileName + ".mp3"), item.mergingConfig.fileName, 100L)
+                Log.d(TAG, "audioloading: "+ audioloading.file.absoluteFile.toString())
+                FakeAudioFileManager.addMer(audioloading)
+
                 val audioResult = ManagerFactory.getAudioCutter()
                     .merge(listAudioCore, item.mergingConfig.fileName, item.mergingConfig.audioFormat, item.mergingConfig.pathFolder)
                 val audioFile = AudioFile(audioResult.file, audioResult.fileName, audioResult.size, audioResult.bitRate, audioResult.time, Uri.parse(audioResult.file.toString()))
                 item.outputAudioFile = audioFile
 
-//                val audio = AudioFile(File("${Environment.getExternalStorageDirectory()}/AudioCutter/mixer"), item.getFileName(), 10000)
-//                ManagerFactory.getAudioFileManager().addMer(audio)
             }
 
             if (item is MixingConvertingItem) {
                 currentProcessingItem.postValue(item)
                 item.audioFile1.time = FakeAudioFileManager.getTime(item.audioFile1.file)
                 item.audioFile2.time = FakeAudioFileManager.getTime(item.audioFile2.file)
+
                 val audioCore1 = AudioCore(item.audioFile1.file, item.audioFile1.fileName, item.audioFile1.size, item.audioFile1.bitRate, item.audioFile1.time, item.audioFile1.mimeType)
                 val audioCore2 = AudioCore(item.audioFile2.file, item.audioFile2.fileName, item.audioFile2.size, item.audioFile2.bitRate, item.audioFile2.time, item.audioFile2.mimeType)
 
                 val formatStr = if (item.mixingConfig.format == AudioFormat.MP3) ".mp3" else ".m4a"
                 var audioFile = AudioFile(File(item.mixingConfig.pathFolder + File.separator + item.mixingConfig.fileName + formatStr), item.mixingConfig.fileName, 100L)
                 FakeAudioFileManager.addMix(audioFile)
+
                 val audioResult = ManagerFactory.getAudioCutter()
                     .mix(audioCore1, audioCore2, item.mixingConfig)
                 audioFile = AudioFile(audioResult.file, audioResult.fileName, audioResult.size, audioResult.bitRate, audioResult.time, Uri.parse(audioResult.file.toString()))
                 item.outputAudioFile = audioFile
-
-                val audio = AudioFile(File("${Environment.getExternalStorageDirectory()}/AudioCutter/mixer"), item.getFileName(), 10000)
-                Log.d(TAG, "processItem: addMix(audio)")    // vao nhieu lan
-                Log.d(TAG, "processItem: listConvertingItemData size : " + listConvertingItemData.size)
             }
 
             if (item is CuttingConvertingItem) {
+
                 val audioCore = AudioCore(item.audioFile.file, item.audioFile.fileName, item.audioFile.size, item.audioFile.bitRate, item.audioFile.time, item.audioFile.mimeType)
                 val audioResult = ManagerFactory.getAudioCutter().cut(audioCore, item.cuttingConfig)
                 val audioFile = AudioFile(audioResult.file, audioResult.fileName, audioResult.size, audioResult.bitRate, audioResult.time, Uri.parse(audioResult.file.toString()))
                 item.outputAudioFile = audioFile        // gan lai audio file tu audioresult duoc tra ve sau khi cutting cho ConvertingItem
 
-//                val audio = AudioFile(File("${Environment.getExternalStorageDirectory()}/AudioCutter/mixer"), item.getFileName(), 10000)
-//                ManagerFactory.getAudioFileManager().addCut(audio)
+                val audio = AudioFile(File("${Environment.getExternalStorageDirectory()}/AudioCutter/cutter"), item.getFileName(), 10000)
+                FakeAudioFileManager.addCut(audio)
             }
 
 
-
-            if (item.state != ConvertingState.ERROR) {
-                item.state = ConvertingState.SUCCESS
-            }
+//            if (item.state != ConvertingState.ERROR) {
+//                item.state = ConvertingState.SUCCESS
+//            }
             synchronized(listConvertingItemData) {
                 listConvertingItemData.remove(item)
             }

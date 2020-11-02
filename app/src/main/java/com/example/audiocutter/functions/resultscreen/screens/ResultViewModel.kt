@@ -11,6 +11,7 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import com.example.audiocutter.objects.AudioFile
+import com.example.core.core.FFMpegState
 
 class ResultViewModel : BaseViewModel() {
     private val audioPlayer = ManagerFactory.newAudioPlayer()
@@ -29,11 +30,13 @@ class ResultViewModel : BaseViewModel() {
                 ConvertingState.PROGRESSING -> {
                     val latestConvertingItem = audioEditorManager.getLatestConvertingItem()
                     latestConvertingItem?.let { item ->
-                        if (item.id == it.id) {         // neu id item loading = item cuoi cung
-                            processingLiveData.postValue(it)
-                        } else {
-                            pendingProcessLiveData.postValue(item.getFileName())
-                        }
+
+                            if (item.id == it.id) {         // neu id item loading = item cuoi cung
+                                processingLiveData.postValue(it)
+                            } else {
+                                pendingProcessLiveData.postValue(item.getFileName())
+                            }
+
                     }
                 }
                 ConvertingState.SUCCESS -> {

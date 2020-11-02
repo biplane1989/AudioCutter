@@ -1,6 +1,8 @@
 package com.example.audiocutter.functions.mystudio.screens
 
+import android.net.Uri
 import android.os.Environment
+import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -142,10 +144,19 @@ class MyStudioViewModel : BaseViewModel() {
     private fun mergeList() {
         mListAudio.clear()
         if (!mListFileLoading.isNullOrEmpty()) {
-        mListAudio.addAll(mListFileLoading)
+            mListAudio.addAll(mListFileLoading)
         }
         if (!mListAudioFileScans.isNullOrEmpty()) {
-        mListAudio.addAll(mListAudioFileScans)
+//            mListAudio.addAll(mListAudioFileScans)
+
+            for (item in mListAudioFileScans) {
+//                if (!isDoubleDisplay(item.audioFile.file.absolutePath.toString())) {        // tam thoi thay file.absolutePath = filename
+                if (!isDoubleDisplay(item.audioFile.fileName)) {        // tam thoi thay file.absolutePath = filename
+                    mListAudio.add(item)
+                }
+
+                Log.d("002", "mergeList: filePath " + item.audioFile.file.absoluteFile.toString())
+            }
         }
 
         if (!mListAudio.isEmpty()) {
@@ -153,6 +164,19 @@ class MyStudioViewModel : BaseViewModel() {
         } else {
             isEmptyStatus.postValue(true)
         }
+    }
+
+    private fun isDoubleDisplay(filePath: String): Boolean {        // kiem tra xem item o listloading co ton tai trong list scan hay khong
+        for (item in mListFileLoading) {
+            Log.d("002", "isDoubleDisplay: filepath $filePath")
+            Log.d("002", "isDoubleDisplay: item  ${item.audioFile.fileName.toString() + ".mp3"}")
+//            if (TextUtils.equals(item.audioFile.file.absolutePath.toString() +".mp3", filePath)) {                    // tam thoi thay file.absolutePath = filename
+            if (TextUtils.equals("mixing", filePath)) {                    // tam thoi thay file.absolutePath = filename
+                Log.d("002", "isDoubleDisplay: $filePath")
+                return true
+            }
+        }
+        return false
     }
 
     // tìm ra những file đã tồn tại trong list cũ
@@ -168,7 +192,7 @@ class MyStudioViewModel : BaseViewModel() {
     // update loading item khi editor
     fun updateLoadingProgressbar(newItem: ConvertingItem): List<AudioFileView> {
         //  TODO()
-        var newItemConverting = AudioFileView(AudioFile(File("${Environment.getExternalStorageDirectory()}/AudioCutter/mixer"), newItem.getFileName(), 100), false, ItemLoadStatus(), newItem.state, newItem.percent, newItem.id)
+        val newItemConverting = AudioFileView(AudioFile(File("${Environment.getExternalStorageDirectory()}/AudioCutter/mixer"), newItem.getFileName(), 100), false, ItemLoadStatus(), newItem.state, newItem.percent, newItem.id)
         if (!mListAudio.isEmpty()) {
             var index = 0
             for (item in mListAudio) {
@@ -179,7 +203,7 @@ class MyStudioViewModel : BaseViewModel() {
             }
         }
         if (!mListFileLoading.isNullOrEmpty()) {
-            var index = 0
+            val index = 0
             for (item in mListFileLoading) {
                 if (item.id == newItem.id) {
                     mListFileLoading[index] = newItemConverting
@@ -371,7 +395,11 @@ class MyStudioViewModel : BaseViewModel() {
 
     // chuyen trang thai play nhac
     fun playingAudioAndchangeStatus(position: Int) {
-        runOnBackground {
+        runOnBackground {               //  truong hop ket qua cua file loadding uri se bi null
+            if (mListAudio.get(position).audioFile.uri == null) {
+                val uri = Uri.parse(mListAudio.get(position).audioFile.file.absolutePath)
+                mListAudio.get(position).audioFile.uri = uri
+            }
             ManagerFactory.getAudioPlayer().play(mListAudio.get(position).audioFile)
         }
         // trang thai phat nhac

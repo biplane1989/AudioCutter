@@ -27,12 +27,11 @@ object FakeAudioFileManager : AudioFileManager {
 
 //    val file = File(Environment.getExternalStorageDirectory().toString() + "/Music/Lonely.mp3")
 
-    val file3 = File(Environment.getExternalStorageDirectory().toString() + "/Download/lonely.mp3")
-    val file4 = File(Environment.getExternalStorageDirectory().toString() + "/Download/lonely.mp3")
-
     val file1 = File(Environment.getExternalStorageDirectory()
         .toString() + "/Download/doihoamattroi.mp3")
     val file2 = File(Environment.getExternalStorageDirectory().toString() + "/Download/xaodong.mp3")
+    val file3 = File(Environment.getExternalStorageDirectory().toString() + "/Download/lonely.mp3")
+    val file4 = File(Environment.getExternalStorageDirectory().toString() + "/Download/samlam.mp3")
     val fileMapTime = HashMap<String, Int>()
 
     fun getTime(file: File): Long {
@@ -49,24 +48,26 @@ object FakeAudioFileManager : AudioFileManager {
 
     init {
         listCut = ArrayList<AudioFile>()
-        listCut.add(AudioFile(file1, "file_name1", 10000, 128, uri = Uri.parse(file1.absolutePath), time = getTime(file1).toLong()))
-        listCut.add(AudioFile(file2, "file_name2", 10000, 128, uri = Uri.parse(file2.absolutePath), time = getTime(file2).toLong()))
-        listCut.add(AudioFile(file2, "file_name2", 10000, 128, uri = Uri.parse(file2.absolutePath), time = getTime(file2).toLong()))
-        listCut.add(AudioFile(file2, "file_name2", 10000, 128, uri = Uri.parse(file2.absolutePath), time = getTime(file2).toLong()))
+        listCut.add(AudioFile(file1, "doihoamattroi", 10000, 128, uri = Uri.parse(file1.absolutePath), time = getTime(file1).toLong()))
+        listCut.add(AudioFile(file2, "xaodong", 10000, 128, uri = Uri.parse(file2.absolutePath), time = getTime(file2).toLong()))
+        listCut.add(AudioFile(file3, "lonely", 10000, 128, uri = Uri.parse(file3.absolutePath), time = getTime(file3).toLong()))
+        listCut.add(AudioFile(file4, "samlam", 10000, 128, uri = Uri.parse(file4.absolutePath), time = getTime(file4).toLong()))
         val audioFileScans = AudioFileScans(listCut, StateLoad.LOADDONE)
         liveDataCut.postValue(audioFileScans)
 
         listMix = ArrayList<AudioFile>()
-        listMix.add(AudioFile(file3, "file_name3", 10000, 128, uri = Uri.parse(file3.absolutePath), time = getTime(file3).toLong()))
-        listMix.add(AudioFile(file4, "file_name4", 10000, 128, uri = Uri.parse(file4.absolutePath), time = getTime(file4).toLong()))
-        listMix.add(AudioFile(file4, "file_name4", 10000, 128, uri = Uri.parse(file4.absolutePath), time = getTime(file4).toLong()))
-        listMix.add(AudioFile(file4, "file_name4", 10000, 128, uri = Uri.parse(file4.absolutePath), time = getTime(file4).toLong()))
+        listMix.add(AudioFile(file1, "doihoamattroi", 10000, 128, uri = Uri.parse(file1.absolutePath), time = getTime(file1).toLong()))
+        listMix.add(AudioFile(file2, "xaodong", 10000, 128, uri = Uri.parse(file2.absolutePath), time = getTime(file2).toLong()))
+        listMix.add(AudioFile(file3, "lonely", 10000, 128, uri = Uri.parse(file3.absolutePath), time = getTime(file3).toLong()))
+        listMix.add(AudioFile(file4, "samlam", 10000, 128, uri = Uri.parse(file4.absolutePath), time = getTime(file4).toLong()))
         val audioFileScans1 = AudioFileScans(listMix, StateLoad.LOADDONE)
         liveDataMix.postValue(audioFileScans1)
 
         listMer = ArrayList<AudioFile>()
-        listMer.add(AudioFile(file1, "file_name5", 10000, 128, uri = Uri.parse(file1.absolutePath), time = getTime(file1).toLong()))
-        listMer.add(AudioFile(file2, "file_name6", 10000, 128, uri = Uri.parse(file2.absolutePath), time = getTime(file2).toLong()))
+        listMer.add(AudioFile(file1, "doihoamattroi", 10000, 128, uri = Uri.parse(file1.absolutePath), time = getTime(file1).toLong()))
+        listMer.add(AudioFile(file2, "xaodong", 10000, 128, uri = Uri.parse(file2.absolutePath), time = getTime(file2).toLong()))
+        listMer.add(AudioFile(file3, "lonely", 10000, 128, uri = Uri.parse(file3.absolutePath), time = getTime(file3).toLong()))
+        listMer.add(AudioFile(file4, "samlam", 10000, 128, uri = Uri.parse(file4.absolutePath), time = getTime(file4).toLong()))
         val audioFileScans2 = AudioFileScans(listMer, StateLoad.LOADDONE)
         liveDataMer.postValue(audioFileScans2)
 
