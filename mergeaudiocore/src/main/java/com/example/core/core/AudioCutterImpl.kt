@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.io.File
 import java.util.*
 
@@ -37,8 +38,7 @@ class AudioCutterImpl : AudioCutter {
         "-y %s -filter_complex \"concat=n=%d:v=0:a=1[a]\" -map \"[a]\" -c:a %s -b:a %dk \"%s\""
     private val CMD_MIX_AUDIO =
         "-y -i \'%s\' -i \'%s\' -filter_complex \"[0:0]volume=%f[a];[1:0]volume=%f[b];[a][b]amix=inputs=2:duration=%s:dropout_transition=0[a]\" -map \"[a]\" -c:a %s -q:a 0 \"%s\""
-    private val CMD_AUDIO_DURATION =
-        "ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 \"%s\""
+
 
     init {
         Config.setLogLevel(Level.AV_LOG_INFO)
@@ -260,9 +260,25 @@ class AudioCutterImpl : AudioCutter {
         return true
     }
 
-    override suspend fun getDurationAudioFile(filePath: String): Long {
+    override suspend fun getDurationAudioFile(filePath: String): AudioInformation {
         val info = FFprobe.getMediaInformation(filePath)
-        return info.duration.replace(".", "").toLong() / 1000
+        val duration = info.duration.replace(".", "").toLong() / 1000
+        val jsonTagsAudio = info.mediaProperties["tags"].toString()
+        val jsonAudio = JSONObject(jsonTagsAudio)
+        return AudioInformation(
+            info.filename.substring(
+                info.filename.lastIndexOf("/") + 1,
+                info.filename.lastIndexOf(".")
+            ),
+            info.bitrate.toInt(),
+            duration,
+            info.size.toLong(),
+            filePath,
+            info.format,
+            jsonAudio["Album"].toString(),
+            jsonAudio["Title"].toString(),
+            jsonAudio["Artist"].toString()
+        )
 
     }
 

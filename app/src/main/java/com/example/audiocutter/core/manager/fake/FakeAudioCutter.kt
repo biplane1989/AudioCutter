@@ -45,7 +45,7 @@ class FakeAudioCutter : AudioCutter {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getDurationAudioFile(filePath: String): Long {
+    override suspend fun getDurationAudioFile(filePath: String): AudioInformation {
         TODO("Not yet implemented")
     }
 
