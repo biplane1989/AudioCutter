@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
+import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
@@ -268,7 +269,8 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
                 DialogConvert.showDialogConvert(
                     childFragmentManager,
                     this,
-                    cuttingViewModel.getAudioFile()
+                    cuttingViewModel.getAudioFile(),
+                    cuttingViewModel.getNameSuggestion()
                 )
             }
             binding.increaseStartTimeIv -> {
@@ -374,7 +376,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
         ratioVolumeFadeout = if (fadeOut != Effect.OFF) (1F / this.fadeOut.time) else 0F
     }
 
-    override fun onAcceptConvert(audioFile: AudioFile, audioCutConfig: AudioCutConfig) {
+    override fun onAcceptConvert(audioCutConfig: AudioCutConfig) {
         var audioConfig = audioCutConfig
         audioConfig.inEffect = fadeIn
         audioConfig.outEffect = fadeOut
@@ -383,12 +385,10 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
         audioConfig.endPosition = (cuttingViewModel.getCuttingEndPos()
             .toFloat() / 1000) - audioConfig.startPosition
 
-        audioConfig.fileName = audioFile.fileName
+        audioConfig.pathFolder = cuttingViewModel.getStorageFolder()
 
-        audioConfig.pathFolder = Environment.getExternalStorageDirectory()
-            .toString() + "/AudioCutter/cutter"
 
-        viewStateManager.editorSaveCutingAudio(this, audioFile, audioCutConfig)
+        viewStateManager.editorSaveCutingAudio(this, cuttingViewModel.getAudioFile(), audioCutConfig)
 
     }
 

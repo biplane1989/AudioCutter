@@ -12,12 +12,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.AudioEditorManager
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.core.manager.fake.FakeAudioFileManager
 import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.resultscreen.objects.*
 import com.example.audiocutter.functions.resultscreen.services.ResultService
 import com.example.audiocutter.objects.AudioFile
@@ -151,14 +148,11 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
             if (item is MixingConvertingItem) {
                 currentProcessingItem.postValue(item)
-                item.audioFile1.time = FakeAudioFileManager.getTime(item.audioFile1.file)
-                item.audioFile2.time = FakeAudioFileManager.getTime(item.audioFile2.file)
                 val audioCore1 = AudioCore(item.audioFile1.file, item.audioFile1.fileName, item.audioFile1.size, item.audioFile1.bitRate, item.audioFile1.time, item.audioFile1.mimeType)
                 val audioCore2 = AudioCore(item.audioFile2.file, item.audioFile2.fileName, item.audioFile2.size, item.audioFile2.bitRate, item.audioFile2.time, item.audioFile2.mimeType)
 
                 val formatStr = if (item.mixingConfig.format == AudioFormat.MP3) ".mp3" else ".m4a"
                 var audioFile = AudioFile(File(item.mixingConfig.pathFolder + File.separator + item.mixingConfig.fileName + formatStr), item.mixingConfig.fileName, 100L)
-                FakeAudioFileManager.addMix(audioFile)
                 val audioResult = ManagerFactory.getAudioCutter()
                     .mix(audioCore1, audioCore2, item.mixingConfig)
                 audioFile = AudioFile(audioResult.file, audioResult.fileName, audioResult.size, audioResult.bitRate, audioResult.time, Uri.parse(audioResult.file.toString()))

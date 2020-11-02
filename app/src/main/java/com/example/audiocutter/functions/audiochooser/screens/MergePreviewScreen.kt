@@ -2,7 +2,6 @@ package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Activity
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
+import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
@@ -24,8 +24,6 @@ import com.example.audiocutter.functions.audiochooser.adapters.MergePreviewAdapt
 import com.example.audiocutter.functions.audiochooser.dialogs.MergeDialog
 import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
-import com.example.audiocutter.functions.editor.screen.CuttingEditorScreenArgs
-import com.example.audiocutter.functions.resultscreen.objects.MergingConvertingItem
 import com.example.audiocutter.ui.audiochooser.merge.MyItemTouchHelper
 import com.example.audiocutter.ui.audiochooser.merge.WrapContentLinearLayoutManager
 import com.example.core.core.AudioFormat
@@ -180,7 +178,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         val mergingConfig = AudioMergingConfig(
             AudioFormat.MP3,
             filename,
-            "${Environment.getExternalStorageDirectory()}/AudioCutter/merger"
+            ManagerFactory.getAudioFileManager().getFolderPath(Folder.TYPE_MERGER)
         )
         viewStateManager.editorSaveMergingAudio(this, audioMerModel.getListAudio(), mergingConfig)
     }
