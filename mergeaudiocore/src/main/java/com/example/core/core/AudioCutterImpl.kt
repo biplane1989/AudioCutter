@@ -31,14 +31,19 @@ class AudioCutterImpl : AudioCutter {
     init {
         Config.setLogLevel(Level.AV_LOG_INFO)
         Config.enableStatisticsCallback {
+            if (timeVideo == 0L) {
+                return@enableStatisticsCallback
+            }
             val percent = (it.time * 100) / timeVideo
             if (itemMergeInfo.state == FFMpegState.IDE && percent >= 100L) {
                 return@enableStatisticsCallback
             }
             audioFileCore.size = it.size * 1204
             mainScope.launch {
-                Log.e(TAG, "percent: $percent   time: ${it.time}   timeVideo: $timeVideo")
-                updateItemLiveData(audioFileCore, ((it.time * 100) / timeVideo).toInt(), FFMpegState.RUNNING)
+                Log.e(TAG, "percent: $percent status: ${itemMergeInfo.state}   time: ${it.time}   timeVideo: $timeVideo")
+                if (itemMergeInfo.state != FFMpegState.CANCEL && itemMergeInfo.state != FFMpegState.FAIL) {
+                    updateItemLiveData(audioFileCore, ((it.time * 100) / timeVideo).toInt(), FFMpegState.RUNNING)
+                }
             }
         }
     }
@@ -58,7 +63,7 @@ class AudioCutterImpl : AudioCutter {
             when (returnCode) {
                 Config.RETURN_CODE_SUCCESS -> {
                     updateAudioFile(fileCutPath, audioCutConfig.fileName, audioCutConfig.bitRate.value, timeVideo, mimeType)
-                    updateItemLiveData(audioFile, 100, FFMpegState.RUNNING)
+                    updateItemLiveData(audioFile, 100, FFMpegState.SUCCESS)
                     return@withContext audioFileCore
                 }
                 Config.RETURN_CODE_CANCEL -> {
@@ -92,7 +97,7 @@ class AudioCutterImpl : AudioCutter {
     override suspend fun mix(audioFile1: AudioCore, audioFile2: AudioCore, audioMixConfig: AudioMixConfig): AudioCore {
         withContext(Dispatchers.Default) {
             updateItemLiveData(audioFileCore, 0, FFMpegState.IDE)
-            
+
             val fileName = audioMixConfig.fileName
             val mimeType = if (audioMixConfig.format == AudioFormat.MP3) AudioFormat.MP3.type else AudioFormat.ACC.type
             val codec = if (audioMixConfig.format == AudioFormat.MP3) CODEC_MP3 else CODEC_AAC
@@ -109,7 +114,7 @@ class AudioCutterImpl : AudioCutter {
             when (requestCode) {
                 Config.RETURN_CODE_SUCCESS -> {
                     updateAudioFile(filePath, fileName, 0, timeVideo, mimeType)
-                    updateItemLiveData(audioFileCore, 100, FFMpegState.RUNNING)
+                    updateItemLiveData(audioFileCore, 100, FFMpegState.SUCCESS)
                     return@withContext audioFileCore
                 }
                 Config.RETURN_CODE_CANCEL -> {
@@ -132,7 +137,7 @@ class AudioCutterImpl : AudioCutter {
     }
 
     override suspend fun merge(listAudioFile: List<AudioCore>, fileName: String, audioFormat: AudioFormat, pathFolder: String): AudioCore {
-        timeVideo =0
+        timeVideo = 0
 
         withContext(Dispatchers.Default) {
 
@@ -155,7 +160,7 @@ class AudioCutterImpl : AudioCutter {
             when (returnCode) {
                 Config.RETURN_CODE_SUCCESS -> {
                     updateAudioFile(pathFileMerge, fileName, bitRateFile, timeVideo, mimeType)
-                    updateItemLiveData(audioFileCore, 100, FFMpegState.RUNNING)
+                    updateItemLiveData(audioFileCore, 100, FFMpegState.SUCCESS)
                     return@withContext audioFileCore
                 }
                 Config.RETURN_CODE_CANCEL -> {

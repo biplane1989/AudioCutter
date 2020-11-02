@@ -21,7 +21,7 @@ enum class MixSelector(val type: String) {
 }
 
 enum class FFMpegState {
-    IDE, RUNNING, CANCEL, FAIL
+    IDE, RUNNING, CANCEL, FAIL, SUCCESS
 }
 
 data class AudioCutConfig(
