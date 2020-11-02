@@ -28,13 +28,19 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
 
     private lateinit var audioMerAdapter: MergeChooserAdapter
     private lateinit var audioMerModel: MergeChooserModel
-    var stateObserver = Observer<Boolean> {
-        if (it) {
-            showProgressBar(true)
-            binding.ivEmptyListMerge.visibility = View.GONE
-            binding.tvEmptyListMer.visibility = View.GONE
-        } else {
-            showProgressBar(false)
+    var stateObserver = Observer<Int> {
+        when (it) {
+            1 -> {
+                showProgressBar(true)
+                binding.ivEmptyListMerge.visibility = View.GONE
+                binding.tvEmptyListMer.visibility = View.GONE
+            }
+            0 -> {
+                showProgressBar(false)
+            }
+            -1 -> {
+                showProgressBar(false)
+            }
         }
     }
     var currentPos = -1

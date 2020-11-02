@@ -32,13 +32,19 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     private lateinit var audioMixModel: MixModel
     private lateinit var binding: MixChooserScreenBinding
     private var currentPos = -1
-    private var stateObserver = Observer<Boolean> {
-        if (it) {
-            showProgressBar(true)
-            binding.ivEmptyListMixer.visibility = View.GONE
-            binding.tvEmptyListMixer.visibility = View.GONE
-        } else {
-            showProgressBar(false)
+    private var stateObserver = Observer<Int> {
+        when (it) {
+            1 -> {
+                showProgressBar(true)
+                binding.ivEmptyListMixer.visibility = View.GONE
+                binding.tvEmptyListMixer.visibility = View.GONE
+            }
+            0 -> {
+                showProgressBar(false)
+            }
+            -1 -> {
+                showProgressBar(false)
+            }
         }
     }
 

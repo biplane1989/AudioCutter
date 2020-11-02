@@ -43,16 +43,20 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         Log.d("nqm", "stateObserver: $it")
         when (it) {
             1 -> {
+                Log.d("nqm", "stateObserver: 1")
                 showProgressBar(true)
                 binding.ivEmptyListCutter.visibility = View.GONE
                 binding.tvEmptyListCutter.visibility = View.GONE
             }
             0 -> {
+                Log.d("nqm", "stateObserver: 0")
                 showProgressBar(false)
             }
             -1 -> {
+                Log.d("nqm", "stateObserver: -1")
                 showProgressBar(false)
-                showEmptyList()
+                binding.ivEmptyListCutter.visibility = View.VISIBLE
+                binding.tvEmptyListCutter.visibility = View.VISIBLE
             }
         }
     }
@@ -60,24 +64,21 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
         Log.d("nqm", "listMusic: ${listMusic.size}")
-        if (listMusic.size == 0 || listMusic == null) {
-            showEmptyList()
+       /* if (listMusic.isEmpty() || listMusic == null) {
+            Log.d("nqm", "listMusic: showpregress")
             showProgressBar(false)
-        }
+            showEmptyList()
+        }*/
         audioCutterAdapter.submitList(ArrayList(listMusic))
     }
 
     private fun showEmptyList() {
+        Log.d("nqm", "listMusic: emptyList")
         binding.rvAudioCutter.visibility = View.INVISIBLE
         binding.ivEmptyListCutter.visibility = View.VISIBLE
         binding.tvEmptyListCutter.visibility = View.VISIBLE
+        Log.d("nqm", "listMusic: emptyList done")
     }
-
-//    private fun showList() {
-//        binding.rvAudioCutter.visibility = View.VISIBLE
-//        binding.ivEmptyListCutter.visibility = View.INVISIBLE
-//        binding.tvEmptyListCutter.visibility = View.INVISIBLE
-//    }
 
     private val playerInfoObserver = Observer<PlayerInfo> {
         audioCutterAdapter.submitList(audioCutterModel.updateMediaInfo(it))
@@ -106,9 +107,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLists()
-        showProgressBar(true)
+//        showProgressBar(true)
         runOnUI {
-            delay(500)
+//            delay(500)
             val stateLiveData = audioCutterModel.getStateLoading()
             stateLiveData.observe(viewLifecycleOwner, stateObserver)
 
@@ -156,7 +157,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
             audioCutterAdapter.submitList(audioCutterModel.getListsearch())
             Log.d(TAG, "seachAudioByName: ${audioCutterModel.getListsearch().size}")
         } else {
-            binding.rvAudioCutter.visibility = View.GONE
+            binding.rvAudioCutter.visibility = View.VISIBLE
             binding.tvEmptyListCutter.visibility = View.VISIBLE
             binding.ivEmptyListCutter.visibility = View.VISIBLE
         }

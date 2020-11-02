@@ -51,7 +51,7 @@ class AudioCutterModel : BaseViewModel() {
                 StateLoad.LOADING -> {
                     _stateLoadProgress.postValue(1)
                 }
-                StateLoad.LOADING -> {
+                StateLoad.LOADDONE -> {
                     _stateLoadProgress.postValue(0)
                 }
                 StateLoad.LOADFAIL -> {

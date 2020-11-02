@@ -6,8 +6,5 @@ class AudioInformation(
     val duration: Long,
     val size: Long,
     val filePath: String,
-    val format: String,
-    val album: String,
-    val title:String,
-    val Artist:String
+    val format: String
 )

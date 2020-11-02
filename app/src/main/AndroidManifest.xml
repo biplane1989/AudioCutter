@@ -25,10 +25,10 @@
         android:theme="@style/AppTheme">
         <activity android:name=".activities.acttest.CutActivity" />
         <activity android:name=".activities.acttest.CoreTestActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
 
 
@@ -50,10 +50,10 @@
 
         <activity android:name=".activities.MainActivity"
             android:launchMode="singleTask">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <service android:name=".functions.resultscreen.services.ResultService" />
     </application>

@@ -1,19 +1,17 @@
 package com.example.core.core
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.arthenica.mobileffmpeg.Config
-import com.arthenica.mobileffmpeg.FFmpeg
-import com.arthenica.mobileffmpeg.FFprobe
-import com.arthenica.mobileffmpeg.Level
+import com.arthenica.mobileffmpeg.*
 import com.example.core.Utils.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import java.io.File
+import java.lang.Exception
 import java.util.*
 
 
@@ -260,26 +258,30 @@ class AudioCutterImpl : AudioCutter {
         return true
     }
 
-    override suspend fun getDurationAudioFile(filePath: String): AudioInformation {
-        val info = FFprobe.getMediaInformation(filePath)
-        val duration = info.duration.replace(".", "").toLong() / 1000
-        val jsonTagsAudio = info.mediaProperties["tags"].toString()
-        val jsonAudio = JSONObject(jsonTagsAudio)
-        return AudioInformation(
-            info.filename.substring(
-                info.filename.lastIndexOf("/") + 1,
-                info.filename.lastIndexOf(".")
-            ),
-            info.bitrate.toInt(),
-            duration,
-            info.size.toLong(),
-            filePath,
-            info.format,
-            jsonAudio["Album"].toString(),
-            jsonAudio["Title"].toString(),
-            jsonAudio["Artist"].toString()
-        )
+    override  fun getAudioInfo(filePath: String): AudioInformation? {
+        val info : MediaInformation
+        //try {
+            info = FFprobe.getMediaInformation(filePath)
+       /* }catch (e:Exception){
+            e.printStackTrace()
+            return null
+        }*/
 
+        info?.let {
+            val duration = info.duration.replace(".", "").toLong() / 1000
+            return AudioInformation(
+                info.filename.substring(
+                    info.filename.lastIndexOf("/") + 1,
+                    info.filename.lastIndexOf(".")
+                ),
+                info.bitrate.toInt(),
+                duration,
+                info.size.toLong(),
+                filePath,
+                info.format
+            )
+        }
+        return null
     }
 
     override suspend fun merge(

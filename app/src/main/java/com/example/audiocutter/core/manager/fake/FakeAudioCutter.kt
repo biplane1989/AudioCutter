@@ -1,5 +1,6 @@
 package com.example.audiocutter.core.manager.fake
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.core.core.*
@@ -45,7 +46,7 @@ class FakeAudioCutter : AudioCutter {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getDurationAudioFile(filePath: String): AudioInformation {
+    override  fun getAudioInfo(filePath: String): AudioInformation {
         TODO("Not yet implemented")
     }
 
