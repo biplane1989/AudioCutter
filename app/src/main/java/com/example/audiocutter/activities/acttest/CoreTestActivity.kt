@@ -66,6 +66,11 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
         listAudio.add(item3)
         listAudio.add(item4)
 
+        runOnUI {
+            val audioMergingInfo = audioCutterImpl.getDurationAudioFile(listAudio[1].file.absolutePath)
+            Log.e(TAG, "createView: $audioMergingInfo" )
+        }
+
     }
 
     override fun onClick(p0: View?) {
