@@ -31,6 +31,8 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     var stateObserver = Observer<Boolean> {
         if (it) {
             showProgressBar(true)
+            binding.ivEmptyListMerge.visibility = View.GONE
+            binding.tvEmptyListMer.visibility = View.GONE
         } else {
             showProgressBar(false)
         }
@@ -38,7 +40,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     var currentPos = -1
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        if (listMusic.isEmpty()) {
+        if (listMusic.size == 0 || listMusic == null) {
             showEmptyView()
         }
         audioMerAdapter.submitList(ArrayList(listMusic))

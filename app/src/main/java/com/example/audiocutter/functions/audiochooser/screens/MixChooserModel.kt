@@ -48,6 +48,7 @@ class MixModel : BaseViewModel() {
             }
 
             Collections.sort(mListAudio, sortListByName)
+
             mListAudio
         }
     }

@@ -35,13 +35,15 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     private var stateObserver = Observer<Boolean> {
         if (it) {
             showProgressBar(true)
+            binding.ivEmptyListMixer.visibility = View.GONE
+            binding.tvEmptyListMixer.visibility = View.GONE
         } else {
             showProgressBar(false)
         }
     }
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        if (listMusic.isEmpty()) {
+        if (listMusic.size == 0 || listMusic == null) {
             showEmptyView()
         }
         audioMixAdapter.submitList(ArrayList(listMusic))

@@ -227,6 +227,7 @@ object AudioFileManagerImpl : AudioFileManager {
 
             } catch (e: Exception) {
                 e.printStackTrace()
+                _listAllAudioFile.postValue(AudioFileScans(listData, StateLoad.LOADFAIL))
             } finally {
                 cursor?.close()
             }
@@ -238,7 +239,6 @@ object AudioFileManagerImpl : AudioFileManager {
         try {
             if (file != null) {
                 val mediaMetadataRetriever = MediaMetadataRetriever()
-
                 mediaMetadataRetriever.setDataSource(file.absolutePath)
                 return mediaMetadataRetriever.extractMetadata(type)!!
             }
