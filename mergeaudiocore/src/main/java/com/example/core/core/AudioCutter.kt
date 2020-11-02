@@ -188,5 +188,6 @@ interface AudioCutter {
     ): AudioCore
 
     suspend fun cancelTask(): Boolean
+    suspend fun getDurationAudioFile(filePath:String):AudioInformation
     fun getAudioMergingInfo(): LiveData<AudioMergingInfo>
 }
