@@ -26,7 +26,8 @@ object ManagerFactory {
         RingtonManagerImpl.init(appContext)
 //        AudioPlayerImpl().init(appContext)
         AudioEditorManagerlmpl.init(appContext)
-        FakeAudioFileManager.init(appContext)
+        //FakeAudioFileManager.init(appContext)
+        mAudioFileManager.init(appContext)
     }
 
     fun getRingtonManager(): RingtonManagerImpl {
@@ -35,7 +36,7 @@ object ManagerFactory {
 
     fun getAudioFileManager(): AudioFileManager {
 //        return mAudioFileManager
-        return FakeAudioFileManager
+        return mAudioFileManager
     }
 
     fun getAudioCutter(): AudioCutter {
