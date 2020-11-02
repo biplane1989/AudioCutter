@@ -23,6 +23,7 @@ import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
 import com.example.audiocutter.permissions.PermissionManager
+import com.example.audiocutter.util.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -421,38 +422,6 @@ object AudioFileManagerImpl : AudioFileManager {
         return pathParent
     }
 
-    /*  override fun getPathParentFileByName(name: String, typeFile: Folder): String {
-          createNecessaryFolders()
-          val random = Random()
-          var text = ""
-          var nameTmp = ""
-          var i = 0
-          var fileName = "merging audio file 11_02"
-
-
-
-          while (true){
-
-          }
-          listData.forEach { item ->
-              text += "${item.fileName},"
-          }
-          if (text.contains(name)) {
-              nameTmp = "$name(${random.nextInt(10)})"
-          } else {
-              nameTmp = name
-          }
-          pathParent = when (typeFile) {
-              Folder.TYPE_CUTTER -> "$APP_FOLDER_PATH/${CUTTING_FOLDER_NAME}/$nameTmp"
-              Folder.TYPE_MERGER -> "$APP_FOLDER_PATH/${MERGING_FOLDER_NAME}/$nameTmp"
-              Folder.TYPE_MIXER -> "$APP_FOLDER_PATH/${MIXING_FOLDER_NAME}/$nameTmp"
-          }
-
-          Log.d(TAG, "getParentFileName: $text")
-
-          return pathParent
-      }*/
-
 
     override suspend fun saveFile(audioFile: AudioFile, typeFile: Folder): StateFile =
         withContext(Dispatchers.Main) {
@@ -509,23 +478,67 @@ object AudioFileManagerImpl : AudioFileManager {
         val fileNameHash = HashSet<String>()
         if (folder.exists()) {
             folder.listFiles()?.forEach {
-                fileNameHash.add(it.name)
+                if (it.name.contains(".")) {
+                    fileNameHash.add(it.name.substring(0, (it.name).lastIndexOf(".")))
+                } else {
+                    fileNameHash.add(it.name)
+                }
+                Log.d(TAG, "getAllFileName: ${it.name}")
             }
         }
         return fileNameHash
 
     }
 
-    override fun genNewAudioFileName(typeFile: Folder) {
+    @SuppressLint("SimpleDateFormat")
+    override fun genNewAudioFileName(typeFile: Folder): String {
+        val random = Random()
         val fileNameHash = getAllFileName(typeFile)
-        if(!fileNameHash.contains("anas")){
-
+        var fileName = ""
+        val day = SimpleDateFormat("dd_MM").format(Date())
+        var textName = ""
+        fileName = when (typeFile) {
+            Folder.TYPE_CUTTER -> {
+                "${CUTTING_FOLDER_NAME}_${APP_FOLDER_NAME}_$day"
+            }
+            Folder.TYPE_MERGER -> {
+                "${MERGING_FOLDER_NAME}_${APP_FOLDER_NAME}_$day"
+            }
+            Folder.TYPE_MIXER -> {
+                "${MIXING_FOLDER_NAME}_${APP_FOLDER_NAME}_$day"
+            }
         }
-        TODO("Not yet implemented")
+
+//        fileName = "AudioCutter_AudioCutter_lonely(2)"
+
+        fileNameHash.forEach {
+            textName += "$it,"
+        }
+        if (textName.contains(fileName)) {
+            fileName = "$fileName(${Utils.getAlphaNumericString(random.nextInt(10))})"
+        }
+        Log.d(TAG, "genNewAudioFileName: $fileName")
+        return fileName
     }
 
-    override fun createValidFileName(name: String, typeFile: Folder) {
-        TODO("Not yet implemented")
+
+    override fun createValidFileName(name: String, typeFile: Folder): String {
+        val random = Random()
+        val fileNameHash = getAllFileName(typeFile)
+        var fileName = ""
+        var textName = ""
+
+        fileNameHash.forEach {
+            textName += "$it,"
+        }
+        fileName = if (textName.contains(name)) {
+            "$name(${Utils.getAlphaNumericString(random.nextInt(10))})"
+        } else {
+            name
+        }
+        Log.d(TAG, "createValidFileName: $fileName")
+
+        return fileName
     }
 
     private fun scanListAudioFileByType(typeFile: Folder): List<AudioFile> {

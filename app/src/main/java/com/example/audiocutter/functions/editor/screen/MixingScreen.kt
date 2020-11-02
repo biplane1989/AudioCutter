@@ -211,7 +211,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     }
 
     private fun checkCompareDurationMin(durAudio1: String, durAudio2: String) {
-        val isCheck = durAudio1 > durAudio2
+        val isCheck = durAudio1.toInt() > durAudio2.toInt()
         if (!isCheck) {
             binding.crChangeViewMixing.setDuration(durAudio1)
         } else {
@@ -220,7 +220,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     }
 
     private fun checkCompareDuration(durAudio1: String, durAudio2: String) {
-        val isCheck = durAudio1 > durAudio2
+        val isCheck = durAudio1.toInt() > durAudio2.toInt()
         if (isCheck) {
             binding.crChangeViewMixing.setDuration(durAudio1)
         } else {

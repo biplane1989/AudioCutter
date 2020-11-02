@@ -173,9 +173,14 @@ object FakeAudioFileManager : AudioFileManager {
         return "orange"
     }
 
-    override fun getPathParentFileByName(name: String, typeFile: Folder): String {
-        return "orange"
+    override fun genNewAudioFileName(typeFile: Folder): String {
+        return ""
     }
+
+    override fun createValidFileName(name: String, typeFile: Folder): String {
+        return ""
+    }
+
 
     fun getDurationByPath(itemFile: File?): String {
         return ""

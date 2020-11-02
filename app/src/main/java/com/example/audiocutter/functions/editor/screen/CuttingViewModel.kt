@@ -66,7 +66,7 @@ class CuttingViewModel : BaseViewModel() {
 
     }
     fun getNameSuggestion():String{
-        return ManagerFactory.getAudioFileManager().
+        return " ManagerFactory.getAudioFileManager()."
     }
 
     fun getStorageFolder():String{
