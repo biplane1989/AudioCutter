@@ -4,7 +4,6 @@ package com.example.audiocutter.functions.editor.screen
 import android.annotation.SuppressLint
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,18 +14,17 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
+import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.MixingScreenBinding
-import com.example.audiocutter.functions.resultscreen.screens.ResultActivity
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.ui.audiochooser.mix.ChangeRangeView
 import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioFormat
 import com.example.core.core.AudioMixConfig
 import com.example.core.core.MixSelector
-import java.io.File
 
 class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPlayLineChange {
     private var isCheckClick: Int = 2
@@ -191,7 +189,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
             binding.ivDoneMixing -> {
                 val mixingConfig = AudioMixConfig(
                     "mixing",
-                    "${Environment.getExternalStorageDirectory()}/AudioCutter/mixer",
+                    ManagerFactory.getAudioFileManager().getFolderPath(Folder.TYPE_MIXER),
                     MixSelector.LONGEST,
                     100,
                     100,

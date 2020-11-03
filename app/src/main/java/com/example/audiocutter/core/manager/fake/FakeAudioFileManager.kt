@@ -170,7 +170,7 @@ object FakeAudioFileManager : AudioFileManager {
         return "orange"
     }
 
-    override fun getParentFile(typeFile: Folder): String {
+    override fun getFolderPath(typeFile: Folder): String {
         return "orange"
     }
 

@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.editor.screen
 
 import androidx.lifecycle.LiveData
 import com.example.audiocutter.base.BaseViewModel
+import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
@@ -64,7 +65,13 @@ class CuttingViewModel : BaseViewModel() {
 
 
     }
+    fun getNameSuggestion():String{
+        return ManagerFactory.getAudioFileManager().
+    }
 
+    fun getStorageFolder():String{
+        return ManagerFactory.getAudioFileManager().getFolderPath(Folder.TYPE_CUTTER)
+    }
     fun resumeAudio() {
         audioPlayer.resume()
     }

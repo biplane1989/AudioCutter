@@ -26,7 +26,6 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
     Slider.OnChangeListener {
     private var listener: OnDialogConvertListener? = null
 
-    private lateinit var audioFile: AudioFile
     private lateinit var edtNameFile: EditText
     private var volume = 0
     private lateinit var spinnerFormat: MaterialSpinner
@@ -48,14 +47,13 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
         fun showDialogConvert(
             fragmentManager: FragmentManager,
             listener: OnDialogConvertListener,
-            audioFile: AudioFile
+            audioFile: AudioFile,
+            nameSuggestion:String
         ) {
             val bundle = Bundle()
-            bundle.putString(Utils.KEY_SEND_AUDIO, audioFile.file.absolutePath)
             val dialogConvert =
                 DialogConvert()
             dialogConvert.arguments = bundle
-            dialogConvert.audioFile = audioFile
             dialogConvert.listener = listener
             dialogConvert.show(fragmentManager, "dialog convert")
         }
@@ -91,21 +89,12 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
         }
     }
 
-    private fun getFileName(nameFile: String): String {
-        val timeNow = System.currentTimeMillis()
-        val simpleDateFormat = SimpleDateFormat(" hh:mm:ss dd/MM/yyyy", Locale.getDefault())
-        val date = Date(timeNow)
-        return nameFile.plus(" ${simpleDateFormat.format(date)}")
-    }
-
     private fun getData() {
-        audioFile = ManagerFactory.getAudioFileManager()
-            .buildAudioFile(requireArguments().getString(Utils.KEY_SEND_AUDIO)!!)
         AudioFormat.values().forEach { listFormat.add(it.name) }
         BitRate.values().forEach { listBitrate.add(it.name.replaceFirstCharacter()) }
         positionFormat =
             if (PreferencesHelper.getBoolean(PreferencesHelper.CONVERT_FORMAT, true)) 0 else 1
-        positionBitrate = listBitrate.getItemPos(audioFile.bitRate)
+        positionBitrate = listBitrate.getItemPos(BitRate._128kb.value)
         volume = PreferencesHelper.getInt(PreferencesHelper.CONVERT_VOLUME, 100)
     }
 
@@ -121,7 +110,6 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
             R.id.dialog_convert_ok_tv -> {
                 if (listener != null) {
                     listener!!.onAcceptConvert(
-                        audioFile,
                         AudioCutConfig(
                             0F,
                             0F,
@@ -151,7 +139,7 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
     }
 
     interface OnDialogConvertListener {
-        fun onAcceptConvert(audioFile: AudioFile, audioCutConfig: AudioCutConfig)
+        fun onAcceptConvert(audioCutConfig: AudioCutConfig)
     }
 
 

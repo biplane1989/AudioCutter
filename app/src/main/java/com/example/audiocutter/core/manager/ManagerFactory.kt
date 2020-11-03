@@ -4,7 +4,6 @@ import android.content.Context
 import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.audioplayer.AudioPlayerImpl
 import com.example.audiocutter.core.contact.ContactManagerImpl
-import com.example.audiocutter.core.manager.fake.FakeAudioFileManager
 import com.example.audiocutter.core.result.AudioEditorManagerlmpl
 import com.example.audiocutter.core.rington.RingtonManagerImpl
 import com.example.core.core.AudioCutter
@@ -26,7 +25,8 @@ object ManagerFactory {
         RingtonManagerImpl.init(appContext)
 //        AudioPlayerImpl().init(appContext)
         AudioEditorManagerlmpl.init(appContext)
-        FakeAudioFileManager.init(appContext)
+        //FakeAudioFileManager.init(appContext)
+        mAudioFileManager.init(appContext)
     }
 
     fun getRingtonManager(): RingtonManagerImpl {
@@ -35,7 +35,7 @@ object ManagerFactory {
 
     fun getAudioFileManager(): AudioFileManager {
 //        return mAudioFileManager
-        return FakeAudioFileManager
+        return mAudioFileManager
     }
 
     fun getAudioCutter(): AudioCutter {
