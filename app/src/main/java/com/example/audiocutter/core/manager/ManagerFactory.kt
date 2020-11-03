@@ -52,8 +52,8 @@ object ManagerFactory {
     }
 
     fun newAudioPlayer(): AudioPlayer {
-        return audioPlayer
-//        return AudioPlayerImpl()
+        /**only return AudioPlayerImpl() to play mutil audio file*/
+        return AudioPlayerImpl()
     }
 
     fun getRingtoneManager(): RingtonManager {

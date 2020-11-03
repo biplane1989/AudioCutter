@@ -109,6 +109,9 @@ object AudioFileManagerImpl : AudioFileManager {
     }
 
     private fun scanAllFile() {
+
+        var duration: Long
+        var bitrate: Int
         if (scanningState == ScanningState.WAITING_FOR_CANCELING) {
             Log.d("taih", "return WAITING_FOR_CANCELING")
             return
@@ -134,8 +137,7 @@ object AudioFileManagerImpl : AudioFileManager {
                 MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.ALBUM,
                 MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.DATE_ADDED,
-                MediaStore.Audio.Media.DURATION
+                MediaStore.Audio.Media.DATE_ADDED
             )
 
             val cursor = resolver.query(
@@ -154,7 +156,6 @@ object AudioFileManagerImpl : AudioFileManager {
                     val clAlbum = cursor.getColumnIndex(projection[4])
                     val clArtist = cursor.getColumnIndex(projection[5])
                     val clDateAdded = cursor.getColumnIndex(projection[6])
-                    val clDuration = cursor.getColumnIndex(projection[7])
 
 
                     cursor.moveToFirst()
@@ -192,11 +193,21 @@ object AudioFileManagerImpl : AudioFileManager {
                                 cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.GENRE))
                         }
                         Log.d(TAG, "scanAllFile: start get Audio info data ${data}")
-
-                        val audioInfo = audioCutter.getAudioInfo(data)
-
-                        val bitRate = audioInfo?.bitRate ?: BitRate._128kb.value
-                        val duration = audioInfo?.duration ?: 0
+                        try {
+                            duration = getInfoAudioFile(
+                                File(data),
+                                MediaMetadataRetriever.METADATA_KEY_DURATION
+                            )!!.toInt().toLong()
+                            bitrate = getInfoAudioFile(
+                                File(data),
+                                MediaMetadataRetriever.METADATA_KEY_BITRATE
+                            )!!.toInt()
+                        } catch (e: Exception) {
+                            val audioInfo = audioCutter.getAudioInfo(data)
+                            bitrate = audioInfo?.bitRate ?: BitRate._128kb.value
+                            duration = audioInfo?.duration ?: 0
+                            e.printStackTrace()
+                        }
 
                         Log.d(
                             "TAG",
@@ -205,16 +216,8 @@ object AudioFileManagerImpl : AudioFileManager {
                                     " \n URI $uri \n title :$title \n" +
                                     " album : $album   \n" + " artist  $artist  \n" +
                                     " date: $date \n" + " genre $genre  \n " +
-                                    "MimeType $mimeType \n filePAth  ${file.absolutePath} \n parent${file.parent}  \n BitRate $bitRate "
+                                    "MimeType $mimeType \n filePAth  ${file.absolutePath} \n parent${file.parent}  \n BitRate $bitrate "
                         )
-
-//                        val duration =
-                        //audioCutter.getAudioInfo(data)?.duration
-
-
-                        //val bitRate = getInfoAudioFile(File(data), MediaMetadataRetriever.METADATA_KEY_BITRATE)?.toInt()
-//                        val duration = getInfoAudioFile(File(data), MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
-                        //val duration = cursor.getString(clDuration).toLong()
 
                         val uri = getUriFromFile(id, resolver, file)
                         if (file.exists()) {
@@ -224,7 +227,7 @@ object AudioFileManagerImpl : AudioFileManager {
                                         file = file,
                                         fileName = name.trim(),
                                         size = file.length(),
-                                        bitRate = bitRate!!,
+                                        bitRate = bitrate!!,
                                         time = duration!!,
                                         uri = uri,
                                         bitmap = bitmap,
@@ -242,7 +245,7 @@ object AudioFileManagerImpl : AudioFileManager {
                                         file = file,
                                         fileName = name,
                                         size = file.length(),
-                                        bitRate = bitRate!!,
+                                        bitRate = bitrate!!,
                                         time = duration!!,
                                         uri = uri,
                                         bitmap = null,
