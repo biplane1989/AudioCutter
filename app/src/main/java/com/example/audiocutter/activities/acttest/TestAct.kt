@@ -21,8 +21,11 @@ class TestAct : BaseActivity() {
 
     private fun initViews() {
         bt_start.setOnClickListener {
-
-            Log.d("TAG", "initViews: ${ ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_MIXER).value!!.listAudioFiles.size}")
+            runOnUI {
+                val audio = ManagerFactory.getAudioFileManager().buildAudioFile("/storage/emulated/0/AudioCutter/cutter/Cung-Dan-Tinh-Yeu-Dan-Truong-My-Tam.mp3")
+               val tmp = ManagerFactory.getAudioFileManager().saveFile(audio, Folder.TYPE_MIXER)
+                Log.d("TAG", "checkState: state ${tmp.name}")
+            }
         }
     }
 

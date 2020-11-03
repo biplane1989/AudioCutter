@@ -38,10 +38,10 @@ import kotlin.collections.HashSet
 
 
 object AudioFileManagerImpl : AudioFileManager {
-    const val APP_FOLDER_NAME = "AudioCutter"
-    const val CUTTING_FOLDER_NAME = "cutter"
-    const val MERGING_FOLDER_NAME = "merger"
-    const val MIXING_FOLDER_NAME = "mixer"
+    private const val APP_FOLDER_NAME = "AudioCutter"
+    private const val CUTTING_FOLDER_NAME = "cutter"
+    private const val MERGING_FOLDER_NAME = "merger"
+    private const val MIXING_FOLDER_NAME = "mixer"
 
 
     enum class ScanningState {
@@ -50,7 +50,7 @@ object AudioFileManagerImpl : AudioFileManager {
         WAITING_FOR_CANCELING
     }
 
-    val APP_FOLDER_PATH = "${Environment.getExternalStorageDirectory()}/${APP_FOLDER_NAME}"
+    private val APP_FOLDER_PATH = "${Environment.getExternalStorageDirectory()}/${APP_FOLDER_NAME}"
     private var uri: Uri = Uri.parse("")
     private val SIZE_KB: Long = 1024L
     private val SIZE_MB = SIZE_KB * SIZE_KB
@@ -76,6 +76,7 @@ object AudioFileManagerImpl : AudioFileManager {
     private var backgroundScope = CoroutineScope(Dispatchers.Default)
 
     override fun init(context: Context) {
+
         if (PermissionManager.hasStoragePermission()) {
             createNecessaryFolders()
             audioCutter = ManagerFactory.getAudioCutter()
@@ -154,6 +155,7 @@ object AudioFileManagerImpl : AudioFileManager {
             )
             try {
                 cursor?.let {
+
                     val clData = cursor.getColumnIndex(projection[0])
                     val clName = cursor.getColumnIndex(projection[1])
                     val clID = cursor.getColumnIndex(projection[2])
@@ -172,6 +174,7 @@ object AudioFileManagerImpl : AudioFileManager {
                         var mimeType: String = ""
                         var name: String
                         val data = cursor.getString(clData)
+                        val audioInfo = audioCutter.getAudioInfo(data)
                         val file = File(data)
                         val preName = file.name
                         if (preName.contains(".")) {
@@ -208,7 +211,7 @@ object AudioFileManagerImpl : AudioFileManager {
                                 MediaMetadataRetriever.METADATA_KEY_BITRATE
                             )!!.toInt()
                         } catch (e: Exception) {
-                            val audioInfo = audioCutter.getAudioInfo(data)
+
                             bitrate = audioInfo?.bitRate ?: BitRate._128kb.value
                             duration = audioInfo?.duration ?: 0
                             e.printStackTrace()
@@ -427,17 +430,17 @@ object AudioFileManagerImpl : AudioFileManager {
         val fileAudio = File(filePath.trim())
         var mimeType = ""
         val abSolutePath = fileAudio.absolutePath.toString()
+        val audioInfo = ManagerFactory.getAudioCutter().getAudioInfo(filePath)
 
 
         val uri = getUriByPath(fileAudio)
-        val duration = getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_DURATION)
+        val duration = audioInfo!!.duration
         if (abSolutePath.contains(".")) {
             mimeType = abSolutePath.substring(abSolutePath.lastIndexOf("."), abSolutePath.length)
         }
 
         var bitrate =
-            getInfoAudioFile(fileAudio, MediaMetadataRetriever.METADATA_KEY_BITRATE)!!.toInt()
-//        val bitrate = 128
+            audioInfo.bitRate
         var name = fileAudio.name
         name = if (name.contains(".")) {
             (name.substring(0, name.lastIndexOf(".")))
@@ -529,6 +532,7 @@ object AudioFileManagerImpl : AudioFileManager {
                     Log.d(TAG, "saveFileToExternal:pathParent $pathParent")
 
                     val dic = File(pathParent)
+                    Log.d(TAG, "saveFileToExternal: ${dic.exists()}   ")
                     if (!dic.exists()) {
                         dic.mkdirs()
                     }
