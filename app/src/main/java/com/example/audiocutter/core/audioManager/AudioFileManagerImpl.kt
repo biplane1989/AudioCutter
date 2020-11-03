@@ -192,16 +192,12 @@ object AudioFileManagerImpl : AudioFileManager {
                                 cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.GENRE))
                         }
                         Log.d(TAG, "scanAllFile: start get Audio info data ${data}")
-                        var bitRate = BitRate._128kb.value
-                        var duration = getInfoAudioFile(
-                            File(data),
-                            MediaMetadataRetriever.METADATA_KEY_DURATION
-                        )?.toLong()
-                        withContext(Dispatchers.Main) {
-                            val audioInfo = audioCutter.getAudioInfo(data)
-                            /*val bitRate = audioInfo?.bitRate ?: BitRate._128kb.value
-                            val duration = audioInfo?.duration ?: 0*/
-                        }
+
+                        val audioInfo = audioCutter.getAudioInfo(data)
+
+                        val bitRate = audioInfo?.bitRate ?: BitRate._128kb.value
+                        val duration = audioInfo?.duration ?: 0
+
 
 //                        val duration =
                         //audioCutter.getAudioInfo(data)?.duration

@@ -22,7 +22,6 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MixChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MixChooserAdapter
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
-import kotlinx.coroutines.delay
 
 class MixChooserScreen : BaseFragment(), View.OnClickListener,
     MixChooserAdapter.AudioMixerListener {
@@ -49,11 +48,19 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     }
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        if (listMusic.size == 0 || listMusic == null) {
-            showEmptyView()
+        if (listMusic.isEmpty() || listMusic == null) {
+            showEmptyList()
+        } else {
+            showList()
+            audioMixAdapter.submitList(ArrayList(listMusic))
         }
-        audioMixAdapter.submitList(ArrayList(listMusic))
 
+    }
+
+    private fun showList() {
+        binding.rvMixer.visibility = View.VISIBLE
+        binding.ivEmptyListMixer.visibility = View.INVISIBLE
+        binding.tvEmptyListMixer.visibility = View.INVISIBLE
     }
 
     private val playerInfoObserver = Observer<PlayerInfo> {
@@ -87,16 +94,14 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLists()
-        showProgressBar(true)
         runOnUI {
-            delay(500)
             val listAudioViewLiveData = audioMixModel.getAllAudioFile()
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
             audioMixModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
         }
     }
 
-    private fun showEmptyView() {
+    private fun showEmptyList() {
         binding.rvMixer.visibility = View.INVISIBLE
         binding.ivEmptyListMixer.visibility = View.VISIBLE
         binding.tvEmptyListMixer.visibility = View.VISIBLE

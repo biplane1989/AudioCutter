@@ -128,7 +128,6 @@
             android:layout_height="match_parent"
             android:layout_below="@id/rlt_actionbar"
             android:visibility="visible"
-            android:background="@color/colorBlack"
             tools:listitem="@layout/item_audio_cutter" />
 
         <ImageView

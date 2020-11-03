@@ -21,7 +21,6 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MergeChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergeChooserAdapter
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
-import kotlinx.coroutines.delay
 
 class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAdapter.AudioMergeListener {
     private lateinit var binding: MergeChooserScreenBinding
@@ -46,12 +45,15 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     var currentPos = -1
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        if (listMusic.size == 0 || listMusic == null) {
-            showEmptyView()
+        if (listMusic.isEmpty() || listMusic == null) {
+            showEmptyList()
+        } else {
+            audioMerAdapter.submitList(ArrayList(listMusic))
+            showList()
         }
-        audioMerAdapter.submitList(ArrayList(listMusic))
 
     }
+
 
     override fun onPause() {
         super.onPause()
@@ -80,9 +82,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLists()
-        showProgressBar(true)
         runOnUI {
-            delay(500)
             audioMerModel.getAllAudioFile().observe(viewLifecycleOwner, listAudioObserver)
             audioMerModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
 
@@ -205,11 +205,18 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     }
 
 
-    private fun showEmptyView() {
+    private fun showEmptyList() {
         showProgressBar(false)
         binding.rvMerge.visibility = View.INVISIBLE
         binding.ivEmptyListMerge.visibility = View.VISIBLE
         binding.tvEmptyListMer.visibility = View.VISIBLE
+    }
+
+    private fun showList() {
+        showProgressBar(false)
+        binding.rvMerge.visibility = View.VISIBLE
+        binding.ivEmptyListMerge.visibility = View.INVISIBLE
+        binding.tvEmptyListMer.visibility = View.INVISIBLE
     }
 
 
