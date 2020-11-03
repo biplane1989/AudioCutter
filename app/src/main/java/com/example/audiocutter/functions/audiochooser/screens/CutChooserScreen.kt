@@ -17,18 +17,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.audioManager.Folder
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.CutChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.CutChooserAdapter
 import com.example.audiocutter.functions.audiochooser.dialogs.SetAsDialog
 import com.example.audiocutter.functions.audiochooser.dialogs.SetAsDoneDialog
 import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
-
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.objects.TypeAudioSetAs
-import kotlinx.coroutines.delay
 
 class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     SetAsDialog.setAsListener, View.OnClickListener, OnActionCallback {
@@ -40,11 +38,37 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     lateinit var dialogDone: SetAsDoneDialog
     lateinit var audioCutterItem: AudioCutterView
 
+    var stateObserver = Observer<Int> {
+        Log.d("nqm", "stateObserver: $it")
+        when (it) {
+            1 -> {
+                Log.d("nqm", "stateObserver: 1")
+                showProgressBar(true)
+                binding.ivEmptyListCutter.visibility = View.GONE
+                binding.tvEmptyListCutter.visibility = View.GONE
+            }
+            0 -> {
+                Log.d("nqm", "stateObserver: 0")
+                showProgressBar(false)
+            }
+            -1 -> {
+                Log.d("nqm", "stateObserver: -1")
+                showProgressBar(false)
+            }
+        }
+    }
     var currentPos = -1
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        audioCutterAdapter.submitList(ArrayList(listMusic))
+        Log.d("nqm", "listMusic: ${listMusic.size}")
+        if (listMusic.isEmpty() || listMusic == null) {
+            showEmptyList()
+        } else {
+            audioCutterAdapter.submitList(ArrayList(listMusic))
+            showList()
+        }
     }
+
 
     private val playerInfoObserver = Observer<PlayerInfo> {
         audioCutterAdapter.submitList(audioCutterModel.updateMediaInfo(it))
@@ -73,11 +97,13 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLists()
-        showProgressBar(true)
         runOnUI {
-            delay(500)
+            val stateLiveData = audioCutterModel.getStateLoading()
+            stateLiveData.observe(viewLifecycleOwner, stateObserver)
+
             val listAudioViewLiveData = audioCutterModel.getAllAudioFile()
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
+
         }
     }
 
@@ -89,21 +115,10 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         }
     }
 
-    override fun showEmptyCallback() {
-        binding.rvAudioCutter.visibility = View.INVISIBLE
-        binding.ivEmptyListCutter.visibility = View.VISIBLE
-        binding.tvEmptyListCutter.visibility = View.VISIBLE
-        showProgressBar(false)
-    }
-
-    override fun hideProgress() {
-        showProgressBar(false)
-    }
 
     private fun checkEdtSearchAudio() {
         binding.edtCutterSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -112,7 +127,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
 
             override fun afterTextChanged(p0: Editable?) {
             }
-
         })
     }
 
@@ -131,7 +145,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
             audioCutterAdapter.submitList(audioCutterModel.getListsearch())
             Log.d(TAG, "seachAudioByName: ${audioCutterModel.getListsearch().size}")
         } else {
-            binding.rvAudioCutter.visibility = View.GONE
+            binding.rvAudioCutter.visibility = View.INVISIBLE
             binding.tvEmptyListCutter.visibility = View.VISIBLE
             binding.ivEmptyListCutter.visibility = View.VISIBLE
         }
@@ -164,6 +178,20 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         binding.ivCutterScreenSearch.visibility = status
         binding.tvCutterScreen.visibility = status
         binding.ivAudioCutterScreenFile.visibility = status
+    }
+
+    private fun showEmptyList() {
+        showProgressBar(false)
+        binding.rvAudioCutter.visibility = View.INVISIBLE
+        binding.ivEmptyListCutter.visibility = View.VISIBLE
+        binding.tvEmptyListCutter.visibility = View.VISIBLE
+    }
+
+    private fun showList() {
+        showProgressBar(false)
+        binding.rvAudioCutter.visibility = View.VISIBLE
+        binding.ivEmptyListCutter.visibility = View.INVISIBLE
+        binding.tvEmptyListCutter.visibility = View.INVISIBLE
     }
 
 
@@ -297,6 +325,8 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     }
 
 }
+
+
 
 
 

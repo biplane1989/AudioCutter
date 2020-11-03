@@ -1,5 +1,6 @@
 package com.example.core.core
 
+import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
@@ -132,5 +133,6 @@ interface AudioCutter {
     suspend fun mix(audioFile1: AudioCore, audioFile2: AudioCore, audioMixConfig: AudioMixConfig): AudioCore
 
     suspend fun cancelTask(): Boolean
+     fun getAudioInfo(filePath:String):AudioInformation?
     fun getAudioMergingInfo(): LiveData<AudioMergingInfo>
 }

@@ -51,7 +51,11 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         super.onPostCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.mixing_screen, container, false)
         initViews()
         return binding.root
@@ -60,7 +64,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //mPlayer2.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
+        mPlayer2.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
         mPlayer1.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
 
     }
@@ -95,10 +99,12 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         audioFile1 = ManagerFactory.getAudioFileManager().buildAudioFile(safeArg.pathAudio1)
         audioFile2 = ManagerFactory.getAudioFileManager().buildAudioFile(safeArg.pathAudio2)
         durAudio1 = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(audioFile1.file, MediaMetadataRetriever.METADATA_KEY_DURATION)!!
+            .getInfoAudioFile(audioFile1.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
+            .toString()
 
         durAudio2 = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(audioFile2.file, MediaMetadataRetriever.METADATA_KEY_DURATION)!!
+            .getInfoAudioFile(audioFile2.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
+            .toString()
         listData.add(audioFile1)
         listData.add(audioFile2)
 
@@ -115,7 +121,10 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 durAudio2
             }
             binding.crChangeViewMixing.setLengthAudio(durAudio1, durAudio2)
-            Log.d("TAG", "setLengthAudio1 :lenggth1 $durAudio1  - length2 $durAudio2   iscompare $isCompare")
+            Log.d(
+                "TAG",
+                "setLengthAudio1 :lenggth1 $durAudio1  - length2 $durAudio2   iscompare $isCompare"
+            )
         }
 
 
@@ -136,6 +145,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         mPlayer1.pause()
         mPlayer2.pause()
     }
+
 
     override fun onClick(v: View) {
         when (v) {
@@ -179,8 +189,14 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 showToast("back frg")
             }
             binding.ivDoneMixing -> {
-                val mixingConfig = AudioMixConfig("mixing", ManagerFactory.getAudioFileManager()
-                    .getFolderPath(Folder.TYPE_MIXER), MixSelector.LONGEST, 100, 100, AudioFormat.MP3)
+                val mixingConfig = AudioMixConfig(
+                    "mixing",
+                    ManagerFactory.getAudioFileManager().getFolderPath(Folder.TYPE_MIXER),
+                    MixSelector.LONGEST,
+                    100,
+                    100,
+                    AudioFormat.MP3
+                )
 
 
 
@@ -197,7 +213,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     }
 
     private fun checkCompareDurationMin(durAudio1: String, durAudio2: String) {
-        val isCheck = durAudio1 > durAudio2
+        val isCheck = durAudio1.toInt() > durAudio2.toInt()
         if (!isCheck) {
             binding.crChangeViewMixing.setDuration(durAudio1)
         } else {
@@ -206,7 +222,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     }
 
     private fun checkCompareDuration(durAudio1: String, durAudio2: String) {
-        val isCheck = durAudio1 > durAudio2
+        val isCheck = durAudio1.toInt() > durAudio2.toInt()
         if (isCheck) {
             binding.crChangeViewMixing.setDuration(durAudio1)
         } else {
@@ -232,8 +248,9 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     }
 
     override fun setVolumeAudio1(value: Float, min: Float, max: Float) {
-        var newValueSound = Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
-        Log.d(TAG, "setVolumeAudio1: ${newValueSound.toFloat()}")
+        var newValueSound =
+            Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
+        Log.d("1010", "setVolumeAudio1: ${newValueSound.toFloat()}")
         if (newValueSound > 1) {
             newValueSound = 1.0
         }
@@ -244,8 +261,9 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     }
 
     override fun setVolumeAudio2(value: Float, min: Float, max: Float) {
-        var newValueSound = Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
-        Log.d(TAG, "setVolumeAudio2: value $newValueSound")
+        var newValueSound =
+            Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
+        Log.d("1010", "setVolumeAudio2: value $newValueSound")
         if (newValueSound > 1) {
             newValueSound = 1.0
         }
@@ -257,7 +275,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     }
 
     override fun endAudioBecauseMaxdistance() {
-        mPlayer2.stop()
         mPlayer1.stop()
+        mPlayer2.stop()
     }
 }

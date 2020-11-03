@@ -20,8 +20,8 @@ class MixModel : BaseViewModel() {
     private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
     private var mListAudioSearch = ArrayList<AudioCutterView>()
-    private var _stateLoadProgress = MutableLiveData<Boolean>()
-    val stateLoadProgress: LiveData<Boolean>
+    private var _stateLoadProgress = MutableLiveData<Int>()
+    val stateLoadProgress: LiveData<Int>
         get() = _stateLoadProgress
 
     var isChooseItem = false
@@ -37,10 +37,16 @@ class MixModel : BaseViewModel() {
 
     fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
-            if (it.state == StateLoad.LOADING) {
-                _stateLoadProgress.postValue(true)
-            } else {
-                _stateLoadProgress.postValue(false)
+            when (it.state) {
+                StateLoad.LOADING -> {
+                    _stateLoadProgress.postValue(1)
+                }
+                StateLoad.LOADDONE -> {
+                    _stateLoadProgress.postValue(0)
+                }
+                StateLoad.LOADFAIL -> {
+                    _stateLoadProgress.postValue(-1)
+                }
             }
             mListAudio.clear()
             it.listAudioFiles.forEach {
@@ -48,11 +54,12 @@ class MixModel : BaseViewModel() {
             }
 
             Collections.sort(mListAudio, sortListByName)
+
             mListAudio
         }
     }
 
-    fun getStateLoading(): LiveData<Boolean> {
+    fun getStateLoading(): LiveData<Int> {
         return stateLoadProgress
     }
 
