@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
+import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MixChooserScreenBinding
@@ -149,7 +150,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
     private fun initViews() {
 
-
+        binding.ivAudioMixerScreenFile.setOnClickListener(this)
         binding.ivAudioMixerScreenFile.setOnClickListener(this)
         binding.ivMixerScreenSearch.setOnClickListener(this)
         binding.ivMixerScreenBackEdt.setOnClickListener(this)
@@ -260,6 +261,10 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
             }
             binding.ivMixerScreenBack -> {
                 activity?.onBackPressed()
+            }
+            binding.ivAudioMixerScreenFile -> {
+
+                   /**handle show layout find file in device**/
             }
         }
     }
