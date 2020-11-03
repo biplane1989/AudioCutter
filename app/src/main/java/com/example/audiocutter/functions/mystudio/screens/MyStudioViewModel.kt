@@ -38,6 +38,9 @@ class MyStudioViewModel : BaseViewModel() {
     // kiểm tra có đang ở trạng thái checkbox delete ko
     var isDeleteStatus = false
 
+    // kiem tra co o trang thai check all khong
+    var isCheckAllStatus = false
+
     // kiểm tra playaudio đã được khởi tạo chưa
     var isPlayingStatus = false
 
@@ -58,6 +61,7 @@ class MyStudioViewModel : BaseViewModel() {
             else -> {
                 listScaners = ManagerFactory.getAudioFileManager()
                     .getListAudioFileByType(Folder.TYPE_MIXER)
+                Log.d(TAG, "listScaners: mixxxxxxxxxxxxxxx")
             }
         }
         val listLoading: LiveData<List<ConvertingItem>>
@@ -70,21 +74,23 @@ class MyStudioViewModel : BaseViewModel() {
             }
             else -> {
                 listLoading = ManagerFactory.getAudioEditorManager().getListMixingItems()
+                Log.d(TAG, "listLoading: mixxxxxxxxxxxxxxx")
             }
         }
         mAudioMediatorLiveData.addSource(listScaners) {
             mListAudioFileScans.clear()
 
-//            if (it.state == StateLoad.LOADING) {
-//                loadingStatus.postValue(true)
-//            }
-//            if (it.state == StateLoad.LOADDONE) {
-//                loadingStatus.postValue(false)
-//            }
+            if (it.state == StateLoad.LOADING) {
+                loadingStatus.postValue(true)
+            }
+            if (it.state == StateLoad.LOADDONE) {
+                loadingStatus.postValue(false)
+            }
             // lan dau tien lay du lieu
 
             if (mListAudioFileScans.size == 0) {
                 for (item in it.listAudioFiles) {
+                    Log.d("001", "isDeleteStatus: " + isDeleteStatus)
                     if (isDeleteStatus) {
                         val newAudioFileView = AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1)
                         newAudioFileView.itemLoadStatus.deleteState = DeleteState.UNCHECK
@@ -92,7 +98,6 @@ class MyStudioViewModel : BaseViewModel() {
                     } else {
                         mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
                     }
-//                    mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
                 }
             } else {
                 /*  // khi thay doi du lieu update đồng bộ hóa list cũ và mới
@@ -124,11 +129,11 @@ class MyStudioViewModel : BaseViewModel() {
             if (!it.isEmpty()) {
                 for (item in it) {
 //                    if (isDeleteStatus) {
-//                        val newAudioFileView = AudioFileView(item.audioFile, false, ItemLoadStatus(), item.state, -1, item.id)
+//                        val newAudioFileView = AudioFileView(AudioFile(File("${Environment.getExternalStorageDirectory()}/AudioCutter/mixer"), item.getFileName(), 100), false, ItemLoadStatus(), item.state, item.percent, item.id)
 //                        newAudioFileView.itemLoadStatus.deleteState = DeleteState.UNCHECK
 //                        mListFileLoading.add(newAudioFileView)
 //                    } else {
-//                        mListFileLoading.add(AudioFileView(item.audioFile, false, ItemLoadStatus(), item.state, -1, item.id))
+//                        mListFileLoading.add(AudioFileView(AudioFile(File("${Environment.getExternalStorageDirectory()}/AudioCutter/mixer"), item.getFileName(), 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
 //                    }
 
                     mListFileLoading.add(AudioFileView(AudioFile(File("${Environment.getExternalStorageDirectory()}/AudioCutter/mixer"), item.getFileName(), 100), false, ItemLoadStatus(), item.state, item.percent, item.id)) // TODO
@@ -150,6 +155,12 @@ class MyStudioViewModel : BaseViewModel() {
 //            mListAudio.addAll(mListAudioFileScans)
 
             for (item in mListAudioFileScans) {
+                if (isDeleteStatus) {                           // khi dang o trang thai delete
+                    item.itemLoadStatus.deleteState = DeleteState.UNCHECK
+                }
+                if (isCheckAllStatus) {
+                    item.itemLoadStatus.deleteState = DeleteState.CHECKED
+                }
 //                if (!isDoubleDisplay(item.audioFile.file.absolutePath.toString())) {        // tam thoi thay file.absolutePath = filename
                 if (!isDoubleDisplay(item.audioFile.fileName)) {        // tam thoi thay file.absolutePath = filename
                     mListAudio.add(item)
@@ -250,6 +261,7 @@ class MyStudioViewModel : BaseViewModel() {
         }
         // update trang thai isDelete
         isDeleteStatus = true
+        Log.d("001", "changeAutoItemToDelete: " + isDeleteStatus)
         mListAudio = copy
         return mListAudio
     }
@@ -274,9 +286,11 @@ class MyStudioViewModel : BaseViewModel() {
     fun isAllChecked(): Boolean {
         mListAudio.forEach {
             if (it.itemLoadStatus.deleteState == DeleteState.UNCHECK) {
+                isCheckAllStatus = false                          // dang o trang thai all select ma du lieu loading xong
                 return false
             }
         }
+        isCheckAllStatus = true
         return true
     }
 
@@ -284,9 +298,11 @@ class MyStudioViewModel : BaseViewModel() {
     fun isChecked(): Boolean {
         mListAudio.forEach {
             if (it.itemLoadStatus.deleteState == DeleteState.CHECKED) {
+
                 return true
             }
         }
+
         return false
     }
 

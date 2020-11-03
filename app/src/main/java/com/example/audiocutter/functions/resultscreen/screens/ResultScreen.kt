@@ -61,11 +61,6 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
             }
             binding.tvInfoMusic.setText(convertAudioSizeToString(it))
         }
-
-//        if (!duration.isNullOrBlank()) {
-//            binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(duration.toInt()))
-//        }
-
     }
     val pendingProcessObserver = Observer<String> {     // observer trang thai pending
         binding.tvWait.visibility = View.VISIBLE
@@ -75,9 +70,11 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.btnBack.visibility = View.GONE
         binding.ivHome.visibility = View.INVISIBLE
         binding.btnCancel.visibility = View.VISIBLE
+
     }
     val processingObserver = Observer<ConvertingItem> {     // observer trang thai processing
 
+        binding.btnOrigin.visibility = View.VISIBLE
         binding.btnBack.visibility = View.GONE
         binding.ivHome.visibility = View.INVISIBLE
         binding.tvWait.visibility = View.GONE

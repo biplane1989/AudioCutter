@@ -34,8 +34,8 @@ object ManagerFactory {
     }
 
     fun getAudioFileManager(): AudioFileManager {
-        return mAudioFileManager
-//        return FakeAudioFileManager
+//        return mAudioFileManager
+        return FakeAudioFileManager
     }
 
     fun getAudioCutter(): AudioCutter {

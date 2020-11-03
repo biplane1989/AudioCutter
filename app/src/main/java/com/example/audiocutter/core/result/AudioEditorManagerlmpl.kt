@@ -52,13 +52,16 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
         ManagerFactory.getAudioCutter().getAudioMergingInfo().observeForever { audioMering ->
 
+            Log.d(TAG, "init: percent: " + audioMering.percent + " status : " + audioMering.state)
             var convertingState: ConvertingState = ConvertingState.WAITING
             when (audioMering.state) {
                 FFMpegState.IDE -> {
                     convertingState = ConvertingState.WAITING
                 }
                 FFMpegState.RUNNING -> {
-                    convertingState = ConvertingState.PROGRESSING
+                    if (audioMering.percent >= 99) convertingState = ConvertingState.SUCCESS
+                    else convertingState = ConvertingState.PROGRESSING
+
                 }
                 FFMpegState.CANCEL -> {
                     convertingState = ConvertingState.ERROR
@@ -145,7 +148,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 }
 
                 var audioloading = AudioFile(File(item.mergingConfig.pathFolder + File.separator + item.mergingConfig.fileName + ".mp3"), item.mergingConfig.fileName, 100L)
-                Log.d(TAG, "audioloading: "+ audioloading.file.absoluteFile.toString())
+                Log.d(TAG, "audioloading: " + audioloading.file.absoluteFile.toString())
                 FakeAudioFileManager.addMer(audioloading)
 
                 val audioResult = ManagerFactory.getAudioCutter()
@@ -180,7 +183,8 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 val audioFile = AudioFile(audioResult.file, audioResult.fileName, audioResult.size, audioResult.bitRate, audioResult.time, Uri.parse(audioResult.file.toString()))
                 item.outputAudioFile = audioFile        // gan lai audio file tu audioresult duoc tra ve sau khi cutting cho ConvertingItem
 
-                val audio = AudioFile(File("${Environment.getExternalStorageDirectory()}/AudioCutter/cutter"), item.getFileName(), 10000)
+
+                val audio = AudioFile(File(item.cuttingConfig.pathFolder + File.separator + item.cuttingConfig.fileName + ".mp3"), item.cuttingConfig.fileName, 100L)
                 FakeAudioFileManager.addCut(audio)
             }
 
