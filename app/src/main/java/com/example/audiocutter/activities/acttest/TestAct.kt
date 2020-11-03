@@ -21,14 +21,8 @@ class TestAct : BaseActivity() {
 
     private fun initViews() {
         bt_start.setOnClickListener {
-            runOnUI {
-                for (i in 0..100){
 
-                    val duration =ManagerFactory.getAudioCutter().getAudioInfo("/storage/emulated/0/Mp3Cutter/AudioCutter/AudioCutter_AudioCutter_AudioMerger_AudioMix_AudioCutter_AudioMerger_AudioCutter.mp3")!!.duration
-                    Log.d("TAG", "initViews:  duration $duration pos $i")
-                }
-
-            }
+            Log.d("TAG", "initViews: ${ ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_MIXER).value!!.listAudioFiles.size}")
         }
     }
 

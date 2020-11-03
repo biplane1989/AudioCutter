@@ -42,8 +42,6 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     private val safeArg: MixingScreenArgs by navArgs()
 
-    private val listData = mutableListOf<AudioFile>()
-
     override fun onPostCreate(savedInstanceState: Bundle?) {
         /** setting maxdistance*/
         mPlayer1.init(requireContext())
@@ -64,7 +62,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //mPlayer2.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
+        mPlayer2.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
         mPlayer1.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
 
     }
@@ -98,16 +96,11 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
         audioFile1 = ManagerFactory.getAudioFileManager().buildAudioFile(safeArg.pathAudio1)
         audioFile2 = ManagerFactory.getAudioFileManager().buildAudioFile(safeArg.pathAudio2)
-        durAudio1 = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(audioFile1.file, MediaMetadataRetriever.METADATA_KEY_DURATION)!!
+        durAudio1 = ManagerFactory.getAudioCutter()
+            .getAudioInfo(audioFile1.file.absolutePath)!!.duration.toString()
 
-        durAudio2 = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(audioFile2.file, MediaMetadataRetriever.METADATA_KEY_DURATION)!!
-        listData.add(audioFile1)
-        listData.add(audioFile2)
-
-
-
+        durAudio2 = ManagerFactory.getAudioCutter()
+            .getAudioInfo(audioFile2.file.absolutePath)!!.duration.toString()
 
         binding.crChangeViewMixing.setFileAudio(audioFile1, audioFile2)
 
@@ -157,8 +150,8 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                             mPlayer1.play(audioFile1)
                             mPlayer2.play(audioFile2)
                         } else {
-                            mPlayer2.resume()
                             mPlayer1.resume()
+                            mPlayer2.resume()
                         }
                     }
                 }

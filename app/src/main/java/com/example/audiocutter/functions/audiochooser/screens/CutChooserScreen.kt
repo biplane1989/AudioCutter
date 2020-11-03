@@ -54,8 +54,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
             -1 -> {
                 Log.d("nqm", "stateObserver: -1")
                 showProgressBar(false)
-//                binding.ivEmptyListCutter.visibility = View.VISIBLE
-//                binding.tvEmptyListCutter.visibility = View.VISIBLE
             }
         }
     }
@@ -147,7 +145,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
             audioCutterAdapter.submitList(audioCutterModel.getListsearch())
             Log.d(TAG, "seachAudioByName: ${audioCutterModel.getListsearch().size}")
         } else {
-            binding.rvAudioCutter.visibility = View.VISIBLE
+            binding.rvAudioCutter.visibility = View.INVISIBLE
             binding.tvEmptyListCutter.visibility = View.VISIBLE
             binding.ivEmptyListCutter.visibility = View.VISIBLE
         }

@@ -103,7 +103,7 @@ object AudioFileManagerImpl : AudioFileManager {
     private fun createFolder(folderPath: String): Boolean {
         val appFolder = File(folderPath)
         if (!appFolder.exists()) {
-            return appFolder.mkdir()
+            return appFolder.mkdirs()
         }
         return true
     }

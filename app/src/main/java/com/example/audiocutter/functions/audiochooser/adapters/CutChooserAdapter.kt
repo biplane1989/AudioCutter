@@ -104,7 +104,11 @@ class CutChooserAdapter(val mContext: Context) :
         fun bind() {
             val itemAudioFile = getItem(position)
             Log.d("TAG", "bind: ${itemAudioFile.isCheckDistance}    state ${itemAudioFile.state}")
-            tvBitrateAudio.text = "${itemAudioFile.audioFile.bitRate}kbp/s"
+            var bitRate = itemAudioFile.audioFile.bitRate / 1000
+            if (bitRate > 320) {
+                bitRate = 320
+            }
+            tvBitrateAudio.text = "${bitRate}kbp/s"
 
             tvNameAudio.text = itemAudioFile.audioFile.fileName
             var size = (itemAudioFile.audioFile.size.toDouble() / SIZE_MB)
