@@ -5,9 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
+import com.arthenica.mobileffmpeg.FFprobe
 import com.arthenica.mobileffmpeg.Level
 import com.example.core.Utils.Utils
 import kotlinx.coroutines.*
+import org.json.JSONObject
 import java.io.File
 import java.util.*
 
@@ -211,6 +213,21 @@ class AudioCutterImpl : AudioCutter {
         audioFileCore.mimeType = fileType
     }
 
+    override fun getAudioInfo(filePath: String): AudioInformation? {
+        val info = FFprobe.getMediaInformation(filePath)
+        val duration = info.duration.replace(".", "").toLong() / 1000
+        return AudioInformation(
+            info.filename.substring(
+                info.filename.lastIndexOf("/") + 1,
+                info.filename.lastIndexOf(".")
+            ),
+            info.bitrate.toInt(),
+            duration,
+            info.size.toLong(),
+            filePath,
+            info.format
+        )
+    }
 
     companion object {
         private const val TAG = "AudioCutterImpl"

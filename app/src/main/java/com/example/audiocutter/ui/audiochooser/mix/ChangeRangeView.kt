@@ -314,7 +314,7 @@ class ChangeRangeView @JvmOverloads constructor(
     }
 
     private fun drawBitmap(canvas: Canvas, fl: Float) {
-        val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_sound_mixing)
+        val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_added_audio)
         rectImage = Rect(
             0,
             0,
@@ -336,7 +336,7 @@ class ChangeRangeView @JvmOverloads constructor(
     }
 
     private fun drawBitmap2(canvas: Canvas, fl: Float) {
-        val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_sound_mixing)
+        val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_added_audio)
         rectImage = Rect(
             0,
             0,

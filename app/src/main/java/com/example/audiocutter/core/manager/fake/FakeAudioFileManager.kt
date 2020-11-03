@@ -185,12 +185,12 @@ object FakeAudioFileManager : AudioFileManager {
 
     }
 
-    override fun genNewAudioFileName(typeFile: Folder) {
-
+    override fun genNewAudioFileName(typeFile: Folder): String {
+        TODO("Not yet implemented")
     }
 
-    override fun createValidFileName(name: String, typeFile: Folder) {
-
+    override fun createValidFileName(name: String, typeFile: Folder): String {
+        TODO("Not yet implemented")
     }
 
     fun getDurationByPath(itemFile: File?): String {
