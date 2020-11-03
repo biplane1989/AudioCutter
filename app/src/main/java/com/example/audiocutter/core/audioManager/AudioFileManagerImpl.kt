@@ -198,6 +198,15 @@ object AudioFileManagerImpl : AudioFileManager {
                         val bitRate = audioInfo?.bitRate ?: BitRate._128kb.value
                         val duration = audioInfo?.duration ?: 0
 
+                        Log.d(
+                            "TAG",
+                            "findAllAudioFiles: data :$data \n name : $name   \n ID  $id  \n" +
+                                    " duration: $duration \n sie ${file.length()}  " +
+                                    " \n URI $uri \n title :$title \n" +
+                                    " album : $album   \n" + " artist  $artist  \n" +
+                                    " date: $date \n" + " genre $genre  \n " +
+                                    "MimeType $mimeType \n filePAth  ${file.absolutePath} \n parent${file.parent}  \n BitRate $bitRate "
+                        )
 
 //                        val duration =
                         //audioCutter.getAudioInfo(data)?.duration

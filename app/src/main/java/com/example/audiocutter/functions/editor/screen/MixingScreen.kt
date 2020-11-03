@@ -42,6 +42,8 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     private val safeArg: MixingScreenArgs by navArgs()
 
+    private val listData = mutableListOf<AudioFile>()
+
     override fun onPostCreate(savedInstanceState: Bundle?) {
         /** setting maxdistance*/
         mPlayer1.init(requireContext())
@@ -96,11 +98,18 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
         audioFile1 = ManagerFactory.getAudioFileManager().buildAudioFile(safeArg.pathAudio1)
         audioFile2 = ManagerFactory.getAudioFileManager().buildAudioFile(safeArg.pathAudio2)
-        durAudio1 = ManagerFactory.getAudioCutter()
-            .getAudioInfo(audioFile1.file.absolutePath)!!.duration.toString()
+        durAudio1 = ManagerFactory.getAudioFileManager()
+            .getInfoAudioFile(audioFile1.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
+            .toString()
 
-        durAudio2 = ManagerFactory.getAudioCutter()
-            .getAudioInfo(audioFile2.file.absolutePath)!!.duration.toString()
+        durAudio2 = ManagerFactory.getAudioFileManager()
+            .getInfoAudioFile(audioFile2.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
+            .toString()
+        listData.add(audioFile1)
+        listData.add(audioFile2)
+
+
+
 
         binding.crChangeViewMixing.setFileAudio(audioFile1, audioFile2)
 
@@ -150,8 +159,8 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                             mPlayer1.play(audioFile1)
                             mPlayer2.play(audioFile2)
                         } else {
-                            mPlayer1.resume()
                             mPlayer2.resume()
+                            mPlayer1.resume()
                         }
                     }
                 }
@@ -241,7 +250,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     override fun setVolumeAudio1(value: Float, min: Float, max: Float) {
         var newValueSound =
             Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
-        Log.d(TAG, "setVolumeAudio1: ${newValueSound.toFloat()}")
+        Log.d("1010", "setVolumeAudio1: ${newValueSound.toFloat()}")
         if (newValueSound > 1) {
             newValueSound = 1.0
         }
@@ -254,7 +263,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     override fun setVolumeAudio2(value: Float, min: Float, max: Float) {
         var newValueSound =
             Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
-        Log.d(TAG, "setVolumeAudio2: value $newValueSound")
+        Log.d("1010", "setVolumeAudio2: value $newValueSound")
         if (newValueSound > 1) {
             newValueSound = 1.0
         }
@@ -266,7 +275,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     }
 
     override fun endAudioBecauseMaxdistance() {
-        mPlayer2.stop()
         mPlayer1.stop()
+        mPlayer2.stop()
     }
 }
