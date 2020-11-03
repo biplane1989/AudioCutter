@@ -24,13 +24,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activities.acttest.CutActivity" />
-
-
-        <activity android:name=".functions.resultscreen.screens.ResultActivity"></activity>
         <activity android:name=".functions.mystudio.screens.OutputActivity" />
-        <activity android:name=".activities.acttest.ResultTestActivity">
-
-        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -42,7 +36,8 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
-        <activity android:name=".activities.MainActivity"
+        <activity
+            android:name=".activities.MainActivity"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

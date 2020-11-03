@@ -59,7 +59,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         super.onPostCreate(savedInstanceState)
         audioMerAdapter = MergeChooserAdapter(requireContext())
         audioMerModel = ViewModelProvider(this).get(MergeChooserModel::class.java)
-        ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -236,7 +236,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     }
 
     private fun handleAudiofile() {
-        ManagerFactory.getAudioPlayer().stop()
+        ManagerFactory.getDefaultAudioPlayer().stop()
 
         val listItemHandle = audioMerModel.getListItemChoose()
         val arrayAudio: Array<String> = Array(listItemHandle.size) { "" }
@@ -269,7 +269,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
 
     override fun onDestroyView() {
         super.onDestroyView()
-        ManagerFactory.getAudioPlayer().stop()
+        ManagerFactory.getDefaultAudioPlayer().stop()
     }
 
     private fun showProgressBar(b: Boolean) {

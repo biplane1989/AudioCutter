@@ -116,9 +116,16 @@ abstract class BaseAndroidViewModel(application: Application) : AndroidViewModel
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
     }
 
-    private val backgroundScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-    protected fun runOnBackgroundThread(executable: Executable): Job {
+    protected val backgroundScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    protected fun runOnBackground(executable: Executable): Job {
         return backgroundScope.launch {
+            executable()
+        }
+
+    }
+
+    protected suspend fun <T> runAndWaitOnBackground(executable: ExecutableForResult<T>): T {
+        return withContext(backgroundScope.coroutineContext) {
             executable()
         }
 

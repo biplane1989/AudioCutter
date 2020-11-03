@@ -1,19 +1,20 @@
 package com.example.audiocutter.functions.resultscreen.screens
 
+import android.app.Application
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
-import com.example.audiocutter.R
-import com.example.audiocutter.base.BaseViewModel
+import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import com.example.audiocutter.objects.AudioFile
-import com.example.core.core.FFMpegState
 
-class ResultViewModel : BaseViewModel() {
+class ResultViewModel(application: Application) : BaseAndroidViewModel(application) {
+
+    private val mContext = getApplication<Application>().applicationContext
     private val audioPlayer = ManagerFactory.newAudioPlayer()
     private val audioEditorManager = ManagerFactory.getAudioEditorManager()
 
@@ -31,11 +32,11 @@ class ResultViewModel : BaseViewModel() {
                     val latestConvertingItem = audioEditorManager.getLatestConvertingItem()
                     latestConvertingItem?.let { item ->
 
-                            if (item.id == it.id) {         // neu id item loading = item cuoi cung
-                                processingLiveData.postValue(it)
-                            } else {
-                                pendingProcessLiveData.postValue(item.getFileName())
-                            }
+                        if (item.id == it.id) {         // neu id item loading = item cuoi cung
+                            processingLiveData.postValue(it)
+                        } else {
+                            pendingProcessLiveData.postValue(item.getFileName())
+                        }
 
                     }
                 }
@@ -59,6 +60,7 @@ class ResultViewModel : BaseViewModel() {
     }
 
     init {
+        audioPlayer.init(mContext)
         audioEditorManager.getCurrentProcessingItem().observeForever(editProcessObserver)
     }
 

@@ -2,7 +2,6 @@ package com.example.audiocutter.functions.resultscreen.screens
 
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,10 +16,8 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.core.result.AudioEditorManagerlmpl
 import com.example.audiocutter.databinding.ResultScreenBinding
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
-import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import com.example.audiocutter.objects.AudioFile
 import java.lang.StringBuilder
 import java.text.SimpleDateFormat
@@ -196,11 +193,11 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
             }
 
             binding.ivHome -> {
-                viewStateManager.resultScreenGoToHome(requireContext())
+                viewStateManager.resultScreenGoToHome(this)
             }
 
             binding.btnOrigin -> {
-                viewStateManager.resultScreenGoToHome(requireContext())
+                viewStateManager.resultScreenGoToHome(this)
             }
             binding.llRingtone -> {
                 if (mResultViewModel.setRingTone()) {

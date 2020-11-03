@@ -171,11 +171,26 @@ object FakeAudioFileManager : AudioFileManager {
     }
 
     override fun getFolderPath(typeFile: Folder): String {
-        return "orange"
+        when(typeFile){
+            Folder.TYPE_CUTTER->{
+                return Environment.getExternalStorageDirectory().toString() + "/AudioCutter/cutter"
+            }
+            Folder.TYPE_MERGER->{
+                return Environment.getExternalStorageDirectory().toString() + "/AudioCutter/merger"
+            }
+            Folder.TYPE_MIXER->{
+                return Environment.getExternalStorageDirectory().toString() + "/AudioCutter/mixer"
+            }
+        }
+
     }
 
-    override fun getPathParentFileByName(name: String, typeFile: Folder): String {
-        return "orange"
+    override fun genNewAudioFileName(typeFile: Folder) {
+
+    }
+
+    override fun createValidFileName(name: String, typeFile: Folder) {
+
     }
 
     fun getDurationByPath(itemFile: File?): String {

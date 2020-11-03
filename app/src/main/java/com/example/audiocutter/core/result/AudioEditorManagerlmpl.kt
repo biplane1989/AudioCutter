@@ -6,18 +6,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.net.Uri
-import android.os.Environment
 import android.os.IBinder
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.AudioEditorManager
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.fake.FakeAudioFileManager
 import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.resultscreen.objects.*
 import com.example.audiocutter.functions.resultscreen.services.ResultService
 import com.example.audiocutter.objects.AudioFile
@@ -59,9 +56,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                     convertingState = ConvertingState.WAITING
                 }
                 FFMpegState.RUNNING -> {
-                    if (audioMering.percent >= 99) convertingState = ConvertingState.SUCCESS
-                    else convertingState = ConvertingState.PROGRESSING
-
+                   convertingState = ConvertingState.PROGRESSING
                 }
                 FFMpegState.CANCEL -> {
                     convertingState = ConvertingState.ERROR
@@ -188,10 +183,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 FakeAudioFileManager.addCut(audio)
             }
 
-
-//            if (item.state != ConvertingState.ERROR) {
-//                item.state = ConvertingState.SUCCESS
-//            }
             synchronized(listConvertingItemData) {
                 listConvertingItemData.remove(item)
             }

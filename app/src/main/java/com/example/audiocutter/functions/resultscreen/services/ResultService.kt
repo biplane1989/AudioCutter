@@ -90,6 +90,7 @@ class ResultService : LifecycleService() {
     }
 
     fun resultIntent(): Intent {
+        Log.d("002", "resultIntent: type audio: " + TYPE_AUDIO)
         val intent = Intent(this, OutputActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             setAction(Constance.NOTIFICATION_ACTION_EDITOR)

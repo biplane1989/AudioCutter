@@ -24,7 +24,7 @@ class AudioCutterModel : BaseViewModel() {
     private var mListAudio = ArrayList<AudioCutterView>()
     private var mListAudioSearch = ArrayList<AudioCutterView>()
     var duration: Long? = 0L
-    var audioPlayer = ManagerFactory.getAudioPlayer()
+    var audioPlayer = ManagerFactory.getDefaultAudioPlayer()
     private lateinit var mcallBack: OnActionCallback
 
     private var _stateLoadProgress = MutableLiveData<Boolean>()

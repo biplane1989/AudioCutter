@@ -55,7 +55,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         super.onPostCreate(savedInstanceState)
         audioCutterAdapter = CutChooserAdapter(requireContext())
         audioCutterModel = ViewModelProvider(this).get(AudioCutterModel::class.java)
-        ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
     override fun onCreateView(
@@ -293,7 +293,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
 
     override fun onDestroyView() {
         super.onDestroyView()
-        ManagerFactory.getAudioPlayer().stop()
+        ManagerFactory.getDefaultAudioPlayer().stop()
     }
 
 }

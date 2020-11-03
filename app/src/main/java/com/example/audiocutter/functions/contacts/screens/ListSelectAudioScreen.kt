@@ -97,7 +97,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             .get(ListSelectAudioViewModel::class.java)
         mListSelectAdapter = ListSelectAdapter(this)
 
-        ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
         isLoading = true
         runOnUI {
             listSelectAudio = mListSelectAudioViewModel.getData() // get data from funtion newIntance

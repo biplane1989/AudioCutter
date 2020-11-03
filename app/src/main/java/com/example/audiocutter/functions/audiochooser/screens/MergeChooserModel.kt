@@ -171,16 +171,16 @@ class MergeChooserModel : BaseViewModel() {
 
     suspend fun play(pos: Int) {
         val audioItem = mListAudio[pos]
-        ManagerFactory.getAudioPlayer().play(audioItem.audioFile)
+        ManagerFactory.getDefaultAudioPlayer().play(audioItem.audioFile)
 
     }
 
     fun pause() {
-        ManagerFactory.getAudioPlayer().pause()
+        ManagerFactory.getDefaultAudioPlayer().pause()
     }
 
     fun resume() {
-        ManagerFactory.getAudioPlayer().resume()
+        ManagerFactory.getDefaultAudioPlayer().resume()
     }
 
 }

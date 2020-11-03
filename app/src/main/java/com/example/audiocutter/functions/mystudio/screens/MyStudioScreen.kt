@@ -45,16 +45,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         }
     }
 
-    // observer playInfo mediaplayer
-    private val playerInfoObserver = Observer<PlayerInfo> {
-        if (myStudioViewModel.isPlayingStatus) {
-            audioCutterAdapter.submitList(myStudioViewModel.updatePlayerInfo(it))
-        }
-    }
-
-    private val progressObserver = Observer<ConvertingItem> {
-        audioCutterAdapter.submitList(myStudioViewModel.updateLoadingProgressbar(it))
-    }
 
     // observer loading sstatus
     private val loadingStatusObserver = Observer<Boolean> {
@@ -98,27 +88,18 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         super.onPostCreate(savedInstanceState)
         myStudioViewModel = ViewModelProviders.of(this).get(MyStudioViewModel::class.java)
         audioCutterAdapter = AudioCutterAdapter(this)
-
-        runOnUI {
-            myStudioViewModel.getListAudioFile(typeAudio)
-                .observe(this as LifecycleOwner, listAudioObserver)
-        }
+        typeAudio = requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
+        myStudioViewModel.init(typeAudio)
+        myStudioViewModel.getListAudioFile().observe(this as LifecycleOwner, listAudioObserver)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_fragment, container, false)
 
-        typeAudio = requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
+
 
         runOnUI {
-//            myStudioViewModel.getListAudioFile(typeAudio)
-//                .observe(this as LifecycleOwner, listAudioObserver)
-
-            ManagerFactory.getAudioPlayer().getPlayerInfo()
-                .observe(this as LifecycleOwner, playerInfoObserver)
-
-            ManagerFactory.getAudioEditorManager().getCurrentProcessingItem()
-                .observe(this as LifecycleOwner, progressObserver)
+//            myStudioViewModel.getListAudioFile().observe(this as LifecycleOwner, listAudioObserver)
 
             myStudioViewModel.getLoadingStatus().observe(viewLifecycleOwner, loadingStatusObserver)
 
@@ -275,7 +256,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         }
         when (fragmentMeta.action) {
             Constance.ACTION_UNCHECK -> { // trang thai isdelete
-                audioCutterAdapter.submitList(myStudioViewModel.changeAutoItemToDelete())
+                myStudioViewModel.changeAutoItemToDelete()
                 if (myStudioViewModel.isAllChecked()) { // nếu không còn data thì sẽ ko hiện checkall
                     cl_delete_all.visibility = View.GONE
                 } else {
@@ -303,9 +284,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                 }
             }
             Constance.ACTION_STOP_MUSIC -> {
-                if (myStudioViewModel.isPlayingStatus) {
-                    myStudioViewModel.stopMediaPlayerWhenTabSelect()
-                }
+                myStudioViewModel.stopMediaPlayerWhenTabSelect()
             }
             Constance.ACTION_CHECK_DELETE -> {
                 if (!myStudioViewModel.isChecked()) {

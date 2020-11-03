@@ -62,7 +62,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         super.onPostCreate(savedInstanceState)
         audioMixAdapter = MixChooserAdapter(requireContext())
         audioMixModel = ViewModelProvider(this).get(MixModel::class.java)
-        ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
     override fun onCreateView(
@@ -292,7 +292,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
     override fun onDestroyView() {
         super.onDestroyView()
-        ManagerFactory.getAudioPlayer().stop()
+        ManagerFactory.getDefaultAudioPlayer().stop()
     }
 
 }
