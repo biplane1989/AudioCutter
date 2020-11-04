@@ -151,8 +151,8 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
     // chuyen trang thai play nhac
     fun playAudio(position: Int) {
-        runOnBackgroundThread {
-            ManagerFactory.getAudioPlayer().play(mListAudioFileView.get(position).audioFile)
+        runOnBackground {
+            ManagerFactory.getDefaultAudioPlayer().play(mListAudioFileView.get(position).audioFile)
         }
 
         // trang thai phat nhac
@@ -161,14 +161,14 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
     fun pauseAudio() {
 
-        runOnBackgroundThread {
-            ManagerFactory.getAudioPlayer().pause()
+        runOnBackground {
+            ManagerFactory.getDefaultAudioPlayer().pause()
         }
     }
 
     fun stopAudio(position: Int) {
-        runOnBackgroundThread {
-            ManagerFactory.getAudioPlayer().stop()
+        runOnBackground {
+            ManagerFactory.getDefaultAudioPlayer().stop()
         }
         val selectItemView = mListAudioFileView.get(position).copy()
         val itemLoadStatus = selectItemView.selectItemStatus.copy()
@@ -180,14 +180,14 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
     fun resumeAudio() {
 
-        runOnBackgroundThread {
-            ManagerFactory.getAudioPlayer().resume()
+        runOnBackground {
+            ManagerFactory.getDefaultAudioPlayer().resume()
         }
     }
 
     fun seekToAudio(cusorPos: Int) {
-        runOnBackgroundThread {
-            ManagerFactory.getAudioPlayer().seek(cusorPos)
+        runOnBackground {
+            ManagerFactory.getDefaultAudioPlayer().seek(cusorPos)
         }
     }
 
@@ -204,8 +204,8 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
         if (selectedPosition == -1) {
             //audio bi nguoi dùng xóa
-            runOnBackgroundThread {
-                ManagerFactory.getAudioPlayer().stop()
+            runOnBackground {
+                ManagerFactory.getDefaultAudioPlayer().stop()
             }
 
         } else {

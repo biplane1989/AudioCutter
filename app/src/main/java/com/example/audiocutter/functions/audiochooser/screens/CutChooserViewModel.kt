@@ -24,15 +24,15 @@ class AudioCutterModel : BaseViewModel() {
     private var mListAudio = ArrayList<AudioCutterView>()
     private var mListAudioSearch = ArrayList<AudioCutterView>()
     var duration: Long? = 0L
-    var audioPlayer = ManagerFactory.getAudioPlayer()
+    var audioPlayer = ManagerFactory.getDefaultAudioPlayer()
     private lateinit var mcallBack: OnActionCallback
 
-    private var _stateLoadProgress = MutableLiveData<Boolean>()
-    val stateLoadProgress: LiveData<Boolean>
+    private var _stateLoadProgress = MutableLiveData<Int>()
+    val stateLoadProgress: LiveData<Int>
         get() = _stateLoadProgress
 
 
-    fun getStateLoading(): LiveData<Boolean> {
+    fun getStateLoading(): LiveData<Int> {
         return stateLoadProgress
     }
 
@@ -47,17 +47,22 @@ class AudioCutterModel : BaseViewModel() {
             ManagerFactory.getAudioFileManager().findAllAudioFiles()
         ) { it ->
             Log.d(TAG, "getAllAudioFile: checkList stateLoading ${it.state}")
-            if (it.state == StateLoad.LOADING) {
-                _stateLoadProgress.postValue(true)
-            } else {
-                _stateLoadProgress.postValue(false)
+            when (it.state) {
+                StateLoad.LOADING -> {
+                    _stateLoadProgress.postValue(1)
+                }
+                StateLoad.LOADDONE -> {
+                    _stateLoadProgress.postValue(0)
+                }
+                StateLoad.LOADFAIL -> {
+                    _stateLoadProgress.postValue(-1)
+                }
             }
             mListAudio.clear()
             it.listAudioFiles.forEach {
                 mListAudio.add(AudioCutterView(it))
             }
             Collections.sort(mListAudio, sortListByName)
-
             mListAudio
         }
     }

@@ -17,12 +17,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
+import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MixChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MixChooserAdapter
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
-import kotlinx.coroutines.delay
 
 class MixChooserScreen : BaseFragment(), View.OnClickListener,
     MixChooserAdapter.AudioMixerListener {
@@ -32,20 +32,36 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     private lateinit var audioMixModel: MixModel
     private lateinit var binding: MixChooserScreenBinding
     private var currentPos = -1
-    private var stateObserver = Observer<Boolean> {
-        if (it) {
-            showProgressBar(true)
-        } else {
-            showProgressBar(false)
+    private var stateObserver = Observer<Int> {
+        when (it) {
+            1 -> {
+                showProgressBar(true)
+                binding.ivEmptyListMixer.visibility = View.GONE
+                binding.tvEmptyListMixer.visibility = View.GONE
+            }
+            0 -> {
+                showProgressBar(false)
+            }
+            -1 -> {
+                showProgressBar(false)
+            }
         }
     }
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        if (listMusic.isEmpty()) {
-            showEmptyView()
+        if (listMusic.isEmpty() || listMusic == null) {
+            showEmptyList()
+        } else {
+            showList()
+            audioMixAdapter.submitList(ArrayList(listMusic))
         }
-        audioMixAdapter.submitList(ArrayList(listMusic))
 
+    }
+
+    private fun showList() {
+        binding.rvMixer.visibility = View.VISIBLE
+        binding.ivEmptyListMixer.visibility = View.INVISIBLE
+        binding.tvEmptyListMixer.visibility = View.INVISIBLE
     }
 
     private val playerInfoObserver = Observer<PlayerInfo> {
@@ -62,7 +78,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         super.onPostCreate(savedInstanceState)
         audioMixAdapter = MixChooserAdapter(requireContext())
         audioMixModel = ViewModelProvider(this).get(MixModel::class.java)
-        ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
     override fun onCreateView(
@@ -79,16 +95,14 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLists()
-        showProgressBar(true)
         runOnUI {
-            delay(500)
             val listAudioViewLiveData = audioMixModel.getAllAudioFile()
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
             audioMixModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
         }
     }
 
-    private fun showEmptyView() {
+    private fun showEmptyList() {
         binding.rvMixer.visibility = View.INVISIBLE
         binding.ivEmptyListMixer.visibility = View.VISIBLE
         binding.tvEmptyListMixer.visibility = View.VISIBLE
@@ -136,7 +150,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
     private fun initViews() {
 
-
+        binding.ivAudioMixerScreenFile.setOnClickListener(this)
         binding.ivAudioMixerScreenFile.setOnClickListener(this)
         binding.ivMixerScreenSearch.setOnClickListener(this)
         binding.ivMixerScreenBackEdt.setOnClickListener(this)
@@ -248,6 +262,10 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
             binding.ivMixerScreenBack -> {
                 activity?.onBackPressed()
             }
+            binding.ivAudioMixerScreenFile -> {
+
+                   /**handle show layout find file in device**/
+            }
         }
     }
 
@@ -292,7 +310,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
     override fun onDestroyView() {
         super.onDestroyView()
-        ManagerFactory.getAudioPlayer().stop()
+        ManagerFactory.getDefaultAudioPlayer().stop()
     }
 
 }

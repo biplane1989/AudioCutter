@@ -5,9 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
+import com.arthenica.mobileffmpeg.FFprobe
 import com.arthenica.mobileffmpeg.Level
 import com.example.core.Utils.Utils
 import kotlinx.coroutines.*
+import org.json.JSONObject
 import java.io.File
 import java.util.*
 
@@ -28,22 +30,34 @@ class AudioCutterImpl : AudioCutter {
     private val CMD_CONCAT_AUDIO = "-y %s -filter_complex \"concat=n=%d:v=0:a=1[a]\" -map \"[a]\" -c:a %s -b:a %dk \"%s\""
     private val CMD_MIX_AUDIO = "-y -i \'%s\' -i \'%s\' -filter_complex \"[0:0]volume=%f[a];[1:0]volume=%f[b];[a][b]amix=inputs=2:duration=%s:dropout_transition=0[a]\" -map \"[a]\" -c:a %s -q:a 0 \"%s\""
 
+    private var lastTime = 0        // dung de luu lai tri tri time cua lan editor truoc
+
     init {
-        Config.setLogLevel(Level.AV_LOG_INFO)
-        Config.enableStatisticsCallback {
-            if (timeVideo == 0L) {
-                return@enableStatisticsCallback
-            }
-            val percent = (it.time * 100) / timeVideo
-            if (itemMergeInfo.state == FFMpegState.IDE && percent >= 100L) {
-                return@enableStatisticsCallback
-            }
-            audioFileCore.size = it.size * 1204
-            mainScope.launch {
-                Log.e(TAG, "percent: $percent status: ${itemMergeInfo.state}   time: ${it.time}   timeVideo: $timeVideo")
-                if (itemMergeInfo.state != FFMpegState.CANCEL && itemMergeInfo.state != FFMpegState.FAIL) {
-                    updateItemLiveData(audioFileCore, ((it.time * 100) / timeVideo).toInt(), FFMpegState.RUNNING)
+        mainScope.launch {
+            Config.setLogLevel(Level.AV_LOG_INFO)
+            Config.enableStatisticsCallback {
+                if (timeVideo == 0L) {
+                    return@enableStatisticsCallback
                 }
+
+                if (it.time == lastTime) {          // do moi lan editor se bi luu lai gia tri cuoi cung cua lan truoc, nen dung bien lastTime de loai truong hopo nay
+                    Log.d(TAG, "lastTime  @@@@@@@@@@@: " + lastTime)
+                    return@enableStatisticsCallback
+                }
+
+                val percent = (it.time * 100) / timeVideo
+                Log.d(TAG, "time: " + it.time)
+                if (itemMergeInfo.state == FFMpegState.IDE && percent >= 100L) {
+                    return@enableStatisticsCallback
+                }
+                audioFileCore.size = it.size * 1204
+//                mainScope.launch {
+                Log.e(TAG, "percent: $percent status: ${itemMergeInfo.state}   time: ${it.time}   timeVideo: $timeVideo")
+                if (itemMergeInfo.state != FFMpegState.CANCEL && itemMergeInfo.state != FFMpegState.FAIL && itemMergeInfo.state != FFMpegState.SUCCESS) {
+                    updateItemLiveData(audioFileCore, ((it.time * 100) / timeVideo).toInt(), FFMpegState.RUNNING)
+                    lastTime = it.time
+                }
+//                }
             }
         }
     }
@@ -77,7 +91,6 @@ class AudioCutterImpl : AudioCutter {
                 }
             }
         }
-
 
         return audioFileCore
     }
@@ -113,6 +126,7 @@ class AudioCutterImpl : AudioCutter {
 
             when (requestCode) {
                 Config.RETURN_CODE_SUCCESS -> {
+                    Log.d(TAG, "mix: RETURN_CODE_SUCCESS")
                     updateAudioFile(filePath, fileName, 0, timeVideo, mimeType)
                     updateItemLiveData(audioFileCore, 100, FFMpegState.SUCCESS)
                     return@withContext audioFileCore
@@ -185,6 +199,8 @@ class AudioCutterImpl : AudioCutter {
         itemMergeInfo.percent = percent
         itemMergeInfo.state = state
         audioFileUpdate.postValue(itemMergeInfo)
+
+        Log.d(TAG, "updateItemLiveData:  percent: " + percent + " state : " + state)
     }
 
     private fun updateAudioFile(path: String, name: String, bitRate: Int, fileTime: Long, fileType: String) {
@@ -197,6 +213,21 @@ class AudioCutterImpl : AudioCutter {
         audioFileCore.mimeType = fileType
     }
 
+    override fun getAudioInfo(filePath: String): AudioInformation? {
+        val info = FFprobe.getMediaInformation(filePath)
+        val duration = info.duration.replace(".", "").toLong() / 1000
+        return AudioInformation(
+            info.filename.substring(
+                info.filename.lastIndexOf("/") + 1,
+                info.filename.lastIndexOf(".")
+            ),
+            info.bitrate.toInt(),
+            duration,
+            info.size.toLong(),
+            filePath,
+            info.format
+        )
+    }
 
     companion object {
         private const val TAG = "AudioCutterImpl"

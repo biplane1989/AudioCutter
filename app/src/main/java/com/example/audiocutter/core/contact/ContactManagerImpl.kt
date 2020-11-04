@@ -35,7 +35,7 @@ object ContactManagerImpl : ContactManager {
 
     suspend fun scanContact(): List<ContactItem> = withContext(Dispatchers.IO) {
         val newListContact: ArrayList<ContactItem> = ArrayList()
-//
+
         val projecttion = arrayOf(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Phone.PHOTO_URI, ContactsContract.CommonDataKinds.Phone.CUSTOM_RINGTONE)
         val cursor: Cursor = mContext.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projecttion, null, null, null)!!
         val nameIndex = cursor.getColumnIndex(projecttion[0])
@@ -114,12 +114,7 @@ object ContactManagerImpl : ContactManager {
 //        contactLiveData.postValue(GetContactResult(false, ArrayList()))
         CoroutineScope(Dispatchers.Default).launch {
             val listContact = scanContact()
-            contactLiveData.postValue(
-                GetContactResult(
-                    true,
-                    listContact
-                )
-            )
+            contactLiveData.postValue(GetContactResult(true, listContact))
         }
 
         return contactLiveData
@@ -128,12 +123,7 @@ object ContactManagerImpl : ContactManager {
     class ContactObserver(handler: Handler?) : ContentObserver(handler) {
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             CoroutineScope(Dispatchers.Default).launch {
-                contactLiveData.postValue(
-                    GetContactResult(
-                        true,
-                        scanContact()
-                    )
-                )
+                contactLiveData.postValue(GetContactResult(true, scanContact()))
             }
         }
     }

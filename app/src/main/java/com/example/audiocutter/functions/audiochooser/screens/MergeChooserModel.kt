@@ -21,8 +21,8 @@ class MergeChooserModel : BaseViewModel() {
     private var mListAudio = ArrayList<AudioCutterView>()
     private var mListAudioSearch = ArrayList<AudioCutterView>()
 
-    private var _stateLoadProgress = MutableLiveData<Boolean>()
-    val stateLoadProgress: LiveData<Boolean>
+    private var _stateLoadProgress = MutableLiveData<Int>()
+    val stateLoadProgress: LiveData<Int>
         get() = _stateLoadProgress
 
 
@@ -33,17 +33,23 @@ class MergeChooserModel : BaseViewModel() {
         }
 
 
-    fun getStateLoading(): LiveData<Boolean> {
+    fun getStateLoading(): LiveData<Int> {
         return stateLoadProgress
     }
 
 
     fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
-            if (it.state == StateLoad.LOADING) {
-                _stateLoadProgress.postValue(true)
-            } else {
-                _stateLoadProgress.postValue(false)
+            when (it.state) {
+                StateLoad.LOADING -> {
+                    _stateLoadProgress.postValue(1)
+                }
+                StateLoad.LOADDONE -> {
+                    _stateLoadProgress.postValue(0)
+                }
+                StateLoad.LOADFAIL -> {
+                    _stateLoadProgress.postValue(-1)
+                }
             }
             mListAudio.clear()
             it.listAudioFiles.forEach {
@@ -171,16 +177,16 @@ class MergeChooserModel : BaseViewModel() {
 
     suspend fun play(pos: Int) {
         val audioItem = mListAudio[pos]
-        ManagerFactory.getAudioPlayer().play(audioItem.audioFile)
+        ManagerFactory.getDefaultAudioPlayer().play(audioItem.audioFile)
 
     }
 
     fun pause() {
-        ManagerFactory.getAudioPlayer().pause()
+        ManagerFactory.getDefaultAudioPlayer().pause()
     }
 
     fun resume() {
-        ManagerFactory.getAudioPlayer().resume()
+        ManagerFactory.getDefaultAudioPlayer().resume()
     }
 
 }

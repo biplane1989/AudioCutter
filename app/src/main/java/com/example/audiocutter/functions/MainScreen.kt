@@ -143,6 +143,7 @@ class MainScreen : BaseFragment(), View.OnClickListener {
 
     private fun onMyStudioItemClicked() {
         if (storagePermissionRequest.isPermissionGranted()) {
+            ManagerFactory.getAudioFileManager().init(requireContext())
             viewStateManager.mainScreenOnMyAudioItemClicked(this)
         } else {
             StoragePermissionDialog.newInstance {

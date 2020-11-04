@@ -10,7 +10,7 @@ import com.example.audiocutter.objects.AudioFile
 
 class CuttingViewModel : BaseViewModel() {
     private lateinit var audioFile: AudioFile
-    private val audioPlayer = ManagerFactory.getAudioPlayer()
+    private val audioPlayer = ManagerFactory.getDefaultAudioPlayer()
     private var cuttingCurrPos = 0
     private var cuttingStartPos = 0
     private var cuttingEndPos = 0

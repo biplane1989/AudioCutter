@@ -144,6 +144,7 @@ class ChangeRangeView @JvmOverloads constructor(
 
         drawTextName(canvas, textName1)
         drawTextName2(canvas, textName2)
+
         drawBitmap(canvas, rowRect1.top + rectText1.height() + RANGE * 3 / 2)
         drawBitmap2(canvas, rowRect2.top + rectText2.height() + RANGE * 3 / 2)
 
@@ -203,6 +204,7 @@ class ChangeRangeView @JvmOverloads constructor(
         rangeCircleProgress2 = rectImageDst2.width() + RANGE * 2
         circleProgressGetY1 = rectImageDst1.top + RADIUS + 3
         circleProgressGetY2 = rectImageDst2.top + RADIUS + 3
+
         drawTextSound(ratioSound1, canvas, rowRectSeekbarSound1.right + RANGE, rowRectSeekbarSound1)
         drawTextSound(ratioSound2, canvas, rowRectSeekbarSound2.right + RANGE, rowRectSeekbarSound2)
     }
@@ -312,7 +314,7 @@ class ChangeRangeView @JvmOverloads constructor(
     }
 
     private fun drawBitmap(canvas: Canvas, fl: Float) {
-        val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_sound_mixing)
+        val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_added_audio)
         rectImage = Rect(
             0,
             0,
@@ -325,16 +327,16 @@ class ChangeRangeView @JvmOverloads constructor(
             (RADIUS * 2 + RANGE).toInt(),
             (fl + RANGE).toInt()
         )
-        Log.d(TAG, "drawBitmap: $rectImage")
+        Log.d(TAG, "checkRange: $RANGE")
         Log.d(TAG, "drawBitmap1: $rectImageDst1")
         canvas.drawBitmap(
             imageSound, rectImage,
-            rectImageDst1, mPaint
+            rectImageDst1, null
         )
     }
 
     private fun drawBitmap2(canvas: Canvas, fl: Float) {
-        val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_sound_mixing)
+        val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_added_audio)
         rectImage = Rect(
             0,
             0,
@@ -351,7 +353,7 @@ class ChangeRangeView @JvmOverloads constructor(
         Log.d(TAG, "drawBitmap1: $rectImageDst1")
         canvas.drawBitmap(
             imageSound, rectImage,
-            rectImageDst2, mPaint
+            rectImageDst2, null
         )
     }
 

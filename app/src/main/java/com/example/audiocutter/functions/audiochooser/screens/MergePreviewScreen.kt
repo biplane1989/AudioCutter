@@ -58,7 +58,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         super.onPostCreate(savedInstanceState)
         audioMerAdapter = MergePreviewAdapter(requireContext())
         audioMerModel = ViewModelProvider(this).get(MergePreviewModel::class.java)
-        ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
 
         listPath = ArrayList()
         listAudioPath = safeArg.listaudio
@@ -134,7 +134,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     }
 
     override fun deleteAudio(pos: Int) {
-        ManagerFactory.getAudioPlayer().stop()
+        ManagerFactory.getDefaultAudioPlayer().stop()
         audioMerAdapter.submitList(audioMerModel.removeItemAudio(pos))
     }
 
@@ -165,7 +165,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     override fun onDestroyView() {
         super.onDestroyView()
-        ManagerFactory.getAudioPlayer().stop()
+        ManagerFactory.getDefaultAudioPlayer().stop()
     }
 
     fun receiveData(listData: List<AudioCutterView>) {

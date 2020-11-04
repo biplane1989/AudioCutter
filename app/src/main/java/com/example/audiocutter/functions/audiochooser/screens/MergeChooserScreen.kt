@@ -21,29 +21,39 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MergeChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergeChooserAdapter
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
-import kotlinx.coroutines.delay
 
 class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAdapter.AudioMergeListener {
     private lateinit var binding: MergeChooserScreenBinding
 
     private lateinit var audioMerAdapter: MergeChooserAdapter
     private lateinit var audioMerModel: MergeChooserModel
-    var stateObserver = Observer<Boolean> {
-        if (it) {
-            showProgressBar(true)
-        } else {
-            showProgressBar(false)
+    var stateObserver = Observer<Int> {
+        when (it) {
+            1 -> {
+                showProgressBar(true)
+                binding.ivEmptyListMerge.visibility = View.GONE
+                binding.tvEmptyListMer.visibility = View.GONE
+            }
+            0 -> {
+                showProgressBar(false)
+            }
+            -1 -> {
+                showProgressBar(false)
+            }
         }
     }
     var currentPos = -1
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        if (listMusic.isEmpty()) {
-            showEmptyView()
+        if (listMusic.isEmpty() || listMusic == null) {
+            showEmptyList()
+        } else {
+            audioMerAdapter.submitList(ArrayList(listMusic))
+            showList()
         }
-        audioMerAdapter.submitList(ArrayList(listMusic))
 
     }
+
 
     override fun onPause() {
         super.onPause()
@@ -59,7 +69,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         super.onPostCreate(savedInstanceState)
         audioMerAdapter = MergeChooserAdapter(requireContext())
         audioMerModel = ViewModelProvider(this).get(MergeChooserModel::class.java)
-        ManagerFactory.getAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -72,9 +82,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLists()
-        showProgressBar(true)
         runOnUI {
-            delay(500)
             audioMerModel.getAllAudioFile().observe(viewLifecycleOwner, listAudioObserver)
             audioMerModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
 
@@ -197,11 +205,18 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     }
 
 
-    private fun showEmptyView() {
+    private fun showEmptyList() {
         showProgressBar(false)
         binding.rvMerge.visibility = View.INVISIBLE
         binding.ivEmptyListMerge.visibility = View.VISIBLE
         binding.tvEmptyListMer.visibility = View.VISIBLE
+    }
+
+    private fun showList() {
+        showProgressBar(false)
+        binding.rvMerge.visibility = View.VISIBLE
+        binding.ivEmptyListMerge.visibility = View.INVISIBLE
+        binding.tvEmptyListMer.visibility = View.INVISIBLE
     }
 
 
@@ -236,7 +251,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     }
 
     private fun handleAudiofile() {
-        ManagerFactory.getAudioPlayer().stop()
+        ManagerFactory.getDefaultAudioPlayer().stop()
 
         val listItemHandle = audioMerModel.getListItemChoose()
         val arrayAudio: Array<String> = Array(listItemHandle.size) { "" }
@@ -269,7 +284,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
 
     override fun onDestroyView() {
         super.onDestroyView()
-        ManagerFactory.getAudioPlayer().stop()
+        ManagerFactory.getDefaultAudioPlayer().stop()
     }
 
     private fun showProgressBar(b: Boolean) {

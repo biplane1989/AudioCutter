@@ -38,11 +38,9 @@ interface MainScreenViewStateManager {
         }
     }
 
-
     fun mainScreenOnMyAudioItemClicked(baseFragment: BaseFragment) {
         if (getViewStateMutable().getLastState() == ViewStateScreen.HOME_SCREEN) {
             getViewStateMutable().pushViewState(ViewStateScreen.MY_AUDIO_SCREEN)
-//            baseFragment.findNavController().navigate(R.id.go_to_my_audio_screen)
             val intent = Intent(baseFragment.context, OutputActivity::class.java)
             baseFragment.context?.startActivity(intent)
         }

@@ -2,7 +2,6 @@ package com.example.audiocutter.functions.resultscreen.screens
 
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,10 +16,8 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.core.result.AudioEditorManagerlmpl
 import com.example.audiocutter.databinding.ResultScreenBinding
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
-import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import com.example.audiocutter.objects.AudioFile
 import java.lang.StringBuilder
 import java.text.SimpleDateFormat
@@ -51,16 +48,16 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.tvTitleResult.visibility = View.VISIBLE
         binding.tvTitleLoading.visibility = View.GONE
 
-        binding.tvTitleMusic.text = it.fileName
-        binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
-
-        val duration = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(it.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
-        if (!duration.isNullOrBlank()) {
-            binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(duration.toInt()))
+        it?.let {
+            binding.tvTitleMusic.text = it.fileName
+            binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
+            val duration = ManagerFactory.getAudioFileManager()
+                .getInfoAudioFile(it.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
+            if (duration != null){
+                binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(duration.toInt()))
+            }
+            binding.tvInfoMusic.setText(convertAudioSizeToString(it))
         }
-        binding.tvInfoMusic.setText(convertAudioSizeToString(it))
-
     }
     val pendingProcessObserver = Observer<String> {     // observer trang thai pending
         binding.tvWait.visibility = View.VISIBLE
@@ -70,8 +67,11 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.btnBack.visibility = View.GONE
         binding.ivHome.visibility = View.INVISIBLE
         binding.btnCancel.visibility = View.VISIBLE
+
     }
     val processingObserver = Observer<ConvertingItem> {     // observer trang thai processing
+
+        binding.btnOrigin.visibility = View.VISIBLE
         binding.btnBack.visibility = View.GONE
         binding.ivHome.visibility = View.INVISIBLE
         binding.tvWait.visibility = View.GONE
@@ -193,11 +193,11 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
             }
 
             binding.ivHome -> {
-                viewStateManager.resultScreenGoToHome(requireContext())
+                viewStateManager.resultScreenGoToHome(this)
             }
 
             binding.btnOrigin -> {
-                viewStateManager.resultScreenGoToHome(requireContext())
+                viewStateManager.resultScreenGoToHome(this)
             }
             binding.llRingtone -> {
                 if (mResultViewModel.setRingTone()) {
