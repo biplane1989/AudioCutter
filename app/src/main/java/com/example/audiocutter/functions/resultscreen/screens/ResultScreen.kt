@@ -17,23 +17,28 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.ResultScreenBinding
+import com.example.audiocutter.functions.mystudio.dialog.CancelDialog
+import com.example.audiocutter.functions.mystudio.dialog.CancelDialogListener
+import com.example.audiocutter.functions.mystudio.dialog.DeleteDialog
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.objects.AudioFile
 import java.lang.StringBuilder
 import java.text.SimpleDateFormat
 
 
-class ResultScreen : BaseFragment(), View.OnClickListener {
+class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener {
     companion object {
         const val MIX = 3
         const val MER = 2
         const val CUT = 1
     }
 
+    private var isDoubleDeleteClicked = true
     private val safeArg: ResultScreenArgs by navArgs()
-    val TAG = "giangtd"
+    private val TAG = "giangtd"
     private lateinit var binding: ResultScreenBinding
-    lateinit var mResultViewModel: ResultViewModel
+    private lateinit var mResultViewModel: ResultViewModel
+    private var dialog: CancelDialog? = null
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
     val processDoneObserver = Observer<AudioFile> {         // observer trang thai done
@@ -53,11 +58,13 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
             binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
             val duration = ManagerFactory.getAudioFileManager()
                 .getInfoAudioFile(it.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
-            if (duration != null){
+            if (duration != null && duration != "") {
                 binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(duration.toInt()))
             }
             binding.tvInfoMusic.setText(convertAudioSizeToString(it))
         }
+
+        dialog?.dismiss()
     }
     val pendingProcessObserver = Observer<String> {     // observer trang thai pending
         binding.tvWait.visibility = View.VISIBLE
@@ -173,6 +180,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         })
     }
 
+
     override fun onClick(view: View?) {
         when (view) {
             binding.ivPausePlayMusic -> {
@@ -182,10 +190,13 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
             }
 
             binding.btnCancel -> {
-                ManagerFactory.getAudioEditorManager().getLatestConvertingItem()?.let {
-                    ManagerFactory.getAudioEditorManager().cancel(it.id)
+                if (isDoubleDeleteClicked) {
+                    ManagerFactory.getAudioEditorManager().getLatestConvertingItem()?.let {
+                        dialog = CancelDialog.newInstance(this, it.id)
+                        dialog?.show(childFragmentManager, CancelDialog.TAG)
+                        isDoubleDeleteClicked = false
+                    }
                 }
-                requireActivity().onBackPressed()
             }
 
             binding.btnBack -> {
@@ -238,6 +249,16 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
 
             }
         }
+    }
+
+    override fun onCancelDeleteClick(id: Int) {
+        ManagerFactory.getAudioEditorManager().cancel(id)
+        isDoubleDeleteClicked = true
+        requireActivity().onBackPressed()
+    }
+
+    override fun onCancelDialog() {
+        isDoubleDeleteClicked = true
     }
 
 }

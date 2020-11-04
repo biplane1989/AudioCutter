@@ -67,7 +67,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 PlayerState.IDLE -> {
                     holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
                     holder.tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
-//                    holder.tvTotal.text = Constance.TIME_TOTAL_DEFAULT
                     holder.sbMusic.progress = 0
                 }
             }

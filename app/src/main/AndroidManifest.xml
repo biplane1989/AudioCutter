@@ -24,7 +24,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activities.acttest.CutActivity" />
-        <activity android:name=".functions.mystudio.screens.OutputActivity" />
+<!--        <activity android:name=".functions.mystudio.screens.OutputActivity" />-->
 
         <provider
             android:name="androidx.core.content.FileProvider"

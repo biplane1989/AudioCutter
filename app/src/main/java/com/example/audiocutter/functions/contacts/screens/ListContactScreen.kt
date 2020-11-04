@@ -39,8 +39,6 @@ class ListContactScreen() : BaseFragment(),
 
     // observer data
     val listContactObserver = Observer<List<ContactItemView>> { listContact ->
-//        Log.d(TAG, "listContactObserver: @@@@@@@@@@@@@@@@")
-//        Log.d(TAG, "ringtone : "+ listContact.get(0).contactItem.ringtone)
         if (listContact != null) {
             runOnUI {
                 if (listContact.isEmpty()) {

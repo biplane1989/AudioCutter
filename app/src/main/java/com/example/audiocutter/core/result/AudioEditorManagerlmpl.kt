@@ -1,12 +1,10 @@
 package com.example.audiocutter.core.result
 
 import android.app.ActivityManager
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.net.Uri
 import android.os.IBinder
+import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,6 +12,7 @@ import androidx.lifecycle.Transformations
 import com.example.audiocutter.core.manager.AudioEditorManager
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.fake.FakeAudioFileManager
+import com.example.audiocutter.core.rington.RingtonManagerImpl
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.resultscreen.objects.*
 import com.example.audiocutter.functions.resultscreen.services.ResultService
@@ -56,7 +55,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                     convertingState = ConvertingState.WAITING
                 }
                 FFMpegState.RUNNING -> {
-                   convertingState = ConvertingState.PROGRESSING
+                    convertingState = ConvertingState.PROGRESSING
                 }
                 FFMpegState.CANCEL -> {
                     convertingState = ConvertingState.ERROR
@@ -150,6 +149,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                     .merge(listAudioCore, item.mergingConfig.fileName, item.mergingConfig.audioFormat, item.mergingConfig.pathFolder)
                 val audioFile = AudioFile(audioResult.file, audioResult.fileName, audioResult.size, audioResult.bitRate, audioResult.time, Uri.parse(audioResult.file.toString()))
                 item.outputAudioFile = audioFile
+                Log.d("001", "URI : " + addMediaStore(audioFile.file.absolutePath.toString()))
 
             }
 
@@ -169,6 +169,8 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                     .mix(audioCore1, audioCore2, item.mixingConfig)
                 audioFile = AudioFile(audioResult.file, audioResult.fileName, audioResult.size, audioResult.bitRate, audioResult.time, Uri.parse(audioResult.file.toString()))
                 item.outputAudioFile = audioFile
+
+                Log.d("001", "URI : " + addMediaStore(audioFile.file.absolutePath.toString()))
             }
 
             if (item is CuttingConvertingItem) {
@@ -181,6 +183,8 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
                 val audio = AudioFile(File(item.cuttingConfig.pathFolder + File.separator + item.cuttingConfig.fileName + ".mp3"), item.cuttingConfig.fileName, 100L)
                 FakeAudioFileManager.addCut(audio)
+
+                Log.d("001", "URI : " + addMediaStore(audioFile.file.absolutePath.toString()))
             }
 
             synchronized(listConvertingItemData) {
@@ -192,6 +196,21 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
             processNextItem()
         }
+    }
+
+    private fun addMediaStore(filePath: String): Uri? {
+        val resolver: ContentResolver = RingtonManagerImpl.mContext.getContentResolver()
+        val file = File(filePath)
+        if (file.exists()) {
+            val values = ContentValues()
+            values.put(MediaStore.Audio.AudioColumns.DISPLAY_NAME, file.name)
+            values.put(MediaStore.Audio.AudioColumns.DATA, file.absolutePath)
+            values.put(MediaStore.Audio.AudioColumns.TITLE, file.name)
+            values.put(MediaStore.Audio.AudioColumns.SIZE, file.length())
+            values.put(MediaStore.Audio.AudioColumns.MIME_TYPE, "audio/mp3")
+            return resolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values)
+        }
+        return null
     }
 
     override fun cutAudio(audioFile: AudioFile, cuttingConfig: AudioCutConfig) {        // add them 1 item loai cut vao list

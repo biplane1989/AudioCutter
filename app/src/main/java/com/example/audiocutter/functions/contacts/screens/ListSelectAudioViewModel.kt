@@ -54,7 +54,6 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
                         duration?.let {
                             newListSelectItemView.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false, duration))
                         }
-//                        newListSelectItemView.add(SelectItemView(audioFile))
                     }
                 }
 

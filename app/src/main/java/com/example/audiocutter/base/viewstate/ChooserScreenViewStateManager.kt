@@ -18,7 +18,6 @@ interface ChooserScreenViewStateManager {
             val action = MixChooserScreenDirections.goToMixingScreen(audioFile1.file.absolutePath, audioFile2.file.absolutePath)
             baseFragment.findNavController().navigate(action)
         }
-
     }
 
     fun onCuttingItemClicked(baseFragment: BaseFragment, itemAudio: AudioCutterView) {

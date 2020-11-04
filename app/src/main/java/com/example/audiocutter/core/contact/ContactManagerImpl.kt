@@ -111,7 +111,6 @@ object ContactManagerImpl : ContactManager {
     }
 
     override fun getListContact(): LiveData<GetContactResult> {
-//        contactLiveData.postValue(GetContactResult(false, ArrayList()))
         CoroutineScope(Dispatchers.Default).launch {
             val listContact = scanContact()
             contactLiveData.postValue(GetContactResult(true, listContact))

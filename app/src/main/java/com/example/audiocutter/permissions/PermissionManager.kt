@@ -29,15 +29,12 @@ class AppPermission {
                 Manifest.permission.READ_CONTACTS,
                 Manifest.permission.WRITE_CONTACTS,
                 Manifest.permission.WRITE_SETTINGS
-
             )
         )
 
         listPermissionNames.forEach({ permissionName ->
             listPermissionInfos.add(PermissionInfo(permissionName, false))
         })
-
-
     }
 
     fun encode(): String {

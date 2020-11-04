@@ -26,12 +26,14 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     var isDeleteClicked = true
     var tabPosition = -1
     var typeAudio = -1
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_screen, container, false)
 
-        arguments?.getInt("TYPE_AUDIO")?.let {
+        arguments?.getInt(Constance.TYPE_AUDIO)?.let {
             typeAudio = it
         }
+
         return binding.root
     }
 
