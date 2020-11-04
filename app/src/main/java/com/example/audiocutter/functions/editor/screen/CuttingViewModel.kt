@@ -65,13 +65,15 @@ class CuttingViewModel : BaseViewModel() {
 
 
     }
-    fun getNameSuggestion():String{
-        return ManagerFactory.getAudioFileManager().
+
+    fun getNameSuggestion(): String {
+        return ""
     }
 
-    fun getStorageFolder():String{
+    fun getStorageFolder(): String {
         return ManagerFactory.getAudioFileManager().getFolderPath(Folder.TYPE_CUTTER)
     }
+
     fun resumeAudio() {
         audioPlayer.resume()
     }
