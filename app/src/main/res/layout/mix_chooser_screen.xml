@@ -27,6 +27,7 @@
                     android:background="@color/colorgrayAlpha" />
 
                 <EditText
+                    android:paddingHorizontal="?actionBarSize"
                     android:id="@+id/edt_mixer_search"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

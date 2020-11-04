@@ -9,6 +9,7 @@ import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -17,6 +18,7 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.bumptech.glide.Glide
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.core.manager.ManagerFactory
@@ -230,19 +232,11 @@ object AudioFileManagerImpl : AudioFileManager {
                         val uri = getUriFromFile(id, resolver, file)
                         if (file.exists()) {
                             val audioFile = AudioFile(
-                                file = file,
-                                fileName = name.trim(),
-                                size = file.length(),
-                                bitRate = bitrate!!,
-                                time = duration!!,
-                                uri = uri,
-                                bitmap = bitmap,
-                                title = title,
-                                alBum = album,
-                                artist = artist,
-                                dateAdded = date,
-                                genre = genre,
-                                mimeType = mimeType
+                                file = file, fileName = name.trim(),
+                                size = file.length(), bitRate = bitrate!!,
+                                time = duration!!, uri = uri, bitmap = bitmap,
+                                title = title, alBum = album, artist = artist, dateAdded = date,
+                                genre = genre, mimeType = mimeType
                             )
                             listAllAudios.add(audioFile)
 
@@ -483,6 +477,26 @@ object AudioFileManagerImpl : AudioFileManager {
 
     fun unRegisterContentObserve() {
         mContext.contentResolver.unregisterContentObserver(audioFileObserver)
+    }
+
+
+    override fun insertFileToMediastore(file: File): Boolean {
+        return try {
+            MediaScannerConnection.scanFile(
+                mContext,
+                arrayOf(file.absolutePath),
+                null
+            ) { s, uri ->
+                Log.d("insertFile", "on complete ${uri}  string $s")
+            }
+
+
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+
     }
 
     override fun getFolderPath(typeFile: Folder): String {

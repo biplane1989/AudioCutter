@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
@@ -205,6 +206,8 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         val imm =
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+        val view =
+            LayoutInflater.from(requireContext()).inflate(R.layout.item_audio_choose_merge, null)
     }
 
 
@@ -247,18 +250,18 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     override fun setAudioAs(typeAudioSetAs: TypeAudioSetAs) {
         var rs = false
         Log.d(TAG, "setAudioAs: ${audioCutterItem.audioFile.fileName}")
-        when (typeAudioSetAs) {
+        rs = when (typeAudioSetAs) {
 
             TypeAudioSetAs.RINGTONE -> {
-                rs = ManagerFactory.getRingtonManager().setRingTone(audioCutterItem.audioFile)
+                ManagerFactory.getRingtonManager().setRingTone(audioCutterItem.audioFile)
             }
             TypeAudioSetAs.ALARM -> {
-                rs = ManagerFactory.getRingtonManager().setAlarmManager(
+                ManagerFactory.getRingtonManager().setAlarmManager(
                     audioCutterItem.audioFile
                 )
             }
             TypeAudioSetAs.NOTIFICATION -> {
-                rs = ManagerFactory.getRingtonManager()
+                ManagerFactory.getRingtonManager()
                     .setNotificationSound(audioCutterItem.audioFile)
             }
         }

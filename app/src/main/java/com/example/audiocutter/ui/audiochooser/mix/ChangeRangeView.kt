@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.View
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
 
@@ -75,6 +76,8 @@ class ChangeRangeView @JvmOverloads constructor(
     private var ratioSound2 = "0%"
     private var maxDistance = 0.0
     private var position = 0
+
+
 
     init {
 
@@ -314,7 +317,7 @@ class ChangeRangeView @JvmOverloads constructor(
     }
 
     private fun drawBitmap(canvas: Canvas, fl: Float) {
-        val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_added_audio)
+        val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_sound_mixing)
         rectImage = Rect(
             0,
             0,
@@ -336,7 +339,7 @@ class ChangeRangeView @JvmOverloads constructor(
     }
 
     private fun drawBitmap2(canvas: Canvas, fl: Float) {
-        val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_added_audio)
+        val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_sound_mixing)
         rectImage = Rect(
             0,
             0,
@@ -379,7 +382,7 @@ class ChangeRangeView @JvmOverloads constructor(
         rect = Rect()
         mPaint6.getTextBounds(text, 0, text.length, rect)
 
-        if (textGetX < rect.width()) {
+        if (textGetX < rect.width() + RADIUS * 2) {
             textGetX = rect.width() + RADIUS * 2
         } else
             if (textGetX >= (mWidth - rect.width() - (RADIUS * 4))) {

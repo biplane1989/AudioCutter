@@ -25,8 +25,6 @@ class ListContactViewModel : BaseViewModel() {
     fun getData(): LiveData<List<ContactItemView>> {
         val listContactItem: LiveData<GetContactResult> = ManagerFactory.getContactManager()
             .getListContact()
-
-
         return Transformations.map(listContactItem) { contacts ->
             if (mListContactItemView.size == 0) {
                 val newListContact = ArrayList<ContactItemView>()

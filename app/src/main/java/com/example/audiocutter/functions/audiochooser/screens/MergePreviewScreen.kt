@@ -22,7 +22,6 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.MergePreviewScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergePreviewAdapter
 import com.example.audiocutter.functions.audiochooser.dialogs.MergeDialog
-import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.ui.audiochooser.merge.MyItemTouchHelper
 import com.example.audiocutter.ui.audiochooser.merge.WrapContentLinearLayoutManager
@@ -42,7 +41,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     private lateinit var audioMerAdapter: MergePreviewAdapter
     private lateinit var audioMerModel: MergePreviewModel
     var currentPos = -1
-    private lateinit var mCallback: OnActionCallback
 
     private lateinit var mergeDialog: MergeDialog
     private val playerInfoObserver = Observer<PlayerInfo> {
@@ -145,8 +143,13 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.iv_mer_screen_back -> mCallback.backFrg()
-            R.id.iv_addfile_merge -> mCallback.backFrg()
+            R.id.iv_mer_screen_back -> {
+                activity?.onBackPressed()
+            }
+            R.id.iv_addfile_merge -> {
+                /**previous frg to choose more item**/
+                showToast("back Frg")
+            }
             R.id.bt_merge_audio -> mergeAudioFile()
         }
     }

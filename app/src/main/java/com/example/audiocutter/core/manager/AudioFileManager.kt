@@ -18,6 +18,7 @@ interface AudioFileManager {
     fun getInfoAudioFile(itemFile: File?, type: Int): String?
     fun getDateCreatFile(file: File?): String?
     fun getFolderPath(typeFile: Folder): String
+    fun insertFileToMediastore(file: File): Boolean
 
 
     fun genNewAudioFileName(typeFile: Folder): String
