@@ -10,6 +10,7 @@ object ViewStateManagerImpl : ViewStateManager, ViewStateMutable {
     override fun initState(viewStateScreen: ViewStateScreen) {
         viewStateList.clear()
         viewStateList.add(viewStateScreen)
+        logState()
     }
 
     override fun getLastState(): ViewStateScreen? {

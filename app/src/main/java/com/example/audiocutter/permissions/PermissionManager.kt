@@ -1,4 +1,5 @@
 package com.example.audiocutter.permissions
+
 import android.Manifest
 import android.app.role.RoleManager
 import android.content.Context
@@ -22,15 +23,7 @@ class AppPermission {
 
 
     init {
-        listPermissionNames.addAll(
-            listOf(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_CONTACTS,
-                Manifest.permission.WRITE_CONTACTS,
-                Manifest.permission.WRITE_SETTINGS
-            )
-        )
+        listPermissionNames.addAll(listOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.WRITE_SETTINGS))
 
         listPermissionNames.forEach({ permissionName ->
             listPermissionInfos.add(PermissionInfo(permissionName, false))
@@ -91,15 +84,17 @@ class AppPermission {
     fun hasWriteSettingPermission(): Boolean {
         return getPermissionInfo(Manifest.permission.WRITE_SETTINGS)?.granted ?: false
     }
+
     fun isPermissionChanged(context: Context): Boolean {
         for (permissionInfo in listPermissionInfos) {
             when (permissionInfo.permissionName) {
+                Manifest.permission.WRITE_SETTINGS -> {
+                    if (permissionInfo.granted != PermissionUtil.hasWriteSetting(context)) {
+                        return true
+                    }
+                }
                 else -> {
-                    if (permissionInfo.granted != PermissionUtil.hasPermission(
-                            context,
-                            permissionInfo.permissionName
-                        )
-                    ) {
+                    if (permissionInfo.granted != PermissionUtil.hasPermission(context, permissionInfo.permissionName)) {
                         return true
                     }
                 }
@@ -111,9 +106,11 @@ class AppPermission {
     fun updatePermission(context: Context) {
         for (permissionInfo in listPermissionInfos) {
             when (permissionInfo.permissionName) {
+                Manifest.permission.WRITE_SETTINGS -> {
+                    permissionInfo.granted = PermissionUtil.hasWriteSetting(context)
+                }
                 else -> {
-                    permissionInfo.granted =
-                        PermissionUtil.hasPermission(context, permissionInfo.permissionName)
+                    permissionInfo.granted = PermissionUtil.hasPermission(context, permissionInfo.permissionName)
                 }
             }
         }
@@ -137,10 +134,7 @@ object PermissionManager {
                 delay(1000)
                 if (appPermission.isPermissionChanged(PermissionManager.appContext)) {
                     appPermission.updatePermission(PermissionManager.appContext)
-                    PreferencesHelper.putString(
-                        APP_PERMISSION_PREFERENCE_KEY,
-                        appPermission.encode()
-                    )
+                    PreferencesHelper.putString(APP_PERMISSION_PREFERENCE_KEY, appPermission.encode())
                     appPermissionLiveData.postValue(appPermission)
                 }
             }
@@ -172,14 +166,9 @@ object PermissionManager {
     }
 
 
-
     fun hasStoragePermission(): Boolean {
         return appPermission.hasStoragePermission()
     }
-
-
-
-
 
 
 }

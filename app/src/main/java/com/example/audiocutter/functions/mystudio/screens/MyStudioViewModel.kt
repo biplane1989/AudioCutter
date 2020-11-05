@@ -58,7 +58,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     fun init(typeAudio: Int) {
 
-        val listScaners: LiveData<AudioFileScans>
+        var listScaners: LiveData<AudioFileScans> = MutableLiveData()
         when (typeAudio) {
             Constance.AUDIO_CUTTER -> {
                 listScaners = ManagerFactory.getAudioFileManager()
@@ -68,12 +68,12 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 listScaners = ManagerFactory.getAudioFileManager()
                     .getListAudioFileByType(Folder.TYPE_MERGER)
             }
-            else -> {
+            Constance.AUDIO_MIXER -> {
                 listScaners = ManagerFactory.getAudioFileManager()
                     .getListAudioFileByType(Folder.TYPE_MIXER)
             }
         }
-        val listLoading: LiveData<List<ConvertingItem>>
+        var listLoading: LiveData<List<ConvertingItem>> = MutableLiveData()
         when (typeAudio) {
             Constance.AUDIO_CUTTER -> {
                 listLoading = ManagerFactory.getAudioEditorManager().getListCuttingItems()
@@ -81,7 +81,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             Constance.AUDIO_MERGER -> {
                 listLoading = ManagerFactory.getAudioEditorManager().getListMergingItems()
             }
-            else -> {
+            Constance.AUDIO_MIXER -> {
                 listLoading = ManagerFactory.getAudioEditorManager().getListMixingItems()
             }
         }
@@ -135,10 +135,9 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         }
         mAudioMediatorLiveData.addSource(ManagerFactory.getAudioEditorManager()
             .getCurrentProcessingItem()) {
-            if (it != null){
+            if (it != null) {
                 updateLoadingProgressbar(it)
             }
-
         }
     }
 
@@ -150,6 +149,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         mListAudio.clear()
         if (!mListFileLoading.isNullOrEmpty()) {
             mListAudio.addAll(mListFileLoading)
+            Log.d(TAG, "mergeList: mListFileLoading " + mListFileLoading.size)
         }
         if (!mListAudioFileScans.isNullOrEmpty()) {
             for (item in mListAudioFileScans) {
@@ -163,6 +163,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                     mListAudio.add(item)
                 }
             }
+            Log.d(TAG, "mergeList: mListAudioFileScans " + mListAudioFileScans.size)
         }
     }
 
@@ -473,5 +474,42 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         isDeleteStatus = false
         isCheckAllStatus = false
         audioPlayer.stop()
+    }
+
+    fun setRingTone(uri: String): Boolean {
+        uri?.let {
+            val audioFile = getAudioFileByUri(uri)
+            audioFile?.let {
+                return ManagerFactory.getRingtoneManager().setRingTone(audioFile)
+            }
+        }
+        return false
+    }
+
+    fun setAlarm(uri: String): Boolean {
+        uri?.let {
+            val audioFile = getAudioFileByUri(uri)
+            audioFile?.let {
+                return ManagerFactory.getRingtoneManager().setAlarmManager(audioFile)
+            }
+        }
+        return false
+    }
+
+    fun setNotification(uri: String): Boolean {
+        uri?.let {
+            val audioFile = getAudioFileByUri(uri)
+            audioFile?.let {
+                return ManagerFactory.getRingtoneManager().setNotificationSound(audioFile)
+            }
+        }
+        return false
+    }
+
+    fun getAudioFileByUri(uri: String): AudioFile? {
+        for (item in mListAudio) {
+            if (TextUtils.equals(item.audioFile.uri.toString(), uri)) return item.audioFile
+        }
+        return null
     }
 }

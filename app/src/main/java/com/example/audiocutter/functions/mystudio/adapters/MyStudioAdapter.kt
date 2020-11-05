@@ -56,9 +56,11 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     override fun submitList(list: List<AudioFileView>?) {
         if (list != null) {
             listAudios = ArrayList(list)
+            Log.d(TAG, "submitList: "+ listAudios.size)
             super.submitList(ArrayList(list))
         } else {
             listAudios = ArrayList()
+            Log.d(TAG, "submitList: "+ listAudios.size)
             super.submitList(null)
         }
 

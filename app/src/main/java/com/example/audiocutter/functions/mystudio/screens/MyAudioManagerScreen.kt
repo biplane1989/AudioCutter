@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.fragment.navArgs
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.channel.FragmentMeta
@@ -16,6 +17,7 @@ import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.adapters.MyStudioViewPagerAdapter
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialog
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialogListener
+import com.example.audiocutter.functions.resultscreen.screens.ResultScreenArgs
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.my_studio_screen.*
 
@@ -25,14 +27,12 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     val TAG = "giangtd"
     var isDeleteClicked = true
     var tabPosition = -1
-    var typeAudio = -1
+    private val safeArg: MyAudioManagerScreenArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_screen, container, false)
 
-        arguments?.getInt(Constance.TYPE_AUDIO)?.let {
-            typeAudio = it
-        }
+        Log.d(TAG, "override onCreateView: manager")
 
         return binding.root
     }
@@ -58,7 +58,9 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
             }
         })
 
-        binding.tabLayout.getTabAt(typeAudio)?.select()
+
+        binding.tabLayout.getTabAt(requireArguments().getInt(Constance.TYPE_AUDIO_TO_NOTIFICATION))
+            ?.select()
 
         binding.backButton.setOnClickListener(this)
         binding.ivExtends.setOnClickListener(this)
@@ -133,5 +135,15 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
 
     override fun onCancel() {
         isDeleteClicked = true
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d(TAG, "override onDestroyView: manager")
+    }
+
+    override fun onPostDestroy() {
+        super.onPostDestroy()
+        Log.d(TAG, "override onPostDestroy: manager")
     }
 }

@@ -5,10 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.base.BaseFragment
@@ -25,9 +23,10 @@ class MainScreen : BaseFragment(), View.OnClickListener {
     private val CONTACTS_ITEM_REQUESTING_PERMISSION = 1 shl 4
     private val MY_STUDIO_REQUESTING_PERMISSION = 1 shl 5
     private val FLASH_CALL_REQUESTING_PERMISSION = 1 shl 6
+
     private lateinit var binding: MainScreenBinding
     private var pendingRequestingPermission = 0
-
+    private val TAG = "giangtd"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.main_screen, container, false)
@@ -47,7 +46,22 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                 }
                 if (storagePermissionRequest.isPermissionGranted() && (pendingRequestingPermission and MY_STUDIO_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
-                    onMyStudioItemClicked()
+                    if (writeSettingPermissionRequest.isPermissionGranted()) {
+                        onMyStudioItemClicked()
+                    } else {
+                        pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION
+                        writeSettingPermissionRequest.requestPermission()
+                    }
+
+                }
+                if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and MY_STUDIO_REQUESTING_PERMISSION) != 0) {
+                    resetRequestingPermission()
+                    if (storagePermissionRequest.isPermissionGranted()) {
+                        onMyStudioItemClicked()
+                    } else {
+                        pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION
+                        storagePermissionRequest.requestPermission()
+                    }
                 }
                 if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
@@ -144,15 +158,22 @@ class MainScreen : BaseFragment(), View.OnClickListener {
     }
 
     private fun onMyStudioItemClicked() {
-        if (storagePermissionRequest.isPermissionGranted()) {
+        if (storagePermissionRequest.isPermissionGranted() && writeSettingPermissionRequest.isPermissionGranted()) {
+            ManagerFactory.getAudioFileManager().init(requireContext())
             viewStateManager.mainScreenOnMyAudioItemClicked(this)
         } else {
             StoragePermissionDialog.newInstance {
                 resetRequestingPermission()
                 pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION
-                storagePermissionRequest.requestPermission()
+                if (!storagePermissionRequest.isPermissionGranted()) {
+                    storagePermissionRequest.requestPermission()
+                } else {
+                    writeSettingPermissionRequest.requestPermission()
+                }
+
             }
                 .show(requireActivity().supportFragmentManager, StoragePermissionDialog::class.java.name)
+
         }
     }
 
@@ -192,7 +213,7 @@ class MainScreen : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private val writeStoragePermissionRequest = object : WriteSettingPermissionRequest {
+    private val writeSettingPermissionRequest = object : WriteSettingPermissionRequest {
         override fun getPermissionActivity(): BaseActivity? {
             return getBaseActivity()
         }
@@ -205,7 +226,7 @@ class MainScreen : BaseFragment(), View.OnClickListener {
     init {
         storagePermissionRequest.init()
         contactPermissionRequest.init()
-        writeStoragePermissionRequest.init()
+        writeSettingPermissionRequest.init()
     }
 
 

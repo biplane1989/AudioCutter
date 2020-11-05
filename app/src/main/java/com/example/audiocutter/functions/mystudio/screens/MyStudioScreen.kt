@@ -44,7 +44,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         }
     }
 
-
     // observer loading sstatus
     private val loadingStatusObserver = Observer<Boolean> {
         if (it) {
@@ -90,7 +89,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             bundle.putInt(BUNDLE_NAME_KEY, typeAudio)
             return bundle
         }
-
     }
 
     fun init() {
@@ -104,13 +102,17 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         audioCutterAdapter = AudioCutterAdapter(this)
         typeAudio = requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
         myStudioViewModel.init(typeAudio)
+
+//        runOnUI {
         myStudioViewModel.getListAudioFile().observe(this as LifecycleOwner, listAudioObserver)
+//        }
+        Log.d(TAG, "onPostCreate: override myStudio")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_fragment, container, false)
         runOnUI {
-//            myStudioViewModel.getListAudioFile().observe(this as LifecycleOwner, listAudioObserver)
+//            myStudioViewModel.getListAudioFile().observe(viewLifecycleOwner, listAudioObserver)
 
             myStudioViewModel.getLoadingStatus().observe(viewLifecycleOwner, loadingStatusObserver)
 
@@ -118,6 +120,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
             myStudioViewModel.getLoadingDone().observe(viewLifecycleOwner, loadingDoneObserver)
         }
+        Log.d(TAG, "onCreateView: override myStudio"  )
         return binding.root
     }
 
@@ -157,7 +160,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
             when (item!!.itemId) {
                 R.id.set_as -> {
-                    val dialog = SetAsDialog.newInstance(this, "giang")
+                    val dialog = SetAsDialog.newInstance(this, audioFile.uri.toString())
                     dialog.show(childFragmentManager, SetAsDialog.TAG)
                 }
                 R.id.cut -> {
@@ -232,28 +235,35 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     // hanlder linterner on dialog set as
-    override fun onsetAsListenner(type: Int) {
+    override fun onsetAsListenner(type: Int, uri: String) {
         when (type) {
             Constance.RINGTONE_TYPE -> {
-                Log.d(TAG, "onsetAsListenner: ringtone")
+                if (myStudioViewModel.setRingTone(uri)) {
+                    Toast.makeText(requireContext(), "Set Ringtone Successful !", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(requireContext(), "Set Ringtone Fail !", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
             Constance.ALARM_TYPE -> {
-                Log.d(TAG, "onsetAsListenner: alarm")
+                if (myStudioViewModel.setAlarm(uri)) {
+                    Toast.makeText(requireContext(), "Set Alarm Successful !", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(requireContext(), "Set Alarm Fail !", Toast.LENGTH_SHORT).show()
+                }
             }
             Constance.NOTIFICATION_TYPE -> {
-                Log.d(TAG, "onsetAsListenner: notification")
+                if (myStudioViewModel.setNotification(uri)) {
+                    Toast.makeText(requireContext(), "Set Notification Successful !", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(requireContext(), "Set Notification Fail !", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
         }
-    }
-
-    override fun onPostDestroy() {
-        super.onPostDestroy()
-        Log.d("taih", "onPostDestroy ${this}")
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-//        cl_delete_all.visibility = View.GONE
     }
 
     // click delete button on dialog delete
@@ -324,5 +334,15 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
     override fun onCancelDialog() {
         isDeleteClicked = true
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d(TAG, " override onDestroyView: myStudio")
+    }
+
+    override fun onPostDestroy() {
+        super.onPostDestroy()
+        Log.d(TAG, "override onPostDestroy: myStudio")
     }
 }
