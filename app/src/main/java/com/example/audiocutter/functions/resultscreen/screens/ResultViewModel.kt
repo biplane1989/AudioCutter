@@ -3,7 +3,9 @@ package com.example.audiocutter.functions.resultscreen.screens
 import android.app.Application
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
@@ -165,7 +167,11 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
     }
 
     fun share() {
-
+        val fileAudio =
+            ManagerFactory.getAudioEditorManager().getLatestConvertingItem()?.outputAudioFile
+        fileAudio?.let {
+            ManagerFactory.getAudioFileManager().shareFileAudio(fileAudio)
+        }
     }
 
     fun setContact() {

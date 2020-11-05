@@ -33,4 +33,5 @@
     <color name="dialog_advanced_text_sniper_color">#2E3041</color>
     <color name="dialog_convert_seekbar_color">#FDAA74</color>
     <color name="colorGraySeekbar">#E0E0E0</color>
+    <color name="colorBlue">#2196F3</color>
 </resources>

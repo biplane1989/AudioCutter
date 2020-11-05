@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.database.ContentObserver
 import android.database.Cursor
 import android.graphics.Bitmap
@@ -18,7 +19,6 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.bumptech.glide.Glide
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.core.manager.ManagerFactory
@@ -204,14 +204,20 @@ object AudioFileManagerImpl : AudioFileManager {
                         }
                         Log.d(TAG, "scanAllFile: start get Audio info data ${data}")
                         try {
-                            duration = getInfoAudioFile(
-                                File(data),
-                                MediaMetadataRetriever.METADATA_KEY_DURATION
-                            )!!.toInt().toLong()
-                            bitrate = getInfoAudioFile(
-                                File(data),
-                                MediaMetadataRetriever.METADATA_KEY_BITRATE
-                            )!!.toInt()
+                            Log.d(TAG, "testQueryDuration - start")
+//                            duration = getInfoAudioFile(
+//                                File(data),
+//                                MediaMetadataRetriever.METADATA_KEY_DURATION
+//                            )!!.toInt().toLong()
+//                            Log.d(TAG, "testQueryDuration - end")
+//                            Log.d(TAG, "testQueryBitrate - start")
+//                            bitrate = getInfoAudioFile(
+//                                File(data),
+//                                MediaMetadataRetriever.METADATA_KEY_BITRATE
+//                            )!!.toInt()
+                            bitrate = audioInfo?.bitRate ?: BitRate._128kb.value
+                            duration = audioInfo?.duration ?: 0
+                            Log.d(TAG, "testQueryBitrate - end")
                         } catch (e: Exception) {
 
                             bitrate = audioInfo?.bitRate ?: BitRate._128kb.value
@@ -425,7 +431,6 @@ object AudioFileManagerImpl : AudioFileManager {
         var mimeType = ""
         val abSolutePath = fileAudio.absolutePath.toString()
         val audioInfo = ManagerFactory.getAudioCutter().getAudioInfo(filePath)
-
 
         val uri = getUriByPath(fileAudio)
         val duration = audioInfo!!.duration
@@ -649,7 +654,7 @@ object AudioFileManagerImpl : AudioFileManager {
         }
     }
 
-    private fun getUriByPath(itemFile: File): Uri? {
+    override fun getUriByPath(itemFile: File): Uri? {
 
         val folder = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DATA)
@@ -671,6 +676,20 @@ object AudioFileManagerImpl : AudioFileManager {
             return uri
         } finally {
             cursor.close()
+        }
+    }
+
+    override fun shareFileAudio(audioFile: AudioFile): Boolean {
+        return try {
+            val intent = Intent()
+            intent.action = Intent.ACTION_SEND
+            intent.putExtra(Intent.EXTRA_STREAM, audioFile.uri)
+            intent.type = "audio/*"
+            mContext.startActivity(Intent.createChooser(intent, "choose a sharing app"))
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
     }
 

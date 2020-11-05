@@ -1,6 +1,7 @@
 package com.example.audiocutter.core.manager
 
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.audioManager.StateFile
@@ -19,8 +20,8 @@ interface AudioFileManager {
     fun getDateCreatFile(file: File?): String?
     fun getFolderPath(typeFile: Folder): String
     fun insertFileToMediastore(file: File): Boolean
-
-
+    fun getUriByPath(itemFile: File): Uri?
+    fun shareFileAudio(audioFile: AudioFile): Boolean
     fun genNewAudioFileName(typeFile: Folder): String
     fun createValidFileName(name: String, typeFile: Folder): String
 }

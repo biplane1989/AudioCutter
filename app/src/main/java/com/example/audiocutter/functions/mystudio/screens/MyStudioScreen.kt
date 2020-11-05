@@ -16,14 +16,12 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.channel.FragmentMeta
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MyStudioFragmentBinding
-import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterAdapter
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterScreenCallback
 import com.example.audiocutter.functions.mystudio.dialog.*
-import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
+import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_fragment.*
 
@@ -160,10 +158,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     Log.d(TAG, "showMenu:cut ")
                 }
                 R.id.share -> {
-                    val shareFragment = ShareFragment()
-                    activity?.supportFragmentManager?.let {
-                        shareFragment.show(it, shareFragment.getTag())
-                    }
+                    ManagerFactory.getAudioFileManager().shareFileAudio(audioFile)
                 }
                 R.id.rename -> {
                     val dialog = RenameDialog.newInstance(this, "giang")

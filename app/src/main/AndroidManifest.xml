@@ -37,7 +37,7 @@
         </provider>
 
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.acttest.testnm.TestAct"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

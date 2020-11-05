@@ -21,7 +21,7 @@ object ManagerFactory {
     fun init(appContext: Context) {
         defaultAudioPlayer.init(appContext)
 //        audioPlayer.init(appContext)
-        AudioFileManagerImpl.init(appContext)
+       AudioFileManagerImpl.init(appContext)
         ContactManagerImpl.init(appContext)
         RingtonManagerImpl.init(appContext)
 //        AudioPlayerImpl().init(appContext)

@@ -19,7 +19,6 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.ResultScreenBinding
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.objects.AudioFile
-import java.lang.StringBuilder
 import java.text.SimpleDateFormat
 
 
@@ -229,7 +228,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
                 }
             }
             binding.llShare -> {
-
+                mResultViewModel.share()
             }
             binding.llContact -> {
 
