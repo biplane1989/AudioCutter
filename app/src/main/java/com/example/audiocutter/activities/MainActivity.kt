@@ -2,19 +2,20 @@ package com.example.audiocutter.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.Log
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateMutable
+import androidx.navigation.fragment.NavHostFragment
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateScreen
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
+import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.databinding.ActivityMainBinding
 import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.functions.mystudio.screens.MyStudioScreen
+import com.example.audiocutter.functions.mystudio.screens.FragmentMeta
+import com.example.audiocutter.functions.mystudio.screens.IMyStudioActivity
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), IMyStudioActivity {
     lateinit var binding: ActivityMainBinding
     override fun onPostCreate() {
         super.onPostCreate()
@@ -40,6 +41,25 @@ class MainActivity : BaseActivity() {
                 if (typeAudio != -1) {
                     viewStateManager.goToMyStudioScreen(findNavController(R.id.app_nav_host_fragment), typeAudio)
                 }
+            }
+        }
+    }
+
+    override fun sendAction(fragmentMeta: FragmentMeta) {
+
+        supportFragmentManager.fragments.forEach {
+            sendAction(it, fragmentMeta)
+
+        }
+    }
+
+    private fun sendAction(fragment: Fragment, fragmentMeta: FragmentMeta) {
+        if(fragment is BaseFragment){
+            fragment.onReceivedAction(fragmentMeta)
+        }
+        fragment.childFragmentManager.fragments.forEach {
+            if (it != fragment) {
+                sendAction(it, fragmentMeta)
             }
         }
     }

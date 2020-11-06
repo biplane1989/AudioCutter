@@ -8,7 +8,6 @@ import kotlinx.android.synthetic.main.my_studio_dialog_delete.*
 
 class DeleteDialog : BaseDialog() {
 
-
     companion object {
         val TAG = "DeleteDialog"
         val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"

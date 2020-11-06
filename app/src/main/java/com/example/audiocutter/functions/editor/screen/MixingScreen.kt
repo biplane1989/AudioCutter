@@ -19,6 +19,9 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.MixingScreenBinding
+import com.example.audiocutter.functions.editor.dialogs.FileNameDialog
+import com.example.audiocutter.functions.editor.dialogs.FileNameDialogListener
+import com.example.audiocutter.functions.mystudio.dialog.CancelDialog
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.ui.audiochooser.mix.ChangeRangeView
 import com.example.audiocutter.util.Utils
@@ -26,7 +29,7 @@ import com.example.core.core.AudioFormat
 import com.example.core.core.AudioMixConfig
 import com.example.core.core.MixSelector
 
-class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPlayLineChange {
+class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPlayLineChange, FileNameDialogListener {
     private var isCheckClick: Int = 2
     private val mPlayer1 = ManagerFactory.newAudioPlayer()
     private val mPlayer2 = ManagerFactory.newAudioPlayer()
@@ -39,6 +42,8 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     private lateinit var audioFile1: AudioFile
     private lateinit var audioFile2: AudioFile
     private var isCompare = false
+    private var dialog: FileNameDialog? = null
+    private var isDeleteClicked = true
 
     private val safeArg: MixingScreenArgs by navArgs()
 
@@ -101,8 +106,6 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
             .getInfoAudioFile(audioFile2.file, MediaMetadataRetriever.METADATA_KEY_DURATION)!!
         listData.add(audioFile1)
         listData.add(audioFile2)
-
-
 
 
         binding.crChangeViewMixing.setFileAudio(audioFile1, audioFile2)
@@ -179,12 +182,11 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 showToast("back frg")
             }
             binding.ivDoneMixing -> {
-                val mixingConfig = AudioMixConfig("mixing", ManagerFactory.getAudioFileManager()
-                    .getFolderPath(Folder.TYPE_MIXER), MixSelector.LONGEST, 100, 100, AudioFormat.MP3)
-
-
-
-                viewStateManager.editorSaveMixingAudio(this, audioFile1, audioFile2, mixingConfig)
+                if (isDeleteClicked) {
+                    val dialog = FileNameDialog.newInstance(this)
+                    dialog.show(childFragmentManager, CancelDialog.TAG)
+                    isDeleteClicked = false
+                }
             }
         }
     }
@@ -259,5 +261,16 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     override fun endAudioBecauseMaxdistance() {
         mPlayer2.stop()
         mPlayer1.stop()
+    }
+
+    override fun onMixClick(fileName: String) {
+        val mixingConfig = AudioMixConfig(fileName, ManagerFactory.getAudioFileManager()
+            .getFolderPath(Folder.TYPE_MIXER), MixSelector.LONGEST, 100, 100, AudioFormat.MP3)
+        viewStateManager.editorSaveMixingAudio(this, audioFile1, audioFile2, mixingConfig)
+        isDeleteClicked = true
+    }
+
+    override fun onCancel() {
+        isDeleteClicked = true
     }
 }

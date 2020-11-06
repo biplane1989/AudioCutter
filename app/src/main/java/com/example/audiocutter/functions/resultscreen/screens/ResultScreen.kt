@@ -1,12 +1,15 @@
 package com.example.audiocutter.functions.resultscreen.screens
 
+import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -19,10 +22,8 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.ResultScreenBinding
 import com.example.audiocutter.functions.mystudio.dialog.CancelDialog
 import com.example.audiocutter.functions.mystudio.dialog.CancelDialogListener
-import com.example.audiocutter.functions.mystudio.dialog.DeleteDialog
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.objects.AudioFile
-import java.lang.StringBuilder
 import java.text.SimpleDateFormat
 
 
@@ -251,7 +252,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener 
         }
     }
 
-    override fun onCancelDeleteClick(id: Int) {
+    override fun onCancelDeleteClick(id: Int) {             // interface delete dialog
         ManagerFactory.getAudioEditorManager().cancel(id)
         isDoubleDeleteClicked = true
         requireActivity().onBackPressed()
@@ -260,5 +261,23 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener 
     override fun onCancelDialog() {
         isDoubleDeleteClicked = true
     }
+
+//    override fun onAttach(context: Context) {           // xu ly back button
+//        super.onAttach(context)
+//        val callback: OnBackPressedCallback = object : OnBackPressedCallback(true // default to enabled
+//        ) {
+//            override fun handleOnBackPressed() {
+//                if (isDoubleDeleteClicked) {
+//                    ManagerFactory.getAudioEditorManager().getLatestConvertingItem()?.let {
+//                        dialog = CancelDialog.newInstance(this@ResultScreen, it.id)
+//                        dialog?.show(childFragmentManager, CancelDialog.TAG)
+//                        isDoubleDeleteClicked = false
+//                    }
+//                }
+//            }
+//        }
+//        requireActivity().onBackPressedDispatcher.addCallback(this,  // LifecycleOwner
+//            callback)
+//    }
 
 }

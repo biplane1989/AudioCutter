@@ -11,13 +11,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.navArgs
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.base.channel.FragmentMeta
 import com.example.audiocutter.databinding.MyStudioScreenBinding
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.adapters.MyStudioViewPagerAdapter
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialog
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialogListener
-import com.example.audiocutter.functions.resultscreen.screens.ResultScreenArgs
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.my_studio_screen.*
 
@@ -39,7 +37,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val myStudioAdapter = MyStudioViewPagerAdapter(requireActivity().supportFragmentManager)
+        val myStudioAdapter = MyStudioViewPagerAdapter(childFragmentManager)
         view_pager.adapter = myStudioAdapter
 
         tab_layout.setupWithViewPager(view_pager)
@@ -112,7 +110,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     // nhận data từ fragment truyền sang
     override fun onReceivedAction(fragmentMeta: FragmentMeta) {
         when (fragmentMeta.action) {
-            Constance.ACTION_CHECK_DELETE -> {  // nếu ko có item nào được chọn thì sẽ không hiển thị dialog delete
+            Constance.ACTION_DELETE -> {  // nếu ko có item nào được chọn thì sẽ không hiển thị dialog delete
                 if ((fragmentMeta.data as Boolean)) {
                     if (isDeleteClicked) {
                         val dialog = DeleteDialog.newInstance(this)

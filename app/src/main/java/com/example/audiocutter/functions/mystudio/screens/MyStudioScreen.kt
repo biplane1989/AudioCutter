@@ -8,13 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.base.channel.FragmentMeta
 import com.example.audiocutter.databinding.MyStudioFragmentBinding
 import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.Constance
@@ -71,7 +69,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     companion object {
-        val TAG = "FragmentMyStudio"
+//        val TAG = "FragmentMyStudio"
         val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
 
         @JvmStatic
@@ -83,12 +81,12 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             return MyStudio
         }
 
-        @JvmStatic
-        fun buildArgs(typeAudio: Int): Bundle {
-            val bundle = Bundle()
-            bundle.putInt(BUNDLE_NAME_KEY, typeAudio)
-            return bundle
-        }
+//        @JvmStatic
+//        fun buildArgs(typeAudio: Int): Bundle {
+//            val bundle = Bundle()
+//            bundle.putInt(BUNDLE_NAME_KEY, typeAudio)
+//            return bundle
+//        }
     }
 
     fun init() {
@@ -104,7 +102,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         myStudioViewModel.init(typeAudio)
 
 //        runOnUI {
-        myStudioViewModel.getListAudioFile().observe(this as LifecycleOwner, listAudioObserver)
+//        myStudioViewModel.getListAudioFile().observe(this as LifecycleOwner, listAudioObserver)
 //        }
         Log.d(TAG, "onPostCreate: override myStudio")
     }
@@ -112,7 +110,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_fragment, container, false)
         runOnUI {
-//            myStudioViewModel.getListAudioFile().observe(viewLifecycleOwner, listAudioObserver)
+            myStudioViewModel.getListAudioFile().observe(viewLifecycleOwner, listAudioObserver)
 
             myStudioViewModel.getLoadingStatus().observe(viewLifecycleOwner, loadingStatusObserver)
 
@@ -204,6 +202,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     private fun checkAllItemSelected() {
+        Log.d(TAG, "override checkAllItemSelected: ")
         if (myStudioViewModel.isAllChecked()) {
             iv_check.setImageResource(R.drawable.my_studio_screen_icon_checked)
         } else {
@@ -287,6 +286,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         }
         when (fragmentMeta.action) {
             Constance.ACTION_UNCHECK -> { // trang thai isdelete
+                Log.d(TAG, "override onReceivedAction: ACTION_UNCHECK")
                 myStudioViewModel.changeAutoItemToDelete()
                 if (myStudioViewModel.isAllChecked()) { // nếu không còn data thì sẽ ko hiện checkall
                     cl_delete_all.visibility = View.GONE
@@ -319,9 +319,9 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             }
             Constance.ACTION_CHECK_DELETE -> {
                 if (!myStudioViewModel.isChecked()) {
-                    sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_CHECK_DELETE, false)
+                    sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_DELETE, false)
                 } else {
-                    sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_CHECK_DELETE, true)
+                    sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_DELETE, true)
                 }
             }
         }
@@ -344,5 +344,10 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     override fun onPostDestroy() {
         super.onPostDestroy()
         Log.d(TAG, "override onPostDestroy: myStudio")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.d(TAG, "override onDetach: myStudio")
     }
 }

@@ -53,10 +53,15 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     var loadingDone: MutableLiveData<Boolean> = MutableLiveData()
 
     init {
+        isDeleteStatus = false
+        isCheckAllStatus = false
         audioPlayer.init(application.applicationContext)
     }
 
     fun init(typeAudio: Int) {
+
+        isDeleteStatus = false
+        isCheckAllStatus = false
 
         var listScaners: LiveData<AudioFileScans> = MutableLiveData()
         when (typeAudio) {
@@ -162,8 +167,9 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 if (!isDoubleDisplay(item.audioFile.file.absolutePath.toString())) {
                     mListAudio.add(item)
                 }
+
+                Log.d(TAG, "override mergeList: isDeleteStatus : " + isDeleteStatus + " isCheckAllStatus : " + isCheckAllStatus)
             }
-            Log.d(TAG, "mergeList: mListAudioFileScans " + mListAudioFileScans.size)
         }
     }
 
@@ -171,7 +177,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         for (item in mListFileLoading) {
             Log.d("002", " filepath $filePath")
             Log.d("002", " item  ${item.audioFile.file.absolutePath + ".mp3"}")
-            if (TextUtils.equals(item.audioFile.file.absolutePath.toString() + item.audioFile.fileName + ".mp3", filePath)) {
+            if (TextUtils.equals(item.audioFile.file.absolutePath.toString() + item.audioFile.fileName + ".mp3", filePath)) {       // TODO lỗi .mp3
                 return true
             }
         }
@@ -247,6 +253,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         }
         // update trang thai isDelete
         isDeleteStatus = true
+
+        Log.d(TAG, "override changeAutoItemToDelete: isDeleteStatus: " + isDeleteStatus)
         mListAudio = copy
         mAudioMediatorLiveData.postValue(mListAudio)
     }
@@ -267,6 +275,17 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         return mListAudio
     }
 
+    private fun isCheckAllUpdateData(): Boolean {  // khi loading xong item kiem tra xem co o trang thai check all hay khong
+        var index = 0
+        while (mListAudioFileScans.size > index) {
+            if (mListAudioFileScans.get(index).itemLoadStatus.deleteState == DeleteState.UNCHECK) {
+                return false
+            }
+            index++
+        }
+        return true
+    }
+
     // check trạng thái có phải check all status ko
     fun isAllChecked(): Boolean {
         mListAudio.forEach {
@@ -276,6 +295,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             }
         }
         isCheckAllStatus = true
+
+        Log.d(TAG, " override isAllChecked: isCheckAllStatus " + isCheckAllStatus)
         return true
     }
 
@@ -461,7 +482,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             mListAudio[index] = newItem
             index++
         }
-
         audioPlayer.stop()
     }
 
@@ -471,8 +491,10 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     override fun onCleared() {
         super.onCleared()
-        isDeleteStatus = false
-        isCheckAllStatus = false
+//        isDeleteStatus = false
+//        isCheckAllStatus = false
+        Log.d(TAG, "override onCleared: isDeleteStatus : " + isDeleteStatus)
+
         audioPlayer.stop()
     }
 
