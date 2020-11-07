@@ -15,6 +15,7 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.objects.AudioFile
+import com.example.core.core.AudioCutter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.act_test.*
 import java.io.File
@@ -98,7 +99,7 @@ class TestAct : BaseActivity() {
 
             }
             bottomSheetBehavior.addBottomSheetCallback(mCallBack)
-
+//shareFileAudio()
 
         }
 
@@ -167,6 +168,16 @@ class TestAct : BaseActivity() {
             DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
 
         dialog.show()
+    }
+
+    fun shareFileAudio(){
+        val audio = ManagerFactory.getAudioFileManager().buildAudioFile("/storage/emulated/0/AudioCutter/merger/vhkllllkj.mp3")
+        val intent = Intent()
+        intent.putExtra(Intent.EXTRA_STREAM,audio.uri)
+       intent.type = "audio/*"
+        intent.action = Intent.ACTION_SEND
+        startActivity(Intent.createChooser(intent,"share app to intent"))
+
     }
 
 
