@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener 
     }
 
     private var isDoubleDeleteClicked = true
+    private var isLoadingDone = false
     private val safeArg: ResultScreenArgs by navArgs()
     private val TAG = "giangtd"
     private lateinit var binding: ResultScreenBinding
@@ -54,6 +56,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener 
         binding.tvTitleResult.visibility = View.VISIBLE
         binding.tvTitleLoading.visibility = View.GONE
 
+        isLoadingDone = true
         it?.let {
             binding.tvTitleMusic.text = it.fileName
             binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
@@ -76,6 +79,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener 
         binding.ivHome.visibility = View.INVISIBLE
         binding.btnCancel.visibility = View.VISIBLE
 
+        isLoadingDone = false
+
     }
     val processingObserver = Observer<ConvertingItem> {     // observer trang thai processing
 
@@ -92,6 +97,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener 
         binding.tvLoading.text = it.percent.toString() + "%"
         binding.tvTitleMusic.text = it.getFileName()
         binding.tvInfoMusic.text = it.bitRate.toString() + "kb/s"
+
+        isLoadingDone = false
     }
 
     private fun convertAudioSizeToString(audioFile: AudioFile): String {
@@ -262,22 +269,26 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener 
         isDoubleDeleteClicked = true
     }
 
-//    override fun onAttach(context: Context) {           // xu ly back button
-//        super.onAttach(context)
-//        val callback: OnBackPressedCallback = object : OnBackPressedCallback(true // default to enabled
-//        ) {
-//            override fun handleOnBackPressed() {
-//                if (isDoubleDeleteClicked) {
-//                    ManagerFactory.getAudioEditorManager().getLatestConvertingItem()?.let {
-//                        dialog = CancelDialog.newInstance(this@ResultScreen, it.id)
-//                        dialog?.show(childFragmentManager, CancelDialog.TAG)
-//                        isDoubleDeleteClicked = false
-//                    }
-//                }
-//            }
-//        }
-//        requireActivity().onBackPressedDispatcher.addCallback(this,  // LifecycleOwner
-//            callback)
-//    }
-
+    override fun onResume() {       // xu ly back button
+        super.onResume()
+        requireView().isFocusableInTouchMode = true
+        requireView().requestFocus()
+        requireView().setOnKeyListener { v, keyCode, event ->
+            if (event.action === KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                if (!isLoadingDone) {
+                    if (isDoubleDeleteClicked) {
+                        ManagerFactory.getAudioEditorManager().getLatestConvertingItem()?.let {
+                            dialog = CancelDialog.newInstance(this@ResultScreen, it.id)
+                            dialog?.show(childFragmentManager, CancelDialog.TAG)
+                            isDoubleDeleteClicked = false
+                        }
+                    }
+                }else{
+                    requireActivity().onBackPressed()
+                }
+                // handle back button
+                true
+            } else false
+        }
+    }
 }

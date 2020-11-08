@@ -37,11 +37,7 @@ object Utils {
 
     @JvmStatic
     fun spToPx(context: Context, sp: Float): Float {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_SP,
-            sp,
-            context.resources.displayMetrics
-        )
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.resources.displayMetrics)
     }
 
     @JvmStatic
@@ -72,8 +68,7 @@ object Utils {
 
     fun getWidthText(str: String = "00:00:00", context: Context): Float {
         val paint = Paint()
-        paint.textSize =
-            spToPx(context, 12f)
+        paint.textSize = spToPx(context, 12f)
         val result = Rect()
         paint.getTextBounds(str, 0, str.length, result)
         return result.width().toFloat()
@@ -115,13 +110,7 @@ object Utils {
     fun getPathByUri(context: Context, uri: String): String? {
         var audioTitle = ""
         val proj = arrayOf(MediaStore.Audio.Media.DATA)
-        var audioCursor: Cursor? = context.contentResolver.query(
-            Uri.parse(uri),
-            proj,
-            null,
-            null,
-            null
-        )
+        var audioCursor: Cursor? = context.contentResolver.query(Uri.parse(uri), proj, null, null, null)
         try {
             if (audioCursor != null) {
                 if (audioCursor.moveToFirst()) {
@@ -138,10 +127,7 @@ object Utils {
     fun getUriRingtoneDefault(context: Context): String? {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
             if (RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE) != null) {
-                return RingtoneManager.getActualDefaultRingtoneUri(
-                    context.applicationContext,
-                    RingtoneManager.TYPE_RINGTONE
-                )
+                return RingtoneManager.getActualDefaultRingtoneUri(context.applicationContext, RingtoneManager.TYPE_RINGTONE)
                     .toString()
             }
         } else {
@@ -157,11 +143,7 @@ object Utils {
     fun getImageCover(context: Context, path: String?): Bitmap? {
         try {
             if (path != null) {
-                val bitmap = MediaStore.Images.Media.getBitmap(
-                    context.contentResolver, Uri.parse(
-                        path
-                    )
-                )
+                val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, Uri.parse(path))
                 return bitmap
             }
         } catch (e: Exception) {
@@ -188,13 +170,7 @@ object Utils {
         return null
     }
 
-    fun convertValue(
-        min1: Double,
-        max1: Double,
-        min2: Double,
-        max2: Double,
-        value: Double
-    ): Double {
+    fun convertValue(min1: Double, max1: Double, min2: Double, max2: Double, value: Double): Double {
         return ((value - min1) * ((max2 - min2) / (max1 - min1)) + min2)
     }
 
@@ -207,11 +183,7 @@ object Utils {
 
 
     fun convertDp2Px(dip: Int, context: Context): Float {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dip.toFloat(),
-            context.resources.displayMetrics
-        )
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip.toFloat(), context.resources.displayMetrics)
     }
 
     //test

@@ -151,12 +151,10 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 PlayerState.IDLE -> {
                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
                     tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
-//                    tvTotal.text = Constance.TIME_TOTAL_DEFAULT
                     sbMusic.progress = 0
                 }
             }
 
-//            tvTotal.text = "/" + simpleDateFormat.format(selectItemView.selectItemStatus.duration)
 
             sbMusic.max = selectItemView.selectItemStatus.duration
             tvTimeLife.text = simpleDateFormat.format(selectItemView.selectItemStatus.currPos)
