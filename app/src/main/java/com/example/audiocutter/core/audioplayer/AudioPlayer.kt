@@ -13,7 +13,7 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.coroutines.*
 
-class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
+class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     val TAG = AudioPlayerImpl::class.java.name
 
 
@@ -71,6 +71,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
     override suspend fun play(audioFile: AudioFile): Boolean {
         try {
+            Log.d("1010", "playNormal: playaudioFile ${audioFile.fileName}")
             withContext(Dispatchers.IO) {
                 stop()
                 if (playInfoData.playerState != PlayerState.IDLE) {
@@ -196,6 +197,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     }
 
     override fun setVolume(volume: Float) {
+        Log.d("1010", "setVolume: $volume")
         mPlayer.setVolume(volume, volume)
         playInfoData.volume = volume
 

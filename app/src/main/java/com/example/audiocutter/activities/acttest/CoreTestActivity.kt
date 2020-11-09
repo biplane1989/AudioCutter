@@ -38,7 +38,7 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
     override fun createView(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_core_test)
         file = File(PATH_FOLDER)
-        var file1 = File(path.plus("/Tướng Quân.flac"))
+        var file1 = File(path.plus("/test7 - Copy.aac"))
         var file2 = File(path.plus("/sample1.aac"))
         var file3 = File(path.plus("/file_example_WAV_1MG.wav"))
         var file4 = File(path.plus("/WeDon.m4a"))
@@ -65,6 +65,13 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
         listAudio.add(item2)
         listAudio.add(item3)
         listAudio.add(item4)
+
+        runOnUI {
+            var a = System.currentTimeMillis()
+            Log.e(TAG, "createView: " )
+            val audioMergingInfo = audioCutterImpl.getAudioInfo(listAudio[1].file.absolutePath)
+            Log.e(TAG, "createView: ${audioMergingInfo}" )
+        }
 
     }
 

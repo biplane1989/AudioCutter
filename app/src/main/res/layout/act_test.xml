@@ -6,6 +6,11 @@
     android:id="@+id/ln_main"
     android:orientation="vertical">
 
+    <Button
+        android:id="@+id/bt_start"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:text="start" />
 
 
 </LinearLayout>
