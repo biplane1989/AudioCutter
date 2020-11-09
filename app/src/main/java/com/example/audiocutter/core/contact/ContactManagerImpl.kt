@@ -9,90 +9,121 @@ import android.os.Build
 import android.os.Handler
 import android.provider.ContactsContract
 import android.text.TextUtils
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.ContactManager
 import com.example.audiocutter.functions.contacts.objects.GetContactResult
 import com.example.audiocutter.objects.ContactItem
 import com.example.audiocutter.util.Utils
 import kotlinx.coroutines.*
 
-object ContactManagerImpl : ContactManager {
+class ContactManagerImpl(val appContext: Context) : ContactManager {
+    enum class ScanningState {                  // cac trang thai de xu ly khi dang loading ma nguoi dung nhan back
+        IDLE, RUNNING, WAITING_FOR_CANCELING
+    }
 
     private val contactLiveData = MutableLiveData<GetContactResult>()
 
-    val TAG = "giangtd"
-    lateinit var mContext: Context
-    private var initialized = false
-    var oldRingtoneDefault = ""
-    val contactObserver = ContactObserver(Handler())
-    val mainScope = MainScope()
+    private val TAG = "giangtd"
 
-    fun init(context: Context) {
-        mContext = context
-    }
-
-    suspend fun scanContact(): List<ContactItem> = withContext(Dispatchers.IO) {
-        val newListContact: ArrayList<ContactItem> = ArrayList()
-
-        val projecttion = arrayOf(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Phone.PHOTO_URI, ContactsContract.CommonDataKinds.Phone.CUSTOM_RINGTONE)
-        val cursor: Cursor = mContext.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projecttion, null, null, null)!!
-        val nameIndex = cursor.getColumnIndex(projecttion[0])
-        val numberIndex = cursor.getColumnIndex(projecttion[1])
-        val photoIndex = cursor.getColumnIndex(projecttion[2])
-        val ringtoneIndex = cursor.getColumnIndex(projecttion[3])
-        try {
-            val defaultRingtone = getUriRingtoneDefault(mContext)
-            defaultRingtone?.let {
-                if (cursor.moveToFirst()) {
-                    do {
-                        val name = cursor.getString(nameIndex)
-                        val number = cursor.getString(numberIndex)
-                        val photoUri = cursor.getString(photoIndex)
-                        val ringtone = cursor.getString(ringtoneIndex)
+    private var oldRingtoneDefault = ""
+    private val contactObserver = ContactObserver(Handler())
+    private val backgroundScope = CoroutineScope(Dispatchers.Default)
+    private var scanningState = ScanningState.IDLE
 
 
-                        if (TextUtils.equals(oldRingtoneDefault, defaultRingtone)) {
-                            if (ringtone != null) {
-                                if (TextUtils.equals(ringtone, defaultRingtone)) {
-                                    newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true, Utils.getNameByUri(mContext, defaultRingtone)))
-                                } else {
-                                    newListContact.add(ContactItem(name, number, photoUri, ringtone, false,Utils.getNameByUri(mContext, ringtone)))
-                                }
-                            } else {
-                                newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true, Utils.getNameByUri(mContext, defaultRingtone)))
-                            }
-                        } else {
-                            if (ringtone != null) {
-                                if (TextUtils.equals(ringtone, oldRingtoneDefault)) {
-                                    newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true, Utils.getNameByUri(mContext, defaultRingtone)))
-                                    // set nhac chuong
-                                } else {
-                                    if (TextUtils.equals(ringtone, defaultRingtone)) {
-                                        newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true,Utils.getNameByUri(mContext, defaultRingtone)))
-                                    } else {
-                                        newListContact.add(ContactItem(name, number, photoUri, ringtone, false,Utils.getNameByUri(mContext, ringtone)))
-                                    }
-                                }
-                            } else {
-                                newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true,Utils.getNameByUri(mContext, defaultRingtone)))
-                            }
-                        }
-                    } while (cursor.moveToNext())
-                }
-                oldRingtoneDefault = defaultRingtone
-            }
-
-        } finally {
-            if (!cursor.isClosed) cursor.close()
+    override fun scanContact() {
+        if (scanningState == ScanningState.WAITING_FOR_CANCELING) {
+            return
         }
-        newListContact
+        backgroundScope.launch {
+            if (scanningState == ScanningState.RUNNING) {
+                scanningState = ScanningState.WAITING_FOR_CANCELING
+                while (scanningState == ScanningState.WAITING_FOR_CANCELING) {
+                    delay(100)
+                }
+            }
+            scanningState = ScanningState.RUNNING
+
+            contactLiveData.postValue(GetContactResult(false))
+
+            val newListContact: ArrayList<ContactItem> = ArrayList()
+            val projecttion = arrayOf(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Phone.PHOTO_URI, ContactsContract.CommonDataKinds.Phone.CUSTOM_RINGTONE)
+            val cursor: Cursor = appContext.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projecttion, null, null, null)!!
+            val nameIndex = cursor.getColumnIndex(projecttion[0])
+            val numberIndex = cursor.getColumnIndex(projecttion[1])
+            val photoIndex = cursor.getColumnIndex(projecttion[2])
+            val ringtoneIndex = cursor.getColumnIndex(projecttion[3])
+            try {
+                val defaultRingtone = getUriRingtoneDefault(appContext)
+                defaultRingtone?.let {
+                    if (cursor.moveToFirst()) {
+                        do {
+//                            delay(1000)
+                            if (!isActive || scanningState == ScanningState.WAITING_FOR_CANCELING) {
+                                break
+                            }
+                            val name = cursor.getString(nameIndex)
+                            val number = cursor.getString(numberIndex)
+                            val photoUri = cursor.getString(photoIndex)
+                            val ringtone = cursor.getString(ringtoneIndex)
+
+                            var isRingtoneDefault = true
+                            var ringtoneFilePath = ""
+
+                            // TODO("optimize code")
+                            if (TextUtils.equals(oldRingtoneDefault, defaultRingtone)) {
+                                if (ringtone != null) {
+                                    if (TextUtils.equals(ringtone, defaultRingtone)) {
+                                        isRingtoneDefault = true
+                                        ringtoneFilePath = defaultRingtone
+                                    } else {
+                                        isRingtoneDefault = false
+                                        ringtoneFilePath = ringtone
+                                    }
+                                } else {
+                                    isRingtoneDefault = true
+                                    ringtoneFilePath = defaultRingtone
+                                }
+                            } else {
+                                if (ringtone != null) {
+                                    if (TextUtils.equals(ringtone, oldRingtoneDefault)) {
+                                        isRingtoneDefault = true
+                                        ringtoneFilePath = defaultRingtone
+                                    } else {
+                                        if (TextUtils.equals(ringtone, defaultRingtone)) {
+                                            isRingtoneDefault = true
+                                            ringtoneFilePath = defaultRingtone
+                                        } else {
+                                            isRingtoneDefault = false
+                                            ringtoneFilePath = ringtone
+                                        }
+                                    }
+                                } else {
+                                    isRingtoneDefault = true
+                                    ringtoneFilePath = defaultRingtone
+                                }
+                            }
+                            val contactItem = ContactItem(name, number, photoUri, defaultRingtone, isRingtoneDefault, Utils.getNameByUri(appContext, ringtoneFilePath))
+                            newListContact.add(contactItem)
+                        } while (cursor.moveToNext())
+                    }
+                    oldRingtoneDefault = defaultRingtone
+                }
+
+                if (scanningState == ScanningState.RUNNING) {
+                    contactLiveData.postValue(GetContactResult(true, newListContact))
+                }
+
+            } finally {
+                if (!cursor.isClosed) cursor.close()
+                scanningState = ScanningState.IDLE
+            }
+        }
     }
 
     // lay uri cua ringtone mac dinh
-    fun getUriRingtoneDefault(context: Context): String? {
+    private fun getUriRingtoneDefault(context: Context): String? {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
             return RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE)
                 .toString()
@@ -102,30 +133,31 @@ object ContactManagerImpl : ContactManager {
     }
 
     override fun getListContact(): LiveData<GetContactResult> {
-        CoroutineScope(Dispatchers.Default).launch {
-            val listContact = scanContact()
-            contactLiveData.postValue(GetContactResult(true, listContact))
-        }
-
         return contactLiveData
     }
 
-    class ContactObserver(handler: Handler?) : ContentObserver(handler) {       // nhan event khi thay doi data tu bo nho
+    inner class ContactObserver(handler: Handler?) : ContentObserver(handler) {       // nhan event khi thay doi data tu bo nho
         override fun onChange(selfChange: Boolean, uri: Uri?) {
-            CoroutineScope(Dispatchers.Default).launch {
-                contactLiveData.postValue(GetContactResult(true, scanContact()))
-            }
+            scanContact()
         }
     }
 
     fun registerContentObserVerDeleted() {
-        mContext.contentResolver.registerContentObserver(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, true, contactObserver)
-        mContext.contentResolver.registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, contactObserver)
+        appContext.contentResolver.registerContentObserver(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, true, contactObserver)
+        appContext.contentResolver.registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, contactObserver)
     }
 
     fun unRegisterContentObserve() {
-        mContext.contentResolver.unregisterContentObserver(contactObserver)
+        appContext.contentResolver.unregisterContentObserver(contactObserver)
     }
 
 
+    override fun setup() {
+        registerContentObserVerDeleted()
+    }
+
+    override fun release() {
+        unRegisterContentObserve()
+        backgroundScope.cancel()
+    }
 }

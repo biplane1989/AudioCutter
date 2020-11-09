@@ -1,4 +1,4 @@
-package com.example.audiocutter.core.audioManager
+package com.example.audiocutter.core.audiomanager
 
 import android.annotation.SuppressLint
 import android.content.ContentResolver
@@ -116,15 +116,12 @@ object AudioFileManagerImpl : AudioFileManager {
         var duration: Long
         var bitrate: Int
         if (scanningState == ScanningState.WAITING_FOR_CANCELING) {
-            Log.d("taih", "return WAITING_FOR_CANCELING")
             return
         }
         backgroundScope.launch {
-            Log.d("taih", "ScanningState ${scanningState.name}")
             if (scanningState == ScanningState.RUNNING) {
                 scanningState = ScanningState.WAITING_FOR_CANCELING
                 while (scanningState == ScanningState.WAITING_FOR_CANCELING) {
-                    Log.d("taih", "waiting ")
                     delay(100)
                 }
             }

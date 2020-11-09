@@ -10,13 +10,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.base.BaseAndroidViewModel
-import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.core.audioManager.Folder
+import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.functions.contacts.objects.SelectItemStatus
-import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.ItemLoadStatus
@@ -25,9 +22,8 @@ import com.example.audiocutter.functions.resultscreen.objects.*
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import java.io.File
+import java.util.*
 
 class MyStudioViewModel(application: Application) : BaseAndroidViewModel(application) {
     private val audioPlayer = ManagerFactory.newAudioPlayer()
@@ -528,7 +524,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     fun setRingTone(uri: String): Boolean {
-        uri?.let {
+        uri.let {
             val audioFile = getAudioFileByUri(uri)
             audioFile?.let {
                 return ManagerFactory.getRingtoneManager().setRingTone(audioFile)
@@ -538,7 +534,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     fun setAlarm(uri: String): Boolean {
-        uri?.let {
+        uri.let {
             val audioFile = getAudioFileByUri(uri)
             audioFile?.let {
                 return ManagerFactory.getRingtoneManager().setAlarmManager(audioFile)
@@ -548,7 +544,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     fun setNotification(uri: String): Boolean {
-        uri?.let {
+        uri.let {
             val audioFile = getAudioFileByUri(uri)
             audioFile?.let {
                 return ManagerFactory.getRingtoneManager().setNotificationSound(audioFile)

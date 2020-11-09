@@ -3,8 +3,8 @@ package com.example.audiocutter.core.manager
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
-import com.example.audiocutter.core.audioManager.Folder
-import com.example.audiocutter.core.audioManager.StateFile
+import com.example.audiocutter.core.audiomanager.Folder
+import com.example.audiocutter.core.audiomanager.StateFile
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import java.io.File

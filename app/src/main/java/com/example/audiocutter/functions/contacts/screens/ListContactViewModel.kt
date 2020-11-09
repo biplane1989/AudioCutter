@@ -4,13 +4,12 @@ import android.app.Application
 import android.content.Context
 import android.text.TextUtils
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseAndroidViewModel
-import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.functions.contacts.objects.ContactItemView
-import com.example.audiocutter.functions.contacts.objects.GetContactResult
 import com.example.audiocutter.objects.ContactItem
 import com.example.audiocutter.util.Utils
 import java.util.*
@@ -20,59 +19,50 @@ import kotlin.collections.ArrayList
 class ListContactViewModel(application: Application) : BaseAndroidViewModel(application) {
 
     private val mContext = getApplication<Application>().applicationContext
+    private val contactManager = ManagerFactory.createNewContactManager(mContext)
 
-    val TAG = "giangtd"
-    private var mListContactItemView = ArrayList<ContactItemView>()
+    var loadingStatus: MutableLiveData<Boolean> = MutableLiveData()
+    var isEmptyStatus: MutableLiveData<Boolean> = MutableLiveData()
+    private val listContactItem = MediatorLiveData<List<ContactItemView>>()
+
+    init {
+        contactManager.setup()
+    }
+
+    fun scan() {
+        runOnBackground {
+            contactManager.scanContact()
+        }
+    }
 
     fun getData(): LiveData<List<ContactItemView>> {
-        val listContactItem: LiveData<GetContactResult> = ManagerFactory.getContactManager()
-            .getListContact()
-        return Transformations.map(listContactItem) { contacts ->
-            if (mListContactItemView.size == 0) {
-                val newListContact = ArrayList<ContactItemView>()
-
-                for (item in contacts.listContactItem) {
-                    newListContact.add(ContactItemView("", item, false, getFilenameRingtoneDefault().toLowerCase(Locale.ROOT), Utils.getImageCover(mContext!!, item.thumb)))
-                }
-
-                mListContactItemView = getHeaderListLatter(newListContact)
-            } else {
-                val newListContacItemView = ArrayList<ContactItemView>()
-                for (item in contacts.listContactItem) {
-                    val contactItemView = getContactItemView(item.phoneNumber)
-                    if (contactItemView != null) {
-                        if (item.ringtone != contactItemView.contactItem.ringtone && contactItemView.isHeader == false) {
-                            newListContacItemView.add(ContactItemView("", item, false, getFilenameRingtoneDefault().toLowerCase(Locale.ROOT),Utils.getImageCover(mContext!!, item.thumb)))
-                        } else {
-                            newListContacItemView.add(contactItemView)
-                        }
-                    } else {
-                        newListContacItemView.add(ContactItemView("", item, false, getFilenameRingtoneDefault().toLowerCase(Locale.ROOT),Utils.getImageCover(mContext!!, item.thumb)))
+        listContactItem.addSource(contactManager.getListContact()) { contacts ->
+            if (contacts.completed) {
+                loadingStatus.postValue(false)
+                if (contacts.listContactItem.size > 0) {
+                    isEmptyStatus.postValue(false)
+                    val newListContacItemView = ArrayList<ContactItemView>()
+                    for (item in contacts.listContactItem) {
+                        newListContacItemView.add(ContactItemView("", item, false))
                     }
+                    listContactItem.postValue(getHeaderListLatter(newListContacItemView))
+                } else {
+                    isEmptyStatus.postValue(true)
                 }
 
-                mListContactItemView.clear()
-                mListContactItemView = getHeaderListLatter(newListContacItemView)
-            }
-            mListContactItemView
-        }
-    }
-
-    // tim ra nhung file con ton tai trong list cu khi co data thay doi
-    private fun getContactItemView(phoneNumber: String): ContactItemView? {
-        mListContactItemView.forEach {
-            if (it.contactItem.phoneNumber.equals(phoneNumber) && it.isHeader == false) {
-                return it
+            } else {
+                loadingStatus.postValue(true)
             }
         }
-        return null
+        return listContactItem
     }
 
-    private fun getFilenameRingtoneDefault(): String {
-        if (Utils.getUriRingtoneDefault(mContext!!) != null) {
-            return Utils.getNameByUri(mContext, Utils.getUriRingtoneDefault(mContext).toString())
-        }
-        return ""
+    fun getLoadingStatus(): LiveData<Boolean> {
+        return loadingStatus
+    }
+
+    fun getIsEmptyStatus(): LiveData<Boolean> {
+        return isEmptyStatus
     }
 
     // tao header cho list contact
@@ -83,26 +73,27 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
         if (contactList.size > 0) {
             for (item in contactList) {     // add them 1 truong headerContact -> conver contactItem.name co dau thanh khong dau
                 newListContact.add(ContactItemView(Utils.covertToString(item.contactItem.name)
-                    .toString(), item.contactItem, false, getFilenameRingtoneDefault().toLowerCase(Locale.ROOT),Utils.getImageCover(mContext!!, item.contactItem.thumb)))
+                    .toString(), item.contactItem, false))
             }
 
-
             Collections.sort(newListContact, Comparator<ContactItemView> { user1, user2 ->  // sap xep list theo headerContact
-                java.lang.String.valueOf(user1.contactHeader.get(0)).toUpperCase()
-                    .compareTo(java.lang.String.valueOf(user2.contactHeader.get(0)).toUpperCase())
+                java.lang.String.valueOf(user1.contactHeader.get(0)).toUpperCase(Locale.ROOT)
+                    .compareTo(java.lang.String.valueOf(user2.contactHeader.get(0))
+                        .toUpperCase(Locale.UK))
             })
 
             val firstContact = newListContact.get(0).contactHeader  // neu co cac ky tu dac biet thi them 1 header = "#"
             if (!firstContact[0].isLetter()) {
-                listContact.add(ContactItemView("#", ContactItem("", "", null, null, false, null), true, null, null))
+                listContact.add(ContactItemView("#", ContactItem("", "", null, null, false, ""), true))
             }
             var lastHeader: String? = ""
             for (contact in newListContact) {           // gom cac contact vao chung 1 header
-                val header: String = contact.contactHeader.get(0).toString().toUpperCase()
+                val header: String = contact.contactHeader.get(0).toString()
+                    .toUpperCase(Locale.ROOT)
                 if (header[0].isLetter()) {
                     if (!TextUtils.equals(lastHeader, header)) {
                         lastHeader = header
-                        listContact.add(ContactItemView(header, contact.contactItem, true, null, null))
+                        listContact.add(ContactItemView(header, contact.contactItem, true))
                     }
                 }
                 listContact.add(contact)
@@ -111,14 +102,19 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
         return listContact
     }
 
-    fun searchContact(data: String): List<ContactItemView> {
-        val newListContact = ArrayList<ContactItemView>()
-        for (contact in mListContactItemView) {
-            if (contact.contactHeader.toUpperCase().contains(data.toUpperCase())) {
-                newListContact.add(contact)
+    fun searchContact(data: String): ArrayList<ContactItemView> {
+        listContactItem.value?.let {
+            val newListContact = ArrayList<ContactItemView>()
+            for (contact in it) {
+                if (contact.contactHeader.toUpperCase(Locale.ROOT)
+                        .contains(data.toUpperCase(Locale.ROOT))) {
+                    newListContact.add(contact)
+                }
             }
+//            listContactItem.postValue(newListContact)
+            return newListContact
         }
-        return newListContact
+        return ArrayList()
     }
 
     // check ringtone contact co phai la ringtone default khong?
@@ -140,5 +136,10 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
             }
         }
         return newListContact
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        contactManager.release()
     }
 }

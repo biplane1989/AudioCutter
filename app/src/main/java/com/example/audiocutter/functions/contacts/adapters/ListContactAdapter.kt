@@ -11,6 +11,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.audiocutter.R
 import com.example.audiocutter.functions.contacts.objects.ContactItemView
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
@@ -80,30 +82,23 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
             } else {
                 val itemViewHolder = holder as ItemViewHolder
                 val newItem = payloads.firstOrNull() as ContactItemView
-//                val contactItem = getItem(position)
 
-//                if (contactItem.contactItem.ringtone != null) {
+                newItem.contactItem.thumb?.let {
+                    Glide.with(mContext!!).load(it)
+                        .transition(DrawableTransitionOptions.withCrossFade()).dontAnimate()
+                        .into(itemViewHolder.ivAvatar)
+                }
+
                 if (!newItem.contactItem.isRingtoneDefault) {
                     itemViewHolder.tvRingtoneDefault.visibility = View.GONE
                     itemViewHolder.cvDefault.visibility = View.GONE
                     itemViewHolder.tvRingtone.visibility = View.VISIBLE
-
-//                    val fileName = Utils.getNameByUri(mContext!!, newItem.contactItem.ringtone!!)   // get name song by uri    | sua contactItem = newItem
-//                    itemViewHolder.tvRingtone.text = fileName.toLowerCase(Locale.ROOT)
-                    itemViewHolder.tvRingtone.text = newItem.contactItem.fileNameRingtone?.toLowerCase(Locale.ROOT)  // get name song by uri    | sua contactItem = newItem
-
+                    itemViewHolder.tvRingtone.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)  // get name song by uri    | sua contactItem = newItem
                 } else {
                     itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
                     itemViewHolder.cvDefault.visibility = View.VISIBLE
                     itemViewHolder.tvRingtone.visibility = View.GONE
-
-//                    if (Utils.getUriRingtoneDefault(mContext!!) != null) {
-//                        val fileName = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
-//                            .toString())
-//                        itemViewHolder.tvRingtoneDefault.text = fileName.toLowerCase(Locale.ROOT)
-//                    }
-
-                    itemViewHolder.tvRingtoneDefault.text = newItem.fileNameRingtoneDefault?.toLowerCase(Locale.ROOT)
+                    itemViewHolder.tvRingtoneDefault.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
 
                 }
             }
@@ -122,39 +117,23 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
             val contentItem = getItem(adapterPosition)
             tvName.text = contentItem.contactItem.name
 
-//            val avatar = Utils.getImageCover(mContext!!, contentItem.contactItem.thumb)
-//
-//            if (avatar != null) {
-//                ivAvatar.setImageBitmap(avatar)
-//            }
-
-            contentItem.avatar?.let {
-                ivAvatar.setImageBitmap(contentItem.avatar)
+            contentItem.contactItem.thumb?.let {
+                Glide.with(itemView.context).load(it)
+                    .transition(DrawableTransitionOptions.withCrossFade()).dontAnimate()
+                    .into(ivAvatar)
             }
 
-//            if (contentItem.contactItem.ringtone != null) {
             if (!contentItem.contactItem.isRingtoneDefault) {
 
                 tvRingtoneDefault.visibility = View.GONE
                 cvDefault.visibility = View.GONE
                 tvRingtone.visibility = View.VISIBLE
-
-//                val fileName = Utils.getNameByUri(mContext!!, contentItem.contactItem.ringtone!!)   // get name song by uri
-//                tvRingtone.text = fileName.toLowerCase(Locale.ROOT)
-                tvRingtone.text = contentItem.contactItem.fileNameRingtone?.toLowerCase(Locale.ROOT)
+                tvRingtone.text = contentItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
             } else {
                 tvRingtoneDefault.visibility = View.VISIBLE
                 cvDefault.visibility = View.VISIBLE
                 tvRingtone.visibility = View.GONE
-
-//                if (Utils.getUriRingtoneDefault(mContext!!) != null) {
-//                    val fileName = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
-//                        .toString())
-//
-//                    tvRingtoneDefault.text = fileName.toLowerCase(Locale.ROOT)
-//                }
-
-                tvRingtoneDefault.text = contentItem.fileNameRingtoneDefault?.toLowerCase(Locale.ROOT)
+                tvRingtoneDefault.text = contentItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
             }
 
             clItemContact.setOnClickListener(this)
@@ -163,16 +142,8 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
         override fun onClick(view: View?) {
             when (view?.id) {
                 R.id.cl_item_contact -> {
-//                    val fileName: String
-//                    if (getItem(adapterPosition).contactItem.ringtone != null) {
-//                        fileName = Utils.getNameByUri(mContext!!, getItem(adapterPosition).contactItem.ringtone!!)
-//                    } else {
-//                        fileName = Utils.getNameByUri(mContext!!, Utils.getUriRingtoneDefault(mContext!!)
-//                            .toString())
-//                    }
-
                     val contactItemView = getItem(adapterPosition)
-                    contactItemView.contactItem.fileNameRingtone?.let {
+                    contactItemView.contactItem.fileNameRingtone.let {
                         contactCallback.itemOnClick(contactItemView.contactItem.phoneNumber, it)
                     }
                 }

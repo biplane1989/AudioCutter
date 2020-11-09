@@ -1,4 +1,4 @@
-package com.example.audiocutter.core.audioManager
+package com.example.audiocutter.core.audiomanager
 
 enum class Folder(type: String) {
     TYPE_CUTTER("cutter"),

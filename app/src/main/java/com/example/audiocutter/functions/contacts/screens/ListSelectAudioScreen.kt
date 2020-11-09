@@ -46,28 +46,55 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
         Log.d(TAG, "list audio size : " + listAudio.size)
         if (listAudio != null) {
-            if (listAudio.isEmpty()) {
-                cl_select.visibility = View.GONE
-                cl_bottom.visibility = View.GONE
-                cl_no_audio.visibility = View.VISIBLE
-            } else {
-                runOnUI {
-                    pb_select.visibility = View.GONE
-                    cl_select.visibility = View.VISIBLE
-                    cl_bottom.visibility = View.VISIBLE
-                    cl_no_audio.visibility = View.GONE
-                    mListSelectAdapter.submitList(ArrayList(listAudio))
+//            if (listAudio.isEmpty()) {
+//                cl_select.visibility = View.GONE
+//                cl_bottom.visibility = View.GONE
+//                cl_no_audio.visibility = View.VISIBLE
+//            } else {
+//                runOnUI {
+//                    pb_select.visibility = View.GONE
+//                    cl_select.visibility = View.VISIBLE
+//                    cl_bottom.visibility = View.VISIBLE
+//                    cl_no_audio.visibility = View.GONE
+//                    mListSelectAdapter.submitList(ArrayList(listAudio))
+//
+//                    val fileName = safeArg.uri            // tam thoi comment
+//
+//                    mListSelectAdapter.submitList(mListSelectAudioViewModel.setSelectRingtone(fileName))
+//                    rv_list_select_audio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))
+//
+//                }
+//            }
+            mListSelectAdapter.submitList(ArrayList(listAudio))
+            val fileName = safeArg.uri            // tam thoi comment
 
-                    val fileName = safeArg.uri            // tam thoi comment
+            mListSelectAdapter.submitList(mListSelectAudioViewModel.setSelectRingtone(fileName))
+            rv_list_select_audio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))
 
-                    if (fileName != null) {
-                        mListSelectAdapter.submitList(mListSelectAudioViewModel.setSelectRingtone(fileName))
-                        rv_list_select_audio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))
-                    }
-                }
-            }
         } else {
             Log.d(TAG, "audio: is null")
+        }
+    }
+
+    // observer loading status
+    private val loadingStatusObserver = Observer<Boolean> {
+        if (it) {
+            binding.pbSelect.visibility = View.VISIBLE
+        } else {
+            binding.pbSelect.visibility = View.GONE
+        }
+    }
+
+    // observer is empty status
+    private val isEmptyStatusObserver = Observer<Boolean> {
+        if (it) {
+            binding.clSelect.visibility = View.GONE
+            binding.clBottom.visibility = View.GONE
+            binding.clNoAudio.visibility = View.VISIBLE
+        } else {
+            binding.clSelect.visibility = View.VISIBLE
+            binding.clBottom.visibility = View.VISIBLE
+            binding.clNoAudio.visibility = View.GONE
         }
     }
 
@@ -87,25 +114,36 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.list_contact_select_screen, container, false)
-        listSelectAudio?.observe(this.viewLifecycleOwner, listAudioObserver)
+
+//        listSelectAudio?.observe(this.viewLifecycleOwner, listAudioObserver)
+
+        mListSelectAudioViewModel.getData().observe(viewLifecycleOwner, listAudioObserver)
+
+        mListSelectAudioViewModel.getIsEmptyStatus()
+            .observe(viewLifecycleOwner, isEmptyStatusObserver)
+        mListSelectAudioViewModel.getLoadingStatus()
+            .observe(viewLifecycleOwner, loadingStatusObserver)
+
         return binding.root
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
+
         mListSelectAudioViewModel = ViewModelProviders.of(this)
             .get(ListSelectAudioViewModel::class.java)
         mListSelectAdapter = ListSelectAdapter(this)
 
         ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
-        isLoading = true
-        runOnUI {
-            listSelectAudio = mListSelectAudioViewModel.getData() // get data from funtion newIntance
-            listSelectAudio?.observe(this.viewLifecycleOwner, listAudioObserver)
-            isLoading = false
-            currentView?.findViewById<ProgressBar>(R.id.pb_select)?.visibility = View.GONE    // tai day ham onCreateView da chay xong r do runOnUI
 
-        }
+//        isLoading = true
+//        runOnUI {
+//            listSelectAudio = mListSelectAudioViewModel.getData() // get data from funtion newIntance
+//            listSelectAudio?.observe(this.viewLifecycleOwner, listAudioObserver)
+//            isLoading = false
+//            currentView?.findViewById<ProgressBar>(R.id.pb_select)?.visibility = View.GONE    // tai day ham onCreateView da chay xong r do runOnUI
+//
+//        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -119,11 +157,11 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         binding.ivFile.setOnClickListener(this)
         binding.backButton.setOnClickListener(this)
 
-        if (isLoading) {
-            pb_select.visibility = View.VISIBLE
-        } else {
-            pb_select.visibility = View.GONE
-        }
+//        if (isLoading) {
+//            pb_select.visibility = View.VISIBLE
+//        } else {
+//            pb_select.visibility = View.GONE
+//        }
 
         edt_search.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
@@ -228,7 +266,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         }
     }
 
-    //    @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         if (requestCode == REQ_CODE_PICK_SOUNDFILE && resultCode == Activity.RESULT_OK && intent != null) {
 

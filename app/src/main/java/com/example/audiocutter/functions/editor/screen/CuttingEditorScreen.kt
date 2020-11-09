@@ -1,7 +1,6 @@
 package com.example.audiocutter.functions.editor.screen
 
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -15,23 +14,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.core.audioManager.Folder
-import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.CuttingEditorScreenBinding
-import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.functions.editor.dialogs.DialogAdvanced
 import com.example.audiocutter.functions.editor.dialogs.DialogConvert
 import com.example.audiocutter.functions.editor.dialogs.OnDialogAdvanceListener
 import com.example.audiocutter.ui.editor.cutting.WaveformEditView
 import com.example.audiocutter.util.PreferencesHelper
 import com.example.audiocutter.util.Utils
-import com.example.core.core.AudioCore
 import com.example.core.core.AudioCutConfig
-import com.example.core.core.AudioFormat
 import com.example.core.core.Effect
-import java.io.File
 
 class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListener,
     View.OnClickListener, View.OnLongClickListener, OnDialogAdvanceListener,

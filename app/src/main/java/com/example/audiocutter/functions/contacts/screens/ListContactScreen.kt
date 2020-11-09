@@ -9,9 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
@@ -21,74 +21,78 @@ import com.example.audiocutter.functions.contacts.adapters.ContactCallback
 import com.example.audiocutter.functions.contacts.objects.ContactItemView
 import com.example.audiocutter.functions.contacts.adapters.ListContactAdapter
 import kotlinx.android.synthetic.main.list_contact_screen.*
+import kotlinx.android.synthetic.main.list_contact_screen.pb_audio_cutter
+import kotlinx.android.synthetic.main.my_studio_fragment.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
-class ListContactScreen() : BaseFragment(),
-    ContactCallback, View.OnClickListener {
+class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListener {
+
     private lateinit var binding: ListContactScreenBinding
-//    val callBack = mainCallBack
-
-    // xin quyen
-    val KEY = 1
-    val CODE_WRITE_SETTINGS_PERMISSION = 2
-    var isLoading = false   // trang thai load cua progressbar
     val TAG = "giangtd4"
     lateinit var listContactAdapter: ListContactAdapter
-    lateinit var mlistContactViewModel: ListContactViewModel
-    private var listContact: LiveData<List<ContactItemView>>? = null
+    lateinit var mListContactViewModel: ListContactViewModel
 
     // observer data
     val listContactObserver = Observer<List<ContactItemView>> { listContact ->
         if (listContact != null) {
-            runOnUI {
-                if (listContact.isEmpty()) {
-                    cl_no_contact.visibility = View.VISIBLE
-                    cl_contact.visibility = View.GONE
-                } else {
-                    cl_contact.visibility = View.VISIBLE
-                    cl_no_contact.visibility = View.GONE
-                    binding.pbAudioCutter.visibility = View.GONE
-                    listContactAdapter.submitList(ArrayList(listContact))
-                }
-            }
+            listContactAdapter.submitList(ArrayList(listContact))
         }
-
     }
+
+    // observer loading status
+    private val loadingStatusObserver = Observer<Boolean> {
+        if (it) {
+            binding.pbAudioCutter.visibility = View.VISIBLE
+        } else {
+            binding.pbAudioCutter.visibility = View.GONE
+        }
+    }
+
+    // observer is empty status
+    private val isEmptyStatusObserver = Observer<Boolean> {
+        if (it) {
+            binding.clContact.visibility = View.GONE
+            binding.clNoContact.visibility = View.VISIBLE
+        } else {
+            binding.clContact.visibility = View.VISIBLE
+            binding.clNoContact.visibility = View.GONE
+        }
+    }
+
 
     fun init() {
-        rv_list_contact.layoutManager = LinearLayoutManager(context)
-        rv_list_contact.setHasFixedSize(true)
-        rv_list_contact.adapter = listContactAdapter
+        binding.rvListContact.layoutManager = LinearLayoutManager(context)
+        binding.rvListContact.setHasFixedSize(true)
+        binding.rvListContact.adapter = listContactAdapter
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.list_contact_screen, container, false)
-        ContactManagerImpl.registerContentObserVerDeleted()
-        listContact?.observe(this.viewLifecycleOwner, listContactObserver)
+        runOnUI {
+            mListContactViewModel.getData().observe(viewLifecycleOwner, listContactObserver)
+
+            mListContactViewModel.getIsEmptyStatus()
+                .observe(viewLifecycleOwner, isEmptyStatusObserver)
+
+            mListContactViewModel.getLoadingStatus()
+                .observe(viewLifecycleOwner, loadingStatusObserver)
+        }
+
         return binding.root
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
-        mlistContactViewModel = ViewModelProviders.of(this)
-            .get(ListContactViewModel::class.java)
-
-        listContactAdapter =
-            ListContactAdapter(
-                context,
-                this
-            )
-        isLoading = true
-        runOnUI {
-            listContact = mlistContactViewModel.getData() // get data from funtion newIntance
-            listContact?.observe(this.viewLifecycleOwner, listContactObserver)
-            isLoading = false
+        mListContactViewModel = ViewModelProviders.of(this).get(ListContactViewModel::class.java)
+        listContactAdapter = ListContactAdapter(context, this)
+        lifecycleScope.launch {
+            /*delay(250)*/
+            mListContactViewModel.scan()
         }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -99,9 +103,6 @@ class ListContactScreen() : BaseFragment(),
         binding.ivSearchClose.setOnClickListener(this)
         binding.ivClear.setOnClickListener(this)
         binding.backButton.setOnClickListener(this)
-        if (isLoading) {
-            pb_audio_cutter.visibility = View.VISIBLE
-        }
 
         binding.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
@@ -110,20 +111,16 @@ class ListContactScreen() : BaseFragment(),
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
 
-            override fun onTextChanged(
-                textChange: CharSequence,
-                start: Int,
-                before: Int,
-                count: Int
-            ) {
-                if (mlistContactViewModel.searchContact(textChange.toString()).size <= 0) {
-                    cl_contact.visibility = View.GONE
-                    cl_no_contact.visibility = View.VISIBLE
+            override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
+                if (mListContactViewModel.searchContact(textChange.toString()).size <= 0) {
+                    binding.clContact.visibility = View.GONE
+                    binding.clNoContact.visibility = View.VISIBLE
                 } else {
-                    cl_contact.visibility = View.VISIBLE
-                    cl_no_contact.visibility = View.GONE
-                    listContactAdapter.submitList(mlistContactViewModel.searchContact(textChange.toString()))
+                    binding.clContact.visibility = View.VISIBLE
+                    binding.clNoContact.visibility = View.GONE
+                    listContactAdapter.submitList(mListContactViewModel.searchContact(textChange.toString()))
                 }
+//                mListContactViewModel.searchContact(textChange.toString())
             }
         })
     }
@@ -141,18 +138,18 @@ class ListContactScreen() : BaseFragment(),
     override fun onClick(view: View) {
         when (view) {
             binding.ivSearch -> {
-                cl_default.visibility = View.GONE
-                cl_search.visibility = View.VISIBLE
+                binding.clDefault.visibility = View.GONE
+                binding.clSearch.visibility = View.VISIBLE
                 showKeyboard()
             }
             binding.ivSearchClose -> {
-                cl_default.visibility = View.VISIBLE
-                cl_search.visibility = View.GONE
-                edt_search.text.clear()
+                binding.clDefault.visibility = View.VISIBLE
+                binding.clSearch.visibility = View.GONE
+                binding.edtSearch.text.clear()
                 hideKeyboard()
             }
             binding.ivClear -> {
-                edt_search.text.clear()
+                binding.edtSearch.text.clear()
             }
             binding.backButton -> {
                 requireActivity().onBackPressed()
@@ -166,7 +163,7 @@ class ListContactScreen() : BaseFragment(),
     }
 
     private fun showKeyboard() {
-        edt_search.requestFocus()
+        binding.edtSearch.requestFocus()
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }

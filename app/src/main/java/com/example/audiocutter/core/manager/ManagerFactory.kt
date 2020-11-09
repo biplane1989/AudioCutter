@@ -1,7 +1,7 @@
 package com.example.audiocutter.core.manager
 
 import android.content.Context
-import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
+import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
 import com.example.audiocutter.core.audioplayer.AudioPlayerImpl
 import com.example.audiocutter.core.contact.ContactManagerImpl
 import com.example.audiocutter.core.result.AudioEditorManagerlmpl
@@ -17,12 +17,10 @@ object ManagerFactory {
 //    private val audioPlayer = AudioPlayerImpl()
 
 
-
     fun init(appContext: Context) {
         defaultAudioPlayer.init(appContext)
 //        audioPlayer.init(appContext)
-       AudioFileManagerImpl.init(appContext)
-        ContactManagerImpl.init(appContext)
+        AudioFileManagerImpl.init(appContext)
         RingtonManagerImpl.init(appContext)
 //        AudioPlayerImpl().init(appContext)
         AudioEditorManagerlmpl.init(appContext)
@@ -44,9 +42,9 @@ object ManagerFactory {
         return mAudioCutter
     }
 
-    fun getContactManager(): ContactManager {
+    fun createNewContactManager(appContext: Context): ContactManager {
 //        return mContactManager
-        return ContactManagerImpl
+        return ContactManagerImpl(appContext)
     }
 
     fun getDefaultAudioPlayer(): AudioPlayer {
@@ -65,6 +63,8 @@ object ManagerFactory {
     fun getAudioEditorManager(): AudioEditorManager {
         return AudioEditorManagerlmpl
     }
+
+
 
 
 }

@@ -3,4 +3,4 @@ package com.example.audiocutter.functions.contacts.objects
 import android.graphics.Bitmap
 import com.example.audiocutter.objects.ContactItem
 
-data class ContactItemView(var contactHeader: String = "", var contactItem: ContactItem, var isHeader: Boolean = false, var fileNameRingtoneDefault: String?, var avatar: Bitmap?)
+data class ContactItemView(var contactHeader: String = "", var contactItem: ContactItem, var isHeader: Boolean = false)

@@ -52,7 +52,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         } else {
             val newItem = payloads.firstOrNull() as SelectItemView
             val selectItemView = getItem(position)
-//            holder.tvTotal.text = "/" + simpleDateFormat.format(selectItemView.selectItemStatus.duration)
             holder.sbMusic.max = selectItemView.selectItemStatus.duration
             holder.tvTimeLife.text = simpleDateFormat.format(selectItemView.selectItemStatus.currPos)
             holder.sbMusic.progress = selectItemView.selectItemStatus.currPos

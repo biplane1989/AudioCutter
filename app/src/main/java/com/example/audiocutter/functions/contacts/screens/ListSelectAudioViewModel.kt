@@ -23,12 +23,21 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     val TAG = "giangtd"
 
     var loadingStatus: MutableLiveData<Boolean> = MutableLiveData()
+    var isEmptyStatus: MutableLiveData<Boolean> = MutableLiveData()
+
+    fun getLoadingStatus(): LiveData<Boolean> {
+        return loadingStatus
+    }
+
+    fun getIsEmptyStatus(): LiveData<Boolean> {
+        return isEmptyStatus
+    }
 
     fun getData(): LiveData<List<SelectItemView>> {
         return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) { listAudio ->
             Log.d("nmcode", "live data size: " + listAudio.listAudioFiles.size)
             // lan dau tien lay du lieu
-            if (mListAudioFileView.size == 0) {
+//            if (mListAudioFileView.size == 0) {
 
                     listAudio.listAudioFiles.forEach { audioFile ->
                         val duration = ManagerFactory.getAudioFileManager()
@@ -41,25 +50,25 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
 //                mListAudioFileView
 
-            } else { // khi thay doi du lieu update
-                // dong bo hoa du lieu list cu va moi
-                val newListSelectItemView = ArrayList<SelectItemView>()
-                listAudio.listAudioFiles.forEach {audioFile ->
-                    val audioFileView = getAudioFileView(audioFile.file.absolutePath)
-                    if (audioFileView != null) {
-                        newListSelectItemView.add(audioFileView)
-                    } else {
-                        val duration = ManagerFactory.getAudioFileManager()
-                            .getInfoAudioFile(audioFile.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
-                        duration?.let {
-                            newListSelectItemView.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false, duration))
-                        }
-                    }
-                }
-
-                mListAudioFileView = getRingtoneDefault(newListSelectItemView) as ArrayList<SelectItemView>
-//                mListAudioFileView
-            }
+//            } else { // khi thay doi du lieu update
+//                // dong bo hoa du lieu list cu va moi
+//                val newListSelectItemView = ArrayList<SelectItemView>()
+//                listAudio.listAudioFiles.forEach {audioFile ->
+//                    val audioFileView = getAudioFileView(audioFile.file.absolutePath)
+//                    if (audioFileView != null) {
+//                        newListSelectItemView.add(audioFileView)
+//                    } else {
+//                        val duration = ManagerFactory.getAudioFileManager()
+//                            .getInfoAudioFile(audioFile.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
+//                        duration?.let {
+//                            newListSelectItemView.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false, duration))
+//                        }
+//                    }
+//                }
+//
+//                mListAudioFileView = getRingtoneDefault(newListSelectItemView) as ArrayList<SelectItemView>
+////                mListAudioFileView
+//            }
             mListAudioFileView
         }
     }
