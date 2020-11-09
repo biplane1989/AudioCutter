@@ -14,10 +14,11 @@ class DeleteDialog : BaseDialog() {
         lateinit var dialogListener: DeleteDialogListener
 
         @JvmStatic
-        fun newInstance(listener: DeleteDialogListener): DeleteDialog {
+        fun newInstance(listener: DeleteDialogListener, pathFolder: String? = ""): DeleteDialog {
             this.dialogListener = listener
             val dialog = DeleteDialog()
             val bundle = Bundle()
+            bundle.putString(BUNDLE_NAME_KEY, pathFolder)
             dialog.arguments = bundle
             return dialog
         }
@@ -41,13 +42,13 @@ class DeleteDialog : BaseDialog() {
         })
 
         tv_delete_dialog_delete.setOnClickListener(View.OnClickListener {
-            dialogListener.onDeleteClick()
+            dialogListener.onDeleteClick(requireArguments().getString(BUNDLE_NAME_KEY, null))
             dialog?.dismiss()
         })
     }
 }
 
 interface DeleteDialogListener {
-    fun onDeleteClick()
+    fun onDeleteClick(pathFolder: String)
     fun onCancel()
 }

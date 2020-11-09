@@ -177,7 +177,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         for (item in mListFileLoading) {
             Log.d("002", " filepath $filePath")
             Log.d("002", " item  ${item.audioFile.file.absolutePath + ".mp3"}")
-            if (TextUtils.equals(item.audioFile.file.absolutePath.toString() + item.audioFile.fileName + ".mp3", filePath)) {       // TODO lỗi .mp3
+            if (TextUtils.equals(item.audioFile.file.absolutePath.toString() + item.audioFile.fileName + ".mp3", filePath) || TextUtils.equals(item.audioFile.file.absolutePath.toString() + item.audioFile.fileName + ".m4a", filePath)) {       // TODO lỗi .mp3
                 return true
             }
         }
@@ -355,6 +355,35 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                     if (it.itemLoadStatus.playerState != PlayerState.IDLE) {
                         audioPlayer.stop()
                     }
+                    listAudioItems.add(it.audioFile)
+                }
+            }
+
+            var folder = Folder.TYPE_MIXER
+            when (typeAudio) {
+                0 -> {
+                    folder = Folder.TYPE_CUTTER
+                }
+                1 -> {
+                    folder = Folder.TYPE_MERGER
+                }
+                2 -> {
+                    folder = Folder.TYPE_MIXER
+                }
+            }
+            if (ManagerFactory.getAudioFileManager().deleteFile(listAudioItems, folder)) {
+                result = true
+            }
+            result
+        }
+    }
+
+    suspend fun deleteItem(pathFolder: String, typeAudio: Int): Boolean {
+        val listAudioItems = ArrayList<AudioFile>()
+        return runAndWaitOnBackground {
+            var result = false
+            mListAudio.forEach {
+                if (TextUtils.equals(it.audioFile.file.absoluteFile.toString(), pathFolder)) {
                     listAudioItems.add(it.audioFile)
                 }
             }

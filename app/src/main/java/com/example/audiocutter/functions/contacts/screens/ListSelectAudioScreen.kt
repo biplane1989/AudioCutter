@@ -59,7 +59,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
                     mListSelectAdapter.submitList(ArrayList(listAudio))
 
                     val fileName = safeArg.uri            // tam thoi comment
-//
+
                     if (fileName != null) {
                         mListSelectAdapter.submitList(mListSelectAudioViewModel.setSelectRingtone(fileName))
                         rv_list_select_audio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))

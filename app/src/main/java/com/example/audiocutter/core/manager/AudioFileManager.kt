@@ -19,7 +19,6 @@ interface AudioFileManager {
     fun getDateCreatFile(file: File?): String?
     fun getFolderPath(typeFile: Folder): String
 
-
     fun genNewAudioFileName(typeFile: Folder)
     fun createValidFileName(name:String, typeFile: Folder)
 }

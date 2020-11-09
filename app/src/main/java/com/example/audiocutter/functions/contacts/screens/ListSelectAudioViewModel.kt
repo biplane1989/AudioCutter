@@ -77,7 +77,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     fun setSelectRingtone(fileName: String): List<SelectItemView> {
         var index = 0
         for (item in mListAudioFileView) {
-            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileName)) {
+            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileName) || TextUtils.equals(item.audioFile.fileName + ".m4a", fileName)) {
                 val newItem = item.copy()
                 newItem.isSelect = true
                 mListAudioFileView.set(index, newItem)
@@ -91,7 +91,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     fun getIndexSelectRingtone(fileName: String): Int {
         var index = 0
         for (item in mListAudioFileView) {
-            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileName)) {
+            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileName) || TextUtils.equals(item.audioFile.fileName + ".m4a", fileName)) {
 
                 return index
             }

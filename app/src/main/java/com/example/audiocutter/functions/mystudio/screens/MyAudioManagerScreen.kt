@@ -125,7 +125,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
         }
     }
 
-    override fun onDeleteClick() {
+    override fun onDeleteClick(pathFolder: String) {
         Log.d(TAG, "onDeleteClick: ")
         isDeleteClicked = true
         sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_DELETE_ALL, tabPosition)

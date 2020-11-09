@@ -69,7 +69,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     companion object {
-//        val TAG = "FragmentMyStudio"
+        //        val TAG = "FragmentMyStudio"
         val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
 
         @JvmStatic
@@ -118,7 +118,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
             myStudioViewModel.getLoadingDone().observe(viewLifecycleOwner, loadingDoneObserver)
         }
-        Log.d(TAG, "onCreateView: override myStudio"  )
+        Log.d(TAG, "onCreateView: override myStudio")
         return binding.root
     }
 
@@ -184,12 +184,12 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     dialog.show(childFragmentManager, RenameDialog.TAG)
                 }
                 R.id.info -> {
-                    val dialog = InfoDialog.newInstance(audioFile)
+                    val dialog = InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
                     dialog.show(childFragmentManager, InfoDialog.TAG)
                 }
                 R.id.delete -> {
                     if (isDoubleDeleteClicked) {
-                        val dialog = DeleteDialog.newInstance(this)
+                        val dialog = DeleteDialog.newInstance(this, audioFile.file.absolutePath)
                         dialog.show(childFragmentManager, DeleteDialog.TAG)
                         isDoubleDeleteClicked = false
                     }
@@ -266,9 +266,18 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     // click delete button on dialog delete
-    override fun onDeleteClick() {
+    override fun onDeleteClick(pathFolder: String) {
         Log.d(TAG, "onDeleteClick: ")
-
+        runOnUI {
+            if (myStudioViewModel.deleteItem(pathFolder, requireArguments().getInt(BUNDLE_NAME_KEY))) { // nếu delete thành công thì sẽ hiện dialog thành công
+                val dialog = DeleteSuccessfullyDialog()
+                dialog.show(childFragmentManager, DeleteSuccessfullyDialog.TAG)
+            } else {
+                Toast.makeText(context, getString(R.string.my_studio_delete_fail), Toast.LENGTH_SHORT)
+                    .show()
+            }
+            Log.d(TAG, "onReceivedAction: " + myStudioViewModel.deleteAllItemSelected(requireArguments().getInt(BUNDLE_NAME_KEY)))
+        }
         isDoubleDeleteClicked = true
     }
 

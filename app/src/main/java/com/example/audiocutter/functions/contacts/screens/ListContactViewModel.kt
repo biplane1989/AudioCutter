@@ -24,8 +24,6 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
     val TAG = "giangtd"
     private var mListContactItemView = ArrayList<ContactItemView>()
 
-    var loadingStatus: MutableLiveData<Boolean> = MutableLiveData()
-
     fun getData(): LiveData<List<ContactItemView>> {
         val listContactItem: LiveData<GetContactResult> = ManagerFactory.getContactManager()
             .getListContact()
