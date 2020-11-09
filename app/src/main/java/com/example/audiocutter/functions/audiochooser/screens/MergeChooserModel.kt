@@ -28,8 +28,7 @@ class MergeChooserModel : BaseViewModel() {
 
     private val sortListByName: Comparator<AudioCutterView> =
         Comparator { m1, m2 ->
-            m1!!.audioFile.fileName.substring(0, 1).toUpperCase(Locale.getDefault())
-                .compareTo(m2!!.audioFile.fileName.substring(0, 1).toUpperCase(Locale.getDefault()))
+            m1.audioFile.fileName.compareTo(m2.audioFile.fileName)
         }
 
 

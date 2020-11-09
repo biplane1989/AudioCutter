@@ -38,8 +38,7 @@ class AudioCutterModel : BaseViewModel() {
 
     private val sortListByName: Comparator<AudioCutterView> =
         Comparator { m1, m2 ->
-            m1!!.audioFile.fileName.substring(0, 1).toUpperCase()
-                .compareTo(m2!!.audioFile.fileName.substring(0, 1).toUpperCase())
+            m1.audioFile.fileName.compareTo(m2.audioFile.fileName)
         }
 
     fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
@@ -74,7 +73,7 @@ class AudioCutterModel : BaseViewModel() {
     }
 
     fun pause() {
-        if(audioPlayer.getPlayerInfoData().playerState == PlayerState.PLAYING){
+        if (audioPlayer.getPlayerInfoData().playerState == PlayerState.PLAYING) {
             audioPlayer.pause()
         }
 
