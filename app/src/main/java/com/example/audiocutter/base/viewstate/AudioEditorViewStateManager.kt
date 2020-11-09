@@ -33,8 +33,6 @@ interface AudioEditorViewStateManager {
         if (getViewStateMutable().getLastState() == ViewStateScreen.CUTTING_EDITOR_SCREEN) {
             getViewStateMutable().pushViewState(ViewStateScreen.RESULT_SCREEN)
             val audioPathArray = arrayOf(audioFile.file.absolutePath.toString())
-
-
             val action = CuttingEditorScreenDirections.goToCuttingEditorResultScreen(ResultScreen.CUT, audioPathArray, null, audioCutConfig, null)
             baseFragment.findNavController().navigate(action)
         }
@@ -55,7 +53,6 @@ interface AudioEditorViewStateManager {
     fun resultScreenGoToHome(baseFragment: BaseFragment){
         if (getViewStateMutable().getLastState() == ViewStateScreen.RESULT_SCREEN){
             getViewStateMutable().popViewStateTo(ViewStateScreen.HOME_SCREEN)
-
             val action = ResultScreenDirections.goToHomeScreen()
             baseFragment.findNavController().navigate(action)
         }

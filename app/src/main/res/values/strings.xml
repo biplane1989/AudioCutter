@@ -109,5 +109,7 @@
     <string name="result_screen_title_contacts">Contacts</string>
     <string name="result_screen_title_open_with">Open With</string>
     <string name="result_screen_btn_background_convert">BACKGROUND CONVERT</string>
+    <string name="cancel_dialog_title">Warning</string>
+    <string name="cancel_dialog_notification">Do you want to cancel the conversion?</string>
     <string name="choose_a_sharing_app">Choose a sharing app</string>
 </resources>

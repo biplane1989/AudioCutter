@@ -8,8 +8,7 @@ import com.example.audiocutter.functions.mystudio.screens.MyStudioScreen
 
 class MyStudioViewPagerAdapter(
 
-    fm: FragmentManager
-) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    fm: FragmentManager) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
     override fun getItem(position: Int): Fragment = when (position) {
         0 -> {

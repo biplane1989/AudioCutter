@@ -17,11 +17,11 @@ class SetAsDialog : BaseDialog() {
         lateinit var listener: SetAsDialogListener
 
         @JvmStatic
-        fun newInstance(setAsDialogListener: SetAsDialogListener, name: String): SetAsDialog {
+        fun newInstance(setAsDialogListener: SetAsDialogListener, uri: String): SetAsDialog {
             listener = setAsDialogListener
             val dialog = SetAsDialog()
             val bundle = Bundle()
-            bundle.putString(BUNDLE_NAME_KEY, name)
+            bundle.putString(BUNDLE_NAME_KEY, uri)
             dialog.arguments = bundle
             return dialog
         }
@@ -50,28 +50,26 @@ class SetAsDialog : BaseDialog() {
             typeSet = Constance.NOTIFICATION_TYPE
         })
         rb_ringtone.setOnClickListener(View.OnClickListener {
-            typeSet = Constance.NOTIFICATION_TYPE
+            typeSet = Constance.RINGTONE_TYPE
         })
 
         tv_set_dialog_set_as.setOnClickListener(View.OnClickListener {
             when (typeSet) {
                 Constance.RINGTONE_TYPE -> {
-                    listener.onsetAsListenner(Constance.RINGTONE_TYPE)
+                    listener.onsetAsListenner(Constance.RINGTONE_TYPE, requireArguments().getString(BUNDLE_NAME_KEY, null))
                 }
                 Constance.ALARM_TYPE -> {
-                    listener.onsetAsListenner(Constance.ALARM_TYPE)
+                    listener.onsetAsListenner(Constance.ALARM_TYPE, requireArguments().getString(BUNDLE_NAME_KEY, null))
                 }
                 Constance.NOTIFICATION_TYPE -> {
-                    listener.onsetAsListenner(Constance.NOTIFICATION_TYPE)
+                    listener.onsetAsListenner(Constance.NOTIFICATION_TYPE, requireArguments().getString(BUNDLE_NAME_KEY, null))
                 }
             }
             dismiss()
         })
     }
-
 }
 
-
 interface SetAsDialogListener {
-    fun onsetAsListenner(type: Int)
+    fun onsetAsListenner(type: Int, uri: String)
 }

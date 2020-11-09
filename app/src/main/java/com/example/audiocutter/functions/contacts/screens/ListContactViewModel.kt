@@ -1,10 +1,12 @@
 package com.example.audiocutter.functions.contacts.screens
 
+import android.app.Application
 import android.content.Context
 import android.text.TextUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.functions.contacts.objects.ContactItemView
@@ -15,12 +17,12 @@ import java.util.*
 import kotlin.Comparator
 import kotlin.collections.ArrayList
 
-class ListContactViewModel : BaseViewModel() {
+class ListContactViewModel(application: Application) : BaseAndroidViewModel(application) {
+
+    private val mContext = getApplication<Application>().applicationContext
 
     val TAG = "giangtd"
     private var mListContactItemView = ArrayList<ContactItemView>()
-
-    var loadingStatus: MutableLiveData<Boolean> = MutableLiveData()
 
     fun getData(): LiveData<List<ContactItemView>> {
         val listContactItem: LiveData<GetContactResult> = ManagerFactory.getContactManager()
@@ -30,7 +32,7 @@ class ListContactViewModel : BaseViewModel() {
                 val newListContact = ArrayList<ContactItemView>()
 
                 for (item in contacts.listContactItem) {
-                    newListContact.add(ContactItemView("", item))
+                    newListContact.add(ContactItemView("", item, false, getFilenameRingtoneDefault().toLowerCase(Locale.ROOT), Utils.getImageCover(mContext!!, item.thumb)))
                 }
 
                 mListContactItemView = getHeaderListLatter(newListContact)
@@ -40,12 +42,12 @@ class ListContactViewModel : BaseViewModel() {
                     val contactItemView = getContactItemView(item.phoneNumber)
                     if (contactItemView != null) {
                         if (item.ringtone != contactItemView.contactItem.ringtone && contactItemView.isHeader == false) {
-                            newListContacItemView.add(ContactItemView("", item))
+                            newListContacItemView.add(ContactItemView("", item, false, getFilenameRingtoneDefault().toLowerCase(Locale.ROOT),Utils.getImageCover(mContext!!, item.thumb)))
                         } else {
                             newListContacItemView.add(contactItemView)
                         }
                     } else {
-                        newListContacItemView.add(ContactItemView("", item))
+                        newListContacItemView.add(ContactItemView("", item, false, getFilenameRingtoneDefault().toLowerCase(Locale.ROOT),Utils.getImageCover(mContext!!, item.thumb)))
                     }
                 }
 
@@ -66,6 +68,13 @@ class ListContactViewModel : BaseViewModel() {
         return null
     }
 
+    private fun getFilenameRingtoneDefault(): String {
+        if (Utils.getUriRingtoneDefault(mContext!!) != null) {
+            return Utils.getNameByUri(mContext, Utils.getUriRingtoneDefault(mContext).toString())
+        }
+        return ""
+    }
+
     // tao header cho list contact
     private fun getHeaderListLatter(contactList: ArrayList<ContactItemView>): ArrayList<ContactItemView> {
         val listContact = ArrayList<ContactItemView>()
@@ -74,7 +83,7 @@ class ListContactViewModel : BaseViewModel() {
         if (contactList.size > 0) {
             for (item in contactList) {     // add them 1 truong headerContact -> conver contactItem.name co dau thanh khong dau
                 newListContact.add(ContactItemView(Utils.covertToString(item.contactItem.name)
-                    .toString(), item.contactItem, false))
+                    .toString(), item.contactItem, false, getFilenameRingtoneDefault().toLowerCase(Locale.ROOT),Utils.getImageCover(mContext!!, item.contactItem.thumb)))
             }
 
 
@@ -85,7 +94,7 @@ class ListContactViewModel : BaseViewModel() {
 
             val firstContact = newListContact.get(0).contactHeader  // neu co cac ky tu dac biet thi them 1 header = "#"
             if (!firstContact[0].isLetter()) {
-                listContact.add(ContactItemView("#", ContactItem("", "", null, null), true))
+                listContact.add(ContactItemView("#", ContactItem("", "", null, null, false, null), true, null, null))
             }
             var lastHeader: String? = ""
             for (contact in newListContact) {           // gom cac contact vao chung 1 header
@@ -93,7 +102,7 @@ class ListContactViewModel : BaseViewModel() {
                 if (header[0].isLetter()) {
                     if (!TextUtils.equals(lastHeader, header)) {
                         lastHeader = header
-                        listContact.add(ContactItemView(header, contact.contactItem, true))
+                        listContact.add(ContactItemView(header, contact.contactItem, true, null, null))
                     }
                 }
                 listContact.add(contact)

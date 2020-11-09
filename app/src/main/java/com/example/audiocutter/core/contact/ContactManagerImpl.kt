@@ -16,6 +16,7 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.ContactManager
 import com.example.audiocutter.functions.contacts.objects.GetContactResult
 import com.example.audiocutter.objects.ContactItem
+import com.example.audiocutter.util.Utils
 import kotlinx.coroutines.*
 
 object ContactManagerImpl : ContactManager {
@@ -56,42 +57,32 @@ object ContactManagerImpl : ContactManager {
                         if (TextUtils.equals(oldRingtoneDefault, defaultRingtone)) {
                             if (ringtone != null) {
                                 if (TextUtils.equals(ringtone, defaultRingtone)) {
-                                    newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true))
-                                    Log.d(TAG, "scanContact: 1")
+                                    newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true, Utils.getNameByUri(mContext, defaultRingtone)))
                                 } else {
-                                    newListContact.add(ContactItem(name, number, photoUri, ringtone, false))
-                                    Log.d(TAG, "scanContact: 2")
+                                    newListContact.add(ContactItem(name, number, photoUri, ringtone, false,Utils.getNameByUri(mContext, ringtone)))
                                 }
                             } else {
-                                newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true))
-                                Log.d(TAG, "scanContact: 3")
+                                newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true, Utils.getNameByUri(mContext, defaultRingtone)))
                             }
                         } else {
                             if (ringtone != null) {
                                 if (TextUtils.equals(ringtone, oldRingtoneDefault)) {
-                                    newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true))
+                                    newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true, Utils.getNameByUri(mContext, defaultRingtone)))
                                     // set nhac chuong
-                                    Log.d(TAG, "scanContact: 4 " + ringtone + " number : " + number)
-                                    Log.d(TAG, "scanContact: is fail: " + ManagerFactory.getRingtoneManager()
-                                        .setRingtoneDefault(defaultRingtone, number))
                                 } else {
                                     if (TextUtils.equals(ringtone, defaultRingtone)) {
-                                        newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true))
-                                        Log.d(TAG, "scanContact: 5 " + ringtone)
+                                        newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true,Utils.getNameByUri(mContext, defaultRingtone)))
                                     } else {
-                                        newListContact.add(ContactItem(name, number, photoUri, ringtone, false))
-                                        Log.d(TAG, "scanContact: 6 " + ringtone)
+                                        newListContact.add(ContactItem(name, number, photoUri, ringtone, false,Utils.getNameByUri(mContext, ringtone)))
                                     }
                                 }
                             } else {
-                                newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true))
-                                Log.d(TAG, "scanContact: 7 " + ringtone)
+                                newListContact.add(ContactItem(name, number, photoUri, defaultRingtone, true,Utils.getNameByUri(mContext, defaultRingtone)))
                             }
                         }
                     } while (cursor.moveToNext())
                 }
                 oldRingtoneDefault = defaultRingtone
-                Log.d(TAG, "oldRingtoneDefault: " + oldRingtoneDefault)
             }
 
         } finally {
@@ -111,7 +102,6 @@ object ContactManagerImpl : ContactManager {
     }
 
     override fun getListContact(): LiveData<GetContactResult> {
-//        contactLiveData.postValue(GetContactResult(false, ArrayList()))
         CoroutineScope(Dispatchers.Default).launch {
             val listContact = scanContact()
             contactLiveData.postValue(GetContactResult(true, listContact))
@@ -120,7 +110,7 @@ object ContactManagerImpl : ContactManager {
         return contactLiveData
     }
 
-    class ContactObserver(handler: Handler?) : ContentObserver(handler) {
+    class ContactObserver(handler: Handler?) : ContentObserver(handler) {       // nhan event khi thay doi data tu bo nho
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             CoroutineScope(Dispatchers.Default).launch {
                 contactLiveData.postValue(GetContactResult(true, scanContact()))

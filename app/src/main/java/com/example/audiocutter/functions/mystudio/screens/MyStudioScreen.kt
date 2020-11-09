@@ -8,32 +8,31 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.base.channel.FragmentMeta
-import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MyStudioFragmentBinding
+import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterAdapter
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterScreenCallback
 import com.example.audiocutter.functions.mystudio.dialog.*
-import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_fragment.*
 
 
-class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener {
+class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, CancelDialogListener {
 
     private lateinit var binding: MyStudioFragmentBinding
-    val TAG = "giangtd"
-    lateinit var myStudioViewModel: MyStudioViewModel
-    lateinit var audioCutterAdapter: AudioCutterAdapter
-    var typeAudio: Int = -1
-    var isDoubleDeleteClicked = true
+    private val TAG = "giangtd"
+    private lateinit var myStudioViewModel: MyStudioViewModel
+    private lateinit var audioCutterAdapter: AudioCutterAdapter
+    private var typeAudio: Int = -1
+    private var isDoubleDeleteClicked = true
+    private var isDeleteClicked = true
+    private var dialog: CancelDialog? = null
 
     val listAudioObserver = Observer<List<AudioFileView>> { listAudio ->
 
@@ -43,13 +42,19 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         }
     }
 
-
     // observer loading sstatus
     private val loadingStatusObserver = Observer<Boolean> {
         if (it) {
             binding.pbAudioCutter.visibility = View.VISIBLE
         } else {
             binding.pbAudioCutter.visibility = View.GONE
+        }
+    }
+
+    // observer loading done danh cho dialog
+    private val loadingDoneObserver = Observer<Boolean> {
+        if (it && dialog != null) {
+            dialog!!.dismiss()
         }
     }
 
@@ -64,7 +69,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     companion object {
-        val TAG = "FragmentMyStudio"
+        //        val TAG = "FragmentMyStudio"
         val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
 
         @JvmStatic
@@ -75,6 +80,13 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             MyStudio.arguments = bundle
             return MyStudio
         }
+
+//        @JvmStatic
+//        fun buildArgs(typeAudio: Int): Bundle {
+//            val bundle = Bundle()
+//            bundle.putInt(BUNDLE_NAME_KEY, typeAudio)
+//            return bundle
+//        }
     }
 
     fun init() {
@@ -88,21 +100,25 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         audioCutterAdapter = AudioCutterAdapter(this)
         typeAudio = requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
         myStudioViewModel.init(typeAudio)
-        myStudioViewModel.getListAudioFile().observe(this as LifecycleOwner, listAudioObserver)
+
+//        runOnUI {
+//        myStudioViewModel.getListAudioFile().observe(this as LifecycleOwner, listAudioObserver)
+//        }
+        Log.d(TAG, "onPostCreate: override myStudio")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_fragment, container, false)
-
-
-
         runOnUI {
-//            myStudioViewModel.getListAudioFile().observe(this as LifecycleOwner, listAudioObserver)
+            myStudioViewModel.getListAudioFile().observe(viewLifecycleOwner, listAudioObserver)
 
             myStudioViewModel.getLoadingStatus().observe(viewLifecycleOwner, loadingStatusObserver)
 
             myStudioViewModel.getIsEmptyStatus().observe(viewLifecycleOwner, isEmptyStatusObserver)
+
+            myStudioViewModel.getLoadingDone().observe(viewLifecycleOwner, loadingDoneObserver)
         }
+        Log.d(TAG, "onCreateView: override myStudio")
         return binding.root
     }
 
@@ -142,7 +158,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
             when (item!!.itemId) {
                 R.id.set_as -> {
-                    val dialog = SetAsDialog.newInstance(this, "giang")
+                    val dialog = SetAsDialog.newInstance(this, audioFile.uri.toString())
                     dialog.show(childFragmentManager, SetAsDialog.TAG)
                 }
                 R.id.cut -> {
@@ -165,12 +181,12 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     dialog.show(childFragmentManager, RenameDialog.TAG)
                 }
                 R.id.info -> {
-                    val dialog = InfoDialog.newInstance(audioFile)
+                    val dialog = InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
                     dialog.show(childFragmentManager, InfoDialog.TAG)
                 }
                 R.id.delete -> {
                     if (isDoubleDeleteClicked) {
-                        val dialog = DeleteDialog.newInstance(this)
+                        val dialog = DeleteDialog.newInstance(this, audioFile.file.absolutePath)
                         dialog.show(childFragmentManager, DeleteDialog.TAG)
                         isDoubleDeleteClicked = false
                     }
@@ -179,11 +195,11 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
             true
         })
-
         popup.show()
     }
 
     private fun checkAllItemSelected() {
+        Log.d(TAG, "override checkAllItemSelected: ")
         if (myStudioViewModel.isAllChecked()) {
             iv_check.setImageResource(R.drawable.my_studio_screen_icon_checked)
         } else {
@@ -201,8 +217,12 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     override fun cancelLoading(id: Int) {      // cancel loading item
-        myStudioViewModel.cancelLoading(id)
         Log.d(TAG, "cancelLoading: ")
+        if (isDeleteClicked) {
+            dialog = CancelDialog.newInstance(this, id)
+            dialog!!.show(childFragmentManager, CancelDialog.TAG)
+            isDeleteClicked = false
+        }
     }
 
     // hanlder linterner on dialog rename
@@ -211,29 +231,50 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     // hanlder linterner on dialog set as
-    override fun onsetAsListenner(type: Int) {
+    override fun onsetAsListenner(type: Int, uri: String) {
         when (type) {
             Constance.RINGTONE_TYPE -> {
-                Log.d(TAG, "onsetAsListenner: ringtone")
+                if (myStudioViewModel.setRingTone(uri)) {
+                    Toast.makeText(requireContext(), "Set Ringtone Successful !", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(requireContext(), "Set Ringtone Fail !", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
             Constance.ALARM_TYPE -> {
-                Log.d(TAG, "onsetAsListenner: alarm")
+                if (myStudioViewModel.setAlarm(uri)) {
+                    Toast.makeText(requireContext(), "Set Alarm Successful !", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(requireContext(), "Set Alarm Fail !", Toast.LENGTH_SHORT).show()
+                }
             }
             Constance.NOTIFICATION_TYPE -> {
-                Log.d(TAG, "onsetAsListenner: notification")
+                if (myStudioViewModel.setNotification(uri)) {
+                    Toast.makeText(requireContext(), "Set Notification Successful !", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(requireContext(), "Set Notification Fail !", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
         }
     }
 
-    override fun onPostDestroy() {
-        super.onPostDestroy()
-        Log.d("taih", "onPostDestroy ${this}")
-    }
-
     // click delete button on dialog delete
-    override fun onDeleteClick() {
+    override fun onDeleteClick(pathFolder: String) {
         Log.d(TAG, "onDeleteClick: ")
-
+        runOnUI {
+            if (myStudioViewModel.deleteItem(pathFolder, requireArguments().getInt(BUNDLE_NAME_KEY))) { // nếu delete thành công thì sẽ hiện dialog thành công
+                val dialog = DeleteSuccessfullyDialog()
+                dialog.show(childFragmentManager, DeleteSuccessfullyDialog.TAG)
+            } else {
+                Toast.makeText(context, getString(R.string.my_studio_delete_fail), Toast.LENGTH_SHORT)
+                    .show()
+            }
+            Log.d(TAG, "onReceivedAction: " + myStudioViewModel.deleteAllItemSelected(requireArguments().getInt(BUNDLE_NAME_KEY)))
+        }
         isDoubleDeleteClicked = true
     }
 
@@ -251,6 +292,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         }
         when (fragmentMeta.action) {
             Constance.ACTION_UNCHECK -> { // trang thai isdelete
+                Log.d(TAG, "override onReceivedAction: ACTION_UNCHECK")
                 myStudioViewModel.changeAutoItemToDelete()
                 if (myStudioViewModel.isAllChecked()) { // nếu không còn data thì sẽ ko hiện checkall
                     cl_delete_all.visibility = View.GONE
@@ -283,11 +325,35 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             }
             Constance.ACTION_CHECK_DELETE -> {
                 if (!myStudioViewModel.isChecked()) {
-                    sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_CHECK_DELETE, false)
+                    sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_DELETE, false)
                 } else {
-                    sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_CHECK_DELETE, true)
+                    sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_DELETE, true)
                 }
             }
         }
+    }
+
+    override fun onCancelDeleteClick(id: Int) {        // cancel dialog
+        myStudioViewModel.cancelLoading(id)
+        isDeleteClicked = true
+    }
+
+    override fun onCancelDialog() {
+        isDeleteClicked = true
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d(TAG, " override onDestroyView: myStudio")
+    }
+
+    override fun onPostDestroy() {
+        super.onPostDestroy()
+        Log.d(TAG, "override onPostDestroy: myStudio")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.d(TAG, "override onDetach: myStudio")
     }
 }

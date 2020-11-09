@@ -188,7 +188,7 @@ object RingtonManagerImpl : RingtonManager {
                 values.put(MediaStore.Audio.AudioColumns.DATA, file.absolutePath)
                 values.put(MediaStore.Audio.AudioColumns.TITLE, file.name)
                 values.put(MediaStore.Audio.AudioColumns.SIZE, file.length())
-                values.put(MediaStore.Audio.AudioColumns.MIME_TYPE, "audio/mp3")
+                values.put(MediaStore.Audio.AudioColumns.MIME_TYPE, "audio/*")              // sua lai .mp3 -> *
                 when (typeRing) {
                     IS_ALARM -> values.put(MediaStore.Audio.AudioColumns.IS_ALARM, true)
                     IS_NOTIFICATION -> values.put(MediaStore.Audio.AudioColumns.IS_NOTIFICATION, true)

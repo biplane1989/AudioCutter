@@ -60,7 +60,6 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
             }
         }
     }
-
     init {
         audioPlayer.init(mContext)
         audioEditorManager.getCurrentProcessingItem().observeForever(editProcessObserver)

@@ -6,26 +6,27 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import kotlinx.android.synthetic.main.my_studio_dialog_delete.*
 
-class DeleteDialog : BaseDialog() {
+class CancelDialog : BaseDialog() {
+
 
     companion object {
-        val TAG = "DeleteDialog"
+        val TAG = "CancelDialog"
         val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
-        lateinit var dialogListener: DeleteDialogListener
+        lateinit var dialogListener: CancelDialogListener
 
         @JvmStatic
-        fun newInstance(listener: DeleteDialogListener, pathFolder: String? = ""): DeleteDialog {
+        fun newInstance(listener: CancelDialogListener, id: Int): CancelDialog {
             this.dialogListener = listener
-            val dialog = DeleteDialog()
+            val dialog = CancelDialog()
             val bundle = Bundle()
-            bundle.putString(BUNDLE_NAME_KEY, pathFolder)
+            bundle.putInt(BUNDLE_NAME_KEY, id)
             dialog.arguments = bundle
             return dialog
         }
     }
 
     override fun getLayoutResId(): Int {
-        return R.layout.my_studio_dialog_delete
+        return R.layout.my_studio_dialog_cancel
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,17 +39,17 @@ class DeleteDialog : BaseDialog() {
         super.onViewCreated(view, savedInstanceState)
         tv_cancel_dialog_delete.setOnClickListener(View.OnClickListener {
             dialog?.dismiss()
-            dialogListener.onCancel()
+            dialogListener.onCancelDialog()
         })
 
         tv_delete_dialog_delete.setOnClickListener(View.OnClickListener {
-            dialogListener.onDeleteClick(requireArguments().getString(BUNDLE_NAME_KEY, null))
+            dialogListener.onCancelDeleteClick(requireArguments().getInt(BUNDLE_NAME_KEY))
             dialog?.dismiss()
         })
     }
 }
 
-interface DeleteDialogListener {
-    fun onDeleteClick(pathFolder: String)
-    fun onCancel()
+interface CancelDialogListener {
+    fun onCancelDeleteClick(id: Int)
+    fun onCancelDialog()
 }

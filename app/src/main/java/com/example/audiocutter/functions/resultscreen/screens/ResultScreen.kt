@@ -1,12 +1,16 @@
 package com.example.audiocutter.functions.resultscreen.screens
 
+import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
+import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -17,22 +21,27 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.ResultScreenBinding
+import com.example.audiocutter.functions.mystudio.dialog.CancelDialog
+import com.example.audiocutter.functions.mystudio.dialog.CancelDialogListener
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.objects.AudioFile
 import java.text.SimpleDateFormat
 
 
-class ResultScreen : BaseFragment(), View.OnClickListener {
+class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener {
     companion object {
         const val MIX = 3
         const val MER = 2
         const val CUT = 1
     }
 
+    private var isDoubleDeleteClicked = true
+    private var isLoadingDone = false
     private val safeArg: ResultScreenArgs by navArgs()
-    val TAG = "giangtd"
+    private val TAG = "giangtd"
     private lateinit var binding: ResultScreenBinding
-    lateinit var mResultViewModel: ResultViewModel
+    private lateinit var mResultViewModel: ResultViewModel
+    private var dialog: CancelDialog? = null
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
     val processDoneObserver = Observer<AudioFile> {         // observer trang thai done
@@ -47,16 +56,19 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.tvTitleResult.visibility = View.VISIBLE
         binding.tvTitleLoading.visibility = View.GONE
 
+        isLoadingDone = true
         it?.let {
             binding.tvTitleMusic.text = it.fileName
             binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
             val duration = ManagerFactory.getAudioFileManager()
                 .getInfoAudioFile(it.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
-            if (duration != null){
+            if (duration != null && duration != "") {
                 binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(duration.toInt()))
             }
             binding.tvInfoMusic.setText(convertAudioSizeToString(it))
         }
+
+        dialog?.dismiss()
     }
     val pendingProcessObserver = Observer<String> {     // observer trang thai pending
         binding.tvWait.visibility = View.VISIBLE
@@ -66,6 +78,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.btnBack.visibility = View.GONE
         binding.ivHome.visibility = View.INVISIBLE
         binding.btnCancel.visibility = View.VISIBLE
+
+        isLoadingDone = false
 
     }
     val processingObserver = Observer<ConvertingItem> {     // observer trang thai processing
@@ -83,6 +97,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         binding.tvLoading.text = it.percent.toString() + "%"
         binding.tvTitleMusic.text = it.getFileName()
         binding.tvInfoMusic.text = it.bitRate.toString() + "kb/s"
+
+        isLoadingDone = false
     }
 
     private fun convertAudioSizeToString(audioFile: AudioFile): String {
@@ -172,6 +188,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         })
     }
 
+
     override fun onClick(view: View?) {
         when (view) {
             binding.ivPausePlayMusic -> {
@@ -181,10 +198,13 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
             }
 
             binding.btnCancel -> {
-                ManagerFactory.getAudioEditorManager().getLatestConvertingItem()?.let {
-                    ManagerFactory.getAudioEditorManager().cancel(it.id)
+                if (isDoubleDeleteClicked) {
+                    ManagerFactory.getAudioEditorManager().getLatestConvertingItem()?.let {
+                        dialog = CancelDialog.newInstance(this, it.id)
+                        dialog?.show(childFragmentManager, CancelDialog.TAG)
+                        isDoubleDeleteClicked = false
+                    }
                 }
-                requireActivity().onBackPressed()
             }
 
             binding.btnBack -> {
@@ -239,4 +259,36 @@ class ResultScreen : BaseFragment(), View.OnClickListener {
         }
     }
 
+    override fun onCancelDeleteClick(id: Int) {             // interface delete dialog
+        ManagerFactory.getAudioEditorManager().cancel(id)
+        isDoubleDeleteClicked = true
+        requireActivity().onBackPressed()
+    }
+
+    override fun onCancelDialog() {
+        isDoubleDeleteClicked = true
+    }
+
+    override fun onResume() {       // xu ly back button
+        super.onResume()
+        requireView().isFocusableInTouchMode = true
+        requireView().requestFocus()
+        requireView().setOnKeyListener { v, keyCode, event ->
+            if (event.action === KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                if (!isLoadingDone) {
+                    if (isDoubleDeleteClicked) {
+                        ManagerFactory.getAudioEditorManager().getLatestConvertingItem()?.let {
+                            dialog = CancelDialog.newInstance(this@ResultScreen, it.id)
+                            dialog?.show(childFragmentManager, CancelDialog.TAG)
+                            isDoubleDeleteClicked = false
+                        }
+                    }
+                }else{
+                    requireActivity().onBackPressed()
+                }
+                // handle back button
+                true
+            } else false
+        }
+    }
 }

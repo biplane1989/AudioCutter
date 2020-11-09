@@ -17,8 +17,8 @@
             app:popExitAnim="@anim/slide_out_right" />
 
         <action
-            android:id="@+id/go_to_my_audio_screen"
-            app:destination="@id/my_audio_screen"
+            android:id="@+id/go_to_my_studio_screen"
+            app:destination="@id/my_studio_screen"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -72,10 +72,6 @@
             app:argType="string" />
     </fragment>
 
-    <fragment
-        android:id="@+id/my_audio_screen"
-        android:name="com.example.audiocutter.functions.mystudio.screens.MyAudioManagerScreen"
-        tools:layout="@layout/my_studio_screen" />
 
     <fragment
         android:id="@+id/cut_chooser_screen"
@@ -182,15 +178,15 @@
         <argument
             android:name="mixingConfig"
             app:argType="com.example.core.core.AudioMixConfig"
-            app:nullable="true"/>
+            app:nullable="true" />
         <argument
             android:name="cuttingConfig"
             app:argType="com.example.core.core.AudioCutConfig"
-            app:nullable="true"/>
+            app:nullable="true" />
         <argument
             android:name="mergingConfig"
             app:argType="com.example.core.core.AudioMergingConfig"
-            app:nullable="true"/>
+            app:nullable="true" />
 
         <action
             android:id="@+id/go_to_home_screen"
@@ -199,6 +195,16 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/my_studio_screen"
+        android:name="com.example.audiocutter.functions.mystudio.screens.MyAudioManagerScreen"
+        tools:layout="@layout/my_studio_screen">
+        <argument
+            android:name="typeAudio"
+            app:argType="integer" />
+
     </fragment>
 
 </navigation>

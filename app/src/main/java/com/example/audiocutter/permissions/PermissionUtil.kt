@@ -31,6 +31,14 @@ object PermissionUtil {
         return true
     }
 
+    fun hasWriteSetting(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Settings.System.canWrite(context)
+        } else {
+            return true
+        }
+    }
+
     fun hasQueryAppInfoPermission(context: Context): Boolean {
         var appOps: AppOpsManager? = null
         var mode = -1

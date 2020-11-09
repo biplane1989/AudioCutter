@@ -13,9 +13,9 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
 import com.example.audiocutter.MyApplication
 import com.example.audiocutter.R
+import com.example.audiocutter.activities.MainActivity
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.functions.mystudio.screens.OutputActivity
 import com.example.audiocutter.functions.resultscreen.objects.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -91,8 +91,8 @@ class ResultService : LifecycleService() {
 
     fun resultIntent(): Intent {
         Log.d("002", "resultIntent: type audio: " + TYPE_AUDIO)
-        val intent = Intent(this, OutputActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             setAction(Constance.NOTIFICATION_ACTION_EDITOR)
             putExtra(Constance.TYPE_RESULT, TYPE_AUDIO)
         }

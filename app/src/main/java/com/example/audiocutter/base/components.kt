@@ -18,8 +18,8 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.*
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateManager
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateManagerImpl
-import com.example.audiocutter.base.channel.FragmentChannel
-import com.example.audiocutter.base.channel.FragmentMeta
+import com.example.audiocutter.functions.mystudio.screens.FragmentMeta
+import com.example.audiocutter.functions.mystudio.screens.IMyStudioActivity
 import kotlinx.coroutines.*
 
 private const val DIALOG_STYLE_KEY = "DIALOG_STYLE_KEY"
@@ -107,8 +107,7 @@ abstract class BaseViewModel : ViewModel(), LifecycleOwner {
     }
 }
 
-abstract class BaseAndroidViewModel(application: Application) : AndroidViewModel(application),
-    LifecycleOwner {
+abstract class BaseAndroidViewModel(application: Application) : AndroidViewModel(application), LifecycleOwner {
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
     init {
@@ -145,12 +144,6 @@ abstract class BaseAndroidViewModel(application: Application) : AndroidViewModel
 abstract class BaseFragment : Fragment() {
     protected val viewStateManager: ViewStateManager = ViewStateManagerImpl
     private val mainScope = MainScope()
-    private val fragmentChannelObserver = Observer<FragmentMeta> {
-
-        if (it.clsName.equals(this::class.java.name)) {
-            onReceivedAction(it)
-        }
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -159,7 +152,6 @@ abstract class BaseFragment : Fragment() {
 
     final override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FragmentChannel.getFragmentMeta().observe(this, fragmentChannelObserver)
         onPostCreate(savedInstanceState)
     }
 
@@ -184,14 +176,10 @@ abstract class BaseFragment : Fragment() {
         }
     }
 
-    protected fun sendFragmentAction(fragmentName: String, action: String, data: Any? = null) {
-        FragmentChannel.sendAction(FragmentMeta(fragmentName, action, data))
-    }
 
     final override fun onDestroy() {
         super.onDestroy()
         onPostDestroy()
-        FragmentChannel.getFragmentMeta().removeObserver(fragmentChannelObserver)
         mainScope.cancel()
         viewStateManager.onScreenFinished()
     }
@@ -200,12 +188,15 @@ abstract class BaseFragment : Fragment() {
 
     }
 
-    protected open fun onReceivedAction(fragmentMeta: FragmentMeta) {
-
+    open fun onReceivedAction(fragmentMeta: FragmentMeta) {
     }
 
+    open fun sendFragmentAction(fragmentName: String, action: String, data: Any? = null) {
+        if (activity is IMyStudioActivity) {
+            (activity as IMyStudioActivity).sendAction(FragmentMeta(fragmentName, action, data))
+        }
+    }
 }
-
 
 abstract class BaseDialog : DialogFragment() {
     protected abstract fun getLayoutResId(): Int
@@ -243,11 +234,7 @@ abstract class BaseDialog : DialogFragment() {
         mainScope.cancel()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
         val view = inflater.inflate(getLayoutResId(), container, false)
         initViews(view, savedInstanceState)

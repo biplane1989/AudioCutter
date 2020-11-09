@@ -28,33 +28,16 @@ interface WriteSettingPermissionRequest : PermissionRequest, Observer<AppPermiss
             val baseActivity = getPermissionActivity()!!
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 PendingCallFunction.guidePermissionToast?.cancel()
-                PendingCallFunction.guidePermissionToast = Toast.makeText(
-                    getPermissionActivity(),
-                    "",
-                    Toast.LENGTH_SHORT
-                )
-                PendingCallFunction.guidePermissionToast!!.setGravity(
-                    Gravity.FILL_HORIZONTAL or Gravity.BOTTOM,
-                    0,
-                    0
-                )
-                val inflater: LayoutInflater =
-                    baseActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                PendingCallFunction.guidePermissionToast!!.view = inflater.inflate(
-                    R.layout.common_guide_turn_on_write_setting_permission,
-                    null
-                )
+                PendingCallFunction.guidePermissionToast = Toast.makeText(getPermissionActivity(), "", Toast.LENGTH_SHORT)
+                PendingCallFunction.guidePermissionToast!!.setGravity(Gravity.FILL_HORIZONTAL or Gravity.BOTTOM, 0, 0)
+                val inflater: LayoutInflater = baseActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                PendingCallFunction.guidePermissionToast!!.view = inflater.inflate(R.layout.common_guide_turn_on_write_setting_permission, null)
                 PendingCallFunction.guidePermissionToast!!.duration = Toast.LENGTH_LONG
                 PendingCallFunction.guidePermissionToast!!.show()
                 goToSetting(baseActivity)
 
-
             } else {
-                PermissionUtil.requestPermission(
-                    baseActivity,
-                    arrayOf(Manifest.permission.WRITE_SETTINGS),
-                    WRITE_SETTINGS_REQUEST_CODE
-                )
+                PermissionUtil.requestPermission(baseActivity, arrayOf(Manifest.permission.WRITE_SETTINGS), WRITE_SETTINGS_REQUEST_CODE)
             }
         }
     }

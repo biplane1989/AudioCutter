@@ -1,25 +1,31 @@
 package com.example.audiocutter.functions.mystudio.dialog
 
+import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.view.View
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_dialog_info.*
+import java.io.File
 import java.text.SimpleDateFormat
 
 class InfoDialog : BaseDialog() {
 
     companion object {
         val TAG = "DeleteDialog"
-        val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
+        val BUNDLE_FILE_NAME = "BUNDLE_FILE_NAME"
+        val BUNDLE_FILE_PATH = "BUNDLE_FILE_PATH"
         lateinit var audioFile: AudioFile
+        val UNKNOWN = "Unknown"
 
         @JvmStatic
-        fun newInstance(audioFile: AudioFile): InfoDialog {
+        fun newInstance(fileName: String, filePath: String): InfoDialog {
             val dialog = InfoDialog()
             val bundle = Bundle()
-            //bundle.putParcelable(BUNDLE_NAME_KEY, audioFile)
+            bundle.putString(BUNDLE_FILE_NAME, fileName)
+            bundle.putString(BUNDLE_FILE_PATH, filePath)
             dialog.arguments = bundle
             return dialog
         }
@@ -32,7 +38,6 @@ class InfoDialog : BaseDialog() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, R.style.DialogGray)
-        //audioFile = requireArguments().getParcelable(BUNDLE_NAME_KEY)!!
 
     }
 
@@ -41,7 +46,6 @@ class InfoDialog : BaseDialog() {
 
         getData()
         tv_ok.setOnClickListener(View.OnClickListener {
-
             dialog?.dismiss()
         })
     }
@@ -49,15 +53,88 @@ class InfoDialog : BaseDialog() {
     fun getData() {
         val simpleDateFormat = SimpleDateFormat("mm:ss")
 
-        tv_file.text = audioFile.fileName
-        tv_location.text = audioFile.file.absolutePath
-        tv_size.text = audioFile.size.toString() + "kb"
-        tv_length.text = simpleDateFormat.format(audioFile.time)
-        tv_birate.text = audioFile.bitRate.toString() + "kb/s"
-        tv_title.text = audioFile.title
-        tv_artist.text = audioFile.artist
-        tv_album.text = audioFile.alBum
-        tv_genre.text = audioFile.genre
-        tv_date.text = audioFile.dateAdded
+
+        val artist = ManagerFactory.getAudioFileManager()
+            .getInfoAudioFile(File(requireArguments().getString(BUNDLE_FILE_PATH)
+                .toString()), MediaMetadataRetriever.METADATA_KEY_ARTIST)
+        val album = ManagerFactory.getAudioFileManager()
+            .getInfoAudioFile(File(requireArguments().getString(BUNDLE_FILE_PATH)
+                .toString()), MediaMetadataRetriever.METADATA_KEY_ALBUM)
+        val bitRate = ManagerFactory.getAudioFileManager()
+            .getInfoAudioFile(File(requireArguments().getString(BUNDLE_FILE_PATH)
+                .toString()), MediaMetadataRetriever.METADATA_KEY_BITRATE)
+        val title = ManagerFactory.getAudioFileManager()
+            .getInfoAudioFile(File(requireArguments().getString(BUNDLE_FILE_PATH)
+                .toString()), MediaMetadataRetriever.METADATA_KEY_TITLE)
+        val duration = ManagerFactory.getAudioFileManager()
+            .getInfoAudioFile(File(requireArguments().getString(BUNDLE_FILE_PATH)
+                .toString()), MediaMetadataRetriever.METADATA_KEY_DURATION)
+        val genre = ManagerFactory.getAudioFileManager()
+            .getInfoAudioFile(File(requireArguments().getString(BUNDLE_FILE_PATH)
+                .toString()), MediaMetadataRetriever.METADATA_KEY_GENRE)
+        val date = ManagerFactory.getAudioFileManager()
+            .getInfoAudioFile(File(requireArguments().getString(BUNDLE_FILE_PATH)
+                .toString()), MediaMetadataRetriever.METADATA_KEY_DATE)
+
+
+
+        if (requireArguments().getString(BUNDLE_FILE_PATH) != null) {
+            val size = File(requireArguments().getString(BUNDLE_FILE_PATH).toString()).length()
+            val index = requireArguments().getString(BUNDLE_FILE_PATH)?.lastIndexOf(".")
+            val format = requireArguments().getString(BUNDLE_FILE_PATH)
+                ?.substring(index!! + 1, requireArguments().getString(BUNDLE_FILE_PATH)?.length!!)
+
+            tv_format.text = format + "(" + format + ")"
+            tv_file.text = requireArguments().getString(BUNDLE_FILE_NAME)
+            tv_size.text = (size.toInt() / 1024).toString() + " kb" + " (" + size + " bytes)"
+            tv_location.text = requireArguments().getString(BUNDLE_FILE_PATH).toString()
+        } else {
+            tv_file.text = UNKNOWN
+            tv_size.text = UNKNOWN
+            tv_location.text = UNKNOWN
+            tv_format.text = UNKNOWN
+        }
+
+        if (!artist.isNullOrEmpty()) {
+            tv_artist.text = artist
+        } else {
+            tv_artist.text = UNKNOWN
+        }
+
+        if (!album.isNullOrEmpty()) {
+            tv_album.text = album
+        } else {
+            tv_album.text = UNKNOWN
+        }
+        if (!bitRate.isNullOrEmpty()) {
+            tv_birate.text = (bitRate.toInt() / 10000).toString() + " kb/s"
+        } else {
+            tv_birate.text = UNKNOWN
+        }
+
+        if (!title.isNullOrEmpty()) {
+            tv_title.text = title
+        } else {
+            tv_title.text = UNKNOWN
+        }
+
+        if (!duration.isNullOrEmpty()) {
+            tv_length.text = simpleDateFormat.format(duration.toInt())
+        } else {
+            tv_length.text = UNKNOWN
+        }
+
+        if (!genre.isNullOrEmpty()) {
+            tv_genre.text = genre
+        } else {
+            tv_genre.text = UNKNOWN
+        }
+
+        if (!date.isNullOrEmpty()) {
+            tv_date.text = date
+        } else {
+            tv_date.text = UNKNOWN
+        }
+
     }
 }
