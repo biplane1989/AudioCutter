@@ -28,6 +28,8 @@ import com.example.audiocutter.functions.contacts.adapters.SelectAudioScreenCall
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.util.FileUtils
 import kotlinx.android.synthetic.main.list_contact_select_screen.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.OnClickListener {
@@ -35,44 +37,20 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     val safeArg: ListSelectAudioScreenArgs by navArgs()
     lateinit var mListSelectAudioViewModel: ListSelectAudioViewModel
     lateinit var mListSelectAdapter: ListSelectAdapter
-    var isLoading = false   // trang thai load cua progressbar
-    var currentView: View? = null
     val REQ_CODE_PICK_SOUNDFILE = 1989
     var positionSelect = -1
-    private var listSelectAudio: LiveData<List<SelectItemView>>? = null
     lateinit var binding: ListContactSelectScreenBinding
 
     // observer data
     val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
         Log.d(TAG, "list audio size : " + listAudio.size)
         if (listAudio != null) {
-//            if (listAudio.isEmpty()) {
-//                cl_select.visibility = View.GONE
-//                cl_bottom.visibility = View.GONE
-//                cl_no_audio.visibility = View.VISIBLE
-//            } else {
-//                runOnUI {
-//                    pb_select.visibility = View.GONE
-//                    cl_select.visibility = View.VISIBLE
-//                    cl_bottom.visibility = View.VISIBLE
-//                    cl_no_audio.visibility = View.GONE
-//                    mListSelectAdapter.submitList(ArrayList(listAudio))
-//
-//                    val fileName = safeArg.uri            // tam thoi comment
-//
-//                    mListSelectAdapter.submitList(mListSelectAudioViewModel.setSelectRingtone(fileName))
-//                    rv_list_select_audio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))
-//
-//                }
-//            }
-            mListSelectAdapter.submitList(ArrayList(listAudio))
+
+//            mListSelectAdapter.submitList(ArrayList(listAudio))
             val fileName = safeArg.uri            // tam thoi comment
 
             mListSelectAdapter.submitList(mListSelectAudioViewModel.setSelectRingtone(fileName))
-            rv_list_select_audio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))
-
-        } else {
-            Log.d(TAG, "audio: is null")
+            binding.rvListSelectAudio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))
         }
     }
 
@@ -98,26 +76,17 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         }
     }
 
-    // observer playInfo mediaplayer
-    private val playerInfoObserver = Observer<PlayerInfo> {
-        if (mListSelectAudioViewModel.isPlayingStatus) {
-            mListSelectAdapter.submitList(mListSelectAudioViewModel.updatePlayerInfo(it))
-        }
-    }
 
     fun init() {
-
-        rv_list_select_audio.layoutManager = LinearLayoutManager(context)
-        rv_list_select_audio.setHasFixedSize(true)
-        rv_list_select_audio.adapter = mListSelectAdapter
+        binding.rvListSelectAudio.layoutManager = LinearLayoutManager(context)
+        binding.rvListSelectAudio.setHasFixedSize(true)
+        binding.rvListSelectAudio.adapter = mListSelectAdapter
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.list_contact_select_screen, container, false)
 
-//        listSelectAudio?.observe(this.viewLifecycleOwner, listAudioObserver)
-
-        mListSelectAudioViewModel.getData().observe(viewLifecycleOwner, listAudioObserver)
+        mListSelectAudioViewModel.getListAudioFile().observe(viewLifecycleOwner, listAudioObserver)
 
         mListSelectAudioViewModel.getIsEmptyStatus()
             .observe(viewLifecycleOwner, isEmptyStatusObserver)
@@ -133,17 +102,10 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         mListSelectAudioViewModel = ViewModelProviders.of(this)
             .get(ListSelectAudioViewModel::class.java)
         mListSelectAdapter = ListSelectAdapter(this)
-
-        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
-
-//        isLoading = true
-//        runOnUI {
-//            listSelectAudio = mListSelectAudioViewModel.getData() // get data from funtion newIntance
-//            listSelectAudio?.observe(this.viewLifecycleOwner, listAudioObserver)
-//            isLoading = false
-//            currentView?.findViewById<ProgressBar>(R.id.pb_select)?.visibility = View.GONE    // tai day ham onCreateView da chay xong r do runOnUI
-//
-//        }
+        lifecycleScope.launch {
+//            delay(1250)
+            mListSelectAudioViewModel.init()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -156,12 +118,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         binding.btnSave.setOnClickListener(this)
         binding.ivFile.setOnClickListener(this)
         binding.backButton.setOnClickListener(this)
-
-//        if (isLoading) {
-//            pb_select.visibility = View.VISIBLE
-//        } else {
-//            pb_select.visibility = View.GONE
-//        }
 
         edt_search.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
@@ -184,7 +140,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             }
         })
     }
-
 
     override fun play(position: Int) {
         mListSelectAudioViewModel.playAudio(position)
@@ -278,7 +233,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
                     Toast.makeText(context, "Set Ringtone Failure !", Toast.LENGTH_SHORT).show()
                 }
             }
-
         }
     }
 

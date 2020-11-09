@@ -110,14 +110,16 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             tvTitle.setText(selectItemView.audioFile.fileName)
             if (selectItemView.audioFile.size / (1024 * 1024) > 0) {
 
-                tvInfo.setText(String.format("%.1f", (selectItemView.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + selectItemView.audioFile.bitRate.toString() + "kb/s")
+                tvInfo.setText(String.format("%.1f", (selectItemView.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s")
             } else {
-                tvInfo.setText(((selectItemView.audioFile.size) / (1024)).toString() + " KB" + " | " + selectItemView.audioFile.bitRate.toString() + "kb/s")
+                tvInfo.setText(((selectItemView.audioFile.size) / (1024)).toString() + " KB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s")
             }
 
             selectItemView.audioFile.bitmap?.let {
                 ivAvatar.setImageBitmap(it)
             }
+
+            tvTotal.text = "/" + simpleDateFormat.format(selectItemView.duration.toInt())
 
             if (selectItemView.isExpanded) {
                 llPlayMusic.visibility = View.VISIBLE
@@ -154,7 +156,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 }
             }
 
-
             sbMusic.max = selectItemView.selectItemStatus.duration
             tvTimeLife.text = simpleDateFormat.format(selectItemView.selectItemStatus.currPos)
 
@@ -183,8 +184,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 R.id.ll_audio_item_header -> {
                     selectAudioScreenCallback.isShowPlayingAudio(adapterPosition)
                     selectAudioScreenCallback.isSelect(adapterPosition)
-
-                    tvTotal.text = "/" + simpleDateFormat.format(audioFileView.duration.toInt())
                 }
                 R.id.iv_pause_play_music -> {
 

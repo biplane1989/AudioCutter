@@ -9,9 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
@@ -70,9 +68,10 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.list_contact_screen, container, false)
-        runOnUI {
-            mListContactViewModel.getData().observe(viewLifecycleOwner, listContactObserver)
 
+        runOnUI {
+
+            // loi observe hoi lai tai
             mListContactViewModel.getIsEmptyStatus()
                 .observe(viewLifecycleOwner, isEmptyStatusObserver)
 
@@ -83,15 +82,24 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
         return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+//        mListContactViewModel.getData().removeObserver(listContactObserver)
+    }
+
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
         mListContactViewModel = ViewModelProviders.of(this).get(ListContactViewModel::class.java)
         listContactAdapter = ListContactAdapter(context, this)
+
+
         lifecycleScope.launch {
             /*delay(250)*/
             mListContactViewModel.scan()
         }
+
+        mListContactViewModel.getData().observe(this as LifecycleOwner, listContactObserver)          // loi observe hoi lai tai
 
     }
 
@@ -120,7 +128,6 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
                     binding.clNoContact.visibility = View.GONE
                     listContactAdapter.submitList(mListContactViewModel.searchContact(textChange.toString()))
                 }
-//                mListContactViewModel.searchContact(textChange.toString())
             }
         })
     }

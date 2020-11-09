@@ -5,6 +5,7 @@ import android.media.MediaMetadataRetriever
 import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseAndroidViewModel
@@ -13,6 +14,8 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.contacts.objects.SelectItemStatus
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
+import com.example.audiocutter.functions.mystudio.objects.AudioFileView
+import com.example.audiocutter.objects.StateLoad
 import com.example.audiocutter.util.Utils
 
 class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(application) {
@@ -21,6 +24,10 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     var isPlayingStatus = false
     private var mListAudioFileView = ArrayList<SelectItemView>()
     val TAG = "giangtd"
+
+    private val audioPlayer = ManagerFactory.newAudioPlayer()
+
+    private val mAudioMediatorLiveData = MediatorLiveData<ArrayList<SelectItemView>>()
 
     var loadingStatus: MutableLiveData<Boolean> = MutableLiveData()
     var isEmptyStatus: MutableLiveData<Boolean> = MutableLiveData()
@@ -33,13 +40,26 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         return isEmptyStatus
     }
 
-    fun getData(): LiveData<List<SelectItemView>> {
-        return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) { listAudio ->
-            Log.d("nmcode", "live data size: " + listAudio.listAudioFiles.size)
-            // lan dau tien lay du lieu
-//            if (mListAudioFileView.size == 0) {
+    fun getListAudioFile(): MediatorLiveData<ArrayList<SelectItemView>> {
+        return mAudioMediatorLiveData
+    }
 
-                    listAudio.listAudioFiles.forEach { audioFile ->
+    init {
+        audioPlayer.init(application.applicationContext)
+    }
+
+    fun init() {
+        mAudioMediatorLiveData.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
+            if (it.state == StateLoad.LOADING) {
+                isEmptyStatus.postValue(false)
+                loadingStatus.postValue(true)
+            }
+            if (it.state == StateLoad.LOADDONE) {       // khi loading xong thi check co data hay khong de show man hinh empty data
+                loadingStatus.postValue(false)
+                if (!it.listAudioFiles.isEmpty()) {
+                    isEmptyStatus.postValue(false)
+
+                    it.listAudioFiles.forEach { audioFile ->
                         val duration = ManagerFactory.getAudioFileManager()
                             .getInfoAudioFile(audioFile.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
                         duration?.let {
@@ -48,39 +68,15 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
                     }
                     mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
 
-//                mListAudioFileView
-
-//            } else { // khi thay doi du lieu update
-//                // dong bo hoa du lieu list cu va moi
-//                val newListSelectItemView = ArrayList<SelectItemView>()
-//                listAudio.listAudioFiles.forEach {audioFile ->
-//                    val audioFileView = getAudioFileView(audioFile.file.absolutePath)
-//                    if (audioFileView != null) {
-//                        newListSelectItemView.add(audioFileView)
-//                    } else {
-//                        val duration = ManagerFactory.getAudioFileManager()
-//                            .getInfoAudioFile(audioFile.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
-//                        duration?.let {
-//                            newListSelectItemView.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false, duration))
-//                        }
-//                    }
-//                }
-//
-//                mListAudioFileView = getRingtoneDefault(newListSelectItemView) as ArrayList<SelectItemView>
-////                mListAudioFileView
-//            }
-            mListAudioFileView
-        }
-    }
-
-    // tim ra nhung file da ton tai trong list cu
-    private fun getAudioFileView(filePath: String): SelectItemView? {
-        mListAudioFileView.forEach {
-            if (it.audioFile.file.absolutePath.equals(filePath)) {
-                return it
+                } else {
+                    isEmptyStatus.postValue(true)
+                }
             }
+            mAudioMediatorLiveData.postValue(mListAudioFileView)
         }
-        return null
+        mAudioMediatorLiveData.addSource(audioPlayer.getPlayerInfo()) {
+            updatePlayerInfo(it)
+        }
     }
 
     fun setSelectRingtone(fileName: String): List<SelectItemView> {
@@ -110,7 +106,6 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     }
 
     fun showPlayingAudio(position: Int): List<SelectItemView> {
-
         // khi play nhac reset lai trang thai cac item khac
         var index = 0
         stopAudio(position)
@@ -124,11 +119,6 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         }
         val selectItemView = mListAudioFileView.get(position).copy()
         selectItemView.isExpanded = !mListAudioFileView.get(position).isExpanded
-
-//        selectItemView.audioFile.time = 1000
-
-        /*   ManagerFactory.getAudioFileManager()        // lay time total cho file audio
-               .getDurationByPath(mListAudioFileView[position].audioFile.file)*/
 
         mListAudioFileView.set(position, selectItemView)
         return mListAudioFileView
@@ -160,24 +150,18 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     // chuyen trang thai play nhac
     fun playAudio(position: Int) {
         runOnBackground {
-            ManagerFactory.getDefaultAudioPlayer().play(mListAudioFileView.get(position).audioFile)
+            audioPlayer.play(mListAudioFileView.get(position).audioFile)
         }
-
-        // trang thai phat nhac
         isPlayingStatus = true
     }
 
     fun pauseAudio() {
-
-        runOnBackground {
-            ManagerFactory.getDefaultAudioPlayer().pause()
-        }
+        audioPlayer.pause()
     }
 
     fun stopAudio(position: Int) {
-        runOnBackground {
-            ManagerFactory.getDefaultAudioPlayer().stop()
-        }
+        audioPlayer.stop()
+
         val selectItemView = mListAudioFileView.get(position).copy()
         val itemLoadStatus = selectItemView.selectItemStatus.copy()
         itemLoadStatus.playerState = PlayerState.IDLE
@@ -187,19 +171,19 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     }
 
     fun resumeAudio() {
-
-        runOnBackground {
-            ManagerFactory.getDefaultAudioPlayer().resume()
-        }
+        audioPlayer.resume()
     }
 
     fun seekToAudio(cusorPos: Int) {
-        runOnBackground {
-            ManagerFactory.getDefaultAudioPlayer().seek(cusorPos)
-        }
+        audioPlayer.seek(cusorPos)
     }
 
-    fun updatePlayerInfo(playerInfo: PlayerInfo): List<SelectItemView> {
+    override fun onCleared() {
+        super.onCleared()
+        audioPlayer.stop()
+    }
+
+    fun updatePlayerInfo(playerInfo: PlayerInfo) {
         var selectedPosition = -1
         var i = 0
         while (i < mListAudioFileView.size) {
@@ -212,10 +196,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
         if (selectedPosition == -1) {
             //audio bi nguoi dùng xóa
-            runOnBackground {
-                ManagerFactory.getDefaultAudioPlayer().stop()
-            }
-
+            audioPlayer.stop()
         } else {
             val selectItemView = mListAudioFileView.get(selectedPosition).copy()
             // update
@@ -226,9 +207,9 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
             selectItemView.selectItemStatus = itemLoadStatus
 
             mListAudioFileView[selectedPosition] = selectItemView
-
         }
-        return mListAudioFileView
+
+        mAudioMediatorLiveData.postValue(mListAudioFileView)
     }
 
     fun searchAudioFile(data: String): ArrayList<SelectItemView> {
