@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.ManagerFactory
@@ -40,18 +39,18 @@ class DialogAppShare(val mContext: Context) : Dialog(mContext) {
         val listAppReceive = mContext.packageManager.queryIntentActivities(intent, 0)
         Log.d("TAG", "setIntent: ${listAppReceive.size}")
 
-        val appNames: MutableList<DialogItem> = ArrayList()
+        val appNames: MutableList<ItemAppShare> = ArrayList()
 
         for (info in listAppReceive) {
             appNames.add(
-                DialogItem(
+                ItemAppShare(
                     info.loadLabel(mContext.packageManager).toString(),
                     info.loadIcon(mContext.packageManager) as BitmapDrawable
                 )
             )
         }
 
-        appShareAdapter.submitList(appNames)
+//        appShareAdapter.submitList(appNames)
         rvApp.adapter = appShareAdapter
     }
 

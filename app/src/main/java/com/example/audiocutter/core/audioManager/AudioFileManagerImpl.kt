@@ -5,6 +5,7 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ResolveInfo
 import android.database.ContentObserver
 import android.database.Cursor
 import android.graphics.Bitmap
@@ -20,6 +21,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.R
+import com.example.audiocutter.activities.acttest.testnm.AppShareAdapter
+import com.example.audiocutter.activities.acttest.testnm.ItemAppShare
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.objects.AudioFile
@@ -40,6 +43,7 @@ import kotlin.collections.HashSet
 
 
 object AudioFileManagerImpl : AudioFileManager {
+    private lateinit var intent: Intent
     private const val APP_FOLDER_NAME = "AudioCutter"
     private const val CUTTING_FOLDER_NAME = "cutter"
     private const val MERGING_FOLDER_NAME = "merger"
@@ -59,6 +63,7 @@ object AudioFileManagerImpl : AudioFileManager {
     private val SIZE_GB = SIZE_MB * SIZE_KB
     private val TAG = AudioFileManagerImpl::class.java.name
     lateinit var mContext: Context
+    private lateinit var listAppShares: MutableList<ItemAppShare>
     private var initialized = false
     private var _listAllAudioFile = MutableLiveData<AudioFileScans>()
     private lateinit var audioCutter: AudioCutter
@@ -75,6 +80,7 @@ object AudioFileManagerImpl : AudioFileManager {
     private val _listCuttingAudios = MutableLiveData<AudioFileScans>()
     private val _listMeringAudios = MutableLiveData<AudioFileScans>()
     private val _listMixingAudios = MutableLiveData<AudioFileScans>()
+    private var listResolver = mutableListOf<ResolveInfo>()
     private var backgroundScope = CoroutineScope(Dispatchers.Default)
 
     override fun init(context: Context) {
@@ -87,6 +93,9 @@ object AudioFileManagerImpl : AudioFileManager {
             }
             initialized = true
             mContext = context.applicationContext
+            intent = Intent()
+            intent.action = Intent.ACTION_SEND
+            intent.type = "audio/*"
             scanAllFile()
             unRegisterContentObserve()
             registerContentObserVerDeleted()
@@ -691,6 +700,25 @@ object AudioFileManagerImpl : AudioFileManager {
             e.printStackTrace()
             false
         }
+    }
+
+    override fun getListApprQueryReceiveData(): MutableList<ItemAppShare> {
+        listResolver = mContext.packageManager.queryIntentActivities(intent, 0)
+        listAppShares = ArrayList()
+        for (info in listResolver) {
+            val item = ItemAppShare(
+                info.loadLabel(mContext.packageManager).toString(),
+                info.loadIcon(mContext.packageManager)
+            )
+            listAppShares.add(item)
+        }
+        return listAppShares
+
+    }
+
+    override fun getListReceiveData(): MutableList<ResolveInfo> {
+        return mContext.packageManager.queryIntentActivities(intent, 0)
+
     }
 
 

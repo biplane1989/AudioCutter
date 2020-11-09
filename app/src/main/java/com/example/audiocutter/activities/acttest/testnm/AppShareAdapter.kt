@@ -2,7 +2,6 @@ package com.example.audiocutter.activities.acttest.testnm
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 
 class AppShareAdapter(val mContext: Context) :
-    ListAdapter<DialogItem, AppShareAdapter.AppShareHolder>(AppShareDiff()) {
+    ListAdapter<ItemAppShareView, AppShareAdapter.AppShareHolder>(AppShareDiff()) {
+    private lateinit var mCallBack: AppShareListener
 
+    fun setOnCallBack(event: AppShareListener) {
+        mCallBack = event
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppShareHolder {
         val itemView =
@@ -23,34 +26,46 @@ class AppShareAdapter(val mContext: Context) :
         return AppShareHolder(itemView)
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables", "SetTextI18n")
     override fun onBindViewHolder(holder: AppShareHolder, position: Int) {
         val item = getItem(position)
-
-        holder.ivApp.setImageDrawable(item.icon)
+        if (!item.isCheckButton) {
+            holder.ivApp.setImageDrawable(item.itemAppShare.icon)
+            holder.tvApp.text = item.itemAppShare.app
+        } else {
+            holder.ivApp.setImageDrawable(item.itemAppShare.icon)
+            holder.tvApp.text = item.itemAppShare.app
+        }
 
     }
+
 
     inner class AppShareHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
         View.OnClickListener {
         val ivApp = itemView.findViewById<ImageView>(R.id.iv_icon_app)
+        val tvApp = itemView.findViewById<TextView>(R.id.tv_app_share)
 
         init {
             itemView.setOnClickListener(this)
         }
 
         override fun onClick(v: View) {
-
+            mCallBack.shareApp(adapterPosition)
         }
+    }
+
+    interface AppShareListener {
+        fun shareApp(position: Int)
     }
 }
 
-class AppShareDiff : DiffUtil.ItemCallback<DialogItem>() {
-    override fun areItemsTheSame(oldItem: DialogItem, newItem: DialogItem): Boolean {
+class AppShareDiff : DiffUtil.ItemCallback<ItemAppShareView>() {
+    override fun areItemsTheSame(oldItem: ItemAppShareView, newItem: ItemAppShareView): Boolean {
         return oldItem == newItem
     }
 
     @SuppressLint("DiffUtilEquals")
-    override fun areContentsTheSame(oldItem: DialogItem, newItem: DialogItem): Boolean {
+    override fun areContentsTheSame(oldItem: ItemAppShareView, newItem: ItemAppShareView): Boolean {
         return oldItem == newItem
     }
 
