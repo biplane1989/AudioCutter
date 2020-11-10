@@ -2,11 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="80dp"
+    android:paddingHorizontal="@dimen/d_16"
+    android:background="?attr/selectableItemBackground"
     android:orientation="horizontal">
+
+<!--    android:background="?attr/selectableItemBackgroundBorderless"-->
 
     <ImageView
         android:id="@+id/iv_icon_app"
-        android:layout_width="80dp"
+        android:layout_width="60dp"
         android:layout_height="match_parent"
         android:scaleType="centerInside"
         android:src="@drawable/ic_sound_mixing" />

@@ -1,4 +1,4 @@
-package com.example.audiocutter.activities.acttest.testnm
+package com.example.audiocutter.functions.audiochooser.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
+import com.example.audiocutter.functions.audiochooser.objects.ItemAppShareView
 
 class AppShareAdapter(val mContext: Context) :
     ListAdapter<ItemAppShareView, AppShareAdapter.AppShareHolder>(AppShareDiff()) {

@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import androidx.lifecycle.LiveData
-import com.example.audiocutter.activities.acttest.testnm.ItemAppShare
+import com.example.audiocutter.functions.audiochooser.objects.ItemAppShare
 import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.audioManager.StateFile
 import com.example.audiocutter.objects.AudioFile

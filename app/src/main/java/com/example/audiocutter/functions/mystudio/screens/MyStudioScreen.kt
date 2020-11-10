@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.mystudio.screens
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,19 +13,22 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
+import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MyStudioFragmentBinding
-import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterAdapter
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterScreenCallback
 import com.example.audiocutter.functions.mystudio.dialog.*
+import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_fragment.*
 
 
-class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, CancelDialogListener {
+class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener,
+    SetAsDialogListener, DeleteDialogListener, CancelDialogListener,
+    DialogAppShare.DialogAppListener {
 
     private lateinit var binding: MyStudioFragmentBinding
     private val TAG = "giangtd"
@@ -34,6 +38,8 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     private var isDoubleDeleteClicked = true
     private var isDeleteClicked = true
     private var dialog: CancelDialog? = null
+    private lateinit var audioFile: AudioFile
+    private lateinit var dialogShare: DialogAppShare
 
     val listAudioObserver = Observer<List<AudioFileView>> { listAudio ->
 
@@ -175,14 +181,17 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     Log.d(TAG, "showMenu:cut ")
                 }
                 R.id.share -> {
-                    ManagerFactory.getAudioFileManager().shareFileAudio(audioFile)
+                    this.audioFile = audioFile
+
+                    ShowDialogShareFile()
                 }
                 R.id.rename -> {
                     val dialog = RenameDialog.newInstance(this, "giang")
                     dialog.show(childFragmentManager, RenameDialog.TAG)
                 }
                 R.id.info -> {
-                    val dialog = InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
+                    val dialog =
+                        InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
                     dialog.show(childFragmentManager, InfoDialog.TAG)
                 }
                 R.id.delete -> {
@@ -197,6 +206,12 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             true
         })
         popup.show()
+    }
+
+    private fun ShowDialogShareFile() {
+        dialogShare = DialogAppShare(requireContext())
+        dialogShare.setOnCallBack(this)
+        dialogShare.show(requireActivity().supportFragmentManager, "TAG_DIALOG")
     }
 
     private fun checkAllItemSelected() {
@@ -356,5 +371,20 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     override fun onDetach() {
         super.onDetach()
         Log.d(TAG, "override onDetach: myStudio")
+    }
+
+    override fun shareFileAudioToAppDevices() {
+        dialogShare.dismiss()
+        ManagerFactory.getAudioFileManager().shareFileAudio(audioFile)
+    }
+
+    override fun shareFilesToAppsDialog(position: Int) {
+        val intent = Intent()
+        intent.putExtra(Intent.EXTRA_STREAM, audioFile.uri)
+        intent.type = "audio/*"
+        intent.`package` = ManagerFactory.getAudioFileManager()
+            .getListReceiveData()[position].activityInfo.packageName
+        intent.action = Intent.ACTION_SEND
+        startActivity(intent)
     }
 }

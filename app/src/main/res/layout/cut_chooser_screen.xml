@@ -126,8 +126,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_audio_cutter"
             android:layout_width="match_parent"
+            android:overScrollMode="never"
             android:layout_height="match_parent"
             android:layout_below="@id/rlt_actionbar"
+            android:layout_marginTop="0dp"
             android:visibility="visible"
             tools:listitem="@layout/item_audio_cutter" />
 

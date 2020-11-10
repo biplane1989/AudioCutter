@@ -240,7 +240,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     override fun showDialogSetAs(itemAudio: AudioCutterView) {
         audioCutterItem = itemAudio
         dialog.setOnCallBack(this)
-        dialog.show()
+        dialog.show(requireActivity().supportFragmentManager, "TAG")
     }
 
     override fun onCutItemClicked(itemAudio: AudioCutterView) {

@@ -129,6 +129,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_mixer"
             android:layout_width="match_parent"
+            android:overScrollMode="never"
             android:layout_height="wrap_content"
             android:layout_above="@id/rlt_next_mixer_parent"
             android:layout_below="@id/rlt_actionbar"

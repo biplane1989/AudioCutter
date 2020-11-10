@@ -34,4 +34,5 @@
     <color name="dialog_convert_seekbar_color">#FDAA74</color>
     <color name="colorGraySeekbar">#E0E0E0</color>
     <color name="colorBlue">#2196F3</color>
+    <color name="colorBlackAlpha">#9E2E3041</color>
 </resources>

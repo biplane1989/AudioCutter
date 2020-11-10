@@ -21,8 +21,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.R
-import com.example.audiocutter.activities.acttest.testnm.AppShareAdapter
-import com.example.audiocutter.activities.acttest.testnm.ItemAppShare
+import com.example.audiocutter.functions.audiochooser.objects.ItemAppShare
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.objects.AudioFile
@@ -702,6 +701,7 @@ object AudioFileManagerImpl : AudioFileManager {
         }
     }
 
+
     override fun getListApprQueryReceiveData(): MutableList<ItemAppShare> {
         listResolver = mContext.packageManager.queryIntentActivities(intent, 0)
         listAppShares = ArrayList()
@@ -720,6 +720,7 @@ object AudioFileManagerImpl : AudioFileManager {
         return mContext.packageManager.queryIntentActivities(intent, 0)
 
     }
+
 
 
 }
