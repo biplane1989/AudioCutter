@@ -58,6 +58,7 @@
                 android:textSize="12dp" />
 
             <EditText
+                android:textIsSelectable="true"
                 android:id="@+id/edt_file_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.editor.dialogs
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -8,17 +9,16 @@ import androidx.fragment.app.FragmentManager
 import com.example.audiocutter.R
 import com.example.audiocutter.activities.acttest.CoreTestActivity
 import com.example.audiocutter.base.BaseDialog
+import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
 import com.example.audiocutter.util.PreferencesHelper
-import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioCutConfig
 import com.example.core.core.AudioFormat
 import com.example.core.core.BitRate
 import com.example.core.core.Effect
 import com.google.android.material.slider.Slider
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -72,7 +72,9 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
         tvConvert = view.findViewById(R.id.dialog_convert_ok_tv)
 
         seekBarVolume.value = volume.toFloat()
-        edtNameFile.setText("name fake")
+        edtNameFile.setText(
+            ManagerFactory.getAudioFileManager().genNewAudioFileName(Folder.TYPE_CUTTER)
+        )
         tvPercent.text = String.format(Locale.ENGLISH, "%d%%", volume)
 
         spinnerFormat.apply {
@@ -108,25 +110,43 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.dialog_convert_ok_tv -> {
-                if (listener != null) {
-                    listener!!.onAcceptConvert(
-                        AudioCutConfig(
-                            0F,
-                            0F,
-                            volume,
-                            edtNameFile.text.toString().trim(),
-                            Effect.OFF,
-                            Effect.OFF,
-                            BitRate.values()[positionBitrate],
-                            AudioFormat.values()[positionFormat],
-                            CoreTestActivity.PATH_CUT_FOLDER
+                val name = ManagerFactory.getAudioFileManager()
+                    .createValidFileName(edtNameFile.text.toString().trim(), Folder.TYPE_CUTTER)
+                if (checkValid(edtNameFile.text.toString().trim())) {
+                    if (listener != null) {
+                        listener!!.onAcceptConvert(
+                            AudioCutConfig(
+                                0F,
+                                0F,
+                                volume,
+                                name,
+                                Effect.OFF,
+                                Effect.OFF,
+                                BitRate.values()[positionBitrate],
+                                AudioFormat.values()[positionFormat],
+                                CoreTestActivity.PATH_CUT_FOLDER
+                            )
                         )
-                    )
-                    addDataSharePre()
+                        addDataSharePre()
+                    }
+                    dismiss()
+                } else {
+                    edtNameFile.setText(name)
                 }
+
             }
+            R.id.dialog_convert_cancel_tv->{dismiss()}
         }
-        dismiss()
+
+    }
+
+    private fun checkValid(name: String): Boolean {
+        if (name.isEmpty()) {
+            edtNameFile.error = "Name must not be empty"
+            edtNameFile.requestFocus()
+            return false
+        }
+        return true
     }
 
     private fun addDataSharePre() {

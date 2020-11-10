@@ -6,6 +6,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import com.example.audiocutter.R
+import com.example.audiocutter.core.audioManager.Folder
+import com.example.audiocutter.core.manager.ManagerFactory
 import kotlinx.android.synthetic.main.merge_audio_dialog.*
 
 class MergeDialog(mContext: Context) : Dialog(mContext), View.OnClickListener {
@@ -24,6 +26,7 @@ class MergeDialog(mContext: Context) : Dialog(mContext), View.OnClickListener {
     }
 
     private fun initViews() {
+        edt_filename_dialog.setText(ManagerFactory.getAudioFileManager().genNewAudioFileName(Folder.TYPE_MERGER))
         tv_cancel_dialog_merge.setOnClickListener(this)
         tv_ok_dialog_merge.setOnClickListener(this)
     }
@@ -41,10 +44,31 @@ class MergeDialog(mContext: Context) : Dialog(mContext), View.OnClickListener {
                 dismiss()
             }
             R.id.tv_ok_dialog_merge -> {
-                mCallback.mergeAudioFile(edt_filename_dialog.text.toString())
-                dismiss()
+                val name = ManagerFactory.getAudioFileManager()
+                    .createValidFileName(
+                        edt_filename_dialog.text.toString().trim(),
+                        Folder.TYPE_MERGER
+                    )
+                if (checkValid(edt_filename_dialog.text.toString())) {
+                    mCallback.mergeAudioFile(name)
+                    dismiss()
+                } else {
+                    edt_filename_dialog.setText(name)
+                }
+
+
             }
         }
+    }
+
+    private fun checkValid(name: String): Boolean {
+        if (name.isEmpty()) {
+            edt_filename_dialog.error = "Name must be null"
+            edt_filename_dialog.requestFocus()
+            return false
+        }
+        return true
+
     }
 
     fun sendData(size: Int) {

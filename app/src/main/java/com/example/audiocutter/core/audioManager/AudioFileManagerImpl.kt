@@ -21,9 +21,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.R
-import com.example.audiocutter.functions.audiochooser.objects.ItemAppShare
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.functions.audiochooser.objects.ItemAppShare
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
@@ -601,7 +601,7 @@ object AudioFileManagerImpl : AudioFileManager {
         val random = Random()
         val fileNameHash = getAllFileName(typeFile)
         var fileName = ""
-        val day = SimpleDateFormat("dd_MM").format(Date())
+        val day = SimpleDateFormat("dd_MM_YYYY").format(Date())
         var textName = ""
         fileName = when (typeFile) {
             Folder.TYPE_CUTTER -> {

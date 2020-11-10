@@ -21,6 +21,8 @@
                 android:background="?attr/selectableItemBackground">
 
                 <EditText
+
+                    android:textIsSelectable="true"
                     android:paddingHorizontal="?actionBarSize"
                     android:id="@+id/edt_mer_search"
                     android:layout_width="match_parent"

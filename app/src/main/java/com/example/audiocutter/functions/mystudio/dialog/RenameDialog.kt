@@ -37,16 +37,29 @@ class RenameDialog : BaseDialog() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        tv_cancel_dialog_delete.setOnClickListener(View.OnClickListener {
+        tv_cancel_dialog_delete.setOnClickListener {
             dialog?.dismiss()
-        })
+        }
 
-        tv_delete_dialog_delete.setOnClickListener(View.OnClickListener {
-            dialogListener.onRenameClick()
-        })
+        tv_delete_dialog_delete.setOnClickListener {
+
+            if (checkValid(edt_new_name.text.toString())) {
+                dialogListener.onRenameClick(edt_new_name.text.toString())
+                dismiss()
+            }
+        }
+    }
+
+    private fun checkValid(name: String): Boolean {
+        if (name.isEmpty()) {
+            edt_new_name.error = "Name must be null"
+            edt_new_name.requestFocus()
+            return false
+        }
+        return true
     }
 }
 
 interface RenameDialogListener {
-    fun onRenameClick()
+    fun onRenameClick(name: String)
 }

@@ -87,6 +87,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
+                android:textIsSelectable="true"
                 android:id="@+id/edt_search"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

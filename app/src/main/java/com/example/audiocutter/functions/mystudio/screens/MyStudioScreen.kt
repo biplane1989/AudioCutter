@@ -242,7 +242,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     // hanlder linterner on dialog rename
-    override fun onRenameClick() {
+    override fun onRenameClick(name:String) {
         Log.d(TAG, "onRenameClick: rename")
     }
 

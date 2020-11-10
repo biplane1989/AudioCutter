@@ -42,7 +42,6 @@ class DialogAppShare(val mContext: Context) : DialogFragment(), AppShareAdapter.
     ): View? {
         rootView =
             LayoutInflater.from(mContext).inflate(R.layout.share_file_dialog, container, false)
-        isCancelable = false
         initView()
         initList()
         return rootView
