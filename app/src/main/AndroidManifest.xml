@@ -24,7 +24,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activities.acttest.CutActivity" />
-<!--        <activity android:name=".functions.mystudio.screens.OutputActivity" />-->
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -38,6 +37,7 @@
 
         <activity
             android:name=".activities.MainActivity"
+            android:windowSoftInputMode="adjustResize"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

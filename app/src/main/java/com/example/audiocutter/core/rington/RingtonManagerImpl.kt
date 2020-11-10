@@ -86,11 +86,11 @@ object RingtonManagerImpl : RingtonManager {
         return false
     }
 
-    override fun setRingToneWithContactNumberAndUri(path: String, contactNumber: String): Boolean {
+    override fun setRingToneWithContactNumberAndUri(pathUri: String, contactNumber: String): Boolean {
 
         val values = ContentValues()
         val resolver: ContentResolver = mContext.getContentResolver()
-        val uri = getOrNew(path, IS_RINGTONE)
+        val uri = getOrNew(pathUri, IS_RINGTONE)
         if (uri != null) {
 
             Log.d("giangtd", "uri ringtone: " + uri)
@@ -124,7 +124,6 @@ object RingtonManagerImpl : RingtonManager {
     }
 
     override fun setRingtoneDefault(uri: String, contactNumber: String): Boolean {
-
         val values = ContentValues()
         val resolver: ContentResolver = mContext.getContentResolver()
         if (uri != null) {

@@ -17,6 +17,7 @@ import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.objects.StateLoad
 import com.example.audiocutter.util.Utils
+import kotlinx.coroutines.launch
 
 class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(application) {
 
@@ -50,29 +51,24 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
     fun init() {
         mAudioMediatorLiveData.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
-            if (it.state == StateLoad.LOADING) {
-                isEmptyStatus.postValue(false)
-                loadingStatus.postValue(true)
-            }
-            if (it.state == StateLoad.LOADDONE) {       // khi loading xong thi check co data hay khong de show man hinh empty data
-                loadingStatus.postValue(false)
-                if (!it.listAudioFiles.isEmpty()) {
+            runOnBackground {
+                if (it.state == StateLoad.LOADING) {
                     isEmptyStatus.postValue(false)
-
-                    it.listAudioFiles.forEach { audioFile ->
-                        val duration = ManagerFactory.getAudioFileManager()
-                            .getInfoAudioFile(audioFile.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
-                        duration?.let {
-                            mListAudioFileView.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false, duration))
-                        }
-                    }
-                    mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
-
-                } else {
-                    isEmptyStatus.postValue(true)
+                    loadingStatus.postValue(true)
                 }
+                if (it.state == StateLoad.LOADDONE) {       // khi loading xong thi check co data hay khong de show man hinh empty data
+                    if (!it.listAudioFiles.isEmpty()) {
+                        it.listAudioFiles.forEach { audioFile ->
+                            mListAudioFileView.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false))
+                        }
+                        mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
+                        loadingStatus.postValue(false)
+                    } else {
+                        isEmptyStatus.postValue(true)
+                    }
+                }
+                mAudioMediatorLiveData.postValue(mListAudioFileView)
             }
-            mAudioMediatorLiveData.postValue(mListAudioFileView)
         }
         mAudioMediatorLiveData.addSource(audioPlayer.getPlayerInfo()) {
             updatePlayerInfo(it)

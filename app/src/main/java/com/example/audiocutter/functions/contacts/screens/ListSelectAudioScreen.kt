@@ -28,6 +28,8 @@ import com.example.audiocutter.functions.contacts.adapters.SelectAudioScreenCall
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.util.FileUtils
 import kotlinx.android.synthetic.main.list_contact_select_screen.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -102,10 +104,14 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         mListSelectAudioViewModel = ViewModelProviders.of(this)
             .get(ListSelectAudioViewModel::class.java)
         mListSelectAdapter = ListSelectAdapter(this)
-        lifecycleScope.launch {
-//            delay(1250)
+
+        CoroutineScope(Dispatchers.Default).launch {
             mListSelectAudioViewModel.init()
         }
+//        lifecycleScope.launch {
+////            delay(1250)
+//            mListSelectAudioViewModel.init()
+//        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -242,7 +248,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     }
 
     private fun showKeyboard() {
-        edt_search.requestFocus()
+        binding.edtSearch.requestFocus()
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }

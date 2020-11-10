@@ -26,7 +26,8 @@ class RenameDialog : BaseDialog() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, R.style.DialogGray)
+//        setStyle(STYLE_NO_TITLE, R.style.DialogGray)
+        setStyle(STYLE_NORMAL, R.style.DialogGray)
 
     }
 

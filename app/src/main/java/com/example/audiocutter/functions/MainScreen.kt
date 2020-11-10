@@ -56,11 +56,11 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                 }
                 if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and MY_STUDIO_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
-                    if (storagePermissionRequest.isPermissionGranted()) {
+                    if (contactPermissionRequest.isPermissionGranted()) {
                         onMyStudioItemClicked()
                     } else {
                         pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION
-                        storagePermissionRequest.requestPermission()
+                        contactPermissionRequest.requestPermission()
                     }
                 }
                 if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
@@ -158,19 +158,18 @@ class MainScreen : BaseFragment(), View.OnClickListener {
     }
 
     private fun onMyStudioItemClicked() {
-        if (storagePermissionRequest.isPermissionGranted() && writeSettingPermissionRequest.isPermissionGranted()) {
+        if (contactPermissionRequest.isPermissionGranted() && writeSettingPermissionRequest.isPermissionGranted()) {
             ManagerFactory.getAudioFileManager().init(requireContext())
             viewStateManager.mainScreenOnMyAudioItemClicked(this)
         } else {
             StoragePermissionDialog.newInstance {
                 resetRequestingPermission()
                 pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION
-                if (!storagePermissionRequest.isPermissionGranted()) {
-                    storagePermissionRequest.requestPermission()
+                if (!contactPermissionRequest.isPermissionGranted()) {
+                    contactPermissionRequest.requestPermission()
                 } else {
                     writeSettingPermissionRequest.requestPermission()
                 }
-
             }
                 .show(requireActivity().supportFragmentManager, StoragePermissionDialog::class.java.name)
 

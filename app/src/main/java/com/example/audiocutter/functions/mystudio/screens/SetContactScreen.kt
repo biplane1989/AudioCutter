@@ -1,39 +1,52 @@
-package com.example.audiocutter.functions.contacts.screens
+package com.example.audiocutter.functions.mystudio.screens
 
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.core.contact.ContactManagerImpl
-import com.example.audiocutter.databinding.ListContactScreenBinding
-import com.example.audiocutter.functions.contacts.adapters.ContactCallback
-import com.example.audiocutter.functions.contacts.objects.ContactItemView
-import com.example.audiocutter.functions.contacts.adapters.ListContactAdapter
-import kotlinx.android.synthetic.main.list_contact_screen.*
-import kotlinx.android.synthetic.main.list_contact_screen.pb_audio_cutter
-import kotlinx.android.synthetic.main.my_studio_fragment.*
-import kotlinx.coroutines.delay
+import com.example.audiocutter.databinding.MyStudioContactScreenBinding
+import com.example.audiocutter.functions.mystudio.adapters.SetContactAdapter
+import com.example.audiocutter.functions.mystudio.adapters.SetContactCallback
+import com.example.audiocutter.functions.mystudio.objects.SetContactItemView
 import kotlinx.coroutines.launch
 
+class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListener {
 
-class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListener {
+    private lateinit var binding: MyStudioContactScreenBinding
 
-    private lateinit var binding: ListContactScreenBinding
     val TAG = "giangtd4"
-    lateinit var listContactAdapter: ListContactAdapter
-    lateinit var mListContactViewModel: ListContactViewModel
+    lateinit var listContactAdapter: SetContactAdapter
+    lateinit var mListContactViewModel: SetContactViewModel
+
+    companion object {
+        val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
+
+        @JvmStatic
+        fun newInstance(pathUri: String): SetContactScreen {
+            val MyStudio = SetContactScreen()
+            val bundle = Bundle()
+            bundle.putString(BUNDLE_NAME_KEY, pathUri)
+            MyStudio.arguments = bundle
+            return MyStudio
+        }
+    }
 
     // observer data
-    val listContactObserver = Observer<List<ContactItemView>> { listContact ->
+    val listContactObserver = Observer<List<SetContactItemView>> { listContact ->
         if (listContact != null) {
             listContactAdapter.submitList(ArrayList(listContact))
         }
@@ -59,6 +72,19 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
         }
     }
 
+
+    private val isSelectObserver = Observer<Boolean> {
+        if (it) {
+            binding.ivOk.visibility = View.VISIBLE
+            binding.tvOk.visibility = View.VISIBLE
+
+            binding.ivNotOk.visibility = View.GONE
+            binding.tvNotOk.visibility = View.GONE
+        } else {
+
+        }
+    }
+
     fun init() {
         binding.rvListContact.layoutManager = LinearLayoutManager(context)
         binding.rvListContact.setHasFixedSize(true)
@@ -66,16 +92,20 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.list_contact_screen, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_contact_screen, container, false)
 
         runOnUI {
+
             // loi observe hoi lai tai
             mListContactViewModel.getIsEmptyStatus()
                 .observe(viewLifecycleOwner, isEmptyStatusObserver)
 
             mListContactViewModel.getLoadingStatus()
                 .observe(viewLifecycleOwner, loadingStatusObserver)
+
+            mListContactViewModel.getIsSelectItem().observe(viewLifecycleOwner, isSelectObserver)
         }
+
         return binding.root
     }
 
@@ -87,8 +117,8 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
-        mListContactViewModel = ViewModelProviders.of(this).get(ListContactViewModel::class.java)
-        listContactAdapter = ListContactAdapter(context, this)
+        mListContactViewModel = ViewModelProviders.of(this).get(SetContactViewModel::class.java)
+        listContactAdapter = SetContactAdapter(context, this)
 
 
         lifecycleScope.launch {
@@ -96,7 +126,8 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
             mListContactViewModel.scan()
         }
 
-        mListContactViewModel.getData().observe(this as LifecycleOwner, listContactObserver)          // loi observe hoi lai tai
+        mListContactViewModel.getData()
+            .observe(this as LifecycleOwner, listContactObserver)          // loi observe hoi lai tai
 
     }
 
@@ -108,6 +139,7 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
         binding.ivSearchClose.setOnClickListener(this)
         binding.ivClear.setOnClickListener(this)
         binding.backButton.setOnClickListener(this)
+        binding.ivOk.setOnClickListener(this)
 
         binding.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
@@ -129,9 +161,8 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
         })
     }
 
-    override fun itemOnClick(phoneNumber: String, fileName: String) {
-        hideKeyboard()
-        viewStateManager.contactScreenOnItemClicked(this, phoneNumber, fileName)
+    override fun itemOnClick(phoneNumber: String) {
+        mListContactViewModel.updateIsSelectItem(phoneNumber)
     }
 
     override fun onPostDestroy() {
@@ -157,6 +188,14 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
             }
             binding.backButton -> {
                 requireActivity().onBackPressed()
+            }
+            binding.ivOk -> {
+                if (mListContactViewModel.setRingtoneForContact(requireArguments().getString(BUNDLE_NAME_KEY, ""))) {
+                    Toast.makeText(context, "Set RingTone Success !", Toast.LENGTH_SHORT).show()
+                    requireActivity().onBackPressed()
+                } else {
+                    Toast.makeText(context, "Set RingTone Fail !", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

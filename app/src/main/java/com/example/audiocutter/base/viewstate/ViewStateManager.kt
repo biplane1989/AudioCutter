@@ -6,14 +6,11 @@ import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.example.audiocutter.R
-import com.example.audiocutter.base.viewstate.AudioEditorViewStateManager
-import com.example.audiocutter.base.viewstate.ChooserScreenViewStateManager
-import com.example.audiocutter.base.viewstate.ContactScreenViewStateManager
-import com.example.audiocutter.base.viewstate.MainScreenViewStateManager
+import com.example.audiocutter.base.viewstate.*
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.screens.MyStudioScreen
 
-interface ViewStateManager : MainScreenViewStateManager, ContactScreenViewStateManager, ChooserScreenViewStateManager, AudioEditorViewStateManager {
+interface ViewStateManager : MainScreenViewStateManager, ContactScreenViewStateManager, ChooserScreenViewStateManager, AudioEditorViewStateManager, MyStudioScreenViewStateManager {
     fun goToMyStudioScreen(navController: NavController, typeAudio: Int) {
         if (getViewStateMutable().getLastState() != ViewStateScreen.MY_STUDIO_SCREEN) {
             getViewStateMutable().pushViewState(ViewStateScreen.MY_STUDIO_SCREEN)

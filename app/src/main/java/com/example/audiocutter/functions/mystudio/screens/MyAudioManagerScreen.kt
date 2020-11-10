@@ -30,19 +30,17 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_screen, container, false)
 
-        Log.d(TAG, "override onCreateView: manager")
-
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val myStudioAdapter = MyStudioViewPagerAdapter(childFragmentManager)
-        view_pager.adapter = myStudioAdapter
+        binding.viewPager.adapter = myStudioAdapter
 
-        tab_layout.setupWithViewPager(view_pager)
+        binding.tabLayout.setupWithViewPager(binding.viewPager)
 
-        tabPosition = tab_layout.selectedTabPosition
+        tabPosition = binding.tabLayout.selectedTabPosition
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_STOP_MUSIC)
@@ -55,7 +53,6 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
             override fun onTabReselected(tab: TabLayout.Tab) {
             }
         })
-
 
         binding.tabLayout.getTabAt(requireArguments().getInt(Constance.TYPE_AUDIO_TO_NOTIFICATION))
             ?.select()
@@ -72,23 +69,23 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_CHECK_DELETE, tabPosition)
             }
             binding.ivClose -> {
-                cl_default.visibility = View.VISIBLE
-                cl_delete.visibility = View.GONE
+                binding.clDefault.visibility = View.VISIBLE
+                binding.clDefault.visibility = View.GONE
 
                 // enable viewpayger swip
-                view_pager.setPagingEnabled(true)
+                binding.viewPager.setPagingEnabled(true)
                 setEnabledTablayout(false)
 
                 sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_HIDE)
             }
             binding.ivExtends -> {
-                cl_default.visibility = View.GONE
-                cl_delete.visibility = View.VISIBLE
+                binding.clDefault.visibility = View.GONE
+                binding.clDelete.visibility = View.VISIBLE
 
-                cl_default.isEnabled
+                binding.clDefault.isEnabled
 
                 // disable viewpayger swip
-                view_pager.setPagingEnabled(false)
+                binding.viewPager.setPagingEnabled(false)
                 setEnabledTablayout(true)
 
                 sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_UNCHECK)
@@ -101,7 +98,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
 
     // enable thanh tiêu đề của tablayout
     fun setEnabledTablayout(isEnable: Boolean) {
-        val tabLayout = tab_layout.getChildAt(0) as LinearLayout
+        val tabLayout = binding.tabLayout.getChildAt(0) as LinearLayout
         for (i in 0 until tabLayout.childCount) {
             tabLayout.getChildAt(i).setOnTouchListener { v, event -> isEnable }
         }
@@ -126,7 +123,6 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     }
 
     override fun onDeleteClick(pathFolder: String) {
-        Log.d(TAG, "onDeleteClick: ")
         isDeleteClicked = true
         sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_DELETE_ALL, tabPosition)
     }
@@ -135,13 +131,4 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
         isDeleteClicked = true
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.d(TAG, "override onDestroyView: manager")
-    }
-
-    override fun onPostDestroy() {
-        super.onPostDestroy()
-        Log.d(TAG, "override onPostDestroy: manager")
-    }
 }

@@ -67,9 +67,9 @@
                 android:layout_marginBottom="16dp"
                 android:backgroundTint="#FDAA74"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
-                android:hint="Name"
+                android:hint="orange"
                 android:textColor="#2E3041"
-                android:textSize="12sp" />
+                android:textSize="16dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
