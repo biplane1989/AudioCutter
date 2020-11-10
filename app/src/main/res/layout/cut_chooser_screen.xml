@@ -83,8 +83,8 @@
 
                 <ImageView
                     android:id="@+id/iv_cutter_screen_search"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="@dimen/d_40"
+                    android:layout_height="@dimen/d_40"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -93,8 +93,8 @@
 
                 <ImageView
                     android:id="@+id/iv_audio_cutter_screen_file"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="@dimen/d_40"
+                    android:layout_height="@dimen/d_40"
                     android:layout_centerVertical="true"
                     android:layout_toLeftOf="@id/iv_cutter_screen_search"
                     android:background="?attr/selectableItemBackgroundBorderless"

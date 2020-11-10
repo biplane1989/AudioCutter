@@ -65,7 +65,7 @@
         <RelativeLayout
             android:id="@+id/rlt_controller"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="@dimen/d_70"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="@dimen/d_16">
 <View

@@ -69,10 +69,6 @@ object AudioFileManagerImpl : AudioFileManager {
     private var scanningState = ScanningState.IDLE
     val listAllAudioFile: LiveData<AudioFileScans>
         get() = _listAllAudioFile
-    private var _listAudioByType = MutableLiveData<AudioFileScans>()
-
-    val listAudioByType: LiveData<AudioFileScans>
-        get() = _listAudioByType
     private val audioFileObserver = AudioFileObserver(Handler())
 
 
@@ -110,6 +106,7 @@ object AudioFileManagerImpl : AudioFileManager {
             createFolder("$APP_FOLDER_PATH/$MIXING_FOLDER_NAME")
         }
     }
+
 
     private fun createFolder(folderPath: String): Boolean {
         val appFolder = File(folderPath)
@@ -192,12 +189,13 @@ object AudioFileManagerImpl : AudioFileManager {
                         } else {
                             name = preName
                         }
-                        val id = cursor.getString(clID)
-//                        val bitmap = getBitmapByPath(data)
-                        val bitmap = BitmapFactory.decodeResource(
+                        val bm = BitmapFactory.decodeResource(
                             mContext.resources,
-                            R.drawable.ic_play_mixing_audio
+                            R.drawable.ic_audiocutter_play
                         )
+                        val id = cursor.getString(clID)
+                        val bitmap = getBitmapByPath(data) ?: bm
+
                         val title = cursor.getString(clTitle)
                         val album = cursor.getString(clAlbum)
                         val artist = cursor.getString(clArtist)
@@ -502,14 +500,11 @@ object AudioFileManagerImpl : AudioFileManager {
             ) { s, uri ->
                 Log.d("insertFile", "on complete ${uri}  string $s")
             }
-
-
             true
         } catch (e: Exception) {
             e.printStackTrace()
             false
         }
-
     }
 
     override fun getFolderPath(typeFile: Folder): String {
@@ -721,6 +716,10 @@ object AudioFileManagerImpl : AudioFileManager {
 
     }
 
+    fun changeNameFileAudio(): Boolean {
+
+        return true
+    }
 
 
 }

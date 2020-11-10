@@ -9,10 +9,8 @@ import android.os.Build
 import android.os.Handler
 import android.provider.ContactsContract
 import android.text.TextUtils
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.ContactManager
 import com.example.audiocutter.functions.contacts.objects.GetContactResult
 import com.example.audiocutter.objects.ContactItem

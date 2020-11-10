@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -307,6 +306,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         binding.tvEmptyListCutter.visibility = View.GONE
         binding.ivEmptyListCutter.visibility = View.GONE
         audioCutterAdapter.submitList(audioCutterModel.getListAudio())
+        binding.edtCutterSearch.setText("")
         hideOrShowEditText(View.GONE)
         hideOrShowView(View.VISIBLE)
     }

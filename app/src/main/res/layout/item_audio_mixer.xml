@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
+    android:layout_height="@dimen/d_70"
     android:background="@color/colorGray">
 
     <com.example.audiocutter.ui.audiochooser.cut.ProgressView
@@ -14,22 +14,22 @@
 
         android:id="@+id/ln_item_audio_mixer_screen"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="@dimen/d_70"
         android:background="?attr/selectableItemBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="48dp"
+            android:layout_width="@dimen/d_40"
             android:id="@+id/iv_controller_audio_recent"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/d_40"
             android:layout_marginLeft="@dimen/d_16"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_audiocutter_play" />
     <LinearLayout
         android:gravity="right"
         android:layout_width="0dp"
-        android:layout_height="45dp"
+        android:layout_height="@dimen/d_40"
         android:layout_weight="1"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/d_16">
@@ -105,8 +105,8 @@
 
             <ImageView
                 android:id="@+id/iv_recent_check"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="@dimen/d_40"
+                android:layout_height="@dimen/d_40"
                 android:scaleType="centerInside"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_noncheck" />

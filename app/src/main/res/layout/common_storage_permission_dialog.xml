@@ -14,8 +14,8 @@
 
         <ImageView
             android:id="@+id/close_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/d_40"
+            android:layout_height="@dimen/d_40"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
             app:layout_constraintEnd_toEndOf="parent"

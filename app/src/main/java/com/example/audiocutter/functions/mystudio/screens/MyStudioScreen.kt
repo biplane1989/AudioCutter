@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.mystudio.screens
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -243,7 +244,10 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
     // hanlder linterner on dialog rename
     override fun onRenameClick(name:String) {
-        Log.d(TAG, "onRenameClick: rename")
+
+     /**handle data rename change name to file insert to mediastore**/
+
+
     }
 
     // hanlder linterner on dialog set as
