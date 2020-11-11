@@ -1,7 +1,6 @@
 package com.example.audiocutter.functions.editor.dialogs
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -10,10 +9,10 @@ import com.example.audiocutter.R
 import com.example.audiocutter.activities.acttest.CoreTestActivity
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audioManager.Folder
-import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
 import com.example.audiocutter.util.PreferencesHelper
+import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioCutConfig
 import com.example.core.core.AudioFormat
 import com.example.core.core.BitRate
@@ -73,7 +72,7 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
 
         seekBarVolume.value = volume.toFloat()
         edtNameFile.setText(
-            ManagerFactory.getAudioFileManager().genNewAudioFileName(Folder.TYPE_CUTTER)
+            Utils.genNewAudioFileName(Folder.TYPE_CUTTER)
         )
         tvPercent.text = String.format(Locale.ENGLISH, "%d%%", volume)
 
@@ -110,7 +109,7 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.dialog_convert_ok_tv -> {
-                val name = ManagerFactory.getAudioFileManager()
+                val name = Utils
                     .createValidFileName(edtNameFile.text.toString().trim(), Folder.TYPE_CUTTER)
                 if (checkValid(edtNameFile.text.toString().trim())) {
                     if (listener != null) {

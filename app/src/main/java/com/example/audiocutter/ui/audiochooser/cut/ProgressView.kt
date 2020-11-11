@@ -5,6 +5,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.RectF
 import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
@@ -36,7 +37,7 @@ class ProgressView : View {
 
 
     init {
-        mPaint1.color = resources.getColor(R.color.colorWhite)
+        mPaint1.color = resources.getColor(R.color.colorwhite)
         mPaint1.style = Paint.Style.FILL
         mPaint2.color = resources.getColor(R.color.colorYelowAlpha)
         mPaint2.style = Paint.Style.FILL

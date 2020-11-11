@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/d_70"
-    android:background="@color/colorGray">
+    android:background="@color/colorWhite">
     <com.example.audiocutter.ui.audiochooser.cut.ProgressView
         android:layout_width="match_parent"
         android:id="@+id/pg_audio_cutter_screen"

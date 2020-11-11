@@ -1,5 +1,6 @@
 package com.example.audiocutter.util
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
@@ -9,21 +10,32 @@ import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.util.Log
 import android.util.TypedValue
+import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
+import com.example.audiocutter.core.audioManager.Folder
+import com.example.audiocutter.core.manager.ManagerFactory
 import java.io.File
 import java.text.Normalizer
 import java.text.SimpleDateFormat
+import java.util.*
 import java.util.regex.Pattern
+import kotlin.collections.HashSet
 
 object Utils {
     val KEY_SEND_PATH = "key_send_path"
     val KEY_SEND_AUDIO = "key_send_audio"
     val FIVE_SECOND = 5000
     val TIME_CHANGE = 100
+    private const val APP_FOLDER_NAME = "AudioCutter"
+    private const val CUTTING_FOLDER_NAME = "cutter"
+    private const val MERGING_FOLDER_NAME = "merger"
+    private const val MIXING_FOLDER_NAME = "mixer"
+    private val APP_FOLDER_PATH = "${Environment.getExternalStorageDirectory()}/${APP_FOLDER_NAME}"
 
     @JvmStatic
     fun dpToPx(context: Context, dp: Float): Float {
@@ -203,17 +215,83 @@ object Utils {
 
         // create StringBuffer size of AlphaNumericString
         val sb = StringBuilder(n)
-        for (i in 0 until n) {
+         for (i in 0 until n) {
 
-            // generate a random number between
-            // 0 to AlphaNumericString variable length
-            val index = (AlphaNumericString.length
-                    * Math.random()).toInt()
+             // generate a random number between
+             // 0 to AlphaNumericString variable length
+             val index = (AlphaNumericString.length
+                     * Math.random()).toInt()
 
-            // add Character one by one in end of sb
-            sb.append(AlphaNumericString[index])
+             // add Character one by one in end of sb
+             sb.append(AlphaNumericString[index])
+         }
+         return sb.toString()
+     }
+
+    private fun getAllFileName(folder: Folder): HashSet<String> {
+        val folderPath = ManagerFactory.getAudioFileManager().getFolderPath(folder)
+        val folder = File(folderPath)
+        val fileNameHash = HashSet<String>()
+        if (folder.exists()) {
+            folder.listFiles()?.forEach {
+                if (it.name.contains(".")) {
+                    fileNameHash.add(it.name.substring(0, (it.name).lastIndexOf(".")))
+                } else {
+                    fileNameHash.add(it.name)
+                }
+            }
         }
-        return sb.toString()
+        return fileNameHash
+
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    fun genNewAudioFileName(typeFile: Folder): String {
+        val random = Random()
+        val fileNameHash = getAllFileName(typeFile)
+        var fileName = ""
+        val day = SimpleDateFormat("dd_MM_YYYY").format(Date())
+        var textName = ""
+        fileName = when (typeFile) {
+            Folder.TYPE_CUTTER -> {
+                "${CUTTING_FOLDER_NAME}_${APP_FOLDER_NAME}_$day"
+            }
+            Folder.TYPE_MERGER -> {
+                "${MERGING_FOLDER_NAME}_${APP_FOLDER_NAME}_$day"
+            }
+            Folder.TYPE_MIXER -> {
+                "${MIXING_FOLDER_NAME}_${APP_FOLDER_NAME}_$day"
+            }
+        }
+
+//        fileName = "AudioCutter_AudioCutter_lonely(2)"
+
+        fileNameHash.forEach {
+            textName += "$it,"
+        }
+        if (textName.contains(fileName)) {
+            fileName = "$fileName(${getAlphaNumericString(random.nextInt(10))})"
+        }
+        return fileName
+    }
+
+
+     fun createValidFileName(name: String, typeFile: Folder): String {
+        val random = Random()
+        val fileNameHash = getAllFileName(typeFile)
+        var fileName = ""
+        var textName = ""
+
+        fileNameHash.forEach {
+            textName += "$it,"
+        }
+        fileName = if (textName.contains(name)) {
+            "$name(${getAlphaNumericString(random.nextInt(10))})"
+        } else {
+            name
+        }
+
+        return fileName
     }
 
 }

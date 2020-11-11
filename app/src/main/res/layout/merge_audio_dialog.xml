@@ -37,7 +37,7 @@
                 android:text="file name" />
 
             <EditText
-                android:textIsSelectable="true"
+
                 android:id="@+id/edt_filename_dialog"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/d_56"

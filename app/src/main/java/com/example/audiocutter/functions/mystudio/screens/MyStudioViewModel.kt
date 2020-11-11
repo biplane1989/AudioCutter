@@ -10,23 +10,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.base.BaseAndroidViewModel
-import com.example.audiocutter.base.BaseViewModel
-import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.audioManager.Folder
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.functions.contacts.objects.SelectItemStatus
-import com.example.audiocutter.functions.contacts.objects.SelectItemView
-import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.ItemLoadStatus
+import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.objects.DeleteState
 import com.example.audiocutter.functions.resultscreen.objects.*
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import java.io.File
 
 class MyStudioViewModel(application: Application) : BaseAndroidViewModel(application) {
@@ -562,5 +557,12 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             if (TextUtils.equals(item.audioFile.uri.toString(), uri)) return item.audioFile
         }
         return null
+    }
+
+    fun renameAudio(newName: String, typeFolder: Folder, filePath: String) {
+        val audioFile = ManagerFactory.getAudioFileManager().buildAudioFile(filePath)
+         ManagerFactory.getAudioFileManager()
+            .reNameToFileAudio(newName, audioFile, typeFolder)
+
     }
 }

@@ -28,7 +28,7 @@
 
                 <EditText
                     android:paddingHorizontal="?actionBarSize"
-                    android:textIsSelectable="true"
+
                     android:id="@+id/edt_mixer_search"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -78,7 +78,7 @@
                         android:fontFamily="@font/sanfranciscodisplay_bold"
                         android:text="@string/audio_mixer_name_actionbar"
                         android:textColor="@color/colorBlack"
-                        android:textIsSelectable="true"
+
                         android:textSize="@dimen/d_18" />
                 </TableRow>
 

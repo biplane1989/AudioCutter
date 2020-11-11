@@ -5,7 +5,7 @@ import android.view.View
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audioManager.Folder
-import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.util.Utils
 import kotlinx.android.synthetic.main.mix_dialog_file_name.*
 
 class MixerDialog : BaseDialog() {
@@ -37,8 +37,8 @@ class MixerDialog : BaseDialog() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        edt_file_name.setText(ManagerFactory.getAudioFileManager().genNewAudioFileName(Folder.TYPE_MIXER))
-        val name = ManagerFactory.getAudioFileManager()
+        edt_file_name.setText(Utils.genNewAudioFileName(Folder.TYPE_MIXER))
+        val name = Utils
             .createValidFileName(
                 edt_file_name.text.toString().trim(),
                 Folder.TYPE_MIXER

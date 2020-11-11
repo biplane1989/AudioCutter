@@ -8,6 +8,7 @@ import android.view.View
 import com.example.audiocutter.R
 import com.example.audiocutter.core.audioManager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.util.Utils
 import kotlinx.android.synthetic.main.merge_audio_dialog.*
 
 class MergeDialog(mContext: Context) : Dialog(mContext), View.OnClickListener {
@@ -26,7 +27,7 @@ class MergeDialog(mContext: Context) : Dialog(mContext), View.OnClickListener {
     }
 
     private fun initViews() {
-        edt_filename_dialog.setText(ManagerFactory.getAudioFileManager().genNewAudioFileName(Folder.TYPE_MERGER))
+        edt_filename_dialog.setText(Utils.genNewAudioFileName(Folder.TYPE_MERGER))
         tv_cancel_dialog_merge.setOnClickListener(this)
         tv_ok_dialog_merge.setOnClickListener(this)
     }
@@ -44,7 +45,7 @@ class MergeDialog(mContext: Context) : Dialog(mContext), View.OnClickListener {
                 dismiss()
             }
             R.id.tv_ok_dialog_merge -> {
-                val name = ManagerFactory.getAudioFileManager()
+                val name = Utils
                     .createValidFileName(
                         edt_filename_dialog.text.toString().trim(),
                         Folder.TYPE_MERGER

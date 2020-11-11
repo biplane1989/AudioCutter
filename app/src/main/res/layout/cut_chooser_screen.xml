@@ -24,8 +24,6 @@
                 android:layout_alignParentBottom="true"
                 android:background="@color/colorgrayAlpha" />
                 <EditText
-
-                    android:textIsSelectable="true"
                     android:paddingHorizontal="?actionBarSize"
                     android:id="@+id/edt_cutter_search"
                     android:layout_width="match_parent"
@@ -76,7 +74,7 @@
                         android:fontFamily="@font/sanfranciscodisplay_bold"
                         android:text="@string/audio_cutter_name_actionbar"
                         android:textColor="@color/colorBlack"
-                        android:textIsSelectable="true"
+
                         android:textSize="@dimen/d_18" />
                 </TableRow>
 

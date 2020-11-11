@@ -42,7 +42,7 @@ class CancelDialog : BaseDialog() {
             dialogListener.onCancelDialog()
         })
 
-        tv_delete_dialog_delete.setOnClickListener(View.OnClickListener {
+        tv_rename_dialog_delete.setOnClickListener(View.OnClickListener {
             dialogListener.onCancelDeleteClick(requireArguments().getInt(BUNDLE_NAME_KEY))
             dialog?.dismiss()
         })

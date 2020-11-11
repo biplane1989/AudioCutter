@@ -24,8 +24,10 @@ interface AudioFileManager {
     fun insertFileToMediastore(file: File): Boolean
     fun getUriByPath(itemFile: File): Uri?
     fun shareFileAudio(audioFile: AudioFile): Boolean
-    fun genNewAudioFileName(typeFile: Folder): String
-    fun createValidFileName(name: String, typeFile: Folder): String
     fun getListApprQueryReceiveData(): MutableList<ItemAppShare>
     fun getListReceiveData ():MutableList<ResolveInfo>
+    fun reNameToFileAudio(name: String, audioFile: AudioFile, typeFile: Folder): Boolean
+    fun checkFileNameDuplicate(name: String, typeFile: Folder): Boolean
+    fun openWithApp( uri: Uri)
+
 }

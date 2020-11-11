@@ -1,6 +1,5 @@
 package com.example.audiocutter.activities.acttest.testnm
 
-import android.content.Intent
 import android.os.Bundle
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
@@ -11,47 +10,33 @@ import kotlinx.android.synthetic.main.act_test.*
 import java.io.File
 
 
-class TestAct : BaseActivity(), DialogAppShare.DialogAppListener {
+class TestAct : BaseActivity() {
+    val path = "/storage/emulated/0/AudioCutter/mixer/aloha - Copy (4).mp3"
+    val file = File(path)
     private lateinit var dialog: DialogAppShare
     private var audioFile: AudioFile = AudioFile(
-        File("/storage/emulated/0/AudioCutter/merger/vhkllllkj.mp3"),
+        file,
         "hello",
         12588L,
         128,
         1255L,
         ManagerFactory.getAudioFileManager().getUriByPath(
-            File("/storage/emulated/0/AudioCutter/merger/vhkllllkj.mp3")
+            file
         )!!,
         null,
         "",
         "",
-        ""
+        "", "",
+        "",
+        ".mp3"
     )
 
 
     override fun createView(savedInstanceState: Bundle?) {
         setContentView(R.layout.act_test)
         bt_start.setOnClickListener {
-            dialog = DialogAppShare(this)
-            dialog.setOnCallBack(this)
-            dialog.show(supportFragmentManager, "TAG_DIALOG")
+            ManagerFactory.getAudioFileManager().openWithApp(audioFile.uri!!)
         }
-    }
-
-
-    override fun shareFileAudioToAppDevices() {
-        dialog.dismiss()
-        ManagerFactory.getAudioFileManager().shareFileAudio(audioFile)
-    }
-
-    override fun shareFilesToAppsDialog(position: Int) {
-        val intent = Intent()
-        intent.putExtra(Intent.EXTRA_STREAM, audioFile.uri)
-        intent.type = "audio/*"
-        intent.`package` = ManagerFactory.getAudioFileManager()
-            .getListReceiveData()[position].activityInfo.packageName
-        intent.action = Intent.ACTION_SEND
-        startActivity(intent)
     }
 
 
