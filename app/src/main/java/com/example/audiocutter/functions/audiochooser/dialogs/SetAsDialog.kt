@@ -1,15 +1,18 @@
 package com.example.audiocutter.functions.audiochooser.dialogs
 
-import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.DialogFragment
 import com.example.audiocutter.R
 import com.example.audiocutter.functions.audiochooser.objects.TypeAudioSetAs
-import kotlinx.android.synthetic.main.setas_dialog.*
 
-class SetAsDialog(context: Context) : Dialog(context), View.OnClickListener {
+class SetAsDialog(val mContext: Context) : DialogFragment(), View.OnClickListener {
+    private lateinit var rootView: View
     var typeSet: TypeAudioSetAs? = null
 
 
@@ -17,10 +20,18 @@ class SetAsDialog(context: Context) : Dialog(context), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.setas_dialog)
+        setStyle(STYLE_NORMAL, R.style.DialogTitle)
+        isCancelable = false
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        rootView = LayoutInflater.from(mContext).inflate(R.layout.setas_dialog, container, false)
         initViews()
-        setCancelable(false)
-        setCanceledOnTouchOutside(false)
+        return rootView
     }
 
     fun setOnCallBack(event: setAsListener) {
@@ -29,12 +40,11 @@ class SetAsDialog(context: Context) : Dialog(context), View.OnClickListener {
 
     private fun initViews() {
 
-        tv_cancel_dialog_set_as.setOnClickListener(this)
-        tv_set_dialog_set_as.setOnClickListener(this)
-
-        rb_alarm.setOnClickListener(this)
-        rb_ringtone.setOnClickListener(this)
-        rb_notification.setOnClickListener(this)
+        rootView.findViewById<TextView>(R.id.tv_cancel_dialog_set_as).setOnClickListener(this)
+        rootView.findViewById<TextView>(R.id.tv_set_dialog_set_as).setOnClickListener(this)
+        rootView.findViewById<TextView>(R.id.rb_alarm).setOnClickListener(this)
+        rootView.findViewById<TextView>(R.id.rb_ringtone).setOnClickListener(this)
+        rootView.findViewById<TextView>(R.id.rb_notification).setOnClickListener(this)
     }
 
     override fun onClick(p0: View) {

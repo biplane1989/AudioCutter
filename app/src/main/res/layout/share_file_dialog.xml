@@ -2,34 +2,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/colorBlue"
-    android:fitsSystemWindows="true">
-
-    <RelativeLayout
-        android:id="@+id/ln_main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/bt_start"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:layout_centerInParent="true"
-            android:text="start" />
-
-    </RelativeLayout>
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
 
         android:id="@+id/cdl_test"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#CCBDBDBD"
-        android:visibility="gone">
+        android:background="@color/colorBlackAlpha"
+        android:visibility="visible">
 
         <RelativeLayout
             android:id="@+id/rv_test_cdl"
@@ -48,10 +31,10 @@
                 android:gravity="center_vertical"
                 android:paddingLeft="@dimen/d_16"
                 android:text="Choose a sharing app"
-                android:textColor="@color/colorBlack"
                 android:textSize="@dimen/d_20" />
 
             <ImageView
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:id="@+id/iv_cancel_dialog"
                 android:layout_width="?actionBarSize"
                 android:layout_height="?actionBarSize"
@@ -63,12 +46,12 @@
                 android:layout_height="match_parent"
                 android:id="@+id/rv_app_share"
                 android:layout_width="match_parent"
+                android:overScrollMode="never"
                 android:layout_marginTop="?actionBarSize"
                 tools:listitem="@layout/item_share_file" />
 
         </RelativeLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
 
 </RelativeLayout>

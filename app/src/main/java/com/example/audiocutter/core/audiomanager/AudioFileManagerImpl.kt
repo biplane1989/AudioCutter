@@ -5,6 +5,7 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ResolveInfo
 import android.database.ContentObserver
 import android.database.Cursor
 import android.graphics.Bitmap
@@ -22,11 +23,11 @@ import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.functions.audiochooser.objects.ItemAppShare
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
 import com.example.audiocutter.permissions.PermissionManager
-import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioCutter
 import com.example.core.core.BitRate
 import kotlinx.coroutines.*
@@ -40,11 +41,12 @@ import kotlin.collections.HashSet
 
 
 object AudioFileManagerImpl : AudioFileManager {
+    private lateinit var intent: Intent
     private const val APP_FOLDER_NAME = "AudioCutter"
     private const val CUTTING_FOLDER_NAME = "cutter"
     private const val MERGING_FOLDER_NAME = "merger"
     private const val MIXING_FOLDER_NAME = "mixer"
-
+    private val APP_FOLDER_PATH = "${Environment.getExternalStorageDirectory()}/${APP_FOLDER_NAME}"
 
     enum class ScanningState {
         IDLE,
@@ -52,29 +54,27 @@ object AudioFileManagerImpl : AudioFileManager {
         WAITING_FOR_CANCELING
     }
 
-    private val APP_FOLDER_PATH = "${Environment.getExternalStorageDirectory()}/${APP_FOLDER_NAME}"
+
     private var uri: Uri = Uri.parse("")
     private val SIZE_KB: Long = 1024L
     private val SIZE_MB = SIZE_KB * SIZE_KB
     private val SIZE_GB = SIZE_MB * SIZE_KB
     private val TAG = AudioFileManagerImpl::class.java.name
     lateinit var mContext: Context
+    private lateinit var listAppShares: MutableList<ItemAppShare>
     private var initialized = false
     private var _listAllAudioFile = MutableLiveData<AudioFileScans>()
     private lateinit var audioCutter: AudioCutter
     private var scanningState = ScanningState.IDLE
     val listAllAudioFile: LiveData<AudioFileScans>
         get() = _listAllAudioFile
-    private var _listAudioByType = MutableLiveData<AudioFileScans>()
-
-    val listAudioByType: LiveData<AudioFileScans>
-        get() = _listAudioByType
     private val audioFileObserver = AudioFileObserver(Handler())
 
 
     private val _listCuttingAudios = MutableLiveData<AudioFileScans>()
     private val _listMeringAudios = MutableLiveData<AudioFileScans>()
     private val _listMixingAudios = MutableLiveData<AudioFileScans>()
+    private var listResolver = mutableListOf<ResolveInfo>()
     private var backgroundScope = CoroutineScope(Dispatchers.Default)
 
     override fun init(context: Context) {
@@ -87,6 +87,9 @@ object AudioFileManagerImpl : AudioFileManager {
             }
             initialized = true
             mContext = context.applicationContext
+            intent = Intent()
+            intent.action = Intent.ACTION_SEND
+            intent.type = "audio/*"
             scanAllFile()
             unRegisterContentObserve()
             registerContentObserVerDeleted()
@@ -102,6 +105,7 @@ object AudioFileManagerImpl : AudioFileManager {
             createFolder("$APP_FOLDER_PATH/$MIXING_FOLDER_NAME")
         }
     }
+
 
     private fun createFolder(folderPath: String): Boolean {
         val appFolder = File(folderPath)
@@ -181,12 +185,13 @@ object AudioFileManagerImpl : AudioFileManager {
                         } else {
                             name = preName
                         }
-                        val id = cursor.getString(clID)
-//                        val bitmap = getBitmapByPath(data)
-                        val bitmap = BitmapFactory.decodeResource(
+                        val bm = BitmapFactory.decodeResource(
                             mContext.resources,
-                            R.drawable.ic_play_mixing_audio
+                            R.drawable.ic_audiocutter_play
                         )
+                        val id = cursor.getString(clID)
+                        val bitmap = getBitmapByPath(data) ?: bm
+
                         val title = cursor.getString(clTitle)
                         val album = cursor.getString(clAlbum)
                         val artist = cursor.getString(clArtist)
@@ -221,7 +226,7 @@ object AudioFileManagerImpl : AudioFileManager {
                             duration = audioInfo?.duration ?: 0
                             e.printStackTrace()
                         }
-
+                        val uri = getUriFromFile(id, resolver, file)
                         Log.d(
                             "TAG",
                             "findAllAudioFiles: data :$data \n name : $name   \n ID  $id  \n" +
@@ -232,7 +237,7 @@ object AudioFileManagerImpl : AudioFileManager {
                                     "MimeType $mimeType \n filePAth  ${file.absolutePath} \n parent${file.parent}  \n BitRate $bitrate "
                         )
 
-                        val uri = getUriFromFile(id, resolver, file)
+
                         if (file.exists()) {
                             val audioFile = AudioFile(
                                 file = file, fileName = name.trim(),
@@ -246,12 +251,15 @@ object AudioFileManagerImpl : AudioFileManager {
                             val folder = checkFolder(audioFile.file.absolutePath)
                             when (folder) {
                                 Folder.TYPE_MIXER -> {
+                                    Log.d(TAG, "111: audiofilemixxing ${audioFile.fileName}")
                                     listMixingAudios.add(audioFile)
                                 }
                                 Folder.TYPE_CUTTER -> {
+                                    Log.d(TAG, "111: audiofile cutting ${audioFile.fileName}")
                                     listCuttingAudios.add(audioFile)
                                 }
                                 Folder.TYPE_MERGER -> {
+                                    Log.d(TAG, "111: audiofile mering ${audioFile.fileName}")
                                     listMergingAudios.add(audioFile)
                                 }
                                 else -> {
@@ -261,7 +269,9 @@ object AudioFileManagerImpl : AudioFileManager {
                         }
                         cursor.moveToNext()
                     }
+
                 }
+
 
                 if (scanningState == ScanningState.RUNNING) {
                     _listCuttingAudios.postValue(
@@ -282,6 +292,9 @@ object AudioFileManagerImpl : AudioFileManager {
                             StateLoad.LOADDONE
                         )
                     )
+                    Log.d(TAG, "nmcd :cutting ${listCuttingAudios.size}")
+                    Log.d(TAG, "nmcd :merring ${listMergingAudios.size}")
+                    Log.d(TAG, "nmcd :mixing ${listMixingAudios.size}")
                     _listAllAudioFile.postValue(AudioFileScans(listAllAudios, StateLoad.LOADDONE))
                 }
 
@@ -416,7 +429,6 @@ object AudioFileManagerImpl : AudioFileManager {
             values.put(MediaStore.Audio.AudioColumns.SIZE, file.length())
             values.put(MediaStore.Audio.AudioColumns.MIME_TYPE, "audio/mp3")
 
-
             return resolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values)
         }
 
@@ -491,14 +503,11 @@ object AudioFileManagerImpl : AudioFileManager {
             ) { s, uri ->
                 Log.d("insertFile", "on complete ${uri}  string $s")
             }
-
-
             true
         } catch (e: Exception) {
             e.printStackTrace()
             false
         }
-
     }
 
     override fun getFolderPath(typeFile: Folder): String {
@@ -567,74 +576,7 @@ object AudioFileManagerImpl : AudioFileManager {
             }
         }
 
-    private fun getAllFileName(folder: Folder): HashSet<String> {
-        val folderPath = getFolderPath(folder)
-        val folder = File(folderPath)
-        val fileNameHash = HashSet<String>()
-        if (folder.exists()) {
-            folder.listFiles()?.forEach {
-                if (it.name.contains(".")) {
-                    fileNameHash.add(it.name.substring(0, (it.name).lastIndexOf(".")))
-                } else {
-                    fileNameHash.add(it.name)
-                }
-                Log.d(TAG, "getAllFileName: ${it.name}")
-            }
-        }
-        return fileNameHash
 
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    override fun genNewAudioFileName(typeFile: Folder): String {
-        val random = Random()
-        val fileNameHash = getAllFileName(typeFile)
-        var fileName = ""
-        val day = SimpleDateFormat("dd_MM").format(Date())
-        var textName = ""
-        fileName = when (typeFile) {
-            Folder.TYPE_CUTTER -> {
-                "${CUTTING_FOLDER_NAME}_${APP_FOLDER_NAME}_$day"
-            }
-            Folder.TYPE_MERGER -> {
-                "${MERGING_FOLDER_NAME}_${APP_FOLDER_NAME}_$day"
-            }
-            Folder.TYPE_MIXER -> {
-                "${MIXING_FOLDER_NAME}_${APP_FOLDER_NAME}_$day"
-            }
-        }
-
-//        fileName = "AudioCutter_AudioCutter_lonely(2)"
-
-        fileNameHash.forEach {
-            textName += "$it,"
-        }
-        if (textName.contains(fileName)) {
-            fileName = "$fileName(${Utils.getAlphaNumericString(random.nextInt(10))})"
-        }
-        Log.d(TAG, "genNewAudioFileName: $fileName")
-        return fileName
-    }
-
-
-    override fun createValidFileName(name: String, typeFile: Folder): String {
-        val random = Random()
-        val fileNameHash = getAllFileName(typeFile)
-        var fileName = ""
-        var textName = ""
-
-        fileNameHash.forEach {
-            textName += "$it,"
-        }
-        fileName = if (textName.contains(name)) {
-            "$name(${Utils.getAlphaNumericString(random.nextInt(10))})"
-        } else {
-            name
-        }
-        Log.d(TAG, "createValidFileName: $fileName")
-
-        return fileName
-    }
 
 
     override fun getListAudioFileByType(typeFile: Folder): LiveData<AudioFileScans> {
@@ -688,6 +630,111 @@ object AudioFileManagerImpl : AudioFileManager {
             e.printStackTrace()
             false
         }
+    }
+
+
+    override fun getListApprQueryReceiveData(): MutableList<ItemAppShare> {
+        listResolver = mContext.packageManager.queryIntentActivities(intent, 0)
+        Log.d(TAG, "getListApprQueryReceiveData: ${listResolver.size}")
+        listAppShares = ArrayList()
+        for (info in listResolver) {
+            val item = ItemAppShare(
+                info.loadLabel(mContext.packageManager).toString(),
+                info.loadIcon(mContext.packageManager)
+            )
+            listAppShares.add(item)
+        }
+        return listAppShares
+
+    }
+
+    override fun getListReceiveData(): MutableList<ResolveInfo> {
+        return mContext.packageManager.queryIntentActivities(intent, 0)
+
+    }
+
+    override fun reNameToFileAudio(
+        newName: String,
+        audioFile: AudioFile,
+        typeFile: Folder
+    ): Boolean {
+
+
+        try {
+            val subPath = when (typeFile) {
+                Folder.TYPE_MIXER -> {
+                    "$APP_FOLDER_PATH/$MIXING_FOLDER_NAME"
+                }
+                Folder.TYPE_MERGER -> {
+                    "$APP_FOLDER_PATH/$MERGING_FOLDER_NAME"
+                }
+                Folder.TYPE_CUTTER -> {
+                    "$APP_FOLDER_PATH/$CUTTING_FOLDER_NAME"
+                }
+            }
+            val file = audioFile.file
+            val pathNew = "$subPath/$newName${audioFile.mimeType}"
+            val fileNew = File(pathNew)
+            file.renameTo(fileNew)
+
+            val values = ContentValues()
+            values.put(MediaStore.Audio.AudioColumns.DISPLAY_NAME, "$newName${audioFile.mimeType}")
+            Log.d(TAG, "reNameToFileAudio: path $pathNew")
+
+            val rows: Int = mContext.contentResolver.update(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values,
+                null, null
+            )
+            MediaScannerConnection.scanFile(
+                mContext,
+                arrayOf(fileNew.absolutePath),
+                null
+            ) { s, uri ->
+                Log.d("insertFile", "on complete ${uri}  string $s")
+            }
+
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        }
+    }
+
+    private fun getAllFileName(folder: Folder): HashSet<String> {
+        val folderPath = getFolderPath(folder)
+        val folder = File(folderPath)
+        val fileNameHash = HashSet<String>()
+        if (folder.exists()) {
+            folder.listFiles()?.forEach {
+                if (it.name.contains(".")) {
+                    fileNameHash.add(it.name.substring(0, (it.name).lastIndexOf(".")))
+                } else {
+                    fileNameHash.add(it.name)
+                }
+            }
+        }
+        return fileNameHash
+
+    }
+
+    override fun checkFileNameDuplicate(name: String, typeFile: Folder): Boolean {
+        val fileNameHash = getAllFileName(typeFile)
+        var result = false
+        fileNameHash.forEach {
+            Log.d("nmcode", "checkFileNameDuplicate: $it")
+            if (name == it) {
+                result = true
+            }
+        }
+
+        return result
+    }
+
+    override  fun openWithApp( uri: Uri) {
+        val intent = Intent()
+        intent.action = Intent.ACTION_VIEW
+        intent.setDataAndType(uri, "audio/*")
+        mContext.startActivity(intent)
     }
 
 

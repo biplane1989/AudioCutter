@@ -166,11 +166,7 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
     }
 
     fun share() {
-        val fileAudio =
-            ManagerFactory.getAudioEditorManager().getLatestConvertingItem()?.outputAudioFile
-        fileAudio?.let {
-            ManagerFactory.getAudioFileManager().shareFileAudio(fileAudio)
-        }
+
     }
 
     fun setContact() {

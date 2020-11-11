@@ -237,7 +237,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     override fun showDialogSetAs(itemAudio: AudioCutterView) {
         audioCutterItem = itemAudio
         dialog.setOnCallBack(this)
-        dialog.show()
+        dialog.show(requireActivity().supportFragmentManager, "TAG")
     }
 
     override fun onCutItemClicked(itemAudio: AudioCutterView) {
@@ -301,6 +301,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         binding.tvEmptyListCutter.visibility = View.GONE
         binding.ivEmptyListCutter.visibility = View.GONE
         audioCutterAdapter.submitList(audioCutterModel.getListAudio())
+        binding.edtCutterSearch.setText("")
         hideOrShowEditText(View.GONE)
         hideOrShowView(View.VISIBLE)
     }

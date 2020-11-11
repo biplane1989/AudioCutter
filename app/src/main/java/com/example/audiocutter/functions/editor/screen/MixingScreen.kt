@@ -19,7 +19,7 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.MixingScreenBinding
-import com.example.audiocutter.functions.editor.dialogs.FileNameDialog
+import com.example.audiocutter.functions.editor.dialogs.MixerDialog
 import com.example.audiocutter.functions.editor.dialogs.FileNameDialogListener
 import com.example.audiocutter.functions.mystudio.dialog.CancelDialog
 import com.example.audiocutter.objects.AudioFile
@@ -42,7 +42,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     private lateinit var audioFile1: AudioFile
     private lateinit var audioFile2: AudioFile
     private var isCompare = false
-    private var dialog: FileNameDialog? = null
+    private var dialog: MixerDialog? = null
     private var isDeleteClicked = true
 
     private val safeArg: MixingScreenArgs by navArgs()
@@ -186,7 +186,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
             }
             binding.ivDoneMixing -> {
                 if (isDeleteClicked) {
-                    val dialog = FileNameDialog.newInstance(this)
+                    val dialog = MixerDialog.newInstance(this)
                     dialog.show(childFragmentManager, CancelDialog.TAG)
                     isDeleteClicked = false
                 }

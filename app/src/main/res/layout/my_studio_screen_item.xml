@@ -11,7 +11,8 @@
     <LinearLayout
         android:id="@+id/ll_audio_item_header"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:gravity="center"
+        android:layout_height="@dimen/d_70"
         android:background="?attr/selectableItemBackground"
         android:orientation="horizontal">
 
@@ -22,8 +23,8 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cv_avatar"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="@dimen/d_40"
+                android:layout_height="@dimen/d_40"
                 android:layout_marginLeft="16dp"
 
                 app:cardBackgroundColor="#C4C6D2"

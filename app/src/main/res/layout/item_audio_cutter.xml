@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:background="@color/colorGray">
+    android:layout_height="@dimen/d_70"
+    android:background="@color/colorWhite">
     <com.example.audiocutter.ui.audiochooser.cut.ProgressView
         android:layout_width="match_parent"
         android:id="@+id/pg_audio_cutter_screen"
@@ -10,9 +10,10 @@
         android:layout_height="match_parent" />
 
     <LinearLayout
+        android:layout_centerInParent="true"
         android:id="@+id/ln_item_audio_cutter_screen"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="@dimen/d_70"
         android:background="?attr/selectableItemBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -21,15 +22,15 @@
         <ImageView
 
             android:id="@+id/iv_controller_audio"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/d_40"
+            android:layout_height="@dimen/d_40"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_audiocutter_play" />
 
         <LinearLayout
             android:gravity="right"
             android:layout_width="0dp"
-            android:layout_height="45dp"
+            android:layout_height="@dimen/d_40"
             android:layout_weight="1"
             android:orientation="horizontal"
             android:paddingLeft="@dimen/d_16">
@@ -104,8 +105,8 @@
 
         <ImageView
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/d_40"
+            android:layout_height="@dimen/d_40"
             android:scaleType="centerInside"
             android:src="@drawable/ic_audiocutter_popupmenu" />
 
@@ -113,4 +114,4 @@
 
 
     </LinearLayout>
-</FrameLayout>
+</RelativeLayout>

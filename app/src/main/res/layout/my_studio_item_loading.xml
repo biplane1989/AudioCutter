@@ -4,7 +4,7 @@
     <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/ll_audio_loading"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/d_70"
         android:background="#FFFFFF"
         android:gravity="center"
         android:orientation="vertical">
@@ -22,8 +22,8 @@
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cv_avatar"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="@dimen/d_40"
+                    android:layout_height="@dimen/d_40"
                     android:layout_marginLeft="16dp"
 
                     app:cardBackgroundColor="#C4C6D2"
@@ -51,7 +51,7 @@
                     android:gravity="top"
                     android:text="@string/my_studio_screen_item_title"
                     android:textColor="#2E3041"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/d_18"
                     android:textStyle="bold"
 
                     app:layout_constraintStart_toEndOf="@id/cv_avatar"
@@ -96,13 +96,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:gravity="end"
+                        android:textSize="@dimen/d_13"
                         android:text="45%" />
                 </LinearLayout>
 
                 <ImageView
                     android:id="@+id/iv_cancel"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="@dimen/d_40"
+                    android:layout_height="@dimen/d_40"
                     android:layout_marginRight="10dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"

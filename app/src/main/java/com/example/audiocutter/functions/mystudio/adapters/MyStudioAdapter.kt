@@ -164,7 +164,10 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         val llItem: LinearLayout = itemView.findViewById(R.id.ll_item)
         fun onBind() {
             val audioFileView = getItem(adapterPosition)
-
+            var bitrate = audioFileView.audioFile.bitRate / 1000
+            if (bitrate > 320) {
+                bitrate = 320
+            }
             tvTitle.setText(audioFileView.audioFile.fileName)
             if (audioFileView.audioFile.size / (1024 * 1024) > 0) {
 

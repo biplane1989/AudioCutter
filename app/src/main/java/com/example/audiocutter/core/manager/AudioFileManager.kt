@@ -1,8 +1,10 @@
 package com.example.audiocutter.core.manager
 
 import android.content.Context
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import androidx.lifecycle.LiveData
+import com.example.audiocutter.functions.audiochooser.objects.ItemAppShare
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.audiomanager.StateFile
 import com.example.audiocutter.objects.AudioFile
@@ -22,6 +24,10 @@ interface AudioFileManager {
     fun insertFileToMediastore(file: File): Boolean
     fun getUriByPath(itemFile: File): Uri?
     fun shareFileAudio(audioFile: AudioFile): Boolean
-    fun genNewAudioFileName(typeFile: Folder): String
-    fun createValidFileName(name: String, typeFile: Folder): String
+    fun getListApprQueryReceiveData(): MutableList<ItemAppShare>
+    fun getListReceiveData ():MutableList<ResolveInfo>
+    fun reNameToFileAudio(name: String, audioFile: AudioFile, typeFile: Folder): Boolean
+    fun checkFileNameDuplicate(name: String, typeFile: Folder): Boolean
+    fun openWithApp( uri: Uri)
+
 }

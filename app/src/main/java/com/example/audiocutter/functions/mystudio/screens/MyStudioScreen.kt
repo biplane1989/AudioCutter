@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.mystudio.screens
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,14 +12,17 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
+import com.example.audiocutter.activities.acttest.testnm.DialogAppShare
 import com.example.audiocutter.base.BaseFragment
+import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MyStudioFragmentBinding
-import com.example.audiocutter.functions.mystudio.objects.AudioFileView
+import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterAdapter
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterScreenCallback
 import com.example.audiocutter.functions.mystudio.dialog.*
+import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.android.synthetic.main.my_studio_fragment.*
 import kotlinx.coroutines.CoroutineScope
@@ -26,7 +30,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, CancelDialogListener {
+class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener,
+    SetAsDialogListener, DeleteDialogListener, CancelDialogListener,
+    DialogAppShare.DialogAppListener {
 
     private lateinit var binding: MyStudioFragmentBinding
     private val TAG = "giangtd"
@@ -35,6 +41,8 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     private var typeAudio: Int = -1
     private var isDeleteClicked = true
     private var dialog: CancelDialog? = null
+    private lateinit var audioFile: AudioFile
+    private lateinit var dialogShare: DialogAppShare
 
     val listAudioObserver = Observer<List<AudioFileView>> { listAudio ->
 
@@ -161,13 +169,21 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     viewStateManager.myStudioSetContactItemClicked(this, audioFile.file.absolutePath)
                 }
                 R.id.open_with -> {
+                    ManagerFactory.getAudioFileManager().openWithApp(audioFile.uri!!)
                     //open with screen
                 }
                 R.id.share -> {
-                    ManagerFactory.getAudioFileManager().shareFileAudio(audioFile)
+                    this.audioFile = audioFile
+
+                    ShowDialogShareFile()
                 }
                 R.id.rename -> {
-                    val dialog = RenameDialog.newInstance(this, "giang")
+                    val dialog = RenameDialog.newInstance(
+                        this,
+                        typeAudio,
+                        audioFile.file.absolutePath,
+                        audioFile.mimeType!!
+                    )
                     dialog.show(childFragmentManager, RenameDialog.TAG)
                 }
                 R.id.info -> {
@@ -185,6 +201,12 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             true
         })
         popup.show()
+    }
+
+    private fun ShowDialogShareFile() {
+        dialogShare = DialogAppShare(requireContext())
+        dialogShare.setOnCallBack(this)
+        dialogShare.show(requireActivity().supportFragmentManager, "TAG_DIALOG")
     }
 
     private fun checkAllItemSelected() {
@@ -213,8 +235,21 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     // hanlder linterner on dialog rename
-    override fun onRenameClick() {
-        Log.d(TAG, "onRenameClick: rename")
+    override fun onRenameClick(newName: String, type: Int, filePath: String) {
+        /**handle data rename change name to file insert to mediastore**/
+        var typeFolder: Folder = when (type) {
+            0 ->
+                Folder.TYPE_CUTTER
+
+            1 ->
+                Folder.TYPE_MERGER
+
+            else ->
+                Folder.TYPE_MIXER
+        }
+         myStudioViewModel.renameAudio(newName, typeFolder, filePath)
+
+
     }
 
     // hanlder linterner on dialog set as
@@ -321,5 +356,21 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
     override fun onCancelDialog() {
         isDeleteClicked = true
+    }
+
+
+    override fun shareFileAudioToAppDevices() {
+        dialogShare.dismiss()
+        ManagerFactory.getAudioFileManager().shareFileAudio(audioFile)
+    }
+
+    override fun shareFilesToAppsDialog(position: Int) {
+        val intent = Intent()
+        intent.putExtra(Intent.EXTRA_STREAM, audioFile.uri)
+        intent.type = "audio/*"
+        intent.`package` = ManagerFactory.getAudioFileManager()
+            .getListReceiveData()[position].activityInfo.packageName
+        intent.action = Intent.ACTION_SEND
+        startActivity(intent)
     }
 }

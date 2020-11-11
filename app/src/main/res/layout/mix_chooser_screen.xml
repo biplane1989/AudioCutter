@@ -28,6 +28,7 @@
 
                 <EditText
                     android:paddingHorizontal="?actionBarSize"
+
                     android:id="@+id/edt_mixer_search"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -77,7 +78,7 @@
                         android:fontFamily="@font/sanfranciscodisplay_bold"
                         android:text="@string/audio_mixer_name_actionbar"
                         android:textColor="@color/colorBlack"
-                        android:textIsSelectable="true"
+
                         android:textSize="@dimen/d_18" />
                 </TableRow>
 
@@ -129,6 +130,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_mixer"
             android:layout_width="match_parent"
+            android:overScrollMode="never"
             android:layout_height="wrap_content"
             android:layout_above="@id/rlt_next_mixer_parent"
             android:layout_below="@id/rlt_actionbar"

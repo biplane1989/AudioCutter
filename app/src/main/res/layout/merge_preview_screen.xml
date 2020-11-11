@@ -36,7 +36,7 @@
                 android:fontFamily="@font/sanfranciscodisplay_bold"
                 android:text="File to be Merged"
                 android:textColor="@color/colorBlack"
-                android:textIsSelectable="true"
+
                 android:textSize="@dimen/d_18" />
             <View
                 android:layout_width="match_parent"
@@ -50,6 +50,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_merge_choose"
         android:layout_width="match_parent"
+        android:overScrollMode="never"
         android:layout_height="match_parent"
         android:layout_below="@id/rlt_actionbar_mer_choose"
         tools:listitem="@layout/item_audio_choose_merge" />
@@ -86,7 +87,7 @@
             android:paddingLeft="@dimen/d_10"
             android:text="Add File"
             android:textColor="@color/colorBlack"
-            android:textIsSelectable="true"
+
             android:textSize="@dimen/d_18" />
 
         <Button

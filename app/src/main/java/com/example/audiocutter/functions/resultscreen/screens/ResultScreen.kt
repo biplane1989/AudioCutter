@@ -1,22 +1,17 @@
 package com.example.audiocutter.functions.resultscreen.screens
-
-import android.content.Context
-import android.media.MediaMetadataRetriever
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.manager.SupportRequestManagerFragment
 import com.example.audiocutter.R
+import com.example.audiocutter.activities.acttest.testnm.DialogAppShare
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
@@ -29,19 +24,22 @@ import com.example.audiocutter.objects.AudioFile
 import java.text.SimpleDateFormat
 
 
-class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener {
+class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener, DialogAppShare.DialogAppListener {
     companion object {
         const val MIX = 3
         const val MER = 2
         const val CUT = 1
     }
 
+    private  var audioFile: AudioFile?=null
+    private lateinit var dialogAppShare: DialogAppShare
+    private var isDoubleDeleteClicked = true
     private var isLoadingDone = false
     private val safeArg: ResultScreenArgs by navArgs()
     private val TAG = "giangtd"
     private lateinit var binding: ResultScreenBinding
     private lateinit var mResultViewModel: ResultViewModel
-
+    private var dialog: CancelDialog? = null
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
     val processDoneObserver = Observer<AudioFile> {         // observer trang thai done
@@ -245,7 +243,11 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener 
                 }
             }
             binding.llShare -> {
-                mResultViewModel.share()
+                audioFile =
+                    ManagerFactory.getAudioEditorManager()
+                        .getLatestConvertingItem()?.outputAudioFile
+                ShowDialogShareFile()
+
             }
             binding.llContact -> {
                 viewStateManager.resultScreenSetContactItemClicked(this, ManagerFactory.getAudioEditorManager()
@@ -256,6 +258,27 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener 
             }
         }
     }
+    private fun ShowDialogShareFile() {
+        dialogAppShare = DialogAppShare(requireContext())
+        dialogAppShare.setOnCallBack(this)
+        dialogAppShare.show(requireActivity().supportFragmentManager, "TAG_DIALOG")
+    }
+
+    override fun shareFileAudioToAppDevices() {
+        dialogAppShare.dismiss()
+        ManagerFactory.getAudioFileManager().shareFileAudio(audioFile!!)
+    }
+
+    override fun shareFilesToAppsDialog(position: Int) {
+        val intent = Intent()
+        intent.putExtra(Intent.EXTRA_STREAM, audioFile!!.uri)
+        intent.type = "audio/*"
+        intent.`package` = ManagerFactory.getAudioFileManager()
+            .getListReceiveData()[position].activityInfo.packageName
+        intent.action = Intent.ACTION_SEND
+        startActivity(intent)
+    }
+
 
     override fun onCancelDeleteClick(id: Int) {             // interface delete dialog
         ManagerFactory.getAudioEditorManager().cancel(id)

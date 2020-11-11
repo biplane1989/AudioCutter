@@ -1,72 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_dialog"
-    android:gravity="center">
+    android:background="#66000000">
 
-    <LinearLayout
-        android:layout_width="350dp"
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:orientation="vertical"
+        app:cardCornerRadius="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible"
+                tools:visibility="visible">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:layout_marginLeft="@dimen/d_16"
-                    android:layout_marginRight="@dimen/d_16"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
                     android:fontFamily="@font/sanfranciscodisplay_bold"
                     android:gravity="center"
-                    android:text="Set As"
+                    android:text="@string/my_studio_dialog_set_as_title"
                     android:textColor="#2E3041"
                     android:textSize="20sp"
                     android:textStyle="bold" />
+            </LinearLayout>
 
 
             <RadioGroup
+                android:layout_marginTop="20dp"
                 android:id="@+id/rg_setas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/d_16">
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp">
 
                 <RadioButton
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
                     android:id="@+id/rb_ringtone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:buttonTint="#FDAA74"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:shadowColor="#FDAA74"
-                    android:text="Ringtone"
+                    android:text="@string/my_studio_dialog_set_as_ringtone"
                     android:textSize="16sp" />
 
                 <RadioButton
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
                     android:id="@+id/rb_alarm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:buttonTint="#FDAA74"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
-                    android:text="Alarm"
+                    android:text="@string/my_studio_dialog_set_as_alarm"
                     android:textSize="16sp" />
 
                 <RadioButton
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
                     android:id="@+id/rb_notification"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:buttonTint="#FDAA74"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
-                    android:text="Notification"
+                    android:text="@string/my_studio_dialog_set_as_notification"
                     android:textSize="16sp" />
             </RadioGroup>
 
             <LinearLayout
+                android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
-                android:layout_height="48dp">
+                android:layout_height="@dimen/d_40">
 
                 <TextView
                     android:id="@+id/tv_cancel_dialog_set_as"
@@ -94,5 +120,5 @@
                     android:textSize="18dp" />
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</LinearLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

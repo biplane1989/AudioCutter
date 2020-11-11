@@ -75,7 +75,10 @@ class CutChooserAdapter(val mContext: Context) :
                 }
                 PlayerState.IDLE -> {
                     holder.pgAudio.resetView()
-                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
+//                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
+                    itemAudioFile.audioFile.bitmap?.let {
+                        holder.ivController.setImageBitmap(it)
+                    }
                 }
             }
 
@@ -108,6 +111,7 @@ class CutChooserAdapter(val mContext: Context) :
             if (bitRate > 320) {
                 bitRate = 320
             }
+
             tvBitrateAudio.text = "${bitRate}kbp/s"
 
             tvNameAudio.text = itemAudioFile.audioFile.fileName
@@ -146,7 +150,10 @@ class CutChooserAdapter(val mContext: Context) :
                     pgAudio.visibility = View.GONE
                     waveView.visibility = View.INVISIBLE
                     pgAudio.resetView()
-                    ivController.setImageResource(R.drawable.ic_audiocutter_play)
+//                    ivController.setImageResource(R.drawable.ic_audiocutter_play)
+                    itemAudioFile.audioFile.bitmap?.let {
+                        ivController.setImageBitmap(it)
+                    }
                 }
             }
 

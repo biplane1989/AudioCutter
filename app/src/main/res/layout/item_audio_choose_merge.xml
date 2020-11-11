@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="80dp">
+    android:layout_height="@dimen/d_70">
 
     <com.example.audiocutter.ui.audiochooser.cut.ProgressView
         android:id="@+id/pg_merge_choose_screen"
@@ -12,7 +12,7 @@
     <LinearLayout
         android:id="@+id/ln_item_merge_choose_screen"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="@dimen/d_70"
         android:background="?attr/selectableItemBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -71,16 +71,16 @@
 
         <ImageView
             android:id="@+id/iv_trash_merge_choose"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/d_40"
+            android:layout_height="@dimen/d_40"
             android:scaleType="centerInside"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_trash_merge" />
 
         <ImageView
             android:id="@+id/iv_move_item"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/d_40"
+            android:layout_height="@dimen/d_40"
             android:scaleType="centerInside"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_move_item_merge" />

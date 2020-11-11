@@ -7,6 +7,7 @@
     <color name="colorGray">#F6F6F6</color>
     <color name="colorgray">#8C8C8C</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorwhite">#EFEDED</color>
     <color name="colorAlpha">#00FFFFFF</color>
     <color name="main_screen_title_text_color">#2E3041</color>
     <color name="main_screen_item_text_color">#FFFFFF</color>
@@ -34,4 +35,5 @@
     <color name="dialog_convert_seekbar_color">#FDAA74</color>
     <color name="colorGraySeekbar">#E0E0E0</color>
     <color name="colorBlue">#2196F3</color>
+    <color name="colorBlackAlpha">#9E2E3041</color>
 </resources>
