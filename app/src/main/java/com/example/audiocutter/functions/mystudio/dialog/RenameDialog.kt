@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
+import com.example.audiocutter.core.audiomanager.Folder
 import kotlinx.android.synthetic.main.my_studio_dialog_rename.*
 
 class RenameDialog : BaseDialog() {
@@ -26,8 +27,7 @@ class RenameDialog : BaseDialog() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setStyle(STYLE_NO_TITLE, R.style.DialogGray)
-        setStyle(STYLE_NORMAL, R.style.DialogGray)
+        setStyle(STYLE_NO_TITLE, R.style.DialogGray)
 
     }
 

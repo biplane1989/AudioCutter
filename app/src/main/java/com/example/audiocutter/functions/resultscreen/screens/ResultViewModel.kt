@@ -179,8 +179,7 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
     fun openWith() {
 
     }
-
-
+    
     override fun onCleared() {
         super.onCleared()
         audioPlayer.stop()

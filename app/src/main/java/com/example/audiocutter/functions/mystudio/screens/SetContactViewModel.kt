@@ -124,7 +124,6 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
                     newListContact.add(contact)
                 }
             }
-//            listContactItem.postValue(newListContact)
             return newListContact
         }
         return ArrayList()
@@ -149,12 +148,11 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
         listContactItem.postValue(mListContact)
     }
 
-    fun setRingtoneForContact(pathUri: String): Boolean {
+    fun setRingtoneForContact(filePath: String): Boolean {
         for (item in mListContact) {
             if (item.isSelect) {
                 return ManagerFactory.getRingtoneManager()
-                    .setRingToneWithContactNumberAndUri(FileUtils.getPath(mContext, Uri.parse(pathUri))
-                        .toString(), item.contactItem.phoneNumber)
+                    .setRingToneWithContactNumberandFilePath(filePath, item.contactItem.phoneNumber)
             }
         }
         return false

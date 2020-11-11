@@ -79,10 +79,6 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
         return binding.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-//        mListContactViewModel.getData().removeObserver(listContactObserver)
-    }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
@@ -96,7 +92,7 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
             mListContactViewModel.scan()
         }
 
-        mListContactViewModel.getData().observe(this as LifecycleOwner, listContactObserver)          // loi observe hoi lai tai
+        mListContactViewModel.getData().observe(this, listContactObserver)          // loi observe hoi lai tai
 
     }
 

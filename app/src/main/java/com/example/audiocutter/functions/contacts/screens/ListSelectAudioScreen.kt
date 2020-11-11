@@ -39,7 +39,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     val safeArg: ListSelectAudioScreenArgs by navArgs()
     lateinit var mListSelectAudioViewModel: ListSelectAudioViewModel
     lateinit var mListSelectAdapter: ListSelectAdapter
-    val REQ_CODE_PICK_SOUNDFILE = 1989
+    val REQ_CODE_PICK_SOUNDFILE = 1990
     var positionSelect = -1
     lateinit var binding: ListContactSelectScreenBinding
 
@@ -47,7 +47,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
         Log.d(TAG, "list audio size : " + listAudio.size)
         if (listAudio != null) {
-
 //            mListSelectAdapter.submitList(ArrayList(listAudio))
             val fileName = safeArg.uri            // tam thoi comment
 
@@ -78,7 +77,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         }
     }
 
-
     fun init() {
         binding.rvListSelectAudio.layoutManager = LinearLayoutManager(context)
         binding.rvListSelectAudio.setHasFixedSize(true)
@@ -108,10 +106,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         CoroutineScope(Dispatchers.Default).launch {
             mListSelectAudioViewModel.init()
         }
-//        lifecycleScope.launch {
-////            delay(1250)
-//            mListSelectAudioViewModel.init()
-//        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -59,6 +59,11 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_TITLE, R.style.DialogConvert)
+    }
+
     override fun initViews(view: View, savedInstanceState: Bundle?) {
         super.initViews(view, savedInstanceState)
         getData()

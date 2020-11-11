@@ -70,7 +70,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
             }
             binding.ivClose -> {
                 binding.clDefault.visibility = View.VISIBLE
-                binding.clDefault.visibility = View.GONE
+                binding.clDelete.visibility = View.GONE
 
                 // enable viewpayger swip
                 binding.viewPager.setPagingEnabled(true)
@@ -81,8 +81,6 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
             binding.ivExtends -> {
                 binding.clDefault.visibility = View.GONE
                 binding.clDelete.visibility = View.VISIBLE
-
-                binding.clDefault.isEnabled
 
                 // disable viewpayger swip
                 binding.viewPager.setPagingEnabled(false)

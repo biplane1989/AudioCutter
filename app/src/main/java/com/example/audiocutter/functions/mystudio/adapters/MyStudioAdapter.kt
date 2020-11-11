@@ -105,10 +105,19 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                         holder.ivItemDelete.setImageResource(R.drawable.my_studio_screen_icon_checked)
                     }
                 }
-                val audioFileView = getItem(position)
-                holder.sbMusic.max = audioFileView.itemLoadStatus.duration
-                holder.tvTimeLife.text = simpleDateFormat.format(audioFileView.itemLoadStatus.currPos)
-                holder.sbMusic.progress = audioFileView.itemLoadStatus.currPos
+
+                if (newItem.isExpanded) {
+                    holder.llPlayMusic.visibility = View.VISIBLE
+                    holder.llItem.setBackgroundResource(R.drawable.my_studio_item_bg)
+                } else {
+                    holder.llPlayMusic.visibility = View.GONE
+                    holder.llItem.setBackgroundColor(Color.WHITE)
+//                    holder.llItem.setBackgroundResource(R.drawable.bg_white_rec)
+                    holder.llItem.setPadding(0, 0, 0, 0)
+                }
+                holder.sbMusic.max = newItem.itemLoadStatus.duration
+                holder.tvTimeLife.text = simpleDateFormat.format(newItem.itemLoadStatus.currPos)
+                holder.sbMusic.progress = newItem.itemLoadStatus.currPos
 
                 when (newItem.itemLoadStatus.playerState) {
                     PlayerState.PLAYING -> {
@@ -159,9 +168,9 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             tvTitle.setText(audioFileView.audioFile.fileName)
             if (audioFileView.audioFile.size / (1024 * 1024) > 0) {
 
-                tvInfo.setText(String.format("%.1f", (audioFileView.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + audioFileView.audioFile.bitRate.toString() + "kb/s")
+                tvInfo.setText(String.format("%.1f", (audioFileView.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + (audioFileView.audioFile.bitRate / 1000).toString() + "kb/s")
             } else {
-                tvInfo.setText(((audioFileView.audioFile.size) / (1024)).toString() + " KB" + " | " + audioFileView.audioFile.bitRate.toString() + "kb/s")
+                tvInfo.setText(((audioFileView.audioFile.size) / (1024)).toString() + " KB" + " | " + (audioFileView.audioFile.bitRate / 1000).toString() + "kb/s")
             }
 
             tvTotal.text = "/" + simpleDateFormat.format(audioFileView.audioFile.time?.toInt())
@@ -175,6 +184,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             } else {
                 llPlayMusic.visibility = View.GONE
                 llItem.setBackgroundColor(Color.WHITE)
+                llItem.setPadding(0, 0, 0, 0)
             }
 
             when (audioFileView.itemLoadStatus.deleteState) {

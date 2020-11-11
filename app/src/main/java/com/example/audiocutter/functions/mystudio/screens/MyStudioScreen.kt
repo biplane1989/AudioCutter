@@ -33,7 +33,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     private lateinit var myStudioViewModel: MyStudioViewModel
     private lateinit var audioCutterAdapter: AudioCutterAdapter
     private var typeAudio: Int = -1
-    private var isDoubleDeleteClicked = true
     private var isDeleteClicked = true
     private var dialog: CancelDialog? = null
 
@@ -155,17 +154,14 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     dialog.show(childFragmentManager, SetAsDialog.TAG)
                 }
                 R.id.cut -> {
-                    //cut screen
-                    Log.d(TAG, "showMenu:cut ")
+                    viewStateManager.myStudioCuttingItemClicked(this, audioFile.file.absolutePath)
                 }
                 R.id.contacs -> {
                     // contacs screen
-                    viewStateManager.myStudioSetContactItemClicked(this, audioFile.uri.toString())
-                    Log.d(TAG, "showMenu:cut ")
+                    viewStateManager.myStudioSetContactItemClicked(this, audioFile.file.absolutePath)
                 }
                 R.id.open_with -> {
                     //open with screen
-                    Log.d(TAG, "showMenu:cut ")
                 }
                 R.id.share -> {
                     ManagerFactory.getAudioFileManager().shareFileAudio(audioFile)
@@ -179,10 +175,9 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     dialog.show(childFragmentManager, InfoDialog.TAG)
                 }
                 R.id.delete -> {
-                    if (isDoubleDeleteClicked) {
+                    if (childFragmentManager.findFragmentByTag(DeleteDialog.TAG) == null) {
                         val dialog = DeleteDialog.newInstance(this, audioFile.file.absolutePath)
                         dialog.show(childFragmentManager, DeleteDialog.TAG)
-                        isDoubleDeleteClicked = false
                     }
                 }
             }
@@ -265,12 +260,10 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     .show()
             }
         }
-        isDoubleDeleteClicked = true
     }
 
     // click cancel button on dialog delete
     override fun onCancel() {
-        isDoubleDeleteClicked = true
     }
 
     // nhận listernner từ fragment khác truyền đến

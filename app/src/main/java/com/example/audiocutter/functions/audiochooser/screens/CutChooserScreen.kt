@@ -2,6 +2,8 @@ package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -17,7 +19,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.CutChooserScreenBinding
@@ -27,13 +28,14 @@ import com.example.audiocutter.functions.audiochooser.dialogs.SetAsDoneDialog
 import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.objects.TypeAudioSetAs
+import com.example.audiocutter.util.FileUtils
 
-class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
-    SetAsDialog.setAsListener, View.OnClickListener, OnActionCallback {
+class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, SetAsDialog.setAsListener, View.OnClickListener, OnActionCallback {
     val TAG = CutChooserScreen::class.java.name
     private lateinit var binding: CutChooserScreenBinding
     private lateinit var audioCutterAdapter: CutChooserAdapter
     private lateinit var audioCutterModel: AudioCutterModel
+    private val REQ_CODE_PICK_SOUNDFILE = 1989
     lateinit var dialog: SetAsDialog
     lateinit var dialogDone: SetAsDoneDialog
     lateinit var audioCutterItem: AudioCutterView
@@ -84,10 +86,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
 
     override fun onCreateView(
 
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.cut_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
@@ -140,8 +139,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
             audioCutterAdapter.submitList(audioCutterModel.getListAudio())
         }
         if (audioCutterModel.searchAudio(audioCutterModel.getListAudio(), yourTextSearch)
-                .isNotEmpty()
-        ) {
+                .isNotEmpty()) {
             audioCutterAdapter.submitList(audioCutterModel.getListsearch())
             Log.d(TAG, "seachAudioByName: ${audioCutterModel.getListsearch().size}")
         } else {
@@ -155,6 +153,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         super.onPause()
         audioCutterModel.pause()
     }
+
     private fun initViews() {
         binding.ivCutterScreenBack.setOnClickListener(this)
         binding.ivAudioCutterScreenFile.setOnClickListener(this)
@@ -202,11 +201,10 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
 
     private fun showKeybroad() {
         binding.edtCutterSearch.requestFocus()
-        val imm =
-            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm = requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
-        val view =
-            LayoutInflater.from(requireContext()).inflate(R.layout.item_audio_choose_merge, null)
+        val view = LayoutInflater.from(requireContext())
+            .inflate(R.layout.item_audio_choose_merge, null)
     }
 
 
@@ -244,6 +242,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
 
     override fun onCutItemClicked(itemAudio: AudioCutterView) {
         viewStateManager.onCuttingItemClicked(this, itemAudio)
+
     }
 
     override fun setAudioAs(typeAudioSetAs: TypeAudioSetAs) {
@@ -255,13 +254,10 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
                 ManagerFactory.getRingtonManager().setRingTone(audioCutterItem.audioFile)
             }
             TypeAudioSetAs.ALARM -> {
-                ManagerFactory.getRingtonManager().setAlarmManager(
-                    audioCutterItem.audioFile
-                )
+                ManagerFactory.getRingtonManager().setAlarmManager(audioCutterItem.audioFile)
             }
             TypeAudioSetAs.NOTIFICATION -> {
-                ManagerFactory.getRingtonManager()
-                    .setNotificationSound(audioCutterItem.audioFile)
+                ManagerFactory.getRingtonManager().setNotificationSound(audioCutterItem.audioFile)
             }
         }
         if (rs) {
@@ -276,7 +272,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     override fun onClick(view: View) {
         when (view) {
             binding.ivAudioCutterScreenFile -> {
-                updateAllFile()
+                getAllFile()
             }
             binding.ivCutterScreenSearch -> {
                 searchAudiofile()
@@ -290,7 +286,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
             binding.ivCutterScreenBack -> {
                 activity?.onBackPressed()
             }
-
         }
     }
 
@@ -317,9 +312,33 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     }
 
 
-    private fun updateAllFile() {
-        ManagerFactory.getAudioFileManager().getListAudioFileByType(Folder.TYPE_CUTTER)
+    private fun getAllFile() {
+        val intent: Intent
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        }/* else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                    intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                    intent.putExtra("android.content.extra.SHOW_ADVANCED", true)
+                } */
+        else {
+            intent = Intent(Intent.ACTION_GET_CONTENT)
+        }
+        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        intent.type = "audio/*"
+//                intent.type = "audio/mp3"
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(Intent.createChooser(intent, "Select a File "), REQ_CODE_PICK_SOUNDFILE)
+    }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        if (requestCode == REQ_CODE_PICK_SOUNDFILE && resultCode == Activity.RESULT_OK && intent != null) {
+
+            val path = FileUtils.getPath(requireContext(), intent.data!!)
+            path?.let {
+                val audio = ManagerFactory.getAudioFileManager().buildAudioFile(path)
+                viewStateManager.onCuttingItemClicked(this, AudioCutterView(audio))
+            }
+        }
     }
 
     override fun onDestroyView() {

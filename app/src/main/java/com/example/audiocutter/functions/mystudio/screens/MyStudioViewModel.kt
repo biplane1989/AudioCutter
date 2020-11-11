@@ -54,7 +54,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     fun init(typeAudio: Int) {
 
-        runOnBackground {
             var listScaners: LiveData<AudioFileScans> = MutableLiveData()
             Log.d(TAG, "init 1:  ${Thread.currentThread().name}")
             when (typeAudio) {
@@ -136,7 +135,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                     updateLoadingProgressbar(it)
                 }
             }
-        }
 
     }
 

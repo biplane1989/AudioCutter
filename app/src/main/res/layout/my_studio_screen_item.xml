@@ -18,7 +18,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_item"
             android:layout_width="match_parent"
-            android:layout_height="56dp">
+            android:layout_height="match_parent">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cv_avatar"
@@ -45,39 +45,41 @@
             <TextView
                 android:id="@+id/tv_title_music"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
+                android:ellipsize="end"
                 android:fontFamily="@font/sanfranciscodisplay_bold"
                 android:gravity="top"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:text="@string/my_studio_screen_item_title"
                 android:textColor="#2E3041"
-                android:textSize="16sp"
-                android:textStyle="bold"
+                android:textSize="16dp"
                 app:layout_constraintBottom_toTopOf="@id/tv_info_music"
                 app:layout_constraintEnd_toStartOf="@id/iv_setting"
                 app:layout_constraintStart_toEndOf="@+id/cv_avatar"
-                app:layout_constraintTop_toTopOf="@id/cv_avatar"
+                app:layout_constraintTop_toTopOf="@+id/cv_avatar"
                 app:layout_constraintVertical_bias="1.0" />
 
             <TextView
+
                 android:id="@+id/tv_info_music"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_marginLeft="15dp"
                 android:fontFamily="@font/sanfranciscodisplay_light"
+                android:gravity="bottom"
                 android:text="5.3 MB | 128kb/s"
                 android:textColor="#9C9C9C"
-                android:textSize="14sp"
+                android:textSize="14dp"
                 app:layout_constraintBottom_toBottomOf="@id/cv_avatar"
                 app:layout_constraintStart_toEndOf="@id/cv_avatar"
                 app:layout_constraintTop_toBottomOf="@id/tv_title_music" />
 
             <ImageView
                 android:id="@+id/iv_setting"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="46dp"
+                android:layout_height="match_parent"
                 android:layout_marginRight="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
@@ -88,8 +90,8 @@
 
             <ImageView
                 android:id="@+id/iv_item_delete"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="46dp"
+                android:layout_height="match_parent"
                 android:layout_marginRight="10dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/my_studio_screen_icon_uncheck"
@@ -116,7 +118,6 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-
             android:scaleType="centerInside"
             android:src="@drawable/my_studio_item_icon_play" />
 

@@ -15,6 +15,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
@@ -22,6 +23,7 @@ import com.example.audiocutter.databinding.MyStudioContactScreenBinding
 import com.example.audiocutter.functions.mystudio.adapters.SetContactAdapter
 import com.example.audiocutter.functions.mystudio.adapters.SetContactCallback
 import com.example.audiocutter.functions.mystudio.objects.SetContactItemView
+import com.example.audiocutter.functions.resultscreen.screens.ResultScreenArgs
 import kotlinx.coroutines.launch
 
 class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListener {
@@ -31,17 +33,18 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
     val TAG = "giangtd4"
     lateinit var listContactAdapter: SetContactAdapter
     lateinit var mListContactViewModel: SetContactViewModel
+    private val safeArg: SetContactScreenArgs by navArgs()      // truyen du lieu qua navigation
 
     companion object {
         val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
 
         @JvmStatic
         fun newInstance(pathUri: String): SetContactScreen {
-            val MyStudio = SetContactScreen()
+            val contact = SetContactScreen()
             val bundle = Bundle()
             bundle.putString(BUNDLE_NAME_KEY, pathUri)
-            MyStudio.arguments = bundle
-            return MyStudio
+            contact.arguments = bundle
+            return contact
         }
     }
 
@@ -95,7 +98,6 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_contact_screen, container, false)
 
         runOnUI {
-
             // loi observe hoi lai tai
             mListContactViewModel.getIsEmptyStatus()
                 .observe(viewLifecycleOwner, isEmptyStatusObserver)
@@ -190,7 +192,7 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
                 requireActivity().onBackPressed()
             }
             binding.ivOk -> {
-                if (mListContactViewModel.setRingtoneForContact(requireArguments().getString(BUNDLE_NAME_KEY, ""))) {
+                if (mListContactViewModel.setRingtoneForContact(safeArg.pathUri)) {
                     Toast.makeText(context, "Set RingTone Success !", Toast.LENGTH_SHORT).show()
                     requireActivity().onBackPressed()
                 } else {

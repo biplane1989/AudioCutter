@@ -31,8 +31,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-
-
                 <ImageView
                     android:id="@+id/iv_avatar_music"
                     android:layout_width="wrap_content"
@@ -46,7 +44,7 @@
             <TextView
                 android:id="@+id/tv_title_music"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:ellipsize="end"
                 android:fontFamily="@font/sanfranciscodisplay_bold"
@@ -55,7 +53,6 @@
                 android:text="@string/my_studio_screen_item_title"
                 android:textColor="#2E3041"
                 android:textSize="16sp"
-                android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@id/ll_info"
                 app:layout_constraintEnd_toStartOf="@id/iv_select"
                 app:layout_constraintStart_toEndOf="@id/cv_avatar"
@@ -95,7 +92,6 @@
                     android:id="@+id/tv_info_music"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
                     android:fontFamily="@font/sanfranciscodisplay_light"
                     android:text="5.3 MB | 128kb/s"
                     android:textColor="#9C9C9C"

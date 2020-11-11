@@ -53,10 +53,19 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             onBindViewHolder(holder, position)
         } else {
             val newItem = payloads.firstOrNull() as SelectItemView
-            val selectItemView = getItem(position)
-            holder.sbMusic.max = selectItemView.selectItemStatus.duration
-            holder.tvTimeLife.text = simpleDateFormat.format(selectItemView.selectItemStatus.currPos)
-            holder.sbMusic.progress = selectItemView.selectItemStatus.currPos
+//            val selectItemView = getItem(position)
+            holder.sbMusic.max = newItem.selectItemStatus.duration
+            holder.tvTimeLife.text = simpleDateFormat.format(newItem.selectItemStatus.currPos)
+            holder.sbMusic.progress = newItem.selectItemStatus.currPos
+
+            if (newItem.isExpanded) {
+                holder.llPlayMusic.visibility = View.VISIBLE
+                holder.llItem.setBackgroundResource(R.drawable.list_contact_select_item_bg)
+            } else {
+                holder.llPlayMusic.visibility = View.GONE
+                holder.llItem.setBackgroundColor(Color.WHITE)
+                holder.llItem.setPadding(0, 0, 0, 0)
+            }
 
             when (newItem.selectItemStatus.playerState) {
                 PlayerState.PLAYING -> {
@@ -129,6 +138,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             } else {
                 llPlayMusic.visibility = View.GONE
                 llItem.setBackgroundColor(Color.WHITE)
+                llItem.setPadding(0, 0, 0, 0)
             }
 
             if (selectItemView.isSelect) {
