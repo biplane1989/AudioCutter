@@ -43,6 +43,9 @@
 
 
                 <TextView
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:singleLine="true"
                     android:id="@+id/tv_title_music"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
@@ -102,8 +105,8 @@
 
                 <ImageView
                     android:id="@+id/iv_cancel"
-                    android:layout_width="@dimen/d_40"
-                    android:layout_height="@dimen/d_40"
+                    android:layout_width="46dp"
+                    android:layout_height="match_parent"
                     android:layout_marginRight="10dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"

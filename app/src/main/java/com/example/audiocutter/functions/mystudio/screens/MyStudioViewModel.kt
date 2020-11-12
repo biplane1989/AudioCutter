@@ -6,9 +6,12 @@ import android.net.Uri
 import android.os.Environment
 import android.text.TextUtils
 import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.audiomanager.Folder
@@ -17,11 +20,14 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.ItemLoadStatus
+import com.example.audiocutter.functions.mystudio.dialog.DeleteSuccessfullyDialog
+import com.example.audiocutter.functions.mystudio.objects.ActionData
 import com.example.audiocutter.functions.mystudio.objects.DeleteState
 import com.example.audiocutter.functions.resultscreen.objects.*
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
+import kotlinx.android.synthetic.main.my_studio_fragment.*
 import java.io.File
 import java.util.*
 
@@ -218,6 +224,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     // xử lý button check delete
     fun checkItemPosition(pos: Int): List<AudioFileView> {
+        Log.d(TAG, "checkItemPosition: pos "+ pos)
         val audioFileView = mListAudio.get(pos).copy()
         if (audioFileView.itemLoadStatus.deleteState == DeleteState.UNCHECK) {
             val itemLoadStatus = audioFileView.itemLoadStatus.copy()
@@ -557,8 +564,35 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     }
 
+    val actionLiveData: MutableLiveData<ActionData> = MutableLiveData()
+
+    fun getAction(): LiveData<ActionData> {
+        return actionLiveData
+    }
+
     override fun onReceivedAction(fragmentMeta: FragmentMeta) {
         super.onReceivedAction(fragmentMeta)
-        Log.d("ababa", "MyStudioViewModel onReceivedAction ${fragmentMeta.action}")
+        Log.d(TAG, "onReceivedAction: 1")
+        fragmentMeta.data?.let {
+            Log.d(TAG, "onReceivedAction: 2")
+            val typeAudio = fragmentMeta.data as Int
+            when (fragmentMeta.action) {
+                Constance.ACTION_UNCHECK -> { // trang thai isdelete
+                    actionLiveData.postValue(ActionData(Constance.ACTION_UNCHECK, typeAudio))
+                }
+                Constance.ACTION_HIDE -> {  // trang thai undelete
+                    actionLiveData.postValue(ActionData(Constance.ACTION_HIDE, typeAudio))
+                }
+                Constance.ACTION_DELETE_ALL -> {
+                    actionLiveData.postValue(ActionData(Constance.ACTION_DELETE_ALL, typeAudio))
+                }
+                Constance.ACTION_STOP_MUSIC -> {
+                    actionLiveData.postValue(ActionData(Constance.ACTION_STOP_MUSIC, typeAudio))
+                }
+                Constance.ACTION_CHECK_DELETE -> {
+                    actionLiveData.postValue(ActionData(Constance.ACTION_CHECK_DELETE, typeAudio))
+                }
+            }
+        }
     }
 }

@@ -93,7 +93,8 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     fun getIndexSelectRingtone(fileName: String): Int {
         var index = 0
         for (item in mListAudioFileView) {
-            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileName) || TextUtils.equals(item.audioFile.fileName + ".m4a", fileName)) {
+//            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileName) || TextUtils.equals(item.audioFile.fileName + ".m4a", fileName)) {
+            if (TextUtils.equals(item.audioFile.fileName + item.audioFile.mimeType, fileName)) {
 
                 return index
             }
