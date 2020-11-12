@@ -85,7 +85,6 @@ class RenameDialog : BaseDialog() {
         ) {
             edt_new_name.error = "The file name already exists"
             edt_new_name.requestFocus()
-        val a=    ManagerFactory.getAudioFileManager().buildAudioFile("path")
             return false
         }
         return true

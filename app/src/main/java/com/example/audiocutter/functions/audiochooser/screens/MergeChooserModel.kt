@@ -19,11 +19,17 @@ class MergeChooserModel : BaseViewModel() {
     private val TAG = MergeChooserModel::class.java.name
     private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
+    private var listTmp = ArrayList<Int>()
     private var mListAudioSearch = ArrayList<AudioCutterView>()
+    var count = 0
 
     private var _stateLoadProgress = MutableLiveData<Int>()
     val stateLoadProgress: LiveData<Int>
         get() = _stateLoadProgress
+
+    private var _countItem = MutableLiveData<Int>()
+    val countItem: LiveData<Int>
+        get() = _countItem
 
 
     private val sortListByName: Comparator<AudioCutterView> =
@@ -51,10 +57,24 @@ class MergeChooserModel : BaseViewModel() {
                 }
             }
             mListAudio.clear()
+
             it.listAudioFiles.forEach {
                 mListAudio.add(AudioCutterView(it))
             }
             Collections.sort(mListAudio, sortListByName)
+
+            for (item in listTmp) {
+                mListAudio.removeAt(item)
+                mListAudio.add(
+                    item,
+                    AudioCutterView(
+                        mListAudioSearch[item].audioFile,
+                        PlayerState.IDLE,
+                        true
+                    )
+                )
+                Log.d(TAG, "getAllAudioFile: ${listTmp.size}")
+            }
             mListAudio
         }
     }
@@ -144,30 +164,31 @@ class MergeChooserModel : BaseViewModel() {
         if (!rs) {
             itemAudio = mListAudio[pos].copy()
             itemAudio.isCheckChooseItem = true
+            count++
             mListAudio[pos] = itemAudio
+            _countItem.postValue(count)
         } else {
             itemAudio = mListAudio[pos].copy()
             itemAudio.isCheckChooseItem = false
+            count--
             mListAudio[pos] = itemAudio
+            _countItem.postValue(count)
         }
 
         return mListAudio
     }
 
-    fun checkList(): Int {
-        var count = 0
-        for (item in mListAudio) {
-            if (item.isCheckChooseItem) {
-                count++
-            }
-        }
-        return count
+    fun getCountItemChoose(): LiveData<Int> {
+        return countItem
     }
 
+
     fun getListItemChoose(): List<AudioCutterView> {
+        listTmp.clear()
         var listAudio = mutableListOf<AudioCutterView>()
         for (item in mListAudio) {
             if (item.isCheckChooseItem) {
+                listTmp.add(mListAudio.indexOf(item))
                 listAudio.add(item)
             }
         }
@@ -186,6 +207,17 @@ class MergeChooserModel : BaseViewModel() {
 
     fun resume() {
         ManagerFactory.getDefaultAudioPlayer().resume()
+    }
+
+    fun getlistAfterReceive(item: AudioCutterView): List<AudioCutterView>? {
+        mListAudio.remove(mListAudio[mListAudio.indexOf(item)])
+        mListAudio.add(
+            mListAudio.indexOf(item),
+            AudioCutterView(item.audioFile, PlayerState.IDLE)
+        )
+        listTmp.remove(mListAudio.indexOf(item))
+        Log.d(TAG, "getlistAfterReceive: listTmp ${listTmp.size}")
+        return mListAudio
     }
 
 }

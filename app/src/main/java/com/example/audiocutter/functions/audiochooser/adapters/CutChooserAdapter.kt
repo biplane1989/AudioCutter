@@ -3,6 +3,7 @@ package com.example.audiocutter.functions.audiochooser.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
+import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.ui.audiochooser.cut.ProgressView
@@ -76,8 +78,15 @@ class CutChooserAdapter(val mContext: Context) :
                 PlayerState.IDLE -> {
                     holder.pgAudio.resetView()
 //                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
-                    itemAudioFile.audioFile.bitmap?.let {
-                        holder.ivController.setImageBitmap(it)
+                    val bitmap =   itemAudioFile.audioFile.bitmap
+                    if(bitmap!=null){
+                        holder.ivController.setImageBitmap(bitmap)
+                    }else{
+                        val bm = BitmapFactory.decodeResource(
+                            AudioFileManagerImpl.mContext.resources,
+                            R.drawable.ic_audiocutter_play
+                        )
+                        holder.ivController.setImageBitmap(bm)
                     }
                 }
             }
@@ -151,8 +160,15 @@ class CutChooserAdapter(val mContext: Context) :
                     waveView.visibility = View.INVISIBLE
                     pgAudio.resetView()
 //                    ivController.setImageResource(R.drawable.ic_audiocutter_play)
-                    itemAudioFile.audioFile.bitmap?.let {
-                        ivController.setImageBitmap(it)
+                    val bitmap =   itemAudioFile.audioFile.bitmap
+                    if(bitmap!=null){
+                        ivController.setImageBitmap(bitmap)
+                    }else{
+                        val bm = BitmapFactory.decodeResource(
+                            AudioFileManagerImpl.mContext.resources,
+                            R.drawable.ic_audiocutter_play
+                        )
+                       ivController.setImageBitmap(bm)
                     }
                 }
             }

@@ -185,12 +185,9 @@ object AudioFileManagerImpl : AudioFileManager {
                         } else {
                             name = preName
                         }
-                        val bm = BitmapFactory.decodeResource(
-                            mContext.resources,
-                            R.drawable.ic_audiocutter_play
-                        )
+
                         val id = cursor.getString(clID)
-                        val bitmap = getBitmapByPath(data) ?: bm
+                        val bitmap = getBitmapByPath(data)
 
                         val title = cursor.getString(clTitle)
                         val album = cursor.getString(clAlbum)

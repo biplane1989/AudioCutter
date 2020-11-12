@@ -269,4 +269,3 @@ abstract class BaseDialog : DialogFragment() {
         }
     }
 }
-

@@ -28,12 +28,14 @@ import com.example.audiocutter.ui.audiochooser.merge.WrapContentLinearLayoutMana
 import com.example.core.core.AudioFormat
 import com.example.core.core.AudioMergingConfig
 
+
 class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseListener,
     View.OnClickListener, MergeDialog.MergeDialogListener {
 
     private val safeArg: MergePreviewScreenArgs by navArgs()
     private lateinit var listAudioPath: Array<String>
     private lateinit var listPath: ArrayList<String>
+
 
     //    private val TAG = "manhqn"
     private val TAG = "giangtd"
@@ -131,7 +133,8 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         audioMerModel.resume()
     }
 
-    override fun deleteAudio(pos: Int) {
+    override fun deleteAudio(pos: Int, audioFile: AudioCutterView) {
+        sendFragmentAction(MergeChooserScreen::class.java.name, "ACTION_DELETE", audioFile)
         ManagerFactory.getDefaultAudioPlayer().stop()
         audioMerAdapter.submitList(audioMerModel.removeItemAudio(pos))
     }
@@ -147,8 +150,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
                 activity?.onBackPressed()
             }
             R.id.iv_addfile_merge -> {
-                /**previous frg to choose more item**/
-                showToast("back Frg")
+                activity?.onBackPressed()
             }
             R.id.bt_merge_audio -> mergeAudioFile()
         }

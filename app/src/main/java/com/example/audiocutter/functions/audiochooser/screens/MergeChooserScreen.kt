@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,7 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MergeChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergeChooserAdapter
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.mystudio.screens.FragmentMeta
 
 class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAdapter.AudioMergeListener {
     private lateinit var binding: MergeChooserScreenBinding
@@ -44,11 +46,11 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     }
     var currentPos = -1
 
-    private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        if (listMusic.isEmpty() || listMusic == null) {
+    private val listAudioObserver = Observer<List<AudioCutterView>> {
+        if (it.isEmpty() || it == null) {
             showEmptyList()
         } else {
-            audioMerAdapter.submitList(ArrayList(listMusic))
+            audioMerAdapter.submitList(ArrayList(it))
             showList()
         }
 
@@ -137,6 +139,15 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         binding.ivMerScreenBack.setOnClickListener(this)
         audioMerAdapter.setAudioListener(this)
 
+        audioMerModel.getCountItemChoose().observe(this.viewLifecycleOwner, Observer {
+            if (it >= 2) {
+                setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
+            } else {
+                setColorButtonNext(R.color.colorgray, R.drawable.bg_next_audio_disabled, false)
+            }
+            binding.tvCountFileMer.text = "${it} file"
+        })
+
 
     }
 
@@ -194,14 +205,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     @SuppressLint("SetTextI18n")
     override fun chooseItemAudio(pos: Int, rs: Boolean) {
         audioMerAdapter.submitList(audioMerModel.chooseItemAudioFile(pos, rs))
-
-        if (audioMerModel.checkList() >= 2) {
-            setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
-        } else {
-            setColorButtonNext(R.color.colorgray, R.drawable.bg_next_audio_disabled, false)
-        }
-
-        binding.tvCountFileMer.text = "${audioMerModel.checkList()} file"
     }
 
 
@@ -248,6 +251,18 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
                 activity?.onBackPressed()
             }
         }
+    }
+
+    override fun onReceivedAction(fragmentMeta: FragmentMeta) {
+        super.onReceivedAction(fragmentMeta)
+
+        Log.d("TAG", "onReceivedAction: receive data")
+        if (fragmentMeta.action.equals("ACTION_DELETE")) {
+            val audio = fragmentMeta.data as AudioCutterView
+            audioMerAdapter.submitList(audioMerModel.getlistAfterReceive(audio))
+            Log.d("TAG", " getlistAfterReceive: data ${audio.audioFile.fileName} ")
+        }
+
     }
 
     private fun handleAudiofile() {

@@ -46,7 +46,6 @@ class MainActivity : BaseActivity(), IMyStudioActivity {
     }
 
     override fun sendAction(fragmentMeta: FragmentMeta) {
-
         supportFragmentManager.fragments.forEach {
             sendAction(it, fragmentMeta)
 
