@@ -188,4 +188,8 @@ class MergeChooserModel : BaseViewModel() {
         ManagerFactory.getDefaultAudioPlayer().resume()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+    }
+
 }

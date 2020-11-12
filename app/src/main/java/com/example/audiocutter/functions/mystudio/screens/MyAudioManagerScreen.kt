@@ -8,9 +8,11 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
+import com.example.audiocutter.base.IViewModel
 import com.example.audiocutter.databinding.MyStudioScreenBinding
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.adapters.MyStudioViewPagerAdapter
@@ -25,12 +27,23 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     val TAG = "giangtd"
     var isDeleteClicked = true
     var tabPosition = -1
+    lateinit var myAudioManagerViewModel: MyAudioManagerViewModel
     private val safeArg: MyAudioManagerScreenArgs by navArgs()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_screen, container, false)
 
         return binding.root
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        myAudioManagerViewModel =
+            ViewModelProviders.of(this).get(MyAudioManagerViewModel::class.java)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -66,7 +79,11 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     override fun onClick(view: View) {
         when (view) {
             binding.ivDelete -> {
-                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_CHECK_DELETE, tabPosition)
+                sendFragmentAction(
+                    MyStudioScreen::class.java.name,
+                    Constance.ACTION_CHECK_DELETE,
+                    tabPosition
+                )
             }
             binding.ivClose -> {
                 binding.clDefault.visibility = View.VISIBLE
@@ -103,7 +120,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     }
 
     // nhận data từ fragment truyền sang
-    override fun onReceivedAction(fragmentMeta: FragmentMeta) {
+    /*override fun onReceivedAction(fragmentMeta: FragmentMeta) {
         when (fragmentMeta.action) {
             Constance.ACTION_DELETE -> {  // nếu ko có item nào được chọn thì sẽ không hiển thị dialog delete
                 if ((fragmentMeta.data as Boolean)) {
@@ -118,15 +135,23 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 }
             }
         }
-    }
+    }*/
 
     override fun onDeleteClick(pathFolder: String) {
         isDeleteClicked = true
-        sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_DELETE_ALL, tabPosition)
+        sendFragmentAction(
+            MyStudioScreen::class.java.name,
+            Constance.ACTION_DELETE_ALL,
+            tabPosition
+        )
     }
 
     override fun onCancel() {
         isDeleteClicked = true
+    }
+
+    override fun getFragmentViewModel(): IViewModel? {
+        return myAudioManagerViewModel
     }
 
 }
