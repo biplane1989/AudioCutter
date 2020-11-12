@@ -605,4 +605,9 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             .reNameToFileAudio(newName, audioFile, typeFolder)
 
     }
+
+    override fun onReceivedAction(fragmentMeta: FragmentMeta) {
+        super.onReceivedAction(fragmentMeta)
+        Log.d("ababa", "MyStudioViewModel onReceivedAction ${fragmentMeta.action}")
+    }
 }

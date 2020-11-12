@@ -24,7 +24,8 @@ import com.example.audiocutter.functions.audiochooser.adapters.MergeChooserAdapt
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.functions.mystudio.screens.FragmentMeta
 
-class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAdapter.AudioMergeListener {
+class MergeChooserScreen : BaseFragment(), View.OnClickListener,
+    MergeChooserAdapter.AudioMergeListener {
     private lateinit var binding: MergeChooserScreenBinding
 
     private lateinit var audioMerAdapter: MergeChooserAdapter
@@ -74,7 +75,11 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.merge_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
@@ -152,7 +157,8 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     }
 
     private fun showKeybroad() {
-        val imm = requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
 
