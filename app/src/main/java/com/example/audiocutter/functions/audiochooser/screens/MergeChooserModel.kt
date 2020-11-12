@@ -9,6 +9,7 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.mystudio.screens.FragmentMeta
 import com.example.audiocutter.objects.StateLoad
 import java.io.File
 import java.util.*
@@ -141,9 +142,7 @@ class MergeChooserModel : BaseViewModel() {
         listTmp.forEach {
             val rs = it.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
                 yourTextSearch.toLowerCase(
-                    Locale.getDefault()
-                )
-            )
+                    Locale.getDefault()))
             if (rs) {
                 mListAudioSearch.add(it)
             }
@@ -209,15 +208,40 @@ class MergeChooserModel : BaseViewModel() {
         ManagerFactory.getDefaultAudioPlayer().resume()
     }
 
-    fun getlistAfterReceive(item: AudioCutterView): List<AudioCutterView>? {
-        mListAudio.remove(mListAudio[mListAudio.indexOf(item)])
+
+    override fun onReceivedAction(fragmentMeta: FragmentMeta) {
+        Log.d("TAG", "onReceivedAction: receive data")
+        if (fragmentMeta.action.equals("ACTION_DELETE")) {
+            val audio = fragmentMeta.data as AudioCutterView
+            getlistAfterReceive(audio)
+            Log.d("TAG", "onReceivedAction: ${audio.audioFile.fileName}")
+            super.onReceivedAction(fragmentMeta)
+        }
+    }
+
+    private fun getlistAfterReceive(item: AudioCutterView): List<AudioCutterView>? {
+
+        val rs1 = mListAudio.indexOf(item)
+        var index = 0
+        mListAudio.forEach {
+            if (item.audioFile.fileName == it.audioFile.fileName) {
+                index = mListAudio.indexOf(it)
+            }
+        }
+        mListAudio.removeAt(index)
         mListAudio.add(
-            mListAudio.indexOf(item),
-            AudioCutterView(item.audioFile, PlayerState.IDLE)
+            index,
+            AudioCutterView(item.audioFile, PlayerState.IDLE, false)
         )
+        val rs2 = mListAudio.indexOf(item)
         listTmp.remove(mListAudio.indexOf(item))
-        Log.d(TAG, "getlistAfterReceive: listTmp ${listTmp.size}")
+        count--
+        _countItem.postValue(count)
+        Log.d(TAG, "getlistAfterReceive: listTmp ${rs1}  -- rs2 $rs2")
+
+
         return mListAudio
     }
+
 
 }

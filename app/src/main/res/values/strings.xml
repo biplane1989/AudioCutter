@@ -112,4 +112,6 @@
     <string name="cancel_dialog_title">Warning</string>
     <string name="cancel_dialog_notification">Do you want to cancel the conversion?</string>
     <string name="choose_a_sharing_app">Choose a sharing app</string>
+    <string name="please_wait_a_moment">Please wait a moment.....</string>
+    <string name="set_successfully">Set Successfully</string>
 </resources>

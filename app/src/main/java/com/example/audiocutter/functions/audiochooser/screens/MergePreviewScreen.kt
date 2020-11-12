@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
+import com.example.audiocutter.base.IViewModel
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
@@ -203,10 +204,10 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     }
 
     private fun showKeybroad() {
-
         val imm =
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
+
 
 }

@@ -3,10 +3,10 @@ package com.example.audiocutter.functions.audiochooser.screens
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,12 +17,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
+import com.example.audiocutter.base.IViewModel
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MergeChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergeChooserAdapter
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
-import com.example.audiocutter.functions.mystudio.screens.FragmentMeta
 
 class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     MergeChooserAdapter.AudioMergeListener {
@@ -135,12 +135,10 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     private fun initViews() {
 
         binding.rltNextMer.isEnabled = false
-        binding.ivAudioMerScreenFile.setOnClickListener(this)
         binding.ivMerScreenSearch.setOnClickListener(this)
         binding.ivMerScreenBackEdt.setOnClickListener(this)
         binding.ivMerScreenClose.setOnClickListener(this)
         binding.rltNextMer.setOnClickListener(this)
-        binding.ivAudioMerScreenFile.setOnClickListener(this)
         binding.ivMerScreenBack.setOnClickListener(this)
         audioMerAdapter.setAudioListener(this)
 
@@ -172,7 +170,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     private fun hideOrShowView(status: Int) {
         binding.ivMerScreenSearch.visibility = status
         binding.tvMerScreen.visibility = status
-        binding.ivAudioMerScreenFile.visibility = status
     }
 
 
@@ -259,19 +256,12 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         }
     }
 
-    override fun onReceivedAction(fragmentMeta: FragmentMeta) {
-        super.onReceivedAction(fragmentMeta)
 
-        Log.d("TAG", "onReceivedAction: receive data")
-        if (fragmentMeta.action.equals("ACTION_DELETE")) {
-            val audio = fragmentMeta.data as AudioCutterView
-            audioMerAdapter.submitList(audioMerModel.getlistAfterReceive(audio))
-            Log.d("TAG", " getlistAfterReceive: data ${audio.audioFile.fileName} ")
-        }
-
-    }
 
     private fun handleAudiofile() {
+        showProgressBar(true)
+        binding.rvMerge.visibility = View.INVISIBLE
+        binding.tvWaitingMer.visibility = View.VISIBLE
         ManagerFactory.getDefaultAudioPlayer().stop()
 
         val listItemHandle = audioMerModel.getListItemChoose()
@@ -314,5 +304,9 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         } else {
             binding.pgrAudioMerge.visibility = View.GONE
         }
+    }
+
+    override fun getFragmentViewModel(): IViewModel? {
+        return audioMerModel
     }
 }

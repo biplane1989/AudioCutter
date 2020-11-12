@@ -79,16 +79,6 @@
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_audiocutter_search" />
 
-                <ImageView
-                    android:id="@+id/iv_audio_mer_screen_file"
-                    android:layout_width="?actionBarSize"
-                    android:layout_height="?actionBarSize"
-                    android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@id/iv_mer_screen_search"
-
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_audiocutter_file" />
 
                 <ImageView
                     android:id="@+id/iv_mer_screen_close"
@@ -146,6 +136,20 @@
             android:layout_gravity="center"
             android:fontFamily="@font/sanfranciscodisplay_regular"
             android:text="@string/no_result_empty"
+            android:textColor="@color/colorgray"
+            android:textSize="@dimen/d_18"
+            android:visibility="gone" />
+        <TextView
+
+            android:id="@+id/tv_waiting_mer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pgr_audio_merge"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:fontFamily="@font/sanfranciscodisplay_regular"
+            android:text="@string/please_wait_a_moment"
             android:textColor="@color/colorgray"
             android:textSize="@dimen/d_18"
             android:visibility="gone" />

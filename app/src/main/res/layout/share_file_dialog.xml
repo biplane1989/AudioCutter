@@ -22,7 +22,7 @@
             android:background="@color/colorWhite"
             android:orientation="vertical"
             app:behavior_peekHeight="320dp"
-            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+           >
 
 
             <TextView

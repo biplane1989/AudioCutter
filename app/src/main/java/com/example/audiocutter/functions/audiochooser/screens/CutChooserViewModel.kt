@@ -148,6 +148,7 @@ class AudioCutterModel : BaseViewModel() {
                 mListAudioSearch.add(it)
             }
         }
+        /***bug play audio file**/
         return mListAudioSearch
     }
 

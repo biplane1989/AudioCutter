@@ -14,7 +14,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginRight="24dp"
         android:orientation="vertical"
-        app:cardCornerRadius="5dp"
+        app:cardCornerRadius="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

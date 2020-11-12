@@ -149,8 +149,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
     private fun initViews() {
 
-        binding.ivAudioMixerScreenFile.setOnClickListener(this)
-        binding.ivAudioMixerScreenFile.setOnClickListener(this)
         binding.ivMixerScreenSearch.setOnClickListener(this)
         binding.ivMixerScreenBackEdt.setOnClickListener(this)
         binding.ivMixerScreenClose.setOnClickListener(this)
@@ -175,7 +173,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     private fun hideOrShowView(status: Int) {
         binding.ivMixerScreenSearch.visibility = status
         binding.tbNameMixer.visibility = status
-        binding.ivAudioMixerScreenFile.visibility = status
     }
 
     private fun showProgressBar(b: Boolean) {
@@ -261,10 +258,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
             binding.ivMixerScreenBack -> {
                 activity?.onBackPressed()
             }
-            binding.ivAudioMixerScreenFile -> {
 
-                   /**handle show layout find file in device**/
-            }
         }
     }
 
