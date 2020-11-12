@@ -6,8 +6,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import com.example.audiocutter.R
-import com.example.audiocutter.core.audioManager.Folder
-import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.util.Utils
 import kotlinx.android.synthetic.main.merge_audio_dialog.*
 

@@ -8,7 +8,7 @@ import androidx.fragment.app.FragmentManager
 import com.example.audiocutter.R
 import com.example.audiocutter.activities.acttest.CoreTestActivity
 import com.example.audiocutter.base.BaseDialog
-import com.example.audiocutter.core.audioManager.Folder
+import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
 import com.example.audiocutter.util.PreferencesHelper

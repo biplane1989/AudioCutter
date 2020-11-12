@@ -16,8 +16,7 @@ import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.util.Log
 import android.util.TypedValue
-import com.example.audiocutter.core.audioManager.AudioFileManagerImpl
-import com.example.audiocutter.core.audioManager.Folder
+import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import java.io.File
 import java.text.Normalizer
