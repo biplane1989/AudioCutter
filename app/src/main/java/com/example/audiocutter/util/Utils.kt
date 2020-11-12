@@ -1,6 +1,7 @@
 package com.example.audiocutter.util
 
 import android.annotation.SuppressLint
+import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
@@ -11,6 +12,7 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.text.TextUtils
@@ -169,6 +171,27 @@ object Utils {
         return false
     }
 
+    fun checkUriIsExits(context: Context, uri: String): Boolean {       // kiem tra uri co ton tai khong
+        val projecttion = arrayOf(MediaStore.MediaColumns.DATA)
+        val cursor: Cursor = context.contentResolver.query(Uri.parse(uri), projecttion, null, null, null)!!
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                val filePath = cursor.getString(0);
+
+                if (File(filePath).exists()) {
+                    return true // do something if it exists
+                } else {
+                    return false    // File was not found
+                }
+            } else {
+                return false        // Uri was ok but no entry found.
+            }
+            cursor.close()
+        } else {
+            return false    // content Uri was invalid or some other error occurred
+        }
+    }
+
     // convert ky tu co dau sang khong dau
     fun covertToString(value: String?): String? {
         try {
@@ -205,27 +228,24 @@ object Utils {
         return duration.toLong()
     }
 
-     fun getAlphaNumericString(n: Int): String? {
+    fun getAlphaNumericString(n: Int): String? {
 
         // chose a Character random from this String
-        val AlphaNumericString = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "0123456789"
-                + "abcdefghijklmnopqrstuvxyz")
+        val AlphaNumericString = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "0123456789" + "abcdefghijklmnopqrstuvxyz")
 
         // create StringBuffer size of AlphaNumericString
         val sb = StringBuilder(n)
-         for (i in 0 until n) {
+        for (i in 0 until n) {
 
-             // generate a random number between
-             // 0 to AlphaNumericString variable length
-             val index = (AlphaNumericString.length
-                     * Math.random()).toInt()
+            // generate a random number between
+            // 0 to AlphaNumericString variable length
+            val index = (AlphaNumericString.length * Math.random()).toInt()
 
-             // add Character one by one in end of sb
-             sb.append(AlphaNumericString[index])
-         }
-         return sb.toString()
-     }
+            // add Character one by one in end of sb
+            sb.append(AlphaNumericString[index])
+        }
+        return sb.toString()
+    }
 
     private fun getAllFileName(folder: Folder): HashSet<String> {
         val folderPath = ManagerFactory.getAudioFileManager().getFolderPath(folder)
@@ -275,7 +295,7 @@ object Utils {
     }
 
 
-     fun createValidFileName(name: String, typeFile: Folder): String {
+    fun createValidFileName(name: String, typeFile: Folder): String {
         val random = Random()
         val fileNameHash = getAllFileName(typeFile)
         var fileName = ""

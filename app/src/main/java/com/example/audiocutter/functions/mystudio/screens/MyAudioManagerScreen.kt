@@ -36,7 +36,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     private val actionObserver = Observer<ActionData> { it ->
         when (it.action) {
             Constance.ACTION_DELETE -> {  // nếu ko có item nào được chọn thì sẽ không hiển thị dialog delete
-                if ((it.data == 3)) {
+                if ((it.data == Constance.TRUE)) {
                     if (isDeleteClicked) {
                         val dialog = DeleteDialog.newInstance(this)
                         dialog.show(childFragmentManager, DeleteDialog.TAG)
@@ -108,7 +108,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 binding.viewPager.setPagingEnabled(true)
                 setEnabledTablayout(false)
 
-                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_HIDE, -1)      // do action extends va close khong can quan tam toi data nen truyen vao -1
+                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_HIDE, Constance.NO_TYPE_AUDIO)      // do action extends va close khong can quan tam toi data nen truyen vao -1
             }
             binding.ivExtends -> {
                 binding.clDefault.visibility = View.GONE
@@ -118,7 +118,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 binding.viewPager.setPagingEnabled(false)
                 setEnabledTablayout(true)
 
-                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_UNCHECK, -1)
+                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_UNCHECK, Constance.NO_TYPE_AUDIO)
             }
             binding.backButton -> {
                 requireActivity().onBackPressed()

@@ -55,25 +55,47 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
             val photoIndex = cursor.getColumnIndex(projecttion[2])
             val ringtoneIndex = cursor.getColumnIndex(projecttion[3])
             try {
-                val defaultRingtone = getUriRingtoneDefault(appContext)
-                defaultRingtone?.let {
-                    if (cursor.moveToFirst()) {
-                        do {
+                var defaultRingtone = ""
+                if (Utils.getUriRingtoneDefault(appContext) == null) {
+                    defaultRingtone = ""
+                } else {
+                    defaultRingtone = Utils.getUriRingtoneDefault(appContext).toString()
+                }
+                if (cursor.moveToFirst()) {
+                    do {
 //                            delay(1000)
-                            if (!isActive || scanningState == ScanningState.WAITING_FOR_CANCELING) {
-                                break
+                        if (!isActive || scanningState == ScanningState.WAITING_FOR_CANCELING) {
+                            break
+                        }
+                        val name = cursor.getString(nameIndex)
+                        val number = cursor.getString(numberIndex)
+                        val photoUri = cursor.getString(photoIndex)
+                        val ringtone = cursor.getString(ringtoneIndex)
+
+
+                        var isRingtoneDefault = true
+                        var ringtoneFilePath = ""
+
+                        // TODO("optimize code")
+                        if (TextUtils.equals(oldRingtoneDefault, defaultRingtone)) {
+                            if (ringtone != null) {
+                                if (TextUtils.equals(ringtone, defaultRingtone)) {
+                                    isRingtoneDefault = true
+                                    ringtoneFilePath = defaultRingtone
+                                } else {
+                                    isRingtoneDefault = false
+                                    ringtoneFilePath = ringtone
+                                }
+                            } else {
+                                isRingtoneDefault = true
+                                ringtoneFilePath = defaultRingtone
                             }
-                            val name = cursor.getString(nameIndex)
-                            val number = cursor.getString(numberIndex)
-                            val photoUri = cursor.getString(photoIndex)
-                            val ringtone = cursor.getString(ringtoneIndex)
-
-                            var isRingtoneDefault = true
-                            var ringtoneFilePath = ""
-
-                            // TODO("optimize code")
-                            if (TextUtils.equals(oldRingtoneDefault, defaultRingtone)) {
-                                if (ringtone != null) {
+                        } else {
+                            if (ringtone != null) {
+                                if (TextUtils.equals(ringtone, oldRingtoneDefault)) {
+                                    isRingtoneDefault = true
+                                    ringtoneFilePath = defaultRingtone
+                                } else {
                                     if (TextUtils.equals(ringtone, defaultRingtone)) {
                                         isRingtoneDefault = true
                                         ringtoneFilePath = defaultRingtone
@@ -81,36 +103,34 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
                                         isRingtoneDefault = false
                                         ringtoneFilePath = ringtone
                                     }
-                                } else {
-                                    isRingtoneDefault = true
-                                    ringtoneFilePath = defaultRingtone
                                 }
                             } else {
-                                if (ringtone != null) {
-                                    if (TextUtils.equals(ringtone, oldRingtoneDefault)) {
-                                        isRingtoneDefault = true
-                                        ringtoneFilePath = defaultRingtone
-                                    } else {
-                                        if (TextUtils.equals(ringtone, defaultRingtone)) {
-                                            isRingtoneDefault = true
-                                            ringtoneFilePath = defaultRingtone
-                                        } else {
-                                            isRingtoneDefault = false
-                                            ringtoneFilePath = ringtone
-                                        }
-                                    }
-                                } else {
-                                    isRingtoneDefault = true
-                                    ringtoneFilePath = defaultRingtone
-                                }
+                                isRingtoneDefault = true
+                                ringtoneFilePath = defaultRingtone
                             }
-                            val contactItem = ContactItem(name, number, photoUri, defaultRingtone, isRingtoneDefault, Utils.getNameByUri(appContext, ringtoneFilePath))
-                            newListContact.add(contactItem)
-                        } while (cursor.moveToNext())
-                    }
-                    oldRingtoneDefault = defaultRingtone
-                }
+                        }
+                        var filename = ""
 
+                        if (!Utils.checkUriIsExits(appContext, ringtoneFilePath)) {     // neu nhac chuong khong ton tai
+                            if (!Utils.checkUriIsExits(appContext, defaultRingtone)) {      /// neu nhac chuong default khong ton tai
+                                filename = ""
+                            } else {
+                                filename = Utils.getNameByUri(appContext, defaultRingtone)
+                            }
+                            ringtoneFilePath = defaultRingtone
+//                            isRingtoneDefault = true
+                        }else{
+                            filename = Utils.getNameByUri(appContext, ringtoneFilePath)
+//                            isRingtoneDefault = false
+                        }
+//                        val contactItem = ContactItem(name, number, photoUri, defaultRingtone, isRingtoneDefault, Utils.getNameByUri(appContext, ringtoneFilePath))
+                        val contactItem = ContactItem(name, number, photoUri, defaultRingtone, isRingtoneDefault, filename)
+                        newListContact.add(contactItem)
+
+                        oldRingtoneDefault = defaultRingtone
+                    } while (cursor.moveToNext())
+
+                }
                 if (scanningState == ScanningState.RUNNING) {
                     contactLiveData.postValue(GetContactResult(true, newListContact))
                 }
@@ -119,16 +139,6 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
                 if (!cursor.isClosed) cursor.close()
                 scanningState = ScanningState.IDLE
             }
-        }
-    }
-
-    // lay uri cua ringtone mac dinh
-    private fun getUriRingtoneDefault(context: Context): String? {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-            return RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE)
-                .toString()
-        } else {
-            return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE).toString()
         }
     }
 
