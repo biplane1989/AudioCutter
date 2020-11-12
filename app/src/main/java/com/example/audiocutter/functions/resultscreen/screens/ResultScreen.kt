@@ -186,6 +186,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     }
 
 
+
+
     override fun onClick(view: View?) {
         when (view) {
             binding.ivPausePlayMusic -> {

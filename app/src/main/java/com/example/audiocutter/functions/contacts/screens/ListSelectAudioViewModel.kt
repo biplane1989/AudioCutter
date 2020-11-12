@@ -49,9 +49,10 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         audioPlayer.init(application.applicationContext)
     }
 
-    fun init() {
-        mAudioMediatorLiveData.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
-            runOnBackground {
+    fun init(fileUri: String) {
+        runOnBackground {
+            mAudioMediatorLiveData.addSource(ManagerFactory.getAudioFileManager()
+                .findAllAudioFiles()) {
                 if (it.state == StateLoad.LOADING) {
                     isEmptyStatus.postValue(false)
                     loadingStatus.postValue(true)
@@ -67,18 +68,18 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
                         isEmptyStatus.postValue(true)
                     }
                 }
-                mAudioMediatorLiveData.postValue(mListAudioFileView)
+                mAudioMediatorLiveData.postValue(setSelectRingtone(fileUri))
             }
-        }
-        mAudioMediatorLiveData.addSource(audioPlayer.getPlayerInfo()) {
-            updatePlayerInfo(it)
+            mAudioMediatorLiveData.addSource(audioPlayer.getPlayerInfo()) {
+                updatePlayerInfo(it)
+            }
         }
     }
 
-    fun setSelectRingtone(fileName: String): List<SelectItemView> {
+    private fun setSelectRingtone(fileUri: String): ArrayList<SelectItemView> {
         var index = 0
         for (item in mListAudioFileView) {
-            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileName) || TextUtils.equals(item.audioFile.fileName + ".m4a", fileName)) {
+            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileUri) || TextUtils.equals(item.audioFile.fileName + ".m4a", fileUri)) {
                 val newItem = item.copy()
                 newItem.isSelect = true
                 mListAudioFileView.set(index, newItem)

@@ -53,7 +53,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             onBindViewHolder(holder, position)
         } else {
             val newItem = payloads.firstOrNull() as SelectItemView
-//            val selectItemView = getItem(position)
             holder.sbMusic.max = newItem.selectItemStatus.duration
             holder.tvTimeLife.text = simpleDateFormat.format(newItem.selectItemStatus.currPos)
             holder.sbMusic.progress = newItem.selectItemStatus.currPos

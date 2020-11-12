@@ -44,11 +44,11 @@ class ResultService : LifecycleService() {
                 ConvertingState.SUCCESS -> {
                     sendNotificationComplte(it.id)
                 }
-//                ConvertingState.ERROR -> {
-////                    sendNotificationFail(it.id)
-////                    stopForeground(serviceForegroundID)
-////                    sendNotificationFail(serviceForegroundID)
-//                }
+                ConvertingState.ERROR -> {
+                    sendNotificationFail(it.id)
+//                    stopForeground(serviceForegroundID)
+//                    sendNotificationFail(serviceForegroundID)
+                }
             }
         }
     }
@@ -131,11 +131,11 @@ class ResultService : LifecycleService() {
                     .setOngoing(false)
                 manager.notify(notificationID, mBuilder.build())
             }
-//            ConvertingState.ERROR -> {
-////                stopForeground(serviceForegroundID)
-////                mBuilder.setContentText("Fail").setProgress(0, 0, false).setOngoing(false)
-////                manager.notify(notificationID, mBuilder.build())
-//            }
+            ConvertingState.ERROR -> {
+//                stopForeground(serviceForegroundID)
+                mBuilder.setContentText("Fail").setProgress(0, 0, false).setOngoing(false)
+                manager.notify(notificationID, mBuilder.build())
+            }
         }
     }
 

@@ -45,13 +45,9 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
     // observer data
     val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
-        Log.d(TAG, "list audio size : " + listAudio.size)
-        if (listAudio != null) {
-//            mListSelectAdapter.submitList(ArrayList(listAudio))
-            val fileName = safeArg.uri            // tam thoi comment
 
-            mListSelectAdapter.submitList(mListSelectAudioViewModel.setSelectRingtone(fileName))
-            binding.rvListSelectAudio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(fileName))
+        if (listAudio != null) {
+            mListSelectAdapter.submitList(ArrayList(listAudio))
         }
     }
 
@@ -103,14 +99,15 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             .get(ListSelectAudioViewModel::class.java)
         mListSelectAdapter = ListSelectAdapter(this)
 
-        CoroutineScope(Dispatchers.Default).launch {
-            mListSelectAudioViewModel.init()
-        }
+        val fileUri = safeArg.uri
+        mListSelectAudioViewModel.init(fileUri)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
+
+        binding.rvListSelectAudio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(safeArg.uri))       // set vi tri khi chuyen sang man hinh den bai nhac da duoc chon
 
         binding.ivSearch.setOnClickListener(this)
         binding.ivSearchClose.setOnClickListener(this)
@@ -119,7 +116,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         binding.ivFile.setOnClickListener(this)
         binding.backButton.setOnClickListener(this)
 
-        edt_search.addTextChangedListener(object : TextWatcher {
+        binding.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
             }
 
@@ -128,13 +125,13 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
             override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
                 if (mListSelectAudioViewModel.searchAudioFile(textChange.toString()).size <= 0) {
-                    cl_select.visibility = View.GONE
-                    cl_bottom.visibility = View.GONE
-                    cl_no_audio.visibility = View.VISIBLE
+                    binding.clSelect.visibility = View.GONE
+                    binding.clBottom.visibility = View.GONE
+                    binding.clNoAudio.visibility = View.VISIBLE
                 } else {
-                    cl_select.visibility = View.VISIBLE
-                    cl_bottom.visibility = View.VISIBLE
-                    cl_no_audio.visibility = View.GONE
+                    binding.clSelect.visibility = View.VISIBLE
+                    binding.clBottom.visibility = View.VISIBLE
+                    binding.clNoAudio.visibility = View.GONE
                     mListSelectAdapter.submitList(mListSelectAudioViewModel.searchAudioFile(textChange.toString()))
                 }
             }
@@ -177,17 +174,17 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         when (view) {
             binding.ivSearch -> {
                 showKeyboard()
-                cl_default.visibility = View.GONE
-                cl_search.visibility = View.VISIBLE
+                binding.clDefault.visibility = View.INVISIBLE
+                binding.clSearch.visibility = View.VISIBLE
             }
             binding.ivSearchClose -> {
-                cl_default.visibility = View.VISIBLE
-                cl_search.visibility = View.GONE
-                edt_search.text.clear()
+                binding.clDefault.visibility = View.VISIBLE
+                binding.clSearch.visibility = View.INVISIBLE
+                binding.edtSearch.text.clear()
                 hideKeyboard()
             }
             binding.ivClear -> {
-                edt_search.text.clear()
+                binding.edtSearch.text.clear()
             }
             binding.btnSave -> {
                 if (mListSelectAudioViewModel.setRingtone(safeArg.phoneNumber)) {

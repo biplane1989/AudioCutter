@@ -29,9 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener,
-    SetAsDialogListener, DeleteDialogListener, CancelDialogListener,
-    DialogAppShare.DialogAppListener {
+class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, CancelDialogListener, DialogAppShare.DialogAppListener {
 
     private lateinit var binding: MyStudioFragmentBinding
     private val TAG = "giangtd"
@@ -100,10 +98,8 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         audioCutterAdapter = AudioCutterAdapter(this)
         typeAudio = requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
 
-        CoroutineScope(Dispatchers.Default).launch {
-            myStudioViewModel.init(typeAudio)
-        }
-        myStudioViewModel.getListAudioFile().observe(this as LifecycleOwner, listAudioObserver)
+        myStudioViewModel.init(typeAudio)
+        myStudioViewModel.getListAudioFile().observe(this, listAudioObserver)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -177,12 +173,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     ShowDialogShareFile()
                 }
                 R.id.rename -> {
-                    val dialog = RenameDialog.newInstance(
-                        this,
-                        typeAudio,
-                        audioFile.file.absolutePath,
-                        audioFile.mimeType!!
-                    )
+                    val dialog = RenameDialog.newInstance(this, typeAudio, audioFile.file.absolutePath, audioFile.mimeType!!)
                     dialog.show(childFragmentManager, RenameDialog.TAG)
                 }
                 R.id.info -> {
@@ -237,16 +228,13 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     override fun onRenameClick(newName: String, type: Int, filePath: String) {
         /**handle data rename change name to file insert to mediastore**/
         var typeFolder: Folder = when (type) {
-            0 ->
-                Folder.TYPE_CUTTER
+            0 -> Folder.TYPE_CUTTER
 
-            1 ->
-                Folder.TYPE_MERGER
+            1 -> Folder.TYPE_MERGER
 
-            else ->
-                Folder.TYPE_MIXER
+            else -> Folder.TYPE_MIXER
         }
-         myStudioViewModel.renameAudio(newName, typeFolder, filePath)
+        myStudioViewModel.renameAudio(newName, typeFolder, filePath)
 
 
     }
