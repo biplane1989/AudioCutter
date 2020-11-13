@@ -149,7 +149,7 @@
             android:gravity="end"
             android:text="00:00"
             android:textColor="#9C9C9C"
-            android:textSize="12sp" />
+            android:textSize="12dp" />
 
         <TextView
             android:id="@+id/tv_time_total"
@@ -157,9 +157,9 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:fontFamily="@font/sanfranciscodisplay_medium"
-            android:text="/08:05"
+            android:text="/00:00"
             android:textColor="#9C9C9C"
-            android:textSize="12sp" />
+            android:textSize="12dp" />
 
     </LinearLayout>
 </LinearLayout>

@@ -233,7 +233,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         audioCutterModel.resume()
     }
 
-
     override fun showDialogSetAs(itemAudio: AudioCutterView) {
         audioCutterItem = itemAudio
         dialog.setOnCallBack(this)
@@ -243,6 +242,10 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     override fun onCutItemClicked(itemAudio: AudioCutterView) {
         viewStateManager.onCuttingItemClicked(this, itemAudio)
 
+    }
+
+    override fun setRingtoneContact(filePath: String) {
+        viewStateManager.onCutScreenSetRingtoneContact(this, filePath)
     }
 
     override fun setAudioAs(typeAudioSetAs: TypeAudioSetAs) {

@@ -43,6 +43,15 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     private lateinit var audioFile: AudioFile
     private lateinit var dialogShare: DialogAppShare
 
+    override fun setMenuVisibility(menuVisible: Boolean) {
+        super.setMenuVisibility(menuVisible)
+        if (menuVisible){
+            Log.d(TAG, "setMenuVisibility: TRUE")
+        }else{
+            Log.d(TAG, "setMenuVisibility: FALE")
+        }
+    }
+
     val listAudioObserver = Observer<List<AudioFileView>> { listAudio ->
 
         listAudio?.let {
@@ -199,6 +208,10 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         myStudioViewModel.seekToAudio(cusorPos)
     }
 
+    override fun onStartSeekBar() {
+        myStudioViewModel.startSeekBar()
+    }
+
     override fun showMenu(view: View, audioFile: AudioFile) { // click item setting
         val popup = android.widget.PopupMenu(context, view)
         popup.inflate(R.menu.output_audio_manager_screen_popup_menu)
@@ -254,9 +267,9 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
     private fun checkAllItemSelected() {
         if (myStudioViewModel.isAllChecked()) {
-            iv_check.setImageResource(R.drawable.my_studio_screen_icon_checked)
+            binding.ivCheck.setImageResource(R.drawable.my_studio_screen_icon_checked)
         } else {
-            iv_check.setImageResource(R.drawable.my_studio_screen_icon_uncheck)
+            binding.ivCheck.setImageResource(R.drawable.my_studio_screen_icon_uncheck)
         }
     }
 
@@ -336,59 +349,9 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             }
         }
     }
-
     // click cancel button on dialog delete
     override fun onCancel() {
     }
-
-    /* // nhận listernner từ fragment khác truyền đến
-     override fun onReceivedAction(fragmentMeta: FragmentMeta) {
-         // nếu typeAudio không bằng data của fragment thoát
-         // ap dung 2 kieu truyen du lieu. 1 qua newIntent fragment, 2. truyen qua call back sendFragment
-         if (fragmentMeta.action in arrayListOf(Constance.ACTION_CHECK_DELETE, Constance.ACTION_DELETE_ALL)) if (typeAudio != (fragmentMeta.data as Int)) {
-             return
-         }
-         when (fragmentMeta.action) {
-             Constance.ACTION_UNCHECK -> { // trang thai isdelete
-                 myStudioViewModel.changeAutoItemToDelete()
-                 if (myStudioViewModel.isAllChecked()) { // nếu không còn data thì sẽ ko hiện checkall
-                     cl_delete_all.visibility = View.GONE
-                 } else {
-                     cl_delete_all.visibility = View.VISIBLE
-                 }
-             }
-             Constance.ACTION_HIDE -> {  // trang thai undelete
-                 audioCutterAdapter.submitList(myStudioViewModel.changeAutoItemToMore())
-                 cl_delete_all.visibility = View.GONE
-                 iv_check.setImageResource(R.drawable.my_studio_screen_icon_uncheck)
-             }
-             Constance.ACTION_DELETE_ALL -> {
-                 if (myStudioViewModel.isAllChecked()) {   // check nếu tất cả đã xóa thì ẩn nút selectall
-                     cl_delete_all.visibility = View.GONE
-                 }
-                 runOnUI {
-                     if (myStudioViewModel.deleteAllItemSelected(requireArguments().getInt(BUNDLE_NAME_KEY))) { // nếu delete thành công thì sẽ hiện dialog thành công
-                         val dialog = DeleteSuccessfullyDialog()
-                         dialog.show(childFragmentManager, DeleteSuccessfullyDialog.TAG)
-                     } else {
-                         Toast.makeText(context, getString(R.string.my_studio_delete_fail), Toast.LENGTH_SHORT)
-                             .show()
-                     }
-                 }
-             }
-             Constance.ACTION_STOP_MUSIC -> {
-                 myStudioViewModel.stopMediaPlayerWhenTabSelect()
-             }
-             Constance.ACTION_CHECK_DELETE -> {
-                 if (!myStudioViewModel.isChecked()) {
-                     sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_DELETE, false)
-                 } else {
-                     sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_DELETE, true)
-                 }
-             }
-         }
-     }*/
-
 
     override fun onCancelDeleteClick(id: Int) {        // cancel dialog
         myStudioViewModel.cancelLoading(id)

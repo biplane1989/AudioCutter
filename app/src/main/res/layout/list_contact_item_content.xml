@@ -40,7 +40,6 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"
         android:fontFamily="@font/sanfranciscodisplay_light"
-        android:hint="25 Minut"
         android:textColor="#9C9C9C"
         android:textSize="14sp"
         android:visibility="gone"

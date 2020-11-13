@@ -88,7 +88,7 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
 
 
         lifecycleScope.launch {
-            /*delay(250)*/
+//            delay(1250)
             mListContactViewModel.scan()
         }
 

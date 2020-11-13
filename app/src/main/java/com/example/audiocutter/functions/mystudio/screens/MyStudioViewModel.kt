@@ -133,7 +133,10 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             }
             mAudioMediatorLiveData.addSource(audioPlayer.getPlayerInfo()) {
                 Log.d("taih", "${it.playerState} ${it.posision}")
-                updatePlayerInfo(it)
+                if (!isSeekBarStatus) {
+                    Log.d(TAG, "init: onStopTrackingTouch updatePlayerInfo --->    isSeekBarStatus "+ isSeekBarStatus)
+                    updatePlayerInfo(it)
+                }
             }
             mAudioMediatorLiveData.addSource(ManagerFactory.getAudioEditorManager()
                 .getCurrentProcessingItem()) {
@@ -141,7 +144,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                     updateLoadingProgressbar(it)
                 }
             }
-
         }
     }
 
@@ -468,6 +470,12 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     fun seekToAudio(cusorPos: Int) {
         audioPlayer.seek(cusorPos)
+        isSeekBarStatus = false
+    }
+
+    var isSeekBarStatus = false
+    fun startSeekBar() {
+        isSeekBarStatus = true
     }
 
     private fun updatePlayerInfo(playerInfo: PlayerInfo) {

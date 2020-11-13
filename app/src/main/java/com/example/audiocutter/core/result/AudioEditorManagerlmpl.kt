@@ -150,7 +150,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 audioFile.uri = addMediaStore(audioFile.file.absolutePath.toString())
                 item.outputAudioFile = audioFile
 
-                Log.d("001", "URI : " + addMediaStore(audioFile.file.absolutePath.toString()))
+//                Log.d("001", "URI : " + addMediaStore(audioFile.file.absolutePath.toString()))
 
             }
 
@@ -173,7 +173,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 item.outputAudioFile = audioFile
 
 
-                Log.d("001", "URI : " + addMediaStore(audioFile.file.absolutePath.toString()))
+//                Log.d("001", "URI : " + addMediaStore(audioFile.file.absolutePath.toString()))
             }
 
             if (item is CuttingConvertingItem) {
@@ -188,7 +188,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 //                val audio = AudioFile(File(item.cuttingConfig.pathFolder + File.separator + item.cuttingConfig.fileName + ".mp3"), item.cuttingConfig.fileName, 100L)
 //                FakeAudioFileManager.addCut(audio)
 
-                Log.d("001", "URI : " + addMediaStore(audioFile.file.absolutePath.toString()))
+//                Log.d("001", "URI : " + addMediaStore(audioFile.file.absolutePath.toString()))
             }
 
             synchronized(listConvertingItemData) {

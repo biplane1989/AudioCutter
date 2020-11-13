@@ -685,6 +685,7 @@ object AudioFileManagerImpl : AudioFileManager {
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values,
                 null, null
             )
+            Log.d(TAG, "insertFile: rows $rows")
             MediaScannerConnection.scanFile(
                 mContext,
                 arrayOf(fileNew.absolutePath),

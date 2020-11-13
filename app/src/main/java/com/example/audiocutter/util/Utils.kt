@@ -1,23 +1,22 @@
 package com.example.audiocutter.util
 
 import android.annotation.SuppressLint
-import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.Typeface
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.provider.ContactsContract
 import android.provider.MediaStore
-import android.provider.OpenableColumns
 import android.text.TextUtils
-import android.util.Log
 import android.util.TypedValue
+import androidx.core.content.res.ResourcesCompat
+import com.example.audiocutter.R
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import java.io.File
@@ -96,7 +95,8 @@ object Utils {
 
     // lay ten bai hat theo uri
     fun getNameByUri(context: Context, uri: String): String {
-        Log.d("giangtd", "getNameByUri: uri: " + uri)
+
+        /*Log.d("giangtd", "getNameByUri: uri: " + uri)
         var fileName = ""
         try {
             val newUri = Uri.parse(uri)
@@ -116,7 +116,10 @@ object Utils {
         if (fileName.isEmpty()) {
             fileName = File(uri).name
         }
-        return fileName
+        return fileName*/
+
+        val r = RingtoneManager.getRingtone(context, Uri.parse(uri))
+        return r.getTitle(context)
     }
 
     // lay path bai hat theo uri
@@ -172,8 +175,9 @@ object Utils {
     }
 
     fun checkUriIsExits(context: Context, uri: String): Boolean {       // kiem tra uri co ton tai khong
+
         val projecttion = arrayOf(MediaStore.MediaColumns.DATA)
-        val cursor: Cursor = context.contentResolver.query(Uri.parse(uri), projecttion, null, null, null)!!
+        val cursor: Cursor? = context.contentResolver.query(Uri.parse(uri), projecttion, null, null, null)
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 val filePath = cursor.getString(0);
@@ -213,6 +217,18 @@ object Utils {
         if (time < 0) return "00:00"
         val df = SimpleDateFormat("mm:ss")
         return df.format(time)
+    }
+
+    fun getWidthTextPlayController(str: String, context: Context, textSize: Int): Float {
+        val paint = Paint()
+        paint.textSize = convertDp2Px(textSize, context)
+        val typeface: Typeface? = ResourcesCompat.getFont(context, R.font.sanfrancisco_medium)
+        typeface?.let {
+            paint.typeface = typeface
+        }
+        val result = Rect()
+        paint.getTextBounds(str, 0, str.length, result)
+        return result.width().toFloat()
     }
 
 

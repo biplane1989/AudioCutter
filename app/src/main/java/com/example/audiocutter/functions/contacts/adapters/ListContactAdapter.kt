@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.audiocutter.R
 import com.example.audiocutter.functions.contacts.objects.ContactItemView
@@ -118,8 +119,8 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
             tvName.text = contentItem.contactItem.name
 
             contentItem.contactItem.thumb?.let {
-                Glide.with(itemView.context).load(it)
-                    .transition(DrawableTransitionOptions.withCrossFade()).dontAnimate()
+                Glide.with(itemView).load(it)
+                    .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
                     .into(ivAvatar)
             }
 

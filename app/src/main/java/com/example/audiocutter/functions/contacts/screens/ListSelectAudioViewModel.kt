@@ -53,9 +53,9 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     }
 
     fun init(fileUri: String) {
-        runOnBackground {
-            mAudioMediatorLiveData.addSource(ManagerFactory.getAudioFileManager()
-                .findAllAudioFiles()) {
+
+        mAudioMediatorLiveData.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
+            runOnBackground {
                 if (it.state == StateLoad.LOADING) {
                     isEmptyStatus.postValue(false)
                     loadingStatus.postValue(true)
@@ -82,7 +82,8 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     private fun setSelectRingtone(fileUri: String): ArrayList<SelectItemView> {
         var index = 0
         for (item in mListAudioFileView) {
-            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileUri) || TextUtils.equals(item.audioFile.fileName + ".m4a", fileUri)) {
+//            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileUri) || TextUtils.equals(item.audioFile.fileName + ".m4a", fileUri)) {
+            if (TextUtils.equals(item.audioFile.fileName + item.audioFile.mimeType, fileUri)) {
                 val newItem = item.copy()
                 newItem.isSelect = true
                 mListAudioFileView.set(index, newItem)

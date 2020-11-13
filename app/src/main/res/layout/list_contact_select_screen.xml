@@ -114,9 +114,8 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
             android:background="#F6F6F6"
-            app:layout_constraintBottom_toTopOf="@id/cl_select"
             app:layout_constraintTop_toBottomOf="@id/cl_default" />
 
         <androidx.constraintlayout.widget.ConstraintLayout

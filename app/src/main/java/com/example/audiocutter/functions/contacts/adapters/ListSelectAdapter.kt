@@ -13,11 +13,14 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.functions.mystudio.Constance
+import com.example.audiocutter.util.Utils
 import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
 import java.text.SimpleDateFormat
 
@@ -100,7 +103,8 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-        val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar_music)
+        //        val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar_music)
+        val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar)
         val tvTitle: TextView = itemView.findViewById(R.id.tv_title_music)
         val tvInfo: TextView = itemView.findViewById(R.id.tv_info_music)
 
@@ -126,7 +130,9 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             }
 
             selectItemView.audioFile.bitmap?.let {
-                ivAvatar.setImageBitmap(it)
+                Glide.with(itemView).load(selectItemView.audioFile.bitmap)
+                    .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
+                    .into(ivAvatar)
             }
 
             tvTotal.text = "/" + simpleDateFormat.format(selectItemView.audioFile.time.toInt())
