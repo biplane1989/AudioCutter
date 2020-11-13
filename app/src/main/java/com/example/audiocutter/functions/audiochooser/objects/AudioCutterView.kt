@@ -10,4 +10,5 @@ data class AudioCutterView(
     var duration: Long = 0L,
     var currentPos: Long = 0L,
     var isCheckDistance: Boolean = false
+
 )

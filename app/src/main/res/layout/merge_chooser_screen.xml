@@ -139,20 +139,6 @@
             android:textColor="@color/colorgray"
             android:textSize="@dimen/d_18"
             android:visibility="gone" />
-        <TextView
-
-            android:id="@+id/tv_waiting_mer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/pgr_audio_merge"
-            android:layout_centerInParent="true"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center"
-            android:fontFamily="@font/sanfranciscodisplay_regular"
-            android:text="@string/please_wait_a_moment"
-            android:textColor="@color/colorgray"
-            android:textSize="@dimen/d_18"
-            android:visibility="gone" />
 
         <View
             android:layout_width="match_parent"

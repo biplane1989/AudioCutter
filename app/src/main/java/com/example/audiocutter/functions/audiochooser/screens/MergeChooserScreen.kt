@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -64,7 +63,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     }
 
     private val playerInfoObserver = Observer<PlayerInfo> {
-        audioMerAdapter.submitList(audioMerModel.updateMediaInfo(it))
+    audioMerModel.updateMediaInfo(it)
     }
 
 
@@ -119,17 +118,18 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         binding.rltNextMerParent.visibility = View.VISIBLE
         binding.tvEmptyListMer.visibility = View.INVISIBLE
         binding.ivEmptyListMerge.visibility = View.INVISIBLE
-        if (yourTextSearch.isEmpty()) {
-            audioMerAdapter.submitList(audioMerModel.getListData())
-        }
-        if (audioMerModel.searchAudio(audioMerModel.getListData(), yourTextSearch).isNotEmpty()) {
-            audioMerAdapter.submitList(audioMerModel.getListAudio())
-        } else {
-            binding.rvMerge.visibility = View.INVISIBLE
-            binding.rltNextMerParent.visibility = View.INVISIBLE
-            binding.tvEmptyListMer.visibility = View.VISIBLE
-            binding.ivEmptyListMerge.visibility = View.VISIBLE
-        }
+        /* if (yourTextSearch.isEmpty()) {
+             audioMerAdapter.submitList(audioMerModel.getListData())
+         }*/
+        audioMerModel.searchAudio(yourTextSearch)
+        /* if () {
+             audioMerAdapter.submitList(audioMerModel.getListAudio())
+         } else {
+             binding.rvMerge.visibility = View.INVISIBLE
+             binding.rltNextMerParent.visibility = View.INVISIBLE
+             binding.tvEmptyListMer.visibility = View.VISIBLE
+             binding.ivEmptyListMerge.visibility = View.VISIBLE
+         }*/
     }
 
 
@@ -206,9 +206,9 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     }
 
     @SuppressLint("SetTextI18n")
-    override fun chooseItemAudio(pos: Int, rs: Boolean) {
+    override fun chooseItemAudio(audioCutterView: AudioCutterView, rs: Boolean) {
 
-        audioMerAdapter.submitList(audioMerModel.chooseItemAudioFile(pos, rs))
+        audioMerModel.chooseItemAudioFile(audioCutterView, rs)
 
     }
 
@@ -260,10 +260,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
 
 
     private fun handleAudiofile() {
-        showProgressBar(true)
 
-        binding.rvMerge.visibility = View.INVISIBLE
-        binding.tvWaitingMer.visibility = View.VISIBLE
         ManagerFactory.getDefaultAudioPlayer().stop()
         val listItemHandle = audioMerModel.getListItemChoose()
 
@@ -285,7 +282,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         binding.rltNextMerParent.visibility = View.VISIBLE
         binding.tvEmptyListMer.visibility = View.INVISIBLE
         binding.ivEmptyListMerge.visibility = View.INVISIBLE
-        audioMerAdapter.submitList(audioMerModel.getListAudio())
+        //audioMerAdapter.submitList(audioMerModel.getListAudio())
         hideKeyboard()
         hideOrShowEditText(View.INVISIBLE)
         hideOrShowView(View.VISIBLE)

@@ -186,8 +186,8 @@ class MergeChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, 
             val item = getItem(adapterPosition)
             when (p0.id) {
                 R.id.iv_controller_audio_merger -> controllerAudio()
-                R.id.ln_menu_merger -> mCallBack.chooseItemAudio(adapterPosition, item.isCheckChooseItem)
-                R.id.ln_item_audio_merger_screen -> mCallBack.chooseItemAudio(adapterPosition, item.isCheckChooseItem)
+                R.id.ln_menu_merger -> mCallBack.chooseItemAudio(getItem(adapterPosition), item.isCheckChooseItem)
+                R.id.ln_item_audio_merger_screen -> mCallBack.chooseItemAudio(getItem(adapterPosition), item.isCheckChooseItem)
             }
         }
 
@@ -218,7 +218,7 @@ class MergeChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, 
         fun play(pos: Int)
         fun pause(pos: Int)
         fun resume(pos: Int)
-        fun chooseItemAudio(pos: Int, rs: Boolean)
+        fun chooseItemAudio(audioCutterView: AudioCutterView, rs: Boolean)
     }
 }
 

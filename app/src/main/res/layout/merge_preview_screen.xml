@@ -51,6 +51,7 @@
         android:id="@+id/rv_merge_choose"
         android:layout_width="match_parent"
         android:overScrollMode="never"
+        android:layout_marginBottom="?actionBarSize"
         android:layout_height="match_parent"
         android:layout_below="@id/rlt_actionbar_mer_choose"
         tools:listitem="@layout/item_audio_choose_merge" />

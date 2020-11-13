@@ -23,7 +23,7 @@ class MergePreviewAdapter(val mContext: Context) :
         MergerChooserAudioDiff()
     ), OnItemTouchHelper {
 
-    var listAudios = mutableListOf<AudioCutterView>()
+    //var listAudios = mutableListOf<AudioCutterView>()
     lateinit var mCallback: AudioMergeChooseListener
     lateinit var mTouchHelper: ItemTouchHelper
 
@@ -34,11 +34,9 @@ class MergePreviewAdapter(val mContext: Context) :
     override fun submitList(list: List<AudioCutterView>?) {
 
         if (list != null) {
-            listAudios = ArrayList(list)
-            super.submitList(listAudios)
+            super.submitList(ArrayList(list))
         } else {
-            listAudios = ArrayList()
-            super.submitList(listAudios)
+            super.submitList(ArrayList())
         }
     }
 
@@ -156,11 +154,11 @@ class MergePreviewAdapter(val mContext: Context) :
         }
 
         private fun deleteAudio() {
-            mCallback.deleteAudio(adapterPosition, listAudios[adapterPosition])
+            mCallback.deleteAudio(adapterPosition, getItem(adapterPosition))
         }
 
         private fun controllerAudio() {
-            val itemAudio = listAudios[adapterPosition]
+            val itemAudio = getItem(adapterPosition)
             if (adapterPosition == -1) {
                 return
             }

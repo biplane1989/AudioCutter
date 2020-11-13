@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.base.IViewModel
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
@@ -35,11 +34,10 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     private val safeArg: MergePreviewScreenArgs by navArgs()
     private lateinit var listAudioPath: Array<String>
-    private lateinit var listPath: ArrayList<String>
+    private lateinit var listPath : ArrayList<String>
 
-
-    //    private val TAG = "manhqn"
-    private val TAG = "giangtd"
+        private val TAG = "manhqn"
+//    private val TAG = "giangtd"
     private lateinit var binding: MergePreviewScreenBinding
     private lateinit var audioMerAdapter: MergePreviewAdapter
     private lateinit var audioMerModel: MergePreviewModel
@@ -69,7 +67,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
         for (item in listAudioPath) {
             listPath.add(item)
-
 
             newListAudio.add(AudioCutterView(ManagerFactory.getAudioFileManager().buildAudioFileAvailable(item), PlayerState.IDLE, false, 0L, 0L, false))
 

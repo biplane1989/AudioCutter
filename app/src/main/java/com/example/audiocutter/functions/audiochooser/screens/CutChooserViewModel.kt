@@ -21,9 +21,12 @@ class AudioCutterModel : BaseViewModel() {
 
     private val TAG = AudioCutterModel::class.java.name
     private var currentAudioPlaying: File = File("")
-    private var mListAudio = ArrayList<AudioCutterView>()
-    private var listData = ArrayList<AudioCutterView>()
+
+    private var mListAudioPrev = ArrayList<AudioCutterView>()
+    private var mListAudios = ArrayList<AudioCutterView>()
     private var mListAudioSearch = ArrayList<AudioCutterView>()
+
+
     var duration: Long? = 0L
     var audioPlayer = ManagerFactory.getDefaultAudioPlayer()
     private lateinit var mcallBack: OnActionCallback
@@ -59,19 +62,19 @@ class AudioCutterModel : BaseViewModel() {
                     _stateLoadProgress.postValue(-1)
                 }
             }
-            mListAudio.clear()
+            mListAudioPrev.clear()
             it.listAudioFiles.forEach {
-                mListAudio.add(AudioCutterView(it))
+                mListAudioPrev.add(AudioCutterView(it))
             }
-            Collections.sort(mListAudio, sortListByName)
-            listData.addAll(mListAudio)
-            mListAudio
+            Collections.sort(mListAudioPrev, sortListByName)
+            mListAudios.addAll(mListAudioPrev)
+            mListAudioPrev
         }
     }
 
 
     suspend fun play(pos: Int) {
-        val audioItem = mListAudio[pos]
+        val audioItem = mListAudioPrev[pos]
         audioPlayer.play(audioItem.audioFile)
     }
 
@@ -96,12 +99,12 @@ class AudioCutterModel : BaseViewModel() {
                 val oldPos = getAudioFilePos(currentAudioPlaying)
                 val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
                 if (oldPos != -1) {
-                    val audioFile = mListAudio[oldPos].copy()
+                    val audioFile = mListAudioPrev[oldPos].copy()
                     audioFile.state = PlayerState.IDLE
                     audioFile.isCheckDistance = false
                     audioFile.currentPos = playerInfo.posision.toLong()
                     audioFile.duration = playerInfo.duration.toLong()
-                    mListAudio[oldPos] = audioFile
+                    mListAudioPrev[oldPos] = audioFile
                 }
                 if (newPos != -1) {
                     updateState(newPos, playerInfo, true)
@@ -115,24 +118,24 @@ class AudioCutterModel : BaseViewModel() {
             currentAudioPlaying = playerInfo.currentAudio!!.file
         }
 
-        return mListAudio
+        return mListAudioPrev
     }
 
     private fun updateState(pos: Int, playerInfo: PlayerInfo, rs: Boolean) {
-        val audioFile = mListAudio[pos].copy()
+        val audioFile = mListAudioPrev[pos].copy()
         audioFile.state = playerInfo.playerState
         audioFile.isCheckDistance = rs
         audioFile.currentPos = playerInfo.posision.toLong()
         audioFile.duration = playerInfo.duration.toLong()
-        mListAudio[pos] = audioFile
+        mListAudioPrev[pos] = audioFile
 
     }
 
 
     private fun getAudioFilePos(file: File): Int {
         var i = 0
-        while (i < mListAudio.size) {
-            if (mListAudio[i].audioFile.file == file) {
+        while (i < mListAudioPrev.size) {
+            if (mListAudioPrev[i].audioFile.file == file) {
                 return i
             }
             i++
@@ -152,19 +155,19 @@ class AudioCutterModel : BaseViewModel() {
                 mListAudioSearch.add(it)
             }
         }
-        mListAudio.clear()
-        mListAudio.addAll(mListAudioSearch)
+        mListAudioPrev.clear()
+        mListAudioPrev.addAll(mListAudioSearch)
         /***bug play audio file**/
-        return mListAudio
+        return mListAudioPrev
     }
 
 
     fun getListAudio(): ArrayList<AudioCutterView> {
-        return mListAudio
+        return mListAudioPrev
     }
 
     fun getListData(): ArrayList<AudioCutterView> {
-        return listData
+        return mListAudios
     }
 
 
