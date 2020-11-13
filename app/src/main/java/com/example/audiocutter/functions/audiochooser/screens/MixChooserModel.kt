@@ -19,12 +19,19 @@ class MixModel : BaseViewModel() {
     private val TAG = MixModel::class.java.name
     private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
+    private var listData = ArrayList<AudioCutterView>()
+    private var listIndexChooser = ArrayList<Int>()
     private var mListAudioSearch = ArrayList<AudioCutterView>()
     private var _stateLoadProgress = MutableLiveData<Int>()
     val stateLoadProgress: LiveData<Int>
         get() = _stateLoadProgress
 
+    private var _countItem = MutableLiveData<Int>()
+    val countItem: LiveData<Int>
+        get() = _countItem
+
     var isChooseItem = false
+    var count = 0
 
 
     private val sortListByName: Comparator<AudioCutterView> =
@@ -53,13 +60,29 @@ class MixModel : BaseViewModel() {
             }
 
             Collections.sort(mListAudio, sortListByName)
+            listData.addAll(mListAudio)
 
+            for (item in listIndexChooser) {
+                mListAudio.removeAt(item)
+                mListAudio.add(
+                    item,
+                    AudioCutterView(
+                        mListAudioSearch[item].audioFile,
+                        PlayerState.IDLE,
+                        isCheckChooseItem = true
+                    )
+                )
+            }
             mListAudio
         }
     }
 
     fun getStateLoading(): LiveData<Int> {
         return stateLoadProgress
+    }
+
+    fun getCountItemChoose(): LiveData<Int> {
+        return countItem
     }
 
 
@@ -128,15 +151,19 @@ class MixModel : BaseViewModel() {
                 mListAudioSearch.add(it)
             }
         }
+        mListAudio.clear()
+        mListAudio.addAll(mListAudioSearch)
         return mListAudioSearch
     }
 
-    fun getListsearch(): ArrayList<AudioCutterView> {
-        return mListAudioSearch
-    }
 
     fun getListAudio(): ArrayList<AudioCutterView> {
         return mListAudio
+
+    }
+
+    fun getListData(): ArrayList<AudioCutterView> {
+        return listData
     }
 
     fun chooseItemAudioFile(pos: Int, rs: Boolean): List<AudioCutterView>? {
@@ -145,10 +172,19 @@ class MixModel : BaseViewModel() {
         if (!rs) {
             itemAudio = mListAudio[pos].copy()
             itemAudio.isCheckChooseItem = true
+            this.count++
+            if (this.count > 2) {
+                this.count = 2
+            }
+            _countItem.postValue(this.count)
             mListAudio[pos] = itemAudio
         } else {
             itemAudio = mListAudio[pos].copy()
             itemAudio.isCheckChooseItem = false
+            if (this.count > 0) {
+                this.count--
+                _countItem.postValue(this.count)
+            }
             mListAudio[pos] = itemAudio
         }
 
@@ -183,6 +219,7 @@ class MixModel : BaseViewModel() {
         for (item in mListAudio) {
             if (item.isCheckChooseItem) {
                 listAudio.add(item)
+                listIndexChooser.add(mListAudio.indexOf(item))
             }
         }
         return listAudio

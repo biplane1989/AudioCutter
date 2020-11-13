@@ -1,12 +1,11 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,8 +33,8 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         when (it) {
             1 -> {
                 showProgressBar(true)
-                binding.ivEmptyListMerge.visibility = View.GONE
-                binding.tvEmptyListMer.visibility = View.GONE
+                binding.ivEmptyListMerge.visibility = View.INVISIBLE
+                binding.tvEmptyListMer.visibility = View.INVISIBLE
             }
             0 -> {
                 showProgressBar(false)
@@ -60,6 +59,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
 
     override fun onPause() {
         super.onPause()
+        hideKeyboard()
         audioMerModel.pause()
     }
 
@@ -70,6 +70,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
+
         audioMerAdapter = MergeChooserAdapter(requireContext())
         audioMerModel = ViewModelProvider(this).get(MergeChooserModel::class.java)
         ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
@@ -116,16 +117,16 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         binding.tvCountFileMer.text = getString(R.string.countFile)
         binding.rvMerge.visibility = View.VISIBLE
         binding.rltNextMerParent.visibility = View.VISIBLE
-        binding.tvEmptyListMer.visibility = View.GONE
-        binding.ivEmptyListMerge.visibility = View.GONE
+        binding.tvEmptyListMer.visibility = View.INVISIBLE
+        binding.ivEmptyListMerge.visibility = View.INVISIBLE
         if (yourTextSearch.isEmpty()) {
-            audioMerAdapter.submitList(audioMerModel.getListAudio())
+            audioMerAdapter.submitList(audioMerModel.getListData())
         }
-        if (audioMerModel.searchAudio(audioMerModel.getListAudio(), yourTextSearch).isNotEmpty()) {
-            audioMerAdapter.submitList(audioMerModel.getListsearch())
+        if (audioMerModel.searchAudio(audioMerModel.getListData(), yourTextSearch).isNotEmpty()) {
+            audioMerAdapter.submitList(audioMerModel.getListAudio())
         } else {
-            binding.rvMerge.visibility = View.GONE
-            binding.rltNextMerParent.visibility = View.GONE
+            binding.rvMerge.visibility = View.INVISIBLE
+            binding.rltNextMerParent.visibility = View.INVISIBLE
             binding.tvEmptyListMer.visibility = View.VISIBLE
             binding.ivEmptyListMerge.visibility = View.VISIBLE
         }
@@ -141,7 +142,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         binding.rltNextMer.setOnClickListener(this)
         binding.ivMerScreenBack.setOnClickListener(this)
         audioMerAdapter.setAudioListener(this)
-
         audioMerModel.getCountItemChoose().observe(this.viewLifecycleOwner, Observer {
             if (it >= 2) {
                 setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
@@ -154,9 +154,14 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
 
     }
 
-    private fun showKeybroad() {
-        val imm =
-            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    private fun hideKeyboard() {
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
+    }
+
+    private fun showKeyboard() {
+        binding.edtMerSearch.requestFocus()
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
 
@@ -172,11 +177,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         binding.tvMerScreen.visibility = status
     }
 
-
-    private fun hideKeyBroad() {
-        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view?.windowToken, 0)
-    }
 
 
     private fun initLists() {
@@ -207,9 +207,10 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
 
     @SuppressLint("SetTextI18n")
     override fun chooseItemAudio(pos: Int, rs: Boolean) {
-        audioMerAdapter.submitList(audioMerModel.chooseItemAudioFile(pos, rs))
-    }
 
+        audioMerAdapter.submitList(audioMerModel.chooseItemAudioFile(pos, rs))
+
+    }
 
     private fun showEmptyList() {
         showProgressBar(false)
@@ -260,11 +261,12 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
 
     private fun handleAudiofile() {
         showProgressBar(true)
+
         binding.rvMerge.visibility = View.INVISIBLE
         binding.tvWaitingMer.visibility = View.VISIBLE
         ManagerFactory.getDefaultAudioPlayer().stop()
-
         val listItemHandle = audioMerModel.getListItemChoose()
+
         val arrayAudio: Array<String> = Array(listItemHandle.size) { "" }
         var index = 0
         for (item in listItemHandle) {
@@ -272,6 +274,8 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
             index++
         }
         viewStateManager.onMergingItemClicked(this, arrayAudio)
+
+
     }
 
 
@@ -279,18 +283,18 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         binding.edtMerSearch.setText("")
         binding.rvMerge.visibility = View.VISIBLE
         binding.rltNextMerParent.visibility = View.VISIBLE
-        binding.tvEmptyListMer.visibility = View.GONE
-        binding.ivEmptyListMerge.visibility = View.GONE
+        binding.tvEmptyListMer.visibility = View.INVISIBLE
+        binding.ivEmptyListMerge.visibility = View.INVISIBLE
         audioMerAdapter.submitList(audioMerModel.getListAudio())
-        hideKeyBroad()
-        hideOrShowEditText(View.GONE)
+        hideKeyboard()
+        hideOrShowEditText(View.INVISIBLE)
         hideOrShowView(View.VISIBLE)
     }
 
     private fun searchAudiofile() {
-        showKeybroad()
+        showKeyboard()
         hideOrShowEditText(View.VISIBLE)
-        hideOrShowView(View.GONE)
+        hideOrShowView(View.INVISIBLE)
     }
 
     override fun onDestroyView() {
@@ -302,7 +306,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         if (b) {
             binding.pgrAudioMerge.visibility = View.VISIBLE
         } else {
-            binding.pgrAudioMerge.visibility = View.GONE
+            binding.pgrAudioMerge.visibility = View.INVISIBLE
         }
     }
 

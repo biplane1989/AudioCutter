@@ -22,6 +22,7 @@ class AudioCutterModel : BaseViewModel() {
     private val TAG = AudioCutterModel::class.java.name
     private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
+    private var listData = ArrayList<AudioCutterView>()
     private var mListAudioSearch = ArrayList<AudioCutterView>()
     var duration: Long? = 0L
     var audioPlayer = ManagerFactory.getDefaultAudioPlayer()
@@ -40,6 +41,7 @@ class AudioCutterModel : BaseViewModel() {
         Comparator { m1, m2 ->
             m1.audioFile.fileName.compareTo(m2.audioFile.fileName)
         }
+
 
     fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return Transformations.map(
@@ -62,6 +64,7 @@ class AudioCutterModel : BaseViewModel() {
                 mListAudio.add(AudioCutterView(it))
             }
             Collections.sort(mListAudio, sortListByName)
+            listData.addAll(mListAudio)
             mListAudio
         }
     }
@@ -88,6 +91,7 @@ class AudioCutterModel : BaseViewModel() {
         Log.d(TAG, "updateMediaInfo: ${playerInfo.playerState}")
         if (playerInfo.currentAudio != null) {
             if (currentAudioPlaying.absoluteFile != playerInfo.currentAudio!!.file.absoluteFile) {
+
 
                 val oldPos = getAudioFilePos(currentAudioPlaying)
                 val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
@@ -148,16 +152,19 @@ class AudioCutterModel : BaseViewModel() {
                 mListAudioSearch.add(it)
             }
         }
+        mListAudio.clear()
+        mListAudio.addAll(mListAudioSearch)
         /***bug play audio file**/
-        return mListAudioSearch
+        return mListAudio
     }
 
-    fun getListsearch(): ArrayList<AudioCutterView> {
-        return mListAudioSearch
-    }
 
     fun getListAudio(): ArrayList<AudioCutterView> {
         return mListAudio
+    }
+
+    fun getListData(): ArrayList<AudioCutterView> {
+        return listData
     }
 
 

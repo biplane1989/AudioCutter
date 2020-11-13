@@ -15,7 +15,7 @@ class CuttingViewModel : BaseViewModel() {
     private var cuttingStartPos = 0
     private var cuttingEndPos = 0
     fun restore(pathAudio: String) {
-        audioFile = ManagerFactory.getAudioFileManager().buildAudioFile(pathAudio)
+        audioFile = ManagerFactory.getAudioFileManager().buildAudioFileAvailable(pathAudio)
 
     }
 

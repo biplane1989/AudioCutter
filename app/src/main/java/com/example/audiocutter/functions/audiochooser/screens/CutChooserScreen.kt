@@ -46,8 +46,8 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             1 -> {
                 Log.d("nqm", "stateObserver: 1")
                 showProgressBar(true)
-                binding.ivEmptyListCutter.visibility = View.GONE
-                binding.tvEmptyListCutter.visibility = View.GONE
+                binding.ivEmptyListCutter.visibility = View.INVISIBLE
+                binding.tvEmptyListCutter.visibility = View.INVISIBLE
             }
             0 -> {
                 Log.d("nqm", "stateObserver: 0")
@@ -110,7 +110,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         if (b) {
             binding.pgrAudioCutter.visibility = View.VISIBLE
         } else {
-            binding.pgrAudioCutter.visibility = View.GONE
+            binding.pgrAudioCutter.visibility = View.INVISIBLE
         }
     }
 
@@ -129,28 +129,26 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         })
     }
 
+
     private fun searchAudioByName(yourTextSearch: String) {
 
-        binding.rvAudioCutter.visibility = View.VISIBLE
-        binding.tvEmptyListCutter.visibility = View.GONE
-        binding.ivEmptyListCutter.visibility = View.GONE
+       showList()
 
         if (yourTextSearch.isEmpty()) {
-            audioCutterAdapter.submitList(audioCutterModel.getListAudio())
+            audioCutterAdapter.submitList(audioCutterModel.getListData())
         }
-        if (audioCutterModel.searchAudio(audioCutterModel.getListAudio(), yourTextSearch)
+        if (audioCutterModel.searchAudio(audioCutterModel.getListData(), yourTextSearch)
                 .isNotEmpty()) {
-            audioCutterAdapter.submitList(audioCutterModel.getListsearch())
-            Log.d(TAG, "seachAudioByName: ${audioCutterModel.getListsearch().size}")
+            audioCutterAdapter.submitList(audioCutterModel.getListAudio())
+//            Log.d(TAG, "seachAudioByName: ${audioCutterModel.getListsearch().size}")
         } else {
-            binding.rvAudioCutter.visibility = View.INVISIBLE
-            binding.tvEmptyListCutter.visibility = View.VISIBLE
-            binding.ivEmptyListCutter.visibility = View.VISIBLE
+            showEmptyList()
         }
     }
 
     override fun onPause() {
         super.onPause()
+        hideKeyboard()
         audioCutterModel.pause()
     }
 
@@ -194,17 +192,15 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     }
 
 
-    private fun hideKeyBroad() {
+    private fun hideKeyboard() {
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
-    private fun showKeybroad() {
+    private fun showKeyboard() {
         binding.edtCutterSearch.requestFocus()
-        val imm = requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
-        val view = LayoutInflater.from(requireContext())
-            .inflate(R.layout.item_audio_choose_merge, null)
     }
 
 
@@ -296,20 +292,20 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     }
 
     private fun previousStatus() {
-        hideKeyBroad()
+        hideKeyboard()
         binding.rvAudioCutter.visibility = View.VISIBLE
-        binding.tvEmptyListCutter.visibility = View.GONE
-        binding.ivEmptyListCutter.visibility = View.GONE
+        binding.tvEmptyListCutter.visibility = View.INVISIBLE
+        binding.ivEmptyListCutter.visibility = View.INVISIBLE
         audioCutterAdapter.submitList(audioCutterModel.getListAudio())
         binding.edtCutterSearch.setText("")
-        hideOrShowEditText(View.GONE)
+        hideOrShowEditText(View.INVISIBLE)
         hideOrShowView(View.VISIBLE)
     }
 
     private fun searchAudiofile() {
-        showKeybroad()
+        showKeyboard()
         hideOrShowEditText(View.VISIBLE)
-        hideOrShowView(View.GONE)
+        hideOrShowView(View.INVISIBLE)
     }
 
 
@@ -336,7 +332,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
             val path = FileUtils.getPath(requireContext(), intent.data!!)
             path?.let {
-                val audio = ManagerFactory.getAudioFileManager().buildAudioFile(path)
+                val audio = ManagerFactory.getAudioFileManager().buildAudioFileAvailable(path)
                 viewStateManager.onCuttingItemClicked(this, AudioCutterView(audio))
             }
         }

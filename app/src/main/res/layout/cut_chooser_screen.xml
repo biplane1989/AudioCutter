@@ -33,7 +33,7 @@
                     android:hint="Search..."
                     android:paddingStart="40dp"
                     android:singleLine="true"
-                    android:visibility="gone">
+                    android:visibility="invisible">
 
                     <requestFocus/>
                 </EditText>

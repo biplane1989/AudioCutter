@@ -35,8 +35,8 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         when (it) {
             1 -> {
                 showProgressBar(true)
-                binding.ivEmptyListMixer.visibility = View.GONE
-                binding.tvEmptyListMixer.visibility = View.GONE
+                binding.ivEmptyListMixer.visibility = View.INVISIBLE
+                binding.tvEmptyListMixer.visibility = View.INVISIBLE
             }
             0 -> {
                 showProgressBar(false)
@@ -67,8 +67,10 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         audioMixAdapter.submitList(audioMixModel.updateMediaInfo(it))
     }
 
+
     override fun onPause() {
         super.onPause()
+        hideKeyboard()
         audioMixModel.pause()
     }
 
@@ -78,6 +80,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         audioMixAdapter = MixChooserAdapter(requireContext())
         audioMixModel = ViewModelProvider(this).get(MixModel::class.java)
         ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+
     }
 
     override fun onCreateView(
@@ -131,16 +134,16 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         binding.tvCountFile.text = getString(R.string.countFile)
         binding.rvMixer.visibility = View.VISIBLE
         binding.rltNextMixerParent.visibility = View.VISIBLE
-        binding.tvEmptyListMixer.visibility = View.GONE
-        binding.ivEmptyListMixer.visibility = View.GONE
+        binding.tvEmptyListMixer.visibility = View.INVISIBLE
+        binding.ivEmptyListMixer.visibility = View.INVISIBLE
         if (yourTextSearch.isEmpty()) {
-            audioMixAdapter.submitList(audioMixModel.getListAudio())
+            audioMixAdapter.submitList(audioMixModel.getListData())
         }
-        if (audioMixModel.searchAudio(audioMixModel.getListAudio(), yourTextSearch).isNotEmpty()) {
-            audioMixAdapter.submitList(audioMixModel.getListsearch())
+        if (audioMixModel.searchAudio(audioMixModel.getListData(), yourTextSearch).isNotEmpty()) {
+            audioMixAdapter.submitList(audioMixModel.getListAudio())
         } else {
-            binding.rvMixer.visibility = View.GONE
-            binding.rltNextMixerParent.visibility = View.GONE
+            binding.rvMixer.visibility = View.INVISIBLE
+            binding.rltNextMixerParent.visibility = View.INVISIBLE
             binding.tvEmptyListMixer.visibility = View.VISIBLE
             binding.ivEmptyListMixer.visibility = View.VISIBLE
         }
@@ -155,15 +158,29 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         binding.rltNextMixer.setOnClickListener(this)
         binding.ivMixerScreenBack.setOnClickListener(this)
         audioMixAdapter.setAudioCutterListtener(this)
+
+        audioMixModel.getCountItemChoose().observe(this.viewLifecycleOwner, Observer {
+            if (it >= 2) {
+                setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
+            } else {
+                setColorButtonNext(R.color.colorgray, R.drawable.bg_next_audio_disabled, false)
+            }
+            binding.tvCountFile.text = "${it} file"
+        })
+
+
     }
 
-    private fun showKeybroad() {
-        val imm =
-            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    private fun hideKeyboard() {
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
+    }
+
+    private fun showKeyboard() {
+        binding.edtMixerSearch.requestFocus()
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
-
-
     private fun hideOrShowEditText(status: Int) {
         binding.ivMixerScreenBackEdt.visibility = status
         binding.ivMixerScreenClose.visibility = status
@@ -179,15 +196,11 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         if (b) {
             binding.pgrAudioMix.visibility = View.VISIBLE
         } else {
-            binding.pgrAudioMix.visibility = View.GONE
+            binding.pgrAudioMix.visibility = View.INVISIBLE
         }
     }
 
 
-    private fun hideKeyBroad() {
-        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view?.windowToken, 0)
-    }
 
 
     private fun initLists() {
@@ -221,15 +234,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     override fun chooseItemAudio(pos: Int, rs: Boolean) {
         audioMixAdapter.submitList(audioMixModel.chooseItemAudioFile(pos, rs))
 
-        if (audioMixModel.checkList() == 2) {
-            setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
-        } else {
-            setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_audio_disabled, false)
-        }
         if (audioMixModel.isChooseItem) {
             showToast(getString(R.string.ToastExceed))
         }
-        binding.tvCountFile.text = "${audioMixModel.checkList()} file"
     }
 
 
@@ -286,20 +293,19 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         binding.edtMixerSearch.setText("")
         binding.rvMixer.visibility = View.VISIBLE
         binding.rltNextMixerParent.visibility = View.VISIBLE
-        binding.tvEmptyListMixer.visibility = View.GONE
-        binding.ivEmptyListMixer.visibility = View.GONE
+        binding.tvEmptyListMixer.visibility = View.INVISIBLE
+        binding.ivEmptyListMixer.visibility = View.INVISIBLE
         audioMixAdapter.submitList(audioMixModel.getListAudio())
-        hideKeyBroad()
-        hideOrShowEditText(View.GONE)
+        hideKeyboard()
+        hideOrShowEditText(View.INVISIBLE)
         hideOrShowView(View.VISIBLE)
     }
 
     private fun searchAudiofile() {
-        showKeybroad()
+        showKeyboard()
         hideOrShowEditText(View.VISIBLE)
-        hideOrShowView(View.GONE)
+        hideOrShowView(View.INVISIBLE)
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

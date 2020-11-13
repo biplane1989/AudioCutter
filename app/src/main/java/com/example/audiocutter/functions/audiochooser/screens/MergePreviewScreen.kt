@@ -57,6 +57,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
+
         audioMerAdapter = MergePreviewAdapter(requireContext())
         audioMerModel = ViewModelProvider(this).get(MergePreviewModel::class.java)
         ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
@@ -65,16 +66,17 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         listAudioPath = safeArg.listaudio
         val newListAudio = ArrayList<AudioCutterView>()
 
+
         for (item in listAudioPath) {
             listPath.add(item)
-            newListAudio.add(
-                AudioCutterView(
-                    ManagerFactory.getAudioFileManager()
-                        .buildAudioFile(item), PlayerState.IDLE, false, 0L, 0L, false
-                )
-            )
+
+
+            newListAudio.add(AudioCutterView(ManagerFactory.getAudioFileManager().buildAudioFileAvailable(item), PlayerState.IDLE, false, 0L, 0L, false))
+
         }
+
         receiveData(newListAudio)
+
     }
 
     override fun onCreateView(

@@ -14,11 +14,13 @@ import java.io.File
 interface AudioFileManager {
     fun init(appContext: Context)
     fun findAllAudioFiles(): LiveData<AudioFileScans>
-    fun buildAudioFile(filePath: String): AudioFile
+    fun buildAudioFileAvailable(filePath: String): AudioFile
+    fun buildAudioFileUnAvailable(filePath: String): AudioFile
     suspend fun saveFile(audioFile: AudioFile, typeFile: Folder): StateFile
     fun deleteFile(listAudioFile: List<AudioFile>, typeFile: Folder): Boolean
     fun getListAudioFileByType(typeFile: Folder): LiveData<AudioFileScans>
     fun getInfoAudioFile(itemFile: File?, type: Int): String?
+    fun getInfoAudioFile( type: Int): String?
     fun getDateCreatFile(file: File?): String?
     fun getFolderPath(typeFile: Folder): String
     fun insertFileToMediastore(file: File): Boolean
