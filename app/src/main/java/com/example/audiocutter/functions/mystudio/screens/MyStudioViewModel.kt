@@ -464,6 +464,21 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         return mListAudio
     }
 
+    // khi chuyển sang tab khác thì stop audio
+    fun stopMediaPlayerWhenTabSelect() {
+        //   khi play nhạc reset lại trạng thái các item khác
+        var index = 0
+        for (item in mListAudio) {
+            val newItem = item.copy()
+            newItem.isExpanded = false
+            val itemLoadStatus = newItem.itemLoadStatus.copy()
+            newItem.itemLoadStatus = itemLoadStatus
+            mListAudio[index] = newItem
+            index++
+        }
+        audioPlayer.stop()
+    }
+
     fun resumeAudioAndChangeStatus(position: Int) {
         audioPlayer.resume()
     }
@@ -503,22 +518,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             mListAudio[selectedPosition] = audioFileView
         }
         mAudioMediatorLiveData.postValue(mListAudio)
-    }
-
-    // khi chuyển sang tab khác thì stop audio
-    fun stopMediaPlayerWhenTabSelect() {
-        //   khi play nhạc reset lại trạng thái các item khác
-        var index = 0
-        for (item in mListAudio) {
-
-            val newItem = item.copy()
-            newItem.isExpanded = false
-            val itemLoadStatus = newItem.itemLoadStatus.copy()
-            newItem.itemLoadStatus = itemLoadStatus
-            mListAudio[index] = newItem
-            index++
-        }
-        audioPlayer.stop()
     }
 
     fun cancelLoading(id: Int) {

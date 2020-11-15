@@ -79,11 +79,19 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         }
     }
 
-    private fun setSelectRingtone(fileUri: String): ArrayList<SelectItemView> {
+    private fun setSelectRingtone(ringtonePath: String): ArrayList<SelectItemView> {
         var index = 0
+//        for (item in mListAudioFileView) {
+////            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileUri) || TextUtils.equals(item.audioFile.fileName + ".m4a", fileUri)) {
+//            if (TextUtils.equals(item.audioFile.fileName + item.audioFile.mimeType, ringtonePath)) {
+//                val newItem = item.copy()
+//                newItem.isSelect = true
+//                mListAudioFileView.set(index, newItem)
+//                break
+//            }
+
         for (item in mListAudioFileView) {
-//            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileUri) || TextUtils.equals(item.audioFile.fileName + ".m4a", fileUri)) {
-            if (TextUtils.equals(item.audioFile.fileName + item.audioFile.mimeType, fileUri)) {
+            if (TextUtils.equals(item.audioFile.uri.toString(), ringtonePath)) {
                 val newItem = item.copy()
                 newItem.isSelect = true
                 mListAudioFileView.set(index, newItem)
@@ -91,14 +99,21 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
             }
             index++
         }
+
         return mListAudioFileView
     }
 
-    fun getIndexSelectRingtone(fileName: String): Int {
+    fun getIndexSelectRingtone(ringtonePath: String): Int {
         var index = 0
+        /* for (item in mListAudioFileView) {
+             if (TextUtils.equals(item.audioFile.fileName + item.audioFile.mimeType, fileName)) {
+
+                 return index
+             }
+             index++
+         }*/
         for (item in mListAudioFileView) {
-//            if (TextUtils.equals(item.audioFile.fileName + ".mp3", fileName) || TextUtils.equals(item.audioFile.fileName + ".m4a", fileName)) {
-            if (TextUtils.equals(item.audioFile.fileName + item.audioFile.mimeType, fileName)) {
+            if (TextUtils.equals(item.audioFile.uri.toString(), ringtonePath)) {
 
                 return index
             }

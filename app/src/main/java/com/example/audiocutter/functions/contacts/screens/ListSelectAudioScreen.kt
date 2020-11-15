@@ -57,6 +57,8 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             binding.pbSelect.visibility = View.VISIBLE
         } else {
             binding.pbSelect.visibility = View.GONE
+            Log.d(TAG, "5555555555555555555555: ")
+            binding.rvListSelectAudio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(safeArg.uri))       // set vi tri khi chuyen sang man hinh den bai nhac da duoc chon
         }
     }
 
@@ -107,7 +109,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         super.onViewCreated(view, savedInstanceState)
         init()
         // sai do chua load duoc het item
-        binding.rvListSelectAudio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(safeArg.uri))       // set vi tri khi chuyen sang man hinh den bai nhac da duoc chon
+//        binding.rvListSelectAudio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(safeArg.uri))       // set vi tri khi chuyen sang man hinh den bai nhac da duoc chon
 
         binding.ivSearch.setOnClickListener(this)
         binding.ivSearchClose.setOnClickListener(this)

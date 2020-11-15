@@ -43,12 +43,17 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     private lateinit var audioFile: AudioFile
     private lateinit var dialogShare: DialogAppShare
 
-    override fun setMenuVisibility(menuVisible: Boolean) {
+    override fun setMenuVisibility(menuVisible: Boolean) {      // su kien khi chuyen tab
         super.setMenuVisibility(menuVisible)
-        if (menuVisible){
+        if (menuVisible) {
             Log.d(TAG, "setMenuVisibility: TRUE")
-        }else{
+
+
+        } else {
             Log.d(TAG, "setMenuVisibility: FALE")
+            if (this.isVisible){
+                myStudioViewModel.stopMediaPlayerWhenTabSelect()
+            }
         }
     }
 
@@ -349,6 +354,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             }
         }
     }
+
     // click cancel button on dialog delete
     override fun onCancel() {
     }

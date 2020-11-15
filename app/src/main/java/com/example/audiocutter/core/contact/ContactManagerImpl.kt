@@ -111,20 +111,21 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
                         }
                         var filename = ""
 
-                        if (!Utils.checkUriIsExits(appContext, ringtoneFilePath)) {     // neu nhac chuong khong ton tai
-                            if (!Utils.checkUriIsExits(appContext, defaultRingtone)) {      /// neu nhac chuong default khong ton tai
-                                filename = ""
-                            } else {
-                                filename = Utils.getNameByUri(appContext, defaultRingtone)
-                            }
-                            ringtoneFilePath = defaultRingtone
+//                        if (!Utils.checkUriIsExits(appContext, ringtoneFilePath)) {     // neu nhac chuong khong ton tai
+//                            if (!Utils.checkUriIsExits(appContext, defaultRingtone)) {      /// neu nhac chuong default khong ton tai
+//                                filename = ""
+//                            } else {
+//                                filename = Utils.getNameByUri(appContext, defaultRingtone)
+//                            }
+//                            ringtoneFilePath = defaultRingtone
 //                            isRingtoneDefault = true
-                        }else{
-                            filename = Utils.getNameByUri(appContext, ringtoneFilePath)
-//                            isRingtoneDefault = false
-                        }
+//                        } else {
+//                            filename = Utils.getNameByUri(appContext, ringtoneFilePath)
+////                            isRingtoneDefault = false
+//                        }
+                        filename = Utils.getNameByUri(appContext, ringtoneFilePath)
 //                        val contactItem = ContactItem(name, number, photoUri, defaultRingtone, isRingtoneDefault, Utils.getNameByUri(appContext, ringtoneFilePath))
-                        val contactItem = ContactItem(name, number, photoUri, defaultRingtone, isRingtoneDefault, filename)
+                        val contactItem = ContactItem(name, number, photoUri, ringtoneFilePath, isRingtoneDefault, filename)
                         newListContact.add(contactItem)
 
                         oldRingtoneDefault = defaultRingtone
