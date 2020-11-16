@@ -14,18 +14,7 @@
         android:fontFamily="@font/sanfranciscodisplay_bold"
         android:hint="A"
         android:textColor="#2E3041"
-        android:textSize="21sp"
+        android:textSize="21dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
-<!--    <View-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="1dp"-->
-<!--        android:layout_marginLeft="52dp"-->
-<!--        android:layout_marginRight="16dp"-->
-<!--        android:layout_marginBottom="8dp"-->
-<!--        android:background="#F6F6F6"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintStart_toEndOf="@id/tv_header" />-->
-
 </androidx.constraintlayout.widget.ConstraintLayout>

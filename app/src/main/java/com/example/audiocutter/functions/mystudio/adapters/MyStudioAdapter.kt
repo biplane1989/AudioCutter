@@ -225,7 +225,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
             sbMusic.max = audioFileView.itemLoadStatus.duration
 
-            tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(audioFileView.itemLoadStatus.currPos), itemView.context)
+            tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(audioFileView.audioFile.time), itemView.context)
                 .toInt() + 15
 
             tvTimeLife.text = simpleDateFormat.format(audioFileView.itemLoadStatus.currPos)

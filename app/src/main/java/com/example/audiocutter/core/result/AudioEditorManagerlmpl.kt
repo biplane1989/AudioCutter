@@ -3,6 +3,7 @@ package com.example.audiocutter.core.result
 import android.app.ActivityManager
 import android.content.*
 import android.net.Uri
+import android.os.Build
 import android.os.IBinder
 import android.provider.MediaStore
 import android.util.Log
@@ -139,41 +140,28 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 item.listAudioFiles.forEach {
                     listAudioCore.add(AudioCore(it.file, it.fileName, it.size, it.bitRate, it.time, it.mimeType))
                 }
-
-//                var audioloading = AudioFile(File(item.mergingConfig.pathFolder + File.separator + item.mergingConfig.fileName + ".mp3"), item.mergingConfig.fileName, 100L)
-//                Log.d(TAG, "audioloading: " + audioloading.file.absoluteFile.toString())
-//                FakeAudioFileManager.addMer(audioloading)
-
                 val audioResult = ManagerFactory.getAudioCutter()
                     .merge(listAudioCore, item.mergingConfig.fileName, item.mergingConfig.audioFormat, item.mergingConfig.pathFolder)
                 val audioFile = AudioFile(audioResult.file, audioResult.fileName, audioResult.size, audioResult.bitRate, audioResult.time, Uri.parse(audioResult.file.toString()))
-                audioFile.uri = addMediaStore(audioFile.file.absolutePath.toString())
+                if (Build.VERSION.SDK_INT < 29) {
+                    audioFile.uri = addMediaStore(audioFile.file.absolutePath.toString())
+                }
                 item.outputAudioFile = audioFile
-
-//                Log.d("001", "URI : " + addMediaStore(audioFile.file.absolutePath.toString()))
-
             }
 
             if (item is MixingConvertingItem) {
                 currentProcessingItem.postValue(item)
-//                item.audioFile1.time = FakeAudioFileManager.getTime(item.audioFile1.file)
-//                item.audioFile2.time = FakeAudioFileManager.getTime(item.audioFile2.file)
 
                 val audioCore1 = AudioCore(item.audioFile1.file, item.audioFile1.fileName, item.audioFile1.size, item.audioFile1.bitRate, item.audioFile1.time, item.audioFile1.mimeType)
                 val audioCore2 = AudioCore(item.audioFile2.file, item.audioFile2.fileName, item.audioFile2.size, item.audioFile2.bitRate, item.audioFile2.time, item.audioFile2.mimeType)
 
-//                val formatStr = if (item.mixingConfig.format == AudioFormat.MP3) ".mp3" else ".m4a"
-//                var audioFile = AudioFile(File(item.mixingConfig.pathFolder + File.separator + item.mixingConfig.fileName + formatStr), item.mixingConfig.fileName, 100L)
-//                FakeAudioFileManager.addMix(audioFile)
-
                 val audioResult = ManagerFactory.getAudioCutter()
                     .mix(audioCore1, audioCore2, item.mixingConfig)
                 val audioFile = AudioFile(audioResult.file, audioResult.fileName, audioResult.size, audioResult.bitRate, audioResult.time, Uri.parse(audioResult.file.toString()))
-                audioFile.uri = addMediaStore(audioFile.file.absolutePath.toString())
+                if (Build.VERSION.SDK_INT < 29) {
+                    audioFile.uri = addMediaStore(audioFile.file.absolutePath.toString())
+                }
                 item.outputAudioFile = audioFile
-
-
-//                Log.d("001", "URI : " + addMediaStore(audioFile.file.absolutePath.toString()))
             }
 
             if (item is CuttingConvertingItem) {
@@ -182,13 +170,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 val audioResult = ManagerFactory.getAudioCutter().cut(audioCore, item.cuttingConfig)
 
                 val audioFile = AudioFile(audioResult.file, audioResult.fileName, audioResult.size, audioResult.bitRate, audioResult.time, Uri.parse(audioResult.file.toString()))
-                audioFile.uri = addMediaStore(audioFile.file.absolutePath.toString())
+                if (Build.VERSION.SDK_INT < 29) {
+                    audioFile.uri = addMediaStore(audioFile.file.absolutePath.toString())
+                }
                 item.outputAudioFile = audioFile        // gan lai audio file tu audioresult duoc tra ve sau khi cutting cho ConvertingItem
-
-//                val audio = AudioFile(File(item.cuttingConfig.pathFolder + File.separator + item.cuttingConfig.fileName + ".mp3"), item.cuttingConfig.fileName, 100L)
-//                FakeAudioFileManager.addCut(audio)
-
-//                Log.d("001", "URI : " + addMediaStore(audioFile.file.absolutePath.toString()))
             }
 
             synchronized(listConvertingItemData) {
@@ -234,7 +219,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             latestConvertingItem = item
         }
 
-        Log.d("taih", "cutAudio")
         val processingItem = getProcessingItem()
         if (processingItem == null) {
             processNextItem()

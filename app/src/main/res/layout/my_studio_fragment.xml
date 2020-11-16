@@ -41,7 +41,7 @@
                 android:fontFamily="@font/sanfranciscodisplay_regular"
                 android:text="@string/my_studio_no_finished_task"
                 android:textColor="#9C9C9C"
-                android:textSize="14sp" />
+                android:textSize="14dp" />
 
         </LinearLayout>
 
@@ -51,6 +51,7 @@
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:background="?attr/selectableItemBackground"
                 android:id="@+id/cl_delete_all"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -65,7 +66,7 @@
                     android:fontFamily="@font/sanfranciscodisplay_regular"
                     android:text="@string/my_studio_fragment_select_all"
                     android:textColor="#9C9C9C"
-                    android:textSize="14sp"
+                    android:textSize="14dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

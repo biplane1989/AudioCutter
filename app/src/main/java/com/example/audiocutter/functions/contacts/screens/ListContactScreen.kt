@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,8 +39,10 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
     private val loadingStatusObserver = Observer<Boolean> {
         if (it) {
             binding.pbAudioCutter.visibility = View.VISIBLE
+            Log.d(TAG, "loadingStatusObserver : 1")
         } else {
             binding.pbAudioCutter.visibility = View.GONE
+            Log.d(TAG, "loadingStatusObserver : 2")
         }
     }
 
@@ -48,9 +51,12 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
         if (it) {
             binding.clContact.visibility = View.GONE
             binding.clNoContact.visibility = View.VISIBLE
+            Log.d(TAG, "isEmptyStatusObserver: 1")
         } else {
             binding.clContact.visibility = View.VISIBLE
             binding.clNoContact.visibility = View.GONE
+
+            Log.d(TAG, "isEmptyStatusObserver: 2")
         }
     }
 
@@ -64,6 +70,7 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
         binding = DataBindingUtil.inflate(inflater, R.layout.list_contact_screen, container, false)
 
         runOnUI {
+            listContactAdapter.submitList(mListContactViewModel.searchContact(""))          // search va chuyen sang man hinh selectScreen, sau do back lai thi load lai list
             // loi observe hoi lai tai
             mListContactViewModel.getIsEmptyStatus()
                 .observe(viewLifecycleOwner, isEmptyStatusObserver)
@@ -87,7 +94,8 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
             mListContactViewModel.scan()
         }
 
-        mListContactViewModel.getData().observe(this, listContactObserver)          // loi observe hoi lai tai
+        mListContactViewModel.getData()
+            .observe(this, listContactObserver)          // loi observe hoi lai tai
 
     }
 

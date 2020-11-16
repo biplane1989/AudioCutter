@@ -199,6 +199,8 @@
 
         <action
             android:id="@+id/go_to_home_screen"
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/main_screen"
             app:destination="@+id/main_screen"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"

@@ -447,8 +447,7 @@ object AudioFileManagerImpl : AudioFileManager {
             mimeType = abSolutePath.substring(abSolutePath.lastIndexOf("."), abSolutePath.length)
         }
 
-        var bitrate =
-            audioInfo.bitRate
+        var bitrate = audioInfo.bitRate
         var name = fileAudio.name
         name = if (name.contains(".")) {
             (name.substring(0, name.lastIndexOf(".")))

@@ -31,7 +31,7 @@ interface SelectAudioScreenCallback {
     fun stop(position: Int)
     fun seekTo(cusorPos: Int)
     fun isShowPlayingAudio(positition: Int)
-    fun isSelect(position: Int)
+    fun onStartSeekBar()
 }
 
 class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback) : ListAdapter<SelectItemView, ListSelectAdapter.ViewHolder>(SelectAudioDiffCallBack()) {
@@ -129,11 +129,14 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 tvInfo.setText(((selectItemView.audioFile.size) / (1024)).toString() + " KB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s")
             }
 
-            selectItemView.audioFile.bitmap?.let {
+        /*    selectItemView.audioFile.bitmap?.let {
                 Glide.with(itemView).load(selectItemView.audioFile.bitmap)
                     .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
                     .into(ivAvatar)
-            }
+            }*/
+
+            tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(selectItemView.audioFile.time), itemView.context)
+                .toInt() + 15
 
             tvTotal.text = "/" + simpleDateFormat.format(selectItemView.audioFile.time.toInt())
 
@@ -184,9 +187,11 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
             sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                    tvTimeLife.text = simpleDateFormat.format(sbMusic.progress)             // update time cho tvTimeLife khi keo seekbar
                 }
 
                 override fun onStartTrackingTouch(p0: SeekBar?) {
+                    selectAudioScreenCallback.onStartSeekBar()
                 }
 
                 override fun onStopTrackingTouch(p0: SeekBar?) {
@@ -200,7 +205,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             when (view.id) {
                 R.id.ll_audio_item_header -> {
                     selectAudioScreenCallback.isShowPlayingAudio(adapterPosition)
-                    selectAudioScreenCallback.isSelect(adapterPosition)
                 }
                 R.id.iv_pause_play_music -> {
 

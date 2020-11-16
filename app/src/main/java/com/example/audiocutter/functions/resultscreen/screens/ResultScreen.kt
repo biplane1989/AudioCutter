@@ -23,6 +23,7 @@ import com.example.audiocutter.functions.mystudio.dialog.CancelDialog
 import com.example.audiocutter.functions.mystudio.dialog.CancelDialogListener
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.objects.AudioFile
+import com.example.audiocutter.util.Utils
 import java.text.SimpleDateFormat
 
 
@@ -59,6 +60,11 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
         isLoadingDone = true
         it?.let {
+            context?.let { context ->
+                binding.tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(it.time), context)
+                    .toInt() + 15
+            }
+
             binding.tvTitleMusic.text = it.fileName
             binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
 
@@ -119,22 +125,25 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         return str.toString()
     }
 
+    var isSeekBarStatus = false
     val playInfoObserver = Observer<PlayerInfo> { playInfo ->       // observer info play music
-        playInfo.playerState
-        binding.sbMusic.max = playInfo.duration
-        binding.sbMusic.progress = playInfo.posision
-        binding.tvTimeTotal.text = "/" + simpleDateFormat.format(playInfo.duration)
-        binding.tvTimeLife.text = simpleDateFormat.format(playInfo.posision)
 
-        when (playInfo.playerState) {
-            PlayerState.IDLE -> {
-                binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
-            }
-            PlayerState.PAUSE -> {
-                binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
-            }
-            PlayerState.PLAYING -> {
-                binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_pause)
+        if (!isSeekBarStatus) {
+            binding.sbMusic.max = playInfo.duration
+            binding.sbMusic.progress = playInfo.posision
+            binding.tvTimeTotal.text = "/" + simpleDateFormat.format(playInfo.duration)
+            binding.tvTimeLife.text = simpleDateFormat.format(playInfo.posision)
+
+            when (playInfo.playerState) {
+                PlayerState.IDLE -> {
+                    binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
+                }
+                PlayerState.PAUSE -> {
+                    binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
+                }
+                PlayerState.PLAYING -> {
+                    binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_pause)
+                }
             }
         }
     }
@@ -176,12 +185,15 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
         binding.sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                binding.tvTimeLife.text = simpleDateFormat.format(binding.sbMusic.progress)             // update time cho tvTimeLife khi keo seekbar
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
+                isSeekBarStatus = true
             }
 
             override fun onStopTrackingTouch(sb: SeekBar?) {
+                isSeekBarStatus = false
                 mResultViewModel.seekToAudio(sb!!.progress)
             }
         })

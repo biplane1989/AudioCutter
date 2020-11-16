@@ -134,24 +134,6 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
         }
     }
 
-    // nhận data từ fragment truyền sang
-    /*override fun onReceivedAction(fragmentMeta: FragmentMeta) {
-        when (fragmentMeta.action) {
-            Constance.ACTION_DELETE -> {  // nếu ko có item nào được chọn thì sẽ không hiển thị dialog delete
-                if ((fragmentMeta.data as Boolean)) {
-                    if (isDeleteClicked) {
-                        val dialog = DeleteDialog.newInstance(this)
-                        dialog.show(childFragmentManager, DeleteDialog.TAG)
-                        isDeleteClicked = false
-                    }
-                } else {
-                    Toast.makeText(context, getString(R.string.my_studio_notification_chose_item_delete), Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-        }
-    }*/
-
     override fun onDeleteClick(pathFolder: String) {
         isDeleteClicked = true
         sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_DELETE_ALL, tabPosition)

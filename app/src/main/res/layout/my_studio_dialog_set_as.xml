@@ -41,7 +41,7 @@
                     android:gravity="center"
                     android:text="@string/my_studio_dialog_set_as_title"
                     android:textColor="#2E3041"
-                    android:textSize="20sp"
+                    android:textSize="20dp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -64,7 +64,7 @@
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:shadowColor="#FDAA74"
                     android:text="@string/my_studio_dialog_set_as_ringtone"
-                    android:textSize="16sp" />
+                    android:textSize="16dp" />
 
                 <RadioButton
                     android:layout_marginTop="12dp"
@@ -76,7 +76,7 @@
                     android:checked="true"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:text="@string/my_studio_dialog_set_as_alarm"
-                    android:textSize="16sp" />
+                    android:textSize="16dp" />
 
                 <RadioButton
                     android:layout_marginTop="12dp"
@@ -87,7 +87,7 @@
                     android:buttonTint="#FDAA74"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:text="@string/my_studio_dialog_set_as_notification"
-                    android:textSize="16sp" />
+                    android:textSize="16dp" />
             </RadioGroup>
 
             <LinearLayout

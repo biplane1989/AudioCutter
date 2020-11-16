@@ -60,6 +60,7 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
             }
         }
     }
+
     init {
         audioPlayer.init(mContext)
         audioEditorManager.getCurrentProcessingItem().observeForever(editProcessObserver)
@@ -135,9 +136,9 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
     }
 
     fun seekToAudio(cusorPos: Int) {
-        runOnBackground {
-            audioPlayer.seek(cusorPos)
-        }
+//        runOnBackground {
+        audioPlayer.seek(cusorPos)
+//        }
     }
 
     fun getPlayerInfo(): LiveData<PlayerInfo> {
@@ -175,7 +176,7 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
     fun openWith() {
 
     }
-    
+
     override fun onCleared() {
         super.onCleared()
         audioPlayer.stop()

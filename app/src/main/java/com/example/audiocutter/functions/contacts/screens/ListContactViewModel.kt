@@ -33,7 +33,9 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
     fun scan() {
         runOnBackground {
             loadingStatus.postValue(true)
+//            delay(2000)
             contactManager.scanContact()
+
         }
     }
 

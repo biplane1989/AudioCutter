@@ -21,26 +21,6 @@
             android:layout_width="match_parent"
             android:layout_height="56dp">
 
-<!--            <androidx.cardview.widget.CardView-->
-<!--                android:id="@+id/iv_avatar"-->
-<!--                android:layout_width="@dimen/d_40"-->
-<!--                android:layout_height="@dimen/d_40"-->
-<!--                android:layout_marginLeft="16dp"-->
-<!--                app:cardBackgroundColor="#C4C6D2"-->
-<!--                app:cardCornerRadius="4dp"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent">-->
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/iv_avatar_music"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:scaleType="centerInside"-->
-<!--                    android:src="@drawable/my_studio_item_icon_music" />-->
-<!--            </androidx.cardview.widget.CardView>-->
-
             <ImageView
                 android:id="@+id/iv_avatar"
                 android:layout_width="@dimen/d_40"
@@ -62,9 +42,8 @@
                 android:fontFamily="@font/sanfranciscodisplay_bold"
                 android:gravity="top"
                 android:maxLines="1"
-                android:text="@string/my_studio_screen_item_title"
                 android:textColor="#2E3041"
-                android:textSize="16sp"
+                android:textSize="16dp"
                 app:layout_constraintBottom_toTopOf="@id/ll_info"
                 app:layout_constraintEnd_toStartOf="@id/iv_select"
                 app:layout_constraintStart_toEndOf="@id/iv_avatar"
@@ -97,17 +76,17 @@
                         android:fontFamily="@font/sanfranciscodisplay_light"
                         android:text="@string/list_contact_item_default"
                         android:textColor="#FFFFFF"
-                        android:textSize="12sp" />
+                        android:textSize="12dp" />
                 </androidx.cardview.widget.CardView>
 
                 <TextView
+                    android:layout_marginLeft="2dp"
                     android:id="@+id/tv_info_music"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sanfranciscodisplay_light"
-                    android:text="5.3 MB | 128kb/s"
                     android:textColor="#9C9C9C"
-                    android:textSize="14sp" />
+                    android:textSize="14dp" />
 
             </LinearLayout>
 
@@ -160,7 +139,7 @@
             android:gravity="end"
             android:text="00:00"
             android:textColor="#9C9C9C"
-            android:textSize="12sp" />
+            android:textSize="12dp" />
 
         <TextView
             android:id="@+id/tv_time_total"
@@ -170,7 +149,7 @@
             android:fontFamily="@font/sanfranciscodisplay_medium"
             android:text="/08:05"
             android:textColor="#9C9C9C"
-            android:textSize="12sp" />
+            android:textSize="12dp" />
 
     </LinearLayout>
 </LinearLayout>

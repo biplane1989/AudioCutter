@@ -47,8 +47,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         super.setMenuVisibility(menuVisible)
         if (menuVisible) {
             Log.d(TAG, "setMenuVisibility: TRUE")
-
-
         } else {
             Log.d(TAG, "setMenuVisibility: FALE")
             if (this.isVisible){
@@ -102,19 +100,19 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             Constance.ACTION_UNCHECK -> { // trang thai isdelete
                 myStudioViewModel.changeAutoItemToDelete()
                 if (myStudioViewModel.isAllChecked()) { // nếu không còn data thì sẽ ko hiện checkall
-                    cl_delete_all.visibility = View.GONE
+                    binding.clDeleteAll.visibility = View.GONE
                 } else {
-                    cl_delete_all.visibility = View.VISIBLE
+                    binding.clDeleteAll.visibility = View.VISIBLE
                 }
             }
             Constance.ACTION_HIDE -> {  // trang thai undelete
                 audioCutterAdapter.submitList(myStudioViewModel.changeAutoItemToMore())
-                cl_delete_all.visibility = View.GONE
-                iv_check.setImageResource(R.drawable.my_studio_screen_icon_uncheck)
+                binding.clDeleteAll.visibility = View.GONE
+                binding.ivCheck.setImageResource(R.drawable.my_studio_screen_icon_uncheck)
             }
             Constance.ACTION_DELETE_ALL -> {
                 if (myStudioViewModel.isAllChecked()) {   // check nếu tất cả đã xóa thì ẩn nút selectall
-                    cl_delete_all.visibility = View.GONE
+                    binding.clDeleteAll.visibility = View.GONE
                 }
                 runOnUI {
                     if (myStudioViewModel.deleteAllItemSelected(requireArguments().getInt(BUNDLE_NAME_KEY))) { // nếu delete thành công thì sẽ hiện dialog thành công
@@ -187,7 +185,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         super.onViewCreated(view, savedInstanceState)
         init()
 
-        binding.ivCheck.setOnClickListener(View.OnClickListener {
+        binding.clDeleteAll.setOnClickListener(View.OnClickListener {
             audioCutterAdapter.submitList(myStudioViewModel.clickSelectAllBtn())
             checkAllItemSelected()
         })

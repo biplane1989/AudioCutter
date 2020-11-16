@@ -57,7 +57,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             binding.pbSelect.visibility = View.VISIBLE
         } else {
             binding.pbSelect.visibility = View.GONE
-            Log.d(TAG, "5555555555555555555555: ")
             binding.rvListSelectAudio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(safeArg.uri))       // set vi tri khi chuyen sang man hinh den bai nhac da duoc chon
         }
     }
@@ -108,8 +107,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
-        // sai do chua load duoc het item
-//        binding.rvListSelectAudio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(safeArg.uri))       // set vi tri khi chuyen sang man hinh den bai nhac da duoc chon
 
         binding.ivSearch.setOnClickListener(this)
         binding.ivSearchClose.setOnClickListener(this)
@@ -161,16 +158,14 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         mListSelectAudioViewModel.seekToAudio(cusorPos)
     }
 
+    override fun onStartSeekBar() {
+        mListSelectAudioViewModel.startSeekBar()
+    }
+
     override fun isShowPlayingAudio(positition: Int) {
         positionSelect = positition
         mListSelectAdapter.submitList(mListSelectAudioViewModel.showPlayingAudio(positition))
     }
-
-    override fun isSelect(position: Int) {
-
-        mListSelectAdapter.submitList(mListSelectAudioViewModel.selectAudio(position))
-    }
-
 
     override fun onClick(view: View?) {
         when (view) {
@@ -212,7 +207,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 //                intent.type = "audio/mp3"
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 startActivityForResult(Intent.createChooser(intent, "Select a File "), REQ_CODE_PICK_SOUNDFILE)
-
             }
             binding.backButton -> {
                 requireActivity().onBackPressed()

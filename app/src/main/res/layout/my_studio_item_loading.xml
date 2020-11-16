@@ -71,7 +71,7 @@
                     android:fontFamily="@font/sanfranciscodisplay_light"
                     android:text="Wait..."
                     android:textColor="#9C9C9C"
-                    android:textSize="14sp"
+                    android:textSize="14dp"
                     app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
                     app:layout_constraintStart_toEndOf="@id/iv_avatar" />
 

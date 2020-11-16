@@ -40,7 +40,7 @@
             android:fontFamily="@font/sanfranciscodisplay_bold"
             android:text="@string/successfully"
             android:textColor="#2E3041"
-            android:textSize="20sp"
+            android:textSize="20dp"
             android:textStyle="bold" />
 
 
