@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +26,6 @@ import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     MergeChooserAdapter.AudioMergeListener {
     private lateinit var binding: MergeChooserScreenBinding
-
     private lateinit var audioMerAdapter: MergeChooserAdapter
     private lateinit var audioMerModel: MergeChooserModel
     var stateObserver = Observer<Int> {
@@ -46,12 +46,25 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     var currentPos = -1
 
     private val listAudioObserver = Observer<List<AudioCutterView>> {
+        Log.d("TAG", "checkSizeListObserve: ${it.size}")
         if (it.isEmpty() || it == null) {
             showEmptyList()
         } else {
             audioMerAdapter.submitList(ArrayList(it))
             showList()
         }
+        var count = 0
+        it.forEach {
+            if (it.isCheckChooseItem) {
+                count++
+                if (count >= 2) {
+                    setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
+                } else {
+                    setColorButtonNext(R.color.colorgray, R.drawable.bg_next_audio_disabled, false)
+                }
+            }
+        }
+        binding.tvCountFileMer.text = "${count} file"
 
     }
 
@@ -103,6 +116,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                audioMerModel.stop()
                 searchAudioByName(binding.edtMerSearch.text.toString())
             }
 
@@ -114,22 +128,11 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     private fun searchAudioByName(yourTextSearch: String) {
         setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_audio_disabled, false)
         binding.tvCountFileMer.text = getString(R.string.countFile)
-        binding.rvMerge.visibility = View.VISIBLE
-        binding.rltNextMerParent.visibility = View.VISIBLE
-        binding.tvEmptyListMer.visibility = View.INVISIBLE
-        binding.ivEmptyListMerge.visibility = View.INVISIBLE
-        /* if (yourTextSearch.isEmpty()) {
-             audioMerAdapter.submitList(audioMerModel.getListData())
-         }*/
+        showList()
+        if(yourTextSearch.isEmpty()){
+            audioMerModel.searchAudio("")
+        }
         audioMerModel.searchAudio(yourTextSearch)
-        /* if () {
-             audioMerAdapter.submitList(audioMerModel.getListAudio())
-         } else {
-             binding.rvMerge.visibility = View.INVISIBLE
-             binding.rltNextMerParent.visibility = View.INVISIBLE
-             binding.tvEmptyListMer.visibility = View.VISIBLE
-             binding.ivEmptyListMerge.visibility = View.VISIBLE
-         }*/
     }
 
 
@@ -142,15 +145,8 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         binding.rltNextMer.setOnClickListener(this)
         binding.ivMerScreenBack.setOnClickListener(this)
         audioMerAdapter.setAudioListener(this)
-        audioMerModel.getCountItemChoose().observe(this.viewLifecycleOwner, Observer {
-            if (it >= 2) {
-                setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
-            } else {
-                setColorButtonNext(R.color.colorgray, R.drawable.bg_next_audio_disabled, false)
-            }
-            binding.tvCountFileMer.text = "${it} file"
-        })
 
+//        searchAudioByName(binding.edtMerSearch.text.toString())
 
     }
 
@@ -246,6 +242,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
             binding.ivMerScreenClose -> {
                 if (!binding.edtMerSearch.text.toString().isEmpty()) {
                     binding.edtMerSearch.setText("")
+
                 }
             }
             binding.rltNextMer -> {

@@ -154,7 +154,7 @@ class MergePreviewAdapter(val mContext: Context) :
         }
 
         private fun deleteAudio() {
-            mCallback.deleteAudio(adapterPosition, getItem(adapterPosition))
+            mCallback.deleteAudio( getItem(adapterPosition))
         }
 
         private fun controllerAudio() {
@@ -217,7 +217,7 @@ class MergePreviewAdapter(val mContext: Context) :
         fun play(pos: Int)
         fun pause(pos: Int)
         fun resume(pos: Int)
-        fun deleteAudio(pos: Int, fileName: AudioCutterView)
+        fun deleteAudio( fileName: AudioCutterView)
         fun moveItemAudio(prePos: Int, nextPos: Int)
     }
 

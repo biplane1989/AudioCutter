@@ -1,9 +1,7 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.*
 import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
@@ -12,40 +10,26 @@ import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.objects.StateLoad
 import java.io.File
 import java.util.*
-import kotlin.Comparator
 import kotlin.collections.ArrayList
 
-class MixModel : BaseViewModel() {
-    private val TAG = MixModel::class.java.name
+class MixChooserModel : BaseViewModel() {
+    private val audioPlayer = ManagerFactory.getDefaultAudioPlayer()
+    private val TAG = MixChooserModel::class.java.name
     private var currentAudioPlaying: File = File("")
-
-    private var mListAudioPrev = ArrayList<AudioCutterView>()
-    private var mListAudios = ArrayList<AudioCutterView>()
-    private var listIndexChooser = ArrayList<Int>()
-    private var mListAudioSearch = ArrayList<AudioCutterView>()
 
 
     private var _stateLoadProgress = MutableLiveData<Int>()
     val stateLoadProgress: LiveData<Int>
         get() = _stateLoadProgress
 
-    private var _countItem = MutableLiveData<Int>()
-    val countItem: LiveData<Int>
-        get() = _countItem
+    private var filterText = ""
 
     var isChooseItem = false
-    var count = 0
 
+    private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>>()
 
-    private val sortListByName: Comparator<AudioCutterView> =
-        Comparator { m1, m2 ->
-            m1.audioFile.fileName.compareTo(m2.audioFile.fileName)
-        }
-
-
-
-    fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
-        return Transformations.map(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
+    init {
+        _listAudioFiles.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
             when (it.state) {
                 StateLoad.LOADING -> {
                     _stateLoadProgress.postValue(1)
@@ -57,85 +41,106 @@ class MixModel : BaseViewModel() {
                     _stateLoadProgress.postValue(-1)
                 }
             }
-            mListAudioPrev.clear()
+            val listAudioViews = ArrayList<AudioCutterView>()
             it.listAudioFiles.forEach {
-                mListAudioPrev.add(AudioCutterView(it))
+                listAudioViews.add(AudioCutterView(it))
             }
+            _listAudioFiles.postValue(listAudioViews)
 
-            Collections.sort(mListAudioPrev, sortListByName)
-            mListAudios.addAll(mListAudioPrev)
-
-            for (item in listIndexChooser) {
-                mListAudioPrev.removeAt(item)
-                mListAudioPrev.add(
-                    item,
-                    AudioCutterView(
-                        mListAudioSearch[item].audioFile,
-                        PlayerState.IDLE,
-                        isCheckChooseItem = true
-                    )
-                )
-            }
-            mListAudioPrev
         }
     }
+
+    private val _listFilteredAudioFiles = liveData<List<AudioCutterView>> {
+        emitSource(_listAudioFiles.map {
+            val listResult = ArrayList(it)
+            if (!filterText.isEmpty()) {
+                listResult.clear()
+                it.forEach { item ->
+                    val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
+                        filterText.toLowerCase(
+                            Locale.getDefault()
+                        )
+                    )
+                    if (rs) {
+                        listResult.add(item)
+                    }
+                }
+            }
+
+            listResult
+        })
+    }
+
+
+    fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
+        return _listFilteredAudioFiles
+    }
+
+
+    private fun getListFilteredAudio(): ArrayList<AudioCutterView> {
+        return ArrayList(_listFilteredAudioFiles.value ?: ArrayList())
+    }
+
+    private fun getListAllAudio(): ArrayList<AudioCutterView> {
+        return ArrayList(_listAudioFiles.value ?: ArrayList())
+    }
+
 
     fun getStateLoading(): LiveData<Int> {
         return stateLoadProgress
     }
 
-    fun getCountItemChoose(): LiveData<Int> {
-        return countItem
-    }
 
-
-    fun updateMediaInfo(playerInfo: PlayerInfo): List<AudioCutterView> {
+    fun updateMediaInfo(playerInfo: PlayerInfo) {
         Log.d(TAG, "updateMediaInfo: ${playerInfo.playerState}")
+        val listAudioViews = getListAllAudio()
+
         if (playerInfo.currentAudio != null) {
             if (currentAudioPlaying.absoluteFile != playerInfo.currentAudio!!.file.absoluteFile) {
 
                 val oldPos = getAudioFilePos(currentAudioPlaying)
                 val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
                 if (oldPos != -1) {
-                    val audioFile = mListAudioPrev[oldPos].copy()
+                    val audioFile = listAudioViews[oldPos].copy()
                     audioFile.state = PlayerState.IDLE
                     audioFile.isCheckDistance = false
                     audioFile.currentPos = playerInfo.posision.toLong()
                     audioFile.duration = playerInfo.duration.toLong()
-                    mListAudioPrev[oldPos] = audioFile
+                    listAudioViews[oldPos] = audioFile
                 }
                 if (newPos != -1) {
-                    updateState(newPos, playerInfo, true)
+                    val audioCutterView = listAudioViews[newPos].copy()
+                    updateState(audioCutterView, playerInfo, true)
+                    listAudioViews[newPos] = audioCutterView
                 }
             } else {
                 val atPos = getAudioFilePos(currentAudioPlaying)
                 if (atPos != -1) {
-                    Log.d(TAG, "updateMediaInfo: atPOs   ${mListAudioPrev.get(atPos).state}")
-                    updateState(atPos, playerInfo, true)
+                    Log.d(TAG, "updateMediaInfo: atPOs   ${listAudioViews.get(atPos).state}")
+                    val audioCutterView = listAudioViews[atPos].copy()
+                    updateState(audioCutterView, playerInfo, true)
+                    listAudioViews[atPos] = audioCutterView
                 }
             }
             currentAudioPlaying = playerInfo.currentAudio!!.file
         }
-
-        return mListAudioPrev
+        _listAudioFiles.postValue(listAudioViews)
     }
 
 
+    private fun updateState(audioCutterView: AudioCutterView, playerInfo: PlayerInfo, rs: Boolean) {
+        audioCutterView.state = playerInfo.playerState
+        audioCutterView.isCheckDistance = rs
+        audioCutterView.currentPos = playerInfo.posision.toLong()
+        audioCutterView.duration = playerInfo.duration.toLong()
 
-    private fun updateState(pos: Int, playerInfo: PlayerInfo, rs: Boolean) {
-        val audioFile = mListAudioPrev[pos].copy()
-        audioFile.state = playerInfo.playerState
-        audioFile.isCheckDistance = rs
-        audioFile.currentPos = playerInfo.posision.toLong()
-        audioFile.duration = playerInfo.duration.toLong()
-        mListAudioPrev[pos] = audioFile
     }
-
 
     private fun getAudioFilePos(file: File): Int {
+        val listAudioViews = getListAllAudio()
         var i = 0
-        while (i < mListAudioPrev.size) {
-            if (mListAudioPrev[i].audioFile.file == file) {
+        while (i < listAudioViews.size) {
+            if (listAudioViews[i].audioFile.file == file) {
                 return i
             }
             i++
@@ -143,103 +148,74 @@ class MixModel : BaseViewModel() {
         return -1
     }
 
-    fun searchAudio(
-        listTmp: MutableList<AudioCutterView>,
-        yourTextSearch: String
-    ): ArrayList<AudioCutterView> {
-        mListAudioSearch.clear()
-        listTmp.forEach {
-            val rs = it.audioFile.fileName.toLowerCase().contains(yourTextSearch.toLowerCase())
-            if (rs) {
-                mListAudioSearch.add(it)
-            }
-        }
-        mListAudioPrev.clear()
-        mListAudioPrev.addAll(mListAudioSearch)
-        return mListAudioSearch
-    }
-
-
-    fun getListAudio(): ArrayList<AudioCutterView> {
-        return mListAudioPrev
+    fun searchAudio(yourTextSearch: String) {
+        filterText = yourTextSearch
+        _listAudioFiles.postValue(_listAudioFiles.value)
 
     }
 
-    fun getListData(): ArrayList<AudioCutterView> {
-        return mListAudios
-    }
 
-    fun chooseItemAudioFile(pos: Int, rs: Boolean): List<AudioCutterView>? {
-        val itemAudio: AudioCutterView
-        var count = 0
-        if (!rs) {
-            itemAudio = mListAudioPrev[pos].copy()
-            itemAudio.isCheckChooseItem = true
-            this.count++
-            if (this.count > 2) {
-                this.count = 2
+    fun chooseItemAudioFile(audioCutterView: AudioCutterView, rs: Boolean) {
+        try {
+            val mListAudios = getListAllAudio()
+            val pos = mListAudios.indexOf(audioCutterView)
+            val itemAudio: AudioCutterView = mListAudios[pos].copy()
+            if (!rs) {
+                itemAudio.isCheckChooseItem = true
+                mListAudios[pos] = itemAudio
+            } else {
+                itemAudio.isCheckChooseItem = false
+                mListAudios[pos] = itemAudio
             }
-            _countItem.postValue(this.count)
-            mListAudioPrev[pos] = itemAudio
-        } else {
-            itemAudio = mListAudioPrev[pos].copy()
-            itemAudio.isCheckChooseItem = false
-            if (this.count > 0) {
-                this.count--
-                _countItem.postValue(this.count)
-            }
-            mListAudioPrev[pos] = itemAudio
-        }
-
-        for (item in mListAudioPrev) {
-            if (item.isCheckChooseItem) {
-                count++
-                Log.d(TAG, "changeItemAudioFile: $count")
-                if (count > 2 && itemAudio.isCheckChooseItem) {
-                    itemAudio.isCheckChooseItem = false
-                    mListAudioPrev[pos] = itemAudio
-                    isChooseItem = true
-                } else if (count < 2) {
-                    isChooseItem = false
+            var count = 0
+            for (item in mListAudios) {
+                if (item.isCheckChooseItem) {
+                    count++
+                    Log.d(TAG, "changeItemAudioFile: $count")
+                    if (count > 2 && itemAudio.isCheckChooseItem) {
+                        itemAudio.isCheckChooseItem = false
+                        mListAudios[pos] = itemAudio
+                        isChooseItem = true
+                    } else if (count < 2) {
+                        isChooseItem = false
+                    }
                 }
             }
+            _listAudioFiles.postValue(mListAudios)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        return mListAudioPrev
+
     }
 
-    fun checkList(): Int {
-        var count = 0
-        for (item in mListAudioPrev) {
-            if (item.isCheckChooseItem) {
-                count++
-            }
-        }
-        return count
-    }
 
     fun getListItemChoose(): List<AudioCutterView> {
+        val mListAudios = getListAllAudio()
         var listAudio = mutableListOf<AudioCutterView>()
-        for (item in mListAudioPrev) {
+        for (item in mListAudios) {
             if (item.isCheckChooseItem) {
                 listAudio.add(item)
-                listIndexChooser.add(mListAudioPrev.indexOf(item))
             }
         }
         return listAudio
     }
 
     suspend fun play(pos: Int) {
-        val audioItem = mListAudioPrev[pos]
-        ManagerFactory.getDefaultAudioPlayer().play(audioItem.audioFile)
+        val audioItem = getListFilteredAudio()[pos]
+        audioPlayer.play(audioItem.audioFile)
 
     }
 
     fun pause() {
-        ManagerFactory.getDefaultAudioPlayer().pause()
+        audioPlayer.pause()
     }
 
     fun resume() {
-        ManagerFactory.getDefaultAudioPlayer().resume()
+        audioPlayer.resume()
+    }
+
+    fun stop() {
+        audioPlayer.stop()
     }
 
 

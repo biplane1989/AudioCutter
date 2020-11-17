@@ -34,27 +34,23 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     val TAG = CutChooserScreen::class.java.name
     private lateinit var binding: CutChooserScreenBinding
     private lateinit var audioCutterAdapter: CutChooserAdapter
-    private lateinit var audioCutterModel: AudioCutterModel
+    private lateinit var audioCutterModel: CutChooserViewModel
     private val REQ_CODE_PICK_SOUNDFILE = 1989
     lateinit var dialog: SetAsDialog
     lateinit var dialogDone: SetAsDoneDialog
     lateinit var audioCutterItem: AudioCutterView
 
     var stateObserver = Observer<Int> {
-        Log.d("nqm", "stateObserver: $it")
         when (it) {
             1 -> {
-                Log.d("nqm", "stateObserver: 1")
                 showProgressBar(true)
                 binding.ivEmptyListCutter.visibility = View.INVISIBLE
                 binding.tvEmptyListCutter.visibility = View.INVISIBLE
             }
             0 -> {
-                Log.d("nqm", "stateObserver: 0")
                 showProgressBar(false)
             }
             -1 -> {
-                Log.d("nqm", "stateObserver: -1")
                 showProgressBar(false)
             }
         }
@@ -62,7 +58,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     var currentPos = -1
 
     private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        Log.d("nqm", "listMusic: ${listMusic.size}")
         if (listMusic.isEmpty() || listMusic == null) {
             showEmptyList()
         } else {
@@ -73,14 +68,14 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
 
     private val playerInfoObserver = Observer<PlayerInfo> {
-        audioCutterAdapter.submitList(audioCutterModel.updateMediaInfo(it))
+        audioCutterModel.updateMediaInfo(it)
     }
 
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         audioCutterAdapter = CutChooserAdapter(requireContext())
-        audioCutterModel = ViewModelProvider(this).get(AudioCutterModel::class.java)
+        audioCutterModel = ViewModelProvider(this).get(CutChooserViewModel::class.java)
         ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
@@ -97,11 +92,8 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         super.onViewCreated(view, savedInstanceState)
         initLists()
         runOnUI {
-            val stateLiveData = audioCutterModel.getStateLoading()
-            stateLiveData.observe(viewLifecycleOwner, stateObserver)
-
-            val listAudioViewLiveData = audioCutterModel.getAllAudioFile()
-            listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
+            audioCutterModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
+            audioCutterModel.getAllAudioFile().observe(viewLifecycleOwner, listAudioObserver)
 
         }
     }
@@ -121,6 +113,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                audioCutterModel.stop()
                 searchAudioByName(binding.edtCutterSearch.text.toString())
             }
 
@@ -132,18 +125,11 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
     private fun searchAudioByName(yourTextSearch: String) {
 
-       showList()
-
+        showList()
         if (yourTextSearch.isEmpty()) {
-            audioCutterAdapter.submitList(audioCutterModel.getListData())
+            audioCutterModel.searchAudio("")
         }
-        if (audioCutterModel.searchAudio(audioCutterModel.getListData(), yourTextSearch)
-                .isNotEmpty()) {
-            audioCutterAdapter.submitList(audioCutterModel.getListAudio())
-//            Log.d(TAG, "seachAudioByName: ${audioCutterModel.getListsearch().size}")
-        } else {
-            showEmptyList()
-        }
+        audioCutterModel.searchAudio(yourTextSearch)
     }
 
     override fun onPause() {
@@ -296,7 +282,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         binding.rvAudioCutter.visibility = View.VISIBLE
         binding.tvEmptyListCutter.visibility = View.INVISIBLE
         binding.ivEmptyListCutter.visibility = View.INVISIBLE
-        audioCutterAdapter.submitList(audioCutterModel.getListAudio())
         binding.edtCutterSearch.setText("")
         hideOrShowEditText(View.INVISIBLE)
         hideOrShowView(View.VISIBLE)

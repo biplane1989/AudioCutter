@@ -188,8 +188,8 @@ class MixChooserAdapter(val mContext: Context) :
             val item = getItem(adapterPosition)
             when (p0.id) {
                 R.id.iv_controller_audio_recent -> controllerAudio()
-                R.id.ln_menu_recent -> mCallBack.chooseItemAudio(adapterPosition, item.isCheckChooseItem)
-                R.id.ln_item_audio_mixer_screen -> mCallBack.chooseItemAudio(adapterPosition, item.isCheckChooseItem)
+                R.id.ln_menu_recent -> mCallBack.chooseItemAudio(getItem(adapterPosition), item.isCheckChooseItem)
+                R.id.ln_item_audio_mixer_screen -> mCallBack.chooseItemAudio(getItem(adapterPosition), item.isCheckChooseItem)
             }
         }
 
@@ -221,7 +221,7 @@ class MixChooserAdapter(val mContext: Context) :
         fun play(pos: Int)
         fun pause(pos: Int)
         fun resume(pos: Int)
-        fun chooseItemAudio(pos: Int, rs: Boolean)
+        fun chooseItemAudio(item: AudioCutterView, rs: Boolean)
     }
 }
 

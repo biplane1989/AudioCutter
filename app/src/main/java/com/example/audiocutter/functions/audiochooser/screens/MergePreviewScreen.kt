@@ -133,10 +133,15 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         audioMerModel.resume()
     }
 
-    override fun deleteAudio(pos: Int, audioFile: AudioCutterView) {
-        sendFragmentAction(MergeChooserScreen::class.java.name, "ACTION_DELETE", audioFile)
-        ManagerFactory.getDefaultAudioPlayer().stop()
-        audioMerAdapter.submitList(audioMerModel.removeItemAudio(pos))
+    override fun deleteAudio(audioFile: AudioCutterView) {
+        try {
+            sendFragmentAction(MergeChooserScreen::class.java.name, "ACTION_DELETE", audioFile)
+            ManagerFactory.getDefaultAudioPlayer().stop()
+            audioMerAdapter.submitList(audioMerModel.removeItemAudio(audioFile))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
 
     override fun moveItemAudio(prePos: Int, nextPos: Int) {
