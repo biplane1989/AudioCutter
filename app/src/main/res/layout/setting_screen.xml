@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorWhite"
+        android:orientation="vertical"
+        android:weightSum="11">
+
+        <LinearLayout
+            android:id="@+id/rlt_actionbar"
+            paddingTopSystemWindowInsets="@{true}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/d_56"
+                android:background="?attr/selectableItemBackground">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/colorgrayAlpha" />
+
+                <ImageView
+                    android:id="@+id/iv_setting_screen_back"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_audiocutter_back" />
+
+                <TableRow
+                    android:id="@+id/tb_name_setting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/iv_setting_screen_back"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tv_setting_screen"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/sanfranciscodisplay_bold"
+                        android:text="@string/setting_text"
+                        android:textColor="@color/colorBlack"
+
+                        android:textSize="@dimen/d_18" />
+                </TableRow>
+
+
+            </RelativeLayout>
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/pgr_audio_setting"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_below="@+id/rlt_actionbar"
+            android:layout_marginTop="@dimen/d_5"
+            android:layout_weight="2"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/d_16">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:text="@string/premium_settingscreen"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/d_16"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:text="@string/remove_ads_string"
+                android:textColor="@color/colorgray2"
+                android:textSize="@dimen/d_16" />
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:layout_marginTop="@dimen/d_16"
+                android:background="@drawable/bg_premium_settings"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_crown_setting" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sanfranciscodisplay_bold"
+                    android:paddingLeft="@dimen/d_13"
+                    android:text="Get Premium"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="@dimen/d_16" />
+
+            </TableRow>
+
+
+        </LinearLayout>
+        <View
+
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorgrayAlpha" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/d_16">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:text="@string/language_settingscreen"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/d_18"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/d_3"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:text="English"
+                android:textColor="@color/colorgray2"
+                android:textSize="@dimen/d_16" />
+
+        </LinearLayout>
+        <View
+
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorgrayAlpha" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/d_16">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:text="@string/feedback_settingscreen"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/d_18"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/d_3"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:text="@string/report_bugs_settingscreen"
+                android:textColor="@color/colorgray2"
+                android:textSize="@dimen/d_16" />
+
+        </LinearLayout>
+        <View
+
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorgrayAlpha" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/d_16">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:text="@string/join_facebook_group_settingscreen"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/d_18"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/d_3"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:text="@string/meet_mp3_cutter_settingscreen"
+                android:textColor="@color/colorgray2"
+                android:textSize="@dimen/d_16" />
+
+        </LinearLayout>
+        <View
+
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorgrayAlpha" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/d_16">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:text="@string/share_settingscreen"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/d_18"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/d_3"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:text="@string/share_mp3_cutting_settingscreen"
+                android:textColor="@color/colorgray2"
+                android:textSize="@dimen/d_16" />
+
+        </LinearLayout>
+        <View
+
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorgrayAlpha" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/d_16">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:text="@string/about_settingscreen"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/d_18"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+        <View
+
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorgrayAlpha" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/d_16">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:text="@string/privacy_policy_settingscreen"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/d_18"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+        <View
+
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorgrayAlpha" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/d_16">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:text="@string/version_settingscreen"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/d_18"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/d_3"
+                android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:text="1.1"
+                android:textColor="@color/colorgray2"
+                android:textSize="@dimen/d_16" />
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>

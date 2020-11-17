@@ -114,4 +114,17 @@
     <string name="choose_a_sharing_app">Choose a sharing app</string>
     <string name="please_wait_a_moment">Please wait a moment.....</string>
     <string name="set_successfully">Set Successfully</string>
+    <string name="setting_text">Settings</string>
+    <string name="remove_ads_string">Remove ads and unlock all features.</string>
+    <string name="premium_settingscreen">Premium</string>
+    <string name="language_settingscreen">Language</string>
+    <string name="feedback_settingscreen">Feedback</string>
+    <string name="report_bugs_settingscreen">Report bugs and tell us what to improve</string>
+    <string name="join_facebook_group_settingscreen">Join Facebook Group</string>
+    <string name="meet_mp3_cutter_settingscreen"><![CDATA[Meet MP3 Cutter & Ringtone Maker with your friends]]></string>
+    <string name="share_settingscreen">Share</string>
+    <string name="share_mp3_cutting_settingscreen"><![CDATA[Share MP3 Cutter & Ringtone Maker with your friends]]></string>
+    <string name="about_settingscreen">About</string>
+    <string name="privacy_policy_settingscreen">Privacy policy</string>
+    <string name="version_settingscreen">Version</string>
 </resources>
