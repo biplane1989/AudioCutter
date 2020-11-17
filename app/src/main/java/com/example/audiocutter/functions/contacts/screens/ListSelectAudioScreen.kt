@@ -123,16 +123,17 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             }
 
             override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
-                if (mListSelectAudioViewModel.searchAudioFile(textChange.toString()).size <= 0) {
-                    binding.clSelect.visibility = View.GONE
-                    binding.clBottom.visibility = View.GONE
-                    binding.clNoAudio.visibility = View.VISIBLE
-                } else {
-                    binding.clSelect.visibility = View.VISIBLE
-                    binding.clBottom.visibility = View.VISIBLE
-                    binding.clNoAudio.visibility = View.GONE
-                    mListSelectAdapter.submitList(mListSelectAudioViewModel.searchAudioFile(textChange.toString()))
-                }
+                /* if (mListSelectAudioViewModel.searchAudioFile(textChange.toString()).size <= 0) {
+                     binding.clSelect.visibility = View.GONE
+                     binding.clBottom.visibility = View.GONE
+                     binding.clNoAudio.visibility = View.VISIBLE
+                 } else {
+                     binding.clSelect.visibility = View.VISIBLE
+                     binding.clBottom.visibility = View.VISIBLE
+                     binding.clNoAudio.visibility = View.GONE
+                     mListSelectAdapter.submitList(mListSelectAudioViewModel.searchAudioFile(textChange.toString()))
+                 }*/
+                mListSelectAudioViewModel.searchAudioFile(textChange.toString())
             }
         })
     }
@@ -164,7 +165,8 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
     override fun isShowPlayingAudio(positition: Int) {
         positionSelect = positition
-        mListSelectAdapter.submitList(mListSelectAudioViewModel.showPlayingAudio(positition))
+//        mListSelectAdapter.submitList(mListSelectAudioViewModel.showPlayingAudio(positition))
+        mListSelectAudioViewModel.showPlayingAudio(positition)
     }
 
     override fun onClick(view: View?) {

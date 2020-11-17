@@ -119,8 +119,8 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
 
 
 //        lifecycleScope.launch {
-            /*delay(250)*/
-            mListContactViewModel.scan()
+        /*delay(250)*/
+        mListContactViewModel.scan()
 //        }
 
         mListContactViewModel.getData()
@@ -146,14 +146,7 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
             }
 
             override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
-                if (mListContactViewModel.searchContact(textChange.toString()).size <= 0) {
-                    binding.clContact.visibility = View.GONE
-                    binding.clNoContact.visibility = View.VISIBLE
-                } else {
-                    binding.clContact.visibility = View.VISIBLE
-                    binding.clNoContact.visibility = View.GONE
-                    listContactAdapter.submitList(mListContactViewModel.searchContact(textChange.toString()))
-                }
+                mListContactViewModel.searchContact(textChange.toString())
             }
         })
     }

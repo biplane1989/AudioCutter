@@ -95,29 +95,6 @@ object Utils {
 
     // lay ten bai hat theo uri
     fun getNameByUri(context: Context, uri: String): String {
-
-        /*Log.d("giangtd", "getNameByUri: uri: " + uri)
-        var fileName = ""
-        try {
-            val newUri = Uri.parse(uri)
-            if (newUri.getScheme().equals("content")) {
-                val cursor: Cursor? = context.contentResolver.query(newUri, null, null, null, null)
-                try {
-                    if (cursor != null && cursor.moveToFirst()) {
-                        fileName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                    }
-                } finally {
-                    cursor!!.close()
-                }
-            }
-        } catch (e: Exception) {
-
-        }
-        if (fileName.isEmpty()) {
-            fileName = File(uri).name
-        }
-        return fileName*/
-
         val r = RingtoneManager.getRingtone(context, Uri.parse(uri))
         return r.getTitle(context)
     }

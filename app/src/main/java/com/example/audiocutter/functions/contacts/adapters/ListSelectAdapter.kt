@@ -56,37 +56,47 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             onBindViewHolder(holder, position)
         } else {
             val newItem = payloads.firstOrNull() as SelectItemView
-            holder.sbMusic.max = newItem.selectItemStatus.duration
-            holder.tvTimeLife.text = simpleDateFormat.format(newItem.selectItemStatus.currPos)
-            holder.sbMusic.progress = newItem.selectItemStatus.currPos
 
-            if (newItem.isExpanded) {
-                holder.llPlayMusic.visibility = View.VISIBLE
-                holder.llItem.setBackgroundResource(R.drawable.list_contact_select_item_bg)
+            if (newItem.isSearch) {
+                holder.sbMusic.max = newItem.selectItemStatus.duration
+                holder.tvTimeLife.text = simpleDateFormat.format(newItem.selectItemStatus.currPos)
+                holder.sbMusic.progress = newItem.selectItemStatus.currPos
+
+                if (newItem.isExpanded) {
+                    holder.llPlayMusic.visibility = View.VISIBLE
+                    holder.llItem.setBackgroundResource(R.drawable.list_contact_select_item_bg)
+                } else {
+                    holder.llPlayMusic.visibility = View.GONE
+                    holder.llItem.setBackgroundColor(Color.WHITE)
+                    holder.llItem.setPadding(0, 0, 0, 0)
+                }
+
+                when (newItem.selectItemStatus.playerState) {
+                    PlayerState.PLAYING -> {
+                        holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_pause)
+                    }
+                    PlayerState.PAUSE -> {
+                        holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
+                    }
+                    PlayerState.IDLE -> {
+                        holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
+                        holder.tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
+                        holder.sbMusic.progress = 0
+                    }
+                }
+                if (newItem.isSelect) {
+                    holder.ivSelect.setImageResource(R.drawable.list_contact_select)
+                } else {
+                    holder.ivSelect.setImageResource(R.drawable.list_contact_unselect)
+                }
+
+                holder.itemView.visibility = View.VISIBLE
+                holder.itemView.setLayoutParams(RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
             } else {
-                holder.llPlayMusic.visibility = View.GONE
-                holder.llItem.setBackgroundColor(Color.WHITE)
-                holder.llItem.setPadding(0, 0, 0, 0)
+                holder.itemView.visibility = View.GONE
+                holder.itemView.setLayoutParams(RecyclerView.LayoutParams(0, 0))
             }
 
-            when (newItem.selectItemStatus.playerState) {
-                PlayerState.PLAYING -> {
-                    holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_pause)
-                }
-                PlayerState.PAUSE -> {
-                    holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
-                }
-                PlayerState.IDLE -> {
-                    holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
-                    holder.tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
-                    holder.sbMusic.progress = 0
-                }
-            }
-            if (newItem.isSelect) {
-                holder.ivSelect.setImageResource(R.drawable.list_contact_select)
-            } else {
-                holder.ivSelect.setImageResource(R.drawable.list_contact_unselect)
-            }
         }
     }
 
@@ -103,7 +113,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-        //        val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar_music)
         val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar)
         val tvTitle: TextView = itemView.findViewById(R.id.tv_title_music)
         val tvInfo: TextView = itemView.findViewById(R.id.tv_info_music)
@@ -121,83 +130,91 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         fun bind() {
             val selectItemView = getItem(adapterPosition)
 
-            tvTitle.setText(selectItemView.audioFile.fileName)
-            if (selectItemView.audioFile.size / (1024 * 1024) > 0) {
+            if (selectItemView.isSearch) {
+                tvTitle.setText(selectItemView.audioFile.fileName)
+                if (selectItemView.audioFile.size / (1024 * 1024) > 0) {
 
-                tvInfo.setText(String.format("%.1f", (selectItemView.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s")
+                    tvInfo.setText(String.format("%.1f", (selectItemView.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s")
+                } else {
+                    tvInfo.setText(((selectItemView.audioFile.size) / (1024)).toString() + " KB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s")
+                }
+
+                /*    selectItemView.audioFile.bitmap?.let {
+                        Glide.with(itemView).load(selectItemView.audioFile.bitmap)
+                            .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
+                            .into(ivAvatar)
+                    }*/
+
+                tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(selectItemView.audioFile.time), itemView.context)
+                    .toInt() + 15
+
+                tvTotal.text = "/" + simpleDateFormat.format(selectItemView.audioFile.time.toInt())
+
+                if (selectItemView.isExpanded) {
+                    llPlayMusic.visibility = View.VISIBLE
+                    llItem.setBackgroundResource(R.drawable.list_contact_select_item_bg)
+                } else {
+                    llPlayMusic.visibility = View.GONE
+                    llItem.setBackgroundColor(Color.WHITE)
+                    llItem.setPadding(0, 0, 0, 0)
+                }
+
+                if (selectItemView.isSelect) {
+                    ivSelect.setImageResource(R.drawable.list_contact_select)
+                } else {
+                    ivSelect.setImageResource(R.drawable.list_contact_unselect)
+                }
+
+                if (selectItemView.isRingtoneDefault) {
+                    cvCarview.visibility = View.VISIBLE
+                } else {
+                    cvCarview.visibility = View.GONE
+                }
+
+                when (selectItemView.selectItemStatus.playerState) {
+                    PlayerState.PLAYING -> {
+                        itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
+                    }
+                    PlayerState.PAUSE -> {
+                        itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
+
+                    }
+                    PlayerState.IDLE -> {
+                        itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
+                        tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
+                        sbMusic.progress = 0
+                    }
+                }
+
+                sbMusic.max = selectItemView.selectItemStatus.duration
+                tvTimeLife.text = simpleDateFormat.format(selectItemView.selectItemStatus.currPos)
+
+                sbMusic.progress = selectItemView.selectItemStatus.currPos
+
+                llAudioHeader.setOnClickListener(this)
+
+                ivPausePlay.setOnClickListener(this)
+
+                sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                    override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                        tvTimeLife.text = simpleDateFormat.format(sbMusic.progress)             // update time cho tvTimeLife khi keo seekbar
+                    }
+
+                    override fun onStartTrackingTouch(p0: SeekBar?) {
+                        selectAudioScreenCallback.onStartSeekBar()
+                    }
+
+                    override fun onStopTrackingTouch(p0: SeekBar?) {
+                        selectAudioScreenCallback.seekTo(sbMusic.progress)
+                    }
+                })
+
+                itemView.visibility = View.VISIBLE
+                itemView.setLayoutParams(RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
             } else {
-                tvInfo.setText(((selectItemView.audioFile.size) / (1024)).toString() + " KB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s")
+                itemView.visibility = View.GONE
+                itemView.setLayoutParams(RecyclerView.LayoutParams(0, 0))
             }
-
-        /*    selectItemView.audioFile.bitmap?.let {
-                Glide.with(itemView).load(selectItemView.audioFile.bitmap)
-                    .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
-                    .into(ivAvatar)
-            }*/
-
-            tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(selectItemView.audioFile.time), itemView.context)
-                .toInt() + 15
-
-            tvTotal.text = "/" + simpleDateFormat.format(selectItemView.audioFile.time.toInt())
-
-            if (selectItemView.isExpanded) {
-                llPlayMusic.visibility = View.VISIBLE
-                llItem.setBackgroundResource(R.drawable.list_contact_select_item_bg)
-            } else {
-                llPlayMusic.visibility = View.GONE
-                llItem.setBackgroundColor(Color.WHITE)
-                llItem.setPadding(0, 0, 0, 0)
-            }
-
-            if (selectItemView.isSelect) {
-                ivSelect.setImageResource(R.drawable.list_contact_select)
-            } else {
-                ivSelect.setImageResource(R.drawable.list_contact_unselect)
-            }
-
-            if (selectItemView.isRingtoneDefault) {
-                cvCarview.visibility = View.VISIBLE
-            } else {
-                cvCarview.visibility = View.GONE
-            }
-
-            when (selectItemView.selectItemStatus.playerState) {
-                PlayerState.PLAYING -> {
-                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
-                }
-                PlayerState.PAUSE -> {
-                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
-
-                }
-                PlayerState.IDLE -> {
-                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
-                    tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
-                    sbMusic.progress = 0
-                }
-            }
-
-            sbMusic.max = selectItemView.selectItemStatus.duration
-            tvTimeLife.text = simpleDateFormat.format(selectItemView.selectItemStatus.currPos)
-
-            sbMusic.progress = selectItemView.selectItemStatus.currPos
-
-            llAudioHeader.setOnClickListener(this)
-
-            ivPausePlay.setOnClickListener(this)
-
-            sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
-                    tvTimeLife.text = simpleDateFormat.format(sbMusic.progress)             // update time cho tvTimeLife khi keo seekbar
-                }
-
-                override fun onStartTrackingTouch(p0: SeekBar?) {
-                    selectAudioScreenCallback.onStartSeekBar()
-                }
-
-                override fun onStopTrackingTouch(p0: SeekBar?) {
-                    selectAudioScreenCallback.seekTo(sbMusic.progress)
-                }
-            })
         }
 
         override fun onClick(view: View) {

@@ -25,18 +25,7 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
     private val listContactItem = MediatorLiveData<List<SetContactItemView>>()
     private val isSelectItem = MutableLiveData<Boolean>()
 
-    private val mListContact = ArrayList<SetContactItemView>()
-    private var newListSearch = ArrayList<SetContactItemView>()
-    private var newListContact = ArrayList<SetContactItemView>()        // dung de set ringtone khi co su kien search hoac khong
-    private var isSearchStatus = false
-
-    private fun getListAudio(serachStatus: Boolean) {          // get newListSearch or mListAudioFileView
-        if (serachStatus) {
-            newListContact = newListSearch
-        } else {
-            newListContact = mListContact
-        }
-    }
+    private var mListContact = ArrayList<SetContactItemView>()
 
     init {
         isSelectItem.postValue(false)
@@ -57,7 +46,7 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
                     isEmptyStatus.postValue(false)
                     val newListContacItemView = ArrayList<SetContactItemView>()
                     for (item in contacts.listContactItem) {
-                        newListContacItemView.add(SetContactItemView("", item, false))
+                        newListContacItemView.add(SetContactItemView("", "", item, false))
                     }
                     val listContact = getHeaderListLatter(newListContacItemView)
                     listContactItem.postValue(listContact)
@@ -95,6 +84,7 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
         if (contactList.size > 0) {
             for (item in contactList) {     // add them 1 truong headerContact -> conver contactItem.name co dau thanh khong dau
                 newListContact.add(SetContactItemView(Utils.covertToString(item.contactItem.name)
+                    .toString(), Utils.covertToString(item.contactItem.name)
                     .toString(), item.contactItem, false))
             }
 
@@ -106,7 +96,7 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
 
             val firstContact = newListContact.get(0).contactHeader  // neu co cac ky tu dac biet thi them 1 header = "#"
             if (!firstContact[0].isLetter()) {
-                listContact.add(SetContactItemView("#", ContactItem("", "", null, null, false, ""), true))
+                listContact.add(SetContactItemView("#", "", ContactItem("", "", null, null, false, ""), true))
             }
             var lastHeader: String? = ""
             for (contact in newListContact) {           // gom cac contact vao chung 1 header
@@ -115,7 +105,7 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
                 if (header[0].isLetter()) {
                     if (!TextUtils.equals(lastHeader, header)) {
                         lastHeader = header
-                        listContact.add(SetContactItemView(header, contact.contactItem, true))
+                        listContact.add(SetContactItemView(header, contact.contactHeader.toUpperCase(Locale.ROOT), contact.contactItem, true))
                     }
                 }
                 listContact.add(contact)
@@ -124,71 +114,59 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
         return listContact
     }
 
-    fun searchContact(data: String): ArrayList<SetContactItemView> {
-
+    fun searchContact(data: String) {
         if (data.equals("")) {
-            isSearchStatus = false
-        } else {
-            isSearchStatus = true
-        }
-        newListSearch.clear()
+            var index = 0
+            for (item in mListContact) {
+                val contact = item.copy()
+                contact.isSearch = true
 
-
-        for (item in mListContact) {
-            if (item.contactHeader.toUpperCase(Locale.ROOT)
-                    .contains(data.toUpperCase(Locale.ROOT))) {
-                newListSearch.add(item)
+                mListContact.set(index, contact)
+                index++
             }
-//        }
-            /*  listContactItem.value?.let {
-      //            val newListContact = ArrayList<SetContactItemView>()
-                  for (contact in it) {
-                      if (contact.contactHeader.toUpperCase(Locale.ROOT)
-                              .contains(data.toUpperCase(Locale.ROOT))) {
-                          newListSearch.add(contact)
-                      }
-                  }*/
+        } else {
+            var index = 0
+            for (item in mListContact) {
+                val contact = item.copy()
+                if (item.searchHeader.toUpperCase(Locale.ROOT)
+                        .contains(data.toUpperCase(Locale.ROOT))) {
+                    contact.isSearch = true
+                } else {
+                    contact.isSearch = false
+                }
+                mListContact.set(index, contact)
+                index++
+            }
         }
-            return newListSearch
-//        }
-//        return ArrayList()
+
+        isEmptyStatus.postValue(true)
+        for (item in mListContact) {
+            if (item.isSearch) {
+                isEmptyStatus.postValue(false)
+            }
+        }
+        listContactItem.postValue(mListContact)
     }
 
     fun updateIsSelectItem(phoneNumber: String) {
 
-        getListAudio(isSearchStatus)
-
         var index = 0
-        for (item in newListContact) {
+        for (item in mListContact) {
             if (TextUtils.equals(item.contactItem.phoneNumber, phoneNumber)) {
                 val newContact = item.copy()
                 newContact.isSelect = true
-                newListContact.set(index, newContact)
+                mListContact.set(index, newContact)
                 isSelectItem.postValue(true)
+
             } else {
                 val newContact = item.copy()
                 newContact.isSelect = false
-                newListContact.set(index, newContact)
+                mListContact.set(index, newContact)
             }
             index++
         }
-        listContactItem.postValue(newListContact)
 
-        /* var index = 0
-         for (item in mListContact) {
-             if (TextUtils.equals(item.contactItem.phoneNumber, phoneNumber)) {
-                 val newContact = item.copy()
-                 newContact.isSelect = true
-                 mListContact.set(index, newContact)
-                 isSelectItem.postValue(true)
-             } else {
-                 val newContact = item.copy()
-                 newContact.isSelect = false
-                 mListContact.set(index, newContact)
-             }
-             index++
-         }
-         listContactItem.postValue(mListContact)*/
+        listContactItem.postValue(mListContact)
     }
 
     fun setRingtoneForContact(filePath: String): Boolean {

@@ -157,6 +157,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
 
         fun onBind() {
             val headerItem = getItem(adapterPosition)
+
             tvHeader.text = headerItem.contactHeader.get(0).toUpperCase().toString()
         }
     }
