@@ -21,27 +21,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-           <!-- <androidx.cardview.widget.CardView
-                android:id="@+id/iv_avatar"
-                android:layout_width="@dimen/d_40"
-                android:layout_height="@dimen/d_40"
-                android:layout_marginLeft="16dp"
-
-                app:cardBackgroundColor="#C4C6D2"
-                app:cardCornerRadius="4dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/iv_avatar_music"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/my_studio_item_icon_music" />
-            </androidx.cardview.widget.CardView>-->
-
             <ImageView
                 android:id="@+id/iv_avatar"
                 android:layout_width="@dimen/d_40"

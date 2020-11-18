@@ -77,7 +77,6 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
                         var ringtoneFilePath = ""
                         var filename = ""
 
-                        // TODO("optimize code")
                         if (Utils.checkUriIsExits(appContext, defaultRingtone)) {           // check co ton tai hay khong
                             if (TextUtils.equals(oldRingtoneDefault, defaultRingtone)) {
                                 if (ringtone != null) {
@@ -129,12 +128,12 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
                                     ringtoneFilePath = ringtone
                                     filename = Utils.getNameByUri(appContext, ringtoneFilePath)
                                 } else {
-                                    filename = ""
+                                    filename = "Default ringtone"
                                     ringtoneFilePath = ""
                                     isRingtoneDefault = true
                                 }
                             } else {
-                                filename = ""
+                                filename = "Default ringtone"
                                 ringtoneFilePath = ""
                                 isRingtoneDefault = true
                             }

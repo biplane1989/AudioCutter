@@ -49,7 +49,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             Log.d(TAG, "setMenuVisibility: TRUE")
         } else {
             Log.d(TAG, "setMenuVisibility: FALE")
-            if (this.isVisible){
+            if (this.isVisible) {
                 myStudioViewModel.stopMediaPlayerWhenTabSelect()
             }
         }
@@ -116,6 +116,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                 }
                 runOnUI {
                     if (myStudioViewModel.deleteAllItemSelected(requireArguments().getInt(BUNDLE_NAME_KEY))) { // nếu delete thành công thì sẽ hiện dialog thành công
+                        Log.d(TAG, "onReceivedAction: DeleteSuccessfullyDialog")
                         val dialog = DeleteSuccessfullyDialog()
                         dialog.show(childFragmentManager, DeleteSuccessfullyDialog.TAG)
                     } else {
@@ -296,7 +297,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     // hanlder linterner on dialog rename
     override fun onRenameClick(newName: String, type: Int, filePath: String) {
         /**handle data rename change name to file insert to mediastore**/
-        var typeFolder: Folder = when (type) {
+        val typeFolder: Folder = when (type) {
             0 -> Folder.TYPE_CUTTER
 
             1 -> Folder.TYPE_MERGER

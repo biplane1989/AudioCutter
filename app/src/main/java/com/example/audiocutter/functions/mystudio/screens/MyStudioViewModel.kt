@@ -62,7 +62,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     fun init(typeAudio: Int) {
-//        runOnBackground {
+
         var listScaners: LiveData<AudioFileScans> = MutableLiveData()
         Log.d(TAG, "init 1:  ${Thread.currentThread().name}")
         when (typeAudio) {
@@ -91,26 +91,30 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 listLoading = ManagerFactory.getAudioEditorManager().getListMixingItems()
             }
         }
-        mAudioMediatorLiveData.addSource(listScaners) {
-            mListAudioFileScans.clear()
-            if (it.state == StateLoad.LOADING) {
-                isEmptyStatus.postValue(false)
-                loadingStatus.postValue(true)
-            }
-            if (it.state == StateLoad.LOADDONE) {       // khi loading xong thi check co data hay khong de show man hinh empty data
-                loadingStatus.postValue(false)
-                if (!it.listAudioFiles.isEmpty()) {
+        mAudioMediatorLiveData.addSource(listScaners) {             // khi data co su thay doi thi se goi vao ham nay
+            runOnBackground {
+//                delay(3000)
+                mListAudioFileScans.clear()
+                Log.d("taihhhhh", "state ${it.state}")
+                if (it.state == StateLoad.LOADING) {
                     isEmptyStatus.postValue(false)
-                } else {
-                    isEmptyStatus.postValue(true)
+                    loadingStatus.postValue(true)
                 }
-            }
-            for (item in it.listAudioFiles) {
-                mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
+                if (it.state == StateLoad.LOADDONE) {       // khi loading xong thi check co data hay khong de show man hinh empty data
+                    loadingStatus.postValue(false)
+                    if (!it.listAudioFiles.isEmpty()) {
+                        isEmptyStatus.postValue(false)
+                    } else {
+                        isEmptyStatus.postValue(true)
+                    }
+                }
+                for (item in it.listAudioFiles) {
+                    mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
 
+                }
+                mergeList()
+                mAudioMediatorLiveData.postValue(mListAudio)
             }
-            mergeList()
-            mAudioMediatorLiveData.postValue(mListAudio)
         }
 
         mAudioMediatorLiveData.addSource(listLoading) {

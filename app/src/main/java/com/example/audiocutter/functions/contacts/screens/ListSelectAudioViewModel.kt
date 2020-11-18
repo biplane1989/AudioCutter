@@ -219,7 +219,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     }
 
     fun searchAudioFile(data: String) {
-//        runOnBackground {
+
         if (data.equals("")) {
             var index = 0
             for (item in mListAudioFileView) {
@@ -246,12 +246,12 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
         isEmptyStatus.postValue(true)
         for (item in mListAudioFileView) {
-            if (!item.isSearch) {
+            if (item.isSearch) {
                 isEmptyStatus.postValue(false)
             }
         }
         mAudioMediatorLiveData.postValue(mListAudioFileView)
-//        }
+
     }
 
     fun setRingtone(phoneNumber: String): Boolean {

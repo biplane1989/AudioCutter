@@ -36,7 +36,6 @@ interface SelectAudioScreenCallback {
 
 class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback) : ListAdapter<SelectItemView, ListSelectAdapter.ViewHolder>(SelectAudioDiffCallBack()) {
     private val TAG = "giangtd"
-    private var listAudios = ArrayList<SelectItemView>()
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -103,11 +102,9 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
     override fun submitList(list: List<SelectItemView>?) {
 
         if (list != null) {
-            listAudios = ArrayList(list)
-            super.submitList(listAudios)
+            super.submitList(ArrayList(list))
         } else {
-            listAudios = ArrayList()
-            super.submitList(listAudios)
+            super.submitList(null)
         }
     }
 
@@ -139,11 +136,11 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                     tvInfo.setText(((selectItemView.audioFile.size) / (1024)).toString() + " KB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s")
                 }
 
-                /*    selectItemView.audioFile.bitmap?.let {
-                        Glide.with(itemView).load(selectItemView.audioFile.bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
-                            .into(ivAvatar)
-                    }*/
+                selectItemView.audioFile.bitmap?.let {
+                    Glide.with(itemView).load(selectItemView.audioFile.bitmap)
+                        .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
+                        .into(ivAvatar)
+                }
 
                 tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(selectItemView.audioFile.time), itemView.context)
                     .toInt() + 15
@@ -218,7 +215,8 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         }
 
         override fun onClick(view: View) {
-            val audioFileView = listAudios.get(adapterPosition)
+//            val audioFileView = listAudios.get(adapterPosition)
+            val audioFileView = getItem(adapterPosition)
             when (view.id) {
                 R.id.ll_audio_item_header -> {
                     selectAudioScreenCallback.isShowPlayingAudio(adapterPosition)
