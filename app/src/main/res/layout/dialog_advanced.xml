@@ -37,7 +37,7 @@
             <com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
                 android:id="@+id/spinner_fade_in"
                 android:layout_width="match_parent"
-                android:layout_height="42dp"
+                android:layout_height="@dimen/d_48"
                 android:layout_marginLeft="24dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginRight="24dp" />
@@ -56,14 +56,14 @@
             <com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
                 android:id="@+id/spinner_fade_out"
                 android:layout_width="match_parent"
-                android:layout_height="42dp"
+                android:layout_height="@dimen/d_48"
                 android:layout_marginLeft="24dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginRight="24dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/d_40"
+                android:layout_height="@dimen/d_48"
                 android:layout_marginTop="21dp"
                 android:orientation="horizontal"
                 android:weightSum="2">

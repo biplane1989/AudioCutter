@@ -28,4 +28,6 @@
     <dimen name="d_70">70dp</dimen>
     <dimen name="d_8">8dp</dimen>
     <dimen name="d_3">3dp</dimen>
+    <dimen name="d_24">24dp</dimen>
+    <dimen name="d_48">48dp</dimen>
 </resources>
