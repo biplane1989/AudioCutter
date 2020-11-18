@@ -250,7 +250,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         if (processingItem == null) {
             processNextItem()
         } else {
-
+            // nothing
         }
         listConvertingItems.postValue(listConvertingItemData)
 
@@ -276,17 +276,17 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         if (processingItem == null) {
             processNextItem()
         } else {
-
+            // nothing
         }
         listConvertingItems.postValue(listConvertingItemData)
     }
 
-    override fun cancel(id: Int) {              // cancel 1 tien trinh loading
+    override fun cancel(idItem: Int) {              // cancel 1 tien trinh loading
         mainScope.launch {
             val iterator: MutableIterator<ConvertingItem> = listConvertingItemData.iterator()
             while (iterator.hasNext()) {
                 val value = iterator.next()
-                if (value.id == id) {
+                if (value.id == idItem) {
                     when (value.state) {
                         ConvertingState.WAITING -> {
                             iterator.remove()
@@ -294,7 +294,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                         ConvertingState.PROGRESSING -> {
                             iterator.remove()
                             ManagerFactory.getAudioCutter().cancelTask()
-                            mService?.cancelNotidication(id)
+                            mService?.cancelNotidication(idItem)
+                        }
+                        else -> {
+                            // nothing
                         }
                     }
                 }

@@ -49,60 +49,40 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
 
             val newListContact: ArrayList<ContactItem> = ArrayList()
             val projecttion = arrayOf(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Phone.PHOTO_URI, ContactsContract.CommonDataKinds.Phone.CUSTOM_RINGTONE)
-            val cursor: Cursor = appContext.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projecttion, null, null, null)!!
-            val nameIndex = cursor.getColumnIndex(projecttion[0])
-            val numberIndex = cursor.getColumnIndex(projecttion[1])
-            val photoIndex = cursor.getColumnIndex(projecttion[2])
-            val ringtoneIndex = cursor.getColumnIndex(projecttion[3])
-            try {
-                var defaultRingtone = ""
-                if (Utils.getUriRingtoneDefault(appContext) == null) {
-                    defaultRingtone = ""
-                } else {
-                    defaultRingtone = Utils.getUriRingtoneDefault(appContext).toString()
-                }
-                if (cursor.moveToFirst()) {
-                    do {
+            val cursor: Cursor? = appContext.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projecttion, null, null, null)
+
+            cursor?.let {
+                val nameIndex = cursor.getColumnIndex(projecttion[0])
+                val numberIndex = cursor.getColumnIndex(projecttion[1])
+                val photoIndex = cursor.getColumnIndex(projecttion[2])
+                val ringtoneIndex = cursor.getColumnIndex(projecttion[3])
+                try {
+                    var defaultRingtone = ""
+                    if (Utils.getUriRingtoneDefault(appContext) == null) {
+                        defaultRingtone = ""
+                    } else {
+                        defaultRingtone = Utils.getUriRingtoneDefault(appContext).toString()
+                    }
+                    if (cursor.moveToFirst()) {
+                        do {
 //                            delay(1000)
-                        if (!isActive || scanningState == ScanningState.WAITING_FOR_CANCELING) {
-                            break
-                        }
-                        val name = cursor.getString(nameIndex)
-                        val number = cursor.getString(numberIndex)
-                        val photoUri = cursor.getString(photoIndex)
-                        val ringtone = cursor.getString(ringtoneIndex)
+                            if (!isActive || scanningState == ScanningState.WAITING_FOR_CANCELING) {
+                                break
+                            }
+                            val name = cursor.getString(nameIndex)
+                            val number = cursor.getString(numberIndex)
+                            val photoUri = cursor.getString(photoIndex)
+                            val ringtone = cursor.getString(ringtoneIndex)
 
 
-                        var isRingtoneDefault = true
-                        var ringtoneFilePath = ""
-                        var filename = ""
+                            var isRingtoneDefault = true
+                            var ringtoneFilePath = ""
+                            var filename = ""
 
-                        if (Utils.checkUriIsExits(appContext, defaultRingtone)) {           // check co ton tai hay khong
-                            if (TextUtils.equals(oldRingtoneDefault, defaultRingtone)) {
-                                if (ringtone != null) {
-                                    if (Utils.checkUriIsExits(appContext, ringtone)) {
-                                        if (TextUtils.equals(ringtone, defaultRingtone)) {
-                                            isRingtoneDefault = true
-                                            ringtoneFilePath = defaultRingtone
-                                        } else {
-                                            isRingtoneDefault = false
-                                            ringtoneFilePath = ringtone
-                                        }
-                                    } else {
-                                        isRingtoneDefault = true
-                                        ringtoneFilePath = defaultRingtone
-                                    }
-                                } else {
-                                    isRingtoneDefault = true
-                                    ringtoneFilePath = defaultRingtone
-                                }
-                            } else {
-                                if (ringtone != null) {
-                                    if (Utils.checkUriIsExits(appContext, ringtone)) {
-                                        if (TextUtils.equals(ringtone, oldRingtoneDefault)) {
-                                            isRingtoneDefault = true
-                                            ringtoneFilePath = defaultRingtone
-                                        } else {
+                            if (Utils.checkUriIsExits(appContext, defaultRingtone)) {           // check co ton tai hay khong
+                                if (TextUtils.equals(oldRingtoneDefault, defaultRingtone)) {
+                                    if (ringtone != null) {
+                                        if (Utils.checkUriIsExits(appContext, ringtone)) {
                                             if (TextUtils.equals(ringtone, defaultRingtone)) {
                                                 isRingtoneDefault = true
                                                 ringtoneFilePath = defaultRingtone
@@ -110,50 +90,74 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
                                                 isRingtoneDefault = false
                                                 ringtoneFilePath = ringtone
                                             }
+                                        } else {
+                                            isRingtoneDefault = true
+                                            ringtoneFilePath = defaultRingtone
                                         }
                                     } else {
                                         isRingtoneDefault = true
                                         ringtoneFilePath = defaultRingtone
                                     }
                                 } else {
-                                    isRingtoneDefault = true
-                                    ringtoneFilePath = defaultRingtone
+                                    if (ringtone != null) {
+                                        if (Utils.checkUriIsExits(appContext, ringtone)) {
+                                            if (TextUtils.equals(ringtone, oldRingtoneDefault)) {
+                                                isRingtoneDefault = true
+                                                ringtoneFilePath = defaultRingtone
+                                            } else {
+                                                if (TextUtils.equals(ringtone, defaultRingtone)) {
+                                                    isRingtoneDefault = true
+                                                    ringtoneFilePath = defaultRingtone
+                                                } else {
+                                                    isRingtoneDefault = false
+                                                    ringtoneFilePath = ringtone
+                                                }
+                                            }
+                                        } else {
+                                            isRingtoneDefault = true
+                                            ringtoneFilePath = defaultRingtone
+                                        }
+                                    } else {
+                                        isRingtoneDefault = true
+                                        ringtoneFilePath = defaultRingtone
+                                    }
                                 }
-                            }
-                            filename = Utils.getNameByUri(appContext, ringtoneFilePath)
-                        } else {
-                            if (ringtone != null) {
-                                if (Utils.checkUriIsExits(appContext, ringtone)) {
-                                    isRingtoneDefault = false
-                                    ringtoneFilePath = ringtone
-                                    filename = Utils.getNameByUri(appContext, ringtoneFilePath)
+                                filename = Utils.getNameByUri(appContext, ringtoneFilePath)
+                            } else {
+                                if (ringtone != null) {
+                                    if (Utils.checkUriIsExits(appContext, ringtone)) {
+                                        isRingtoneDefault = false
+                                        ringtoneFilePath = ringtone
+                                        filename = Utils.getNameByUri(appContext, ringtoneFilePath)
+                                    } else {
+                                        filename = "Default ringtone"
+                                        ringtoneFilePath = ""
+                                        isRingtoneDefault = true
+                                    }
                                 } else {
                                     filename = "Default ringtone"
                                     ringtoneFilePath = ""
                                     isRingtoneDefault = true
                                 }
-                            } else {
-                                filename = "Default ringtone"
-                                ringtoneFilePath = ""
-                                isRingtoneDefault = true
                             }
-                        }
 
-                        val contactItem = ContactItem(name, number, photoUri, ringtoneFilePath, isRingtoneDefault, filename)
-                        newListContact.add(contactItem)
+                            val contactItem = ContactItem(name, number, photoUri, ringtoneFilePath, isRingtoneDefault, filename)
+                            newListContact.add(contactItem)
 
-                        oldRingtoneDefault = defaultRingtone
-                    } while (cursor.moveToNext())
+                            oldRingtoneDefault = defaultRingtone
+                        } while (cursor.moveToNext())
 
+                    }
+                    if (scanningState == ScanningState.RUNNING) {
+                        contactLiveData.postValue(GetContactResult(true, newListContact))
+                    }
+
+                } finally {
+                    if (!cursor.isClosed) cursor.close()
+                    scanningState = ScanningState.IDLE
                 }
-                if (scanningState == ScanningState.RUNNING) {
-                    contactLiveData.postValue(GetContactResult(true, newListContact))
-                }
-
-            } finally {
-                if (!cursor.isClosed) cursor.close()
-                scanningState = ScanningState.IDLE
             }
+
         }
     }
 

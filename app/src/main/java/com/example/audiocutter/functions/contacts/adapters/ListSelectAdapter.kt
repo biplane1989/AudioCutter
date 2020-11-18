@@ -215,7 +215,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         }
 
         override fun onClick(view: View) {
-//            val audioFileView = listAudios.get(adapterPosition)
             val audioFileView = getItem(adapterPosition)
             when (view.id) {
                 R.id.ll_audio_item_header -> {
