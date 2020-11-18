@@ -3,7 +3,6 @@ package com.example.audiocutter.util
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ResolveInfo
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.Paint
@@ -16,7 +15,6 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.TextUtils
-import android.util.Log
 import android.util.TypedValue
 import androidx.core.content.res.ResourcesCompat
 import com.example.audiocutter.R
@@ -378,7 +376,12 @@ object Utils {
             intent.action = Intent.ACTION_SEND
             intent.putExtra(Intent.EXTRA_STREAM, audioFile.uri)
             intent.type = "audio/*"
-            context.startActivity(Intent.createChooser(intent, "choose a sharing app"))
+            context.startActivity(
+                Intent.createChooser(
+                    intent,
+                    context.resources.getString(R.string.Choose_in_app_inten)
+                )
+            )
             true
         } catch (e: Exception) {
             e.printStackTrace()

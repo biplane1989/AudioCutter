@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,8 +31,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         when (it) {
             1 -> {
                 showProgressBar(true)
-                binding.ivEmptyListMerge.visibility = View.INVISIBLE
-                binding.tvEmptyListMer.visibility = View.INVISIBLE
             }
             0 -> {
                 showProgressBar(false)
@@ -45,26 +42,42 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     }
     var currentPos = -1
 
-    private val listAudioObserver = Observer<List<AudioCutterView>> {
-        Log.d("TAG", "checkSizeListObserve: ${it.size}")
-        if (it.isEmpty() || it == null) {
-            showEmptyList()
+    private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
+        if (listMusic == null) {
+            binding.rvMerge.visibility = View.INVISIBLE
         } else {
-            audioMerAdapter.submitList(ArrayList(it))
-            showList()
-        }
-        var count = 0
-        it.forEach {
-            if (it.isCheckChooseItem) {
-                count++
-                if (count >= 2) {
-                    setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
-                } else {
-                    setColorButtonNext(R.color.colorgray, R.drawable.bg_next_audio_disabled, false)
+            if (listMusic.isEmpty()) {
+                showEmptyList()
+
+            } else {
+
+                audioMerAdapter.submitList(ArrayList(listMusic))
+                showList()
+                showProgressBar(false)
+
+            }
+            var count = 0
+            listMusic.forEach {
+                if (it.isCheckChooseItem) {
+                    count++
+                    if (count >= 2) {
+                        setColorButtonNext(
+                            R.color.colorWhite,
+                            R.drawable.bg_next_audio_enabled,
+                            true
+                        )
+                    } else {
+                        setColorButtonNext(
+                            R.color.colorgray,
+                            R.drawable.bg_next_audio_disabled,
+                            false
+                        )
+                    }
                 }
             }
+            binding.tvCountFileMer.text = "${count} file"
         }
-        binding.tvCountFileMer.text = "${count} file"
+
 
     }
 
@@ -103,8 +116,8 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         super.onViewCreated(view, savedInstanceState)
         initLists()
         runOnUI {
-            audioMerModel.getAllAudioFile().observe(viewLifecycleOwner, listAudioObserver)
             audioMerModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
+            audioMerModel.getAllAudioFile().observe(viewLifecycleOwner, listAudioObserver)
 
         }
     }
