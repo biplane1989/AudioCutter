@@ -6,9 +6,12 @@ import android.net.Uri
 import android.os.Environment
 import android.text.TextUtils
 import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.audiomanager.Folder
@@ -17,11 +20,14 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.ItemLoadStatus
+import com.example.audiocutter.functions.mystudio.dialog.DeleteSuccessfullyDialog
+import com.example.audiocutter.functions.mystudio.objects.ActionData
 import com.example.audiocutter.functions.mystudio.objects.DeleteState
 import com.example.audiocutter.functions.resultscreen.objects.*
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
+import kotlinx.android.synthetic.main.my_studio_fragment.*
 import java.io.File
 import java.util.*
 
@@ -53,124 +59,92 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     fun init(typeAudio: Int) {
+        runOnBackground {
+            var listScaners: LiveData<AudioFileScans> = MutableLiveData()
+            Log.d(TAG, "init 1:  ${Thread.currentThread().name}")
+            when (typeAudio) {
+                Constance.AUDIO_CUTTER -> {
+                    listScaners = ManagerFactory.getAudioFileManager()
+                        .getListAudioFileByType(Folder.TYPE_CUTTER)
+                }
+                Constance.AUDIO_MERGER -> {
+                    listScaners = ManagerFactory.getAudioFileManager()
+                        .getListAudioFileByType(Folder.TYPE_MERGER)
+                }
+                Constance.AUDIO_MIXER -> {
+                    listScaners = ManagerFactory.getAudioFileManager()
+                        .getListAudioFileByType(Folder.TYPE_MIXER)
+                }
+            }
+            var listLoading: LiveData<List<ConvertingItem>> = MutableLiveData()
+            when (typeAudio) {
+                Constance.AUDIO_CUTTER -> {
+                    listLoading = ManagerFactory.getAudioEditorManager().getListCuttingItems()
+                }
+                Constance.AUDIO_MERGER -> {
+                    listLoading = ManagerFactory.getAudioEditorManager().getListMergingItems()
+                }
+                Constance.AUDIO_MIXER -> {
+                    listLoading = ManagerFactory.getAudioEditorManager().getListMixingItems()
+                }
+            }
 
-        var listScaners: LiveData<AudioFileScans> = MutableLiveData()
-        Log.d(TAG, "init 1:  ${Thread.currentThread().name}")
-        when (typeAudio) {
-            Constance.AUDIO_CUTTER -> {
-                listScaners = ManagerFactory.getAudioFileManager()
-                    .getListAudioFileByType(Folder.TYPE_CUTTER)
-            }
-            Constance.AUDIO_MERGER -> {
-                listScaners = ManagerFactory.getAudioFileManager()
-                    .getListAudioFileByType(Folder.TYPE_MERGER)
-            }
-            Constance.AUDIO_MIXER -> {
-                listScaners = ManagerFactory.getAudioFileManager()
-                    .getListAudioFileByType(Folder.TYPE_MIXER)
-            }
-        }
-        var listLoading: LiveData<List<ConvertingItem>> = MutableLiveData()
-        when (typeAudio) {
-            Constance.AUDIO_CUTTER -> {
-                listLoading = ManagerFactory.getAudioEditorManager().getListCuttingItems()
-            }
-            Constance.AUDIO_MERGER -> {
-                listLoading = ManagerFactory.getAudioEditorManager().getListMergingItems()
-            }
-            Constance.AUDIO_MIXER -> {
-                listLoading = ManagerFactory.getAudioEditorManager().getListMixingItems()
-            }
-        }
+            mAudioMediatorLiveData.addSource(listScaners) {
 
-        mAudioMediatorLiveData.addSource(listScaners) {
-
-            mListAudioFileScans.clear()
-            if (it.state == StateLoad.LOADING) {
-                isEmptyStatus.postValue(false)
-                loadingStatus.postValue(true)
-            }
-            if (it.state == StateLoad.LOADDONE) {       // khi loading xong thi check co data hay khong de show man hinh empty data
-                loadingStatus.postValue(false)
-                if (!it.listAudioFiles.isEmpty()) {
+                mListAudioFileScans.clear()
+                if (it.state == StateLoad.LOADING) {
                     isEmptyStatus.postValue(false)
-                } else {
-                    isEmptyStatus.postValue(true)
+                    loadingStatus.postValue(true)
                 }
-            }
-            for (item in it.listAudioFiles) {
-                mListAudioFileScans.add(
-                    AudioFileView(
-                        item,
-                        false,
-                        ItemLoadStatus(),
-                        ConvertingState.SUCCESS,
-                        -1,
-                        -1
-                    )
-                )
-
-            }
-            mergeList()
-            mAudioMediatorLiveData.postValue(mListAudio)
-
-        }
-
-        mAudioMediatorLiveData.addSource(listLoading) {
-            mListFileLoading.clear()
-            if (!it.isEmpty()) {
-                for (item in it) {
-                    if (item is CuttingConvertingItem) {
-                        mListFileLoading.add(
-                            AudioFileView(
-                                AudioFile(
-                                    File(item.cuttingConfig.pathFolder),
-                                    item.cuttingConfig.fileName,
-                                    100
-                                ), false, ItemLoadStatus(), item.state, item.percent, item.id
-                            )
-                        )
-                    }
-                    if (item is MergingConvertingItem) {
-                        mListFileLoading.add(
-                            AudioFileView(
-                                AudioFile(
-                                    File(item.mergingConfig.pathFolder),
-                                    item.mergingConfig.fileName,
-                                    100
-                                ), false, ItemLoadStatus(), item.state, item.percent, item.id
-                            )
-                        )
-                    }
-                    if (item is MixingConvertingItem) {
-                        mListFileLoading.add(
-                            AudioFileView(
-                                AudioFile(
-                                    File(item.mixingConfig.pathFolder),
-                                    item.mixingConfig.fileName,
-                                    100
-                                ), false, ItemLoadStatus(), item.state, item.percent, item.id
-                            )
-                        )
+                if (it.state == StateLoad.LOADDONE) {       // khi loading xong thi check co data hay khong de show man hinh empty data
+                    loadingStatus.postValue(false)
+                    if (!it.listAudioFiles.isEmpty()) {
+                        isEmptyStatus.postValue(false)
+                    } else {
+                        isEmptyStatus.postValue(true)
                     }
                 }
-            }
-            mergeList()
-            mAudioMediatorLiveData.postValue(mListAudio)
-        }
-        mAudioMediatorLiveData.addSource(audioPlayer.getPlayerInfo()) {
-            Log.d("taih", "${it.playerState} ${it.posision}")
-            updatePlayerInfo(it)
-        }
-        mAudioMediatorLiveData.addSource(
-            ManagerFactory.getAudioEditorManager()
-                .getCurrentProcessingItem()
-        ) {
-            if (it != null) {
-                updateLoadingProgressbar(it)
-            }
-        }
+                for (item in it.listAudioFiles) {
+                    mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
 
+                }
+                mergeList()
+                mAudioMediatorLiveData.postValue(mListAudio)
+
+            }
+
+            mAudioMediatorLiveData.addSource(listLoading) {
+                mListFileLoading.clear()
+                if (!it.isEmpty()) {
+                    for (item in it) {
+                        if (item is CuttingConvertingItem) {
+                            mListFileLoading.add(AudioFileView(AudioFile(File(item.cuttingConfig.pathFolder), item.cuttingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
+                        }
+                        if (item is MergingConvertingItem) {
+                            mListFileLoading.add(AudioFileView(AudioFile(File(item.mergingConfig.pathFolder), item.mergingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
+                        }
+                        if (item is MixingConvertingItem) {
+                            mListFileLoading.add(AudioFileView(AudioFile(File(item.mixingConfig.pathFolder), item.mixingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
+                        }
+                    }
+                }
+                mergeList()
+                mAudioMediatorLiveData.postValue(mListAudio)
+            }
+            mAudioMediatorLiveData.addSource(audioPlayer.getPlayerInfo()) {
+                Log.d("taih", "${it.playerState} ${it.posision}")
+                if (!isSeekBarStatus) {
+                    Log.d(TAG, "init: onStopTrackingTouch updatePlayerInfo --->    isSeekBarStatus "+ isSeekBarStatus)
+                    updatePlayerInfo(it)
+                }
+            }
+            mAudioMediatorLiveData.addSource(ManagerFactory.getAudioEditorManager()
+                .getCurrentProcessingItem()) {
+                if (it != null) {
+                    updateLoadingProgressbar(it)
+                }
+            }
+        }
     }
 
     fun getListAudioFile(): MediatorLiveData<ArrayList<AudioFileView>> {
@@ -202,14 +176,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         for (item in mListFileLoading) {
             Log.d("002", " filepath $filePath")
             Log.d("002", " item  ${item.audioFile.file.absolutePath + ".mp3"}")
-            if (TextUtils.equals(
-                    item.audioFile.file.absolutePath.toString() + item.audioFile.fileName + ".mp3",
-                    filePath
-                ) || TextUtils.equals(
-                    item.audioFile.file.absolutePath.toString() + item.audioFile.fileName + ".m4a",
-                    filePath
-                )
-            ) {       // TODO lỗi .mp3
+//            if (TextUtils.equals(item.audioFile.file.absolutePath.toString() + item.audioFile.fileName + ".mp3", filePath) || TextUtils.equals(item.audioFile.file.absolutePath.toString() + item.audioFile.fileName + ".m4a", filePath)) {       // TODO lỗi .mp3
+            if (TextUtils.equals(item.audioFile.file.absolutePath.toString() + item.audioFile.fileName + item.audioFile.mimeType, filePath)) {
                 return true
             }
         }
@@ -218,13 +186,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     // update loading item khi editor
     fun updateLoadingProgressbar(newItem: ConvertingItem) {
-        val newItemConverting = AudioFileView(
-            AudioFile(
-                File("${Environment.getExternalStorageDirectory()}/AudioCutter/mixer"),
-                newItem.getFileName(),
-                100
-            ), false, ItemLoadStatus(), newItem.state, newItem.percent, newItem.id
-        )
+        val newItemConverting = AudioFileView(AudioFile(File("${Environment.getExternalStorageDirectory()}/AudioCutter/mixer"), newItem.getFileName(), 100), false, ItemLoadStatus(), newItem.state, newItem.percent, newItem.id)
         if (!mListAudio.isEmpty()) {
             var index = 0
             for (item in mListAudio) {
@@ -265,6 +227,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     // xử lý button check delete
     fun checkItemPosition(pos: Int): List<AudioFileView> {
+        Log.d(TAG, "checkItemPosition: pos " + pos)
         val audioFileView = mListAudio.get(pos).copy()
         if (audioFileView.itemLoadStatus.deleteState == DeleteState.UNCHECK) {
             val itemLoadStatus = audioFileView.itemLoadStatus.copy()
@@ -328,8 +291,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     fun isAllChecked(): Boolean {
         mListAudio.forEach {
             if (it.itemLoadStatus.deleteState == DeleteState.UNCHECK) {
-                isCheckAllStatus =
-                    false                          // dang o trang thai all select ma du lieu loading xong
+                isCheckAllStatus = false                          // dang o trang thai all select ma du lieu loading xong
                 return false
             }
         }
@@ -502,12 +464,33 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         return mListAudio
     }
 
+    // khi chuyển sang tab khác thì stop audio
+    fun stopMediaPlayerWhenTabSelect() {
+        //   khi play nhạc reset lại trạng thái các item khác
+        var index = 0
+        for (item in mListAudio) {
+            val newItem = item.copy()
+            newItem.isExpanded = false
+            val itemLoadStatus = newItem.itemLoadStatus.copy()
+            newItem.itemLoadStatus = itemLoadStatus
+            mListAudio[index] = newItem
+            index++
+        }
+        audioPlayer.stop()
+    }
+
     fun resumeAudioAndChangeStatus(position: Int) {
         audioPlayer.resume()
     }
 
     fun seekToAudio(cusorPos: Int) {
         audioPlayer.seek(cusorPos)
+        isSeekBarStatus = false
+    }
+
+    var isSeekBarStatus = false
+    fun startSeekBar() {
+        isSeekBarStatus = true
     }
 
     private fun updatePlayerInfo(playerInfo: PlayerInfo) {
@@ -535,22 +518,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             mListAudio[selectedPosition] = audioFileView
         }
         mAudioMediatorLiveData.postValue(mListAudio)
-    }
-
-    // khi chuyển sang tab khác thì stop audio
-    fun stopMediaPlayerWhenTabSelect() {
-        //   khi play nhạc reset lại trạng thái các item khác
-        var index = 0
-        for (item in mListAudio) {
-
-            val newItem = item.copy()
-            newItem.isExpanded = false
-            val itemLoadStatus = newItem.itemLoadStatus.copy()
-            newItem.itemLoadStatus = itemLoadStatus
-            mListAudio[index] = newItem
-            index++
-        }
-        audioPlayer.stop()
     }
 
     fun cancelLoading(id: Int) {
@@ -604,10 +571,35 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         ManagerFactory.getAudioFileManager()
             .reNameToFileAudio(newName, audioFile, typeFolder)
 
+    val actionLiveData: MutableLiveData<ActionData> = MutableLiveData()
+
+    fun getAction(): LiveData<ActionData> {
+        return actionLiveData
     }
 
     override fun onReceivedAction(fragmentMeta: FragmentMeta) {
         super.onReceivedAction(fragmentMeta)
-        Log.d("ababa", "MyStudioViewModel onReceivedAction ${fragmentMeta.action}")
+        Log.d(TAG, "onReceivedAction: 1")
+        fragmentMeta.data?.let {
+            Log.d(TAG, "onReceivedAction: 2")
+            val typeAudio = fragmentMeta.data as Int
+            when (fragmentMeta.action) {
+                Constance.ACTION_UNCHECK -> { // trang thai isdelete
+                    actionLiveData.postValue(ActionData(Constance.ACTION_UNCHECK, typeAudio))
+                }
+                Constance.ACTION_HIDE -> {  // trang thai undelete
+                    actionLiveData.postValue(ActionData(Constance.ACTION_HIDE, typeAudio))
+                }
+                Constance.ACTION_DELETE_ALL -> {
+                    actionLiveData.postValue(ActionData(Constance.ACTION_DELETE_ALL, typeAudio))
+                }
+                Constance.ACTION_STOP_MUSIC -> {
+                    actionLiveData.postValue(ActionData(Constance.ACTION_STOP_MUSIC, typeAudio))
+                }
+                Constance.ACTION_CHECK_DELETE -> {
+                    actionLiveData.postValue(ActionData(Constance.ACTION_CHECK_DELETE, typeAudio))
+                }
+            }
+        }
     }
 }

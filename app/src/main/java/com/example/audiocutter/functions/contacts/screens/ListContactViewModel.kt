@@ -12,6 +12,7 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.functions.contacts.objects.ContactItemView
 import com.example.audiocutter.objects.ContactItem
 import com.example.audiocutter.util.Utils
+import kotlinx.coroutines.delay
 import java.util.*
 import kotlin.Comparator
 import kotlin.collections.ArrayList
@@ -31,12 +32,14 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
 
     fun scan() {
         runOnBackground {
+            loadingStatus.postValue(true)
             contactManager.scanContact()
         }
     }
 
     fun getData(): LiveData<List<ContactItemView>> {
         listContactItem.addSource(contactManager.getListContact()) { contacts ->
+            loadingStatus.postValue(true)
             if (contacts.completed) {
                 loadingStatus.postValue(false)
                 if (contacts.listContactItem.size > 0) {

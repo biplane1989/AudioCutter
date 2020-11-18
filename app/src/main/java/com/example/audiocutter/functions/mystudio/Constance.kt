@@ -21,6 +21,10 @@ object Constance {
     val AUDIO_MERGER = 1
     val AUDIO_MIXER = 2
 
+    val NO_TYPE_AUDIO = -1
+    val TRUE = 3
+    val FALSE = 4
+
     val AUDIO_CUTTER_STRING = "Audio Cutter"
     val AUDIO_MERGER_STRING = "Audio Merger"
     val AUDIO_MIXER_STRING = "Audio Mixer"

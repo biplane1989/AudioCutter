@@ -232,6 +232,7 @@ abstract class BaseFragment : Fragment() {
     protected open fun onPostDestroy() {
 
     }
+
     open fun sendFragmentAction(fragmentName: String, action: String, data: Any? = null) {
         if (activity is BaseActivity) {
             (activity as BaseActivity).sendFragmentData(FragmentMeta(fragmentName, action, data))

@@ -23,6 +23,7 @@ import com.example.audiocutter.databinding.MergePreviewScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergePreviewAdapter
 import com.example.audiocutter.functions.audiochooser.dialogs.MergeDialog
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.mystudio.dialog.DeleteDialog
 import com.example.audiocutter.ui.audiochooser.merge.MyItemTouchHelper
 import com.example.audiocutter.ui.audiochooser.merge.WrapContentLinearLayoutManager
 import com.example.core.core.AudioFormat
@@ -93,8 +94,8 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
 
     private fun initViews() {
-        mergeDialog = MergeDialog(requireContext())
-        mergeDialog.setOnCallBack(this)
+//        mergeDialog = MergeDialog(requireContext())
+//        mergeDialog.setOnCallBack(this)
 
         binding.btMergeAudio.setOnClickListener(this)
         binding.ivMerScreenBack.setOnClickListener(this)
@@ -163,8 +164,13 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     private fun mergeAudioFile() {
         if (audioMerModel.getListAudio().size >= 2) {
-            mergeDialog.sendData(audioMerModel.getListAudio().size)
-            mergeDialog.show()
+
+//            mergeDialog.sendData(audioMerModel.getListAudio().size)
+//            mergeDialog.show()
+
+            val dialog = MergeDialog.newInstance(this, audioMerModel.getListAudio().size)
+            dialog.show(childFragmentManager, MergeDialog.TAG)
+
             showKeybroad()
 
         } else {

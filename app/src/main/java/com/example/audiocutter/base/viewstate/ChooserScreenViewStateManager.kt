@@ -35,4 +35,12 @@ interface ChooserScreenViewStateManager {
             baseFragment.findNavController().navigate(action)
         }
     }
+
+    fun onCutScreenSetRingtoneContact(baseFragment: BaseFragment, filePath: String) {
+        if (getViewStateMutable().getLastState() == ViewStateScreen.MP3_CUT_CHOOSER_SCREEN) {
+            getViewStateMutable().pushViewState(ViewStateScreen.SET_CONTACT_SCREEN)
+            val action = CutChooserScreenDirections.cutChooserScreenGoToSetContactScreen(filePath)
+            baseFragment.findNavController().navigate(action)
+        }
+    }
 }

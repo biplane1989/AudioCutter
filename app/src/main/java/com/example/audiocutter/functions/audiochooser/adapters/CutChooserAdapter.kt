@@ -20,10 +20,7 @@ import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
 import kotlin.math.floor
 
-class CutChooserAdapter(val mContext: Context) :
-    ListAdapter<AudioCutterView, CutChooserAdapter.AudiocutterHolder>(
-        CutChooserAudioDiff()
-    ) {
+class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, CutChooserAdapter.AudiocutterHolder>(CutChooserAudioDiff()) {
     lateinit var mCallBack: CutChooserListener
     val SIZE_MB = 1024 * 1024
     var listAudios = mutableListOf<AudioCutterView>()
@@ -37,11 +34,10 @@ class CutChooserAdapter(val mContext: Context) :
         if (list!!.size != 0 || list != null) {
             listAudios = ArrayList(list)
             super.submitList(listAudios)
-        } else
-            if (list!!.size == 0 || list == null) {
-                listAudios = ArrayList()
-                super.submitList(listAudios)
-            }
+        } else if (list!!.size == 0 || list == null) {
+            listAudios = ArrayList()
+            super.submitList(listAudios)
+        }
     }
 
 
@@ -57,11 +53,7 @@ class CutChooserAdapter(val mContext: Context) :
     }
 
 
-    override fun onBindViewHolder(
-        holder: AudiocutterHolder,
-        position: Int,
-        payloads: MutableList<Any>
-    ) {
+    override fun onBindViewHolder(holder: AudiocutterHolder, position: Int, payloads: MutableList<Any>) {
         super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
@@ -94,8 +86,7 @@ class CutChooserAdapter(val mContext: Context) :
         }
     }
 
-    inner class AudiocutterHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
-        View.OnClickListener {
+    inner class AudiocutterHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
         val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)!!
         val tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_audio)
@@ -204,7 +195,6 @@ class CutChooserAdapter(val mContext: Context) :
             }
         }
 
-
         private fun showPopupMenu(itemAudio: AudioCutterView) {
             val popupMenu = PopupMenu(mContext, lnMenu)
             popupMenu.menuInflater.inflate(R.menu.menu_item_audio, popupMenu.menu)
@@ -214,16 +204,15 @@ class CutChooserAdapter(val mContext: Context) :
                     R.id.menu_cut -> {
                         mCallBack.onCutItemClicked(getItem(adapterPosition))
                     }
-                    R.id.menu_play
-                    -> {
+                    R.id.menu_play -> {
                         controllerAudio()
                     }
-                    R.id.menu_contacts
-                    -> {
-                        Toast.makeText(mContext, "contacts", Toast.LENGTH_SHORT).show()
+                    R.id.menu_contacts -> {
+
+                        mCallBack.setRingtoneContact(itemAudio.audioFile.file.absolutePath)
+//                        Toast.makeText(mContext, "contacts", Toast.LENGTH_SHORT).show()
                     }
-                    R.id.menu_setas
-                    -> {
+                    R.id.menu_setas -> {
                         mCallBack.showDialogSetAs(itemAudio)
                     }
                 }
@@ -240,6 +229,7 @@ class CutChooserAdapter(val mContext: Context) :
         fun resume(pos: Int)
         fun showDialogSetAs(itemAudio: AudioCutterView)
         fun onCutItemClicked(itemAudio: AudioCutterView)
+        fun setRingtoneContact(filePath: String)
     }
 }
 

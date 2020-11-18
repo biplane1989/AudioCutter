@@ -10,6 +10,9 @@ import android.widget.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.util.Util
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerState
@@ -18,6 +21,7 @@ import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.objects.DeleteState
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import com.example.audiocutter.objects.AudioFile
+import com.example.audiocutter.util.Utils
 import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +38,7 @@ interface AudioCutterScreenCallback {
     fun checkDeletePos(position: Int)
     fun isShowPlayingAudio(positition: Int)
     fun cancelLoading(id: Int)
+    fun onStartSeekBar()
 }
 
 class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallback) : ListAdapter<AudioFileView, RecyclerView.ViewHolder>(MusicDiffCallBack()) {
@@ -95,12 +100,12 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                         holder.ivSetting.visibility = View.VISIBLE
                     }
                     DeleteState.UNCHECK -> {
-                        holder.ivSetting.visibility = View.GONE
+                        holder.ivSetting.visibility = View.INVISIBLE
                         holder.ivItemDelete.visibility = View.VISIBLE
                         holder.ivItemDelete.setImageResource(R.drawable.my_studio_screen_icon_uncheck)
                     }
                     DeleteState.CHECKED -> {
-                        holder.ivSetting.visibility = View.GONE
+                        holder.ivSetting.visibility = View.INVISIBLE
                         holder.ivItemDelete.visibility = View.VISIBLE
                         holder.ivItemDelete.setImageResource(R.drawable.my_studio_screen_icon_checked)
                     }
@@ -112,7 +117,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 } else {
                     holder.llPlayMusic.visibility = View.GONE
                     holder.llItem.setBackgroundColor(Color.WHITE)
-//                    holder.llItem.setBackgroundResource(R.drawable.bg_white_rec)
                     holder.llItem.setPadding(0, 0, 0, 0)
                 }
                 holder.sbMusic.max = newItem.itemLoadStatus.duration
@@ -149,7 +153,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
     inner class SuccessViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-        val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar_music)
+        val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar)
         val ivSetting: ImageView = itemView.findViewById(R.id.iv_setting)
         val tvTitle: TextView = itemView.findViewById(R.id.tv_title_music)
         val tvInfo: TextView = itemView.findViewById(R.id.tv_info_music)
@@ -170,16 +174,12 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             }
             tvTitle.setText(audioFileView.audioFile.fileName)
             if (audioFileView.audioFile.size / (1024 * 1024) > 0) {
-
-                tvInfo.setText(String.format("%.1f", (audioFileView.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + (audioFileView.audioFile.bitRate / 1000).toString() + "kb/s")
+                tvInfo.setText(String.format("%.1f", (audioFileView.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + bitrate + "kb/s")
             } else {
-                tvInfo.setText(((audioFileView.audioFile.size) / (1024)).toString() + " KB" + " | " + (audioFileView.audioFile.bitRate / 1000).toString() + "kb/s")
+                tvInfo.setText(((audioFileView.audioFile.size) / (1024)).toString() + " KB" + " | " + bitrate + "kb/s")
             }
 
             tvTotal.text = "/" + simpleDateFormat.format(audioFileView.audioFile.time?.toInt())
-            audioFileView.audioFile.bitmap?.let {
-                ivAvatar.setImageBitmap(it)
-            }
 
             if (audioFileView.isExpanded) {
                 llPlayMusic.visibility = View.VISIBLE
@@ -197,12 +197,12 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     ivSetting.visibility = View.VISIBLE
                 }
                 DeleteState.UNCHECK -> {
-                    ivSetting.visibility = View.GONE
+                    ivSetting.visibility = View.INVISIBLE
                     ivItemDelete.visibility = View.VISIBLE
                     ivItemDelete.setImageResource(R.drawable.my_studio_screen_icon_uncheck)
                 }
                 DeleteState.CHECKED -> {
-                    ivSetting.visibility = View.GONE
+                    ivSetting.visibility = View.INVISIBLE
                     ivItemDelete.visibility = View.VISIBLE
                     ivItemDelete.setImageResource(R.drawable.my_studio_screen_icon_checked)
                 }
@@ -224,6 +224,10 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             }
 
             sbMusic.max = audioFileView.itemLoadStatus.duration
+
+            tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(audioFileView.itemLoadStatus.currPos), itemView.context)
+                .toInt() + 15
+
             tvTimeLife.text = simpleDateFormat.format(audioFileView.itemLoadStatus.currPos)
 
             sbMusic.progress = audioFileView.itemLoadStatus.currPos
@@ -235,16 +239,19 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             ivSetting.setOnClickListener(this)
 
             sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                override fun onProgressChanged(sb: SeekBar?, p1: Int, p2: Boolean) {
+                    tvTimeLife.text = simpleDateFormat.format(sb?.progress)             // update time cho tvTimeLife khi keo seekbar
                 }
 
                 override fun onStartTrackingTouch(p0: SeekBar?) {
+                    audioCutterScreenCallback.onStartSeekBar()
+
                 }
 
                 override fun onStopTrackingTouch(p0: SeekBar?) {
                     audioCutterScreenCallback.seekTo(sbMusic.progress)
-                }
 
+                }
             })
         }
 

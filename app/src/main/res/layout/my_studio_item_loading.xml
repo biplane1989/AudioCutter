@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    <LinearLayout
         android:id="@+id/ll_audio_loading"
         android:layout_width="match_parent"
         android:layout_height="@dimen/d_70"
@@ -21,7 +22,7 @@
                 android:layout_height="56dp">
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cv_avatar"
+                    android:id="@+id/iv_avatar"
                     android:layout_width="@dimen/d_40"
                     android:layout_height="@dimen/d_40"
                     android:layout_marginLeft="16dp"
@@ -44,18 +45,23 @@
 
                 <TextView
                     android:id="@+id/tv_title_music"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginLeft="15dp"
+                    android:ellipsize="end"
                     android:fontFamily="@font/sanfranciscodisplay_bold"
                     android:gravity="top"
+                    android:maxLines="1"
+                    android:singleLine="true"
                     android:text="@string/my_studio_screen_item_title"
                     android:textColor="#2E3041"
                     android:textSize="@dimen/d_18"
                     android:textStyle="bold"
-
-                    app:layout_constraintStart_toEndOf="@id/cv_avatar"
-                    app:layout_constraintTop_toTopOf="@id/cv_avatar" />
+                    app:layout_constraintBottom_toTopOf="@+id/ll_progressbar"
+                    app:layout_constraintEnd_toStartOf="@+id/iv_cancel"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toEndOf="@+id/iv_avatar"
+                    app:layout_constraintTop_toTopOf="@id/iv_avatar" />
 
                 <TextView
                     android:id="@+id/tv_wait"
@@ -66,20 +72,20 @@
                     android:text="Wait..."
                     android:textColor="#9C9C9C"
                     android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@id/cv_avatar"
-                    app:layout_constraintStart_toEndOf="@id/cv_avatar" />
+                    app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
+                    app:layout_constraintStart_toEndOf="@id/iv_avatar" />
 
                 <LinearLayout
-                    android:layout_marginRight="10dp"
                     android:id="@+id/ll_progressbar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
+                    android:layout_marginRight="10dp"
                     android:gravity="center_vertical"
                     android:visibility="visible"
-                    app:layout_constraintBottom_toBottomOf="@id/cv_avatar"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
                     app:layout_constraintEnd_toStartOf="@+id/iv_cancel"
-                    app:layout_constraintStart_toEndOf="@id/cv_avatar">
+                    app:layout_constraintStart_toEndOf="@id/iv_avatar">
 
                     <ProgressBar
                         android:id="@+id/pb_loading"
@@ -96,14 +102,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:gravity="end"
-                        android:textSize="@dimen/d_13"
-                        android:text="45%" />
+                        android:text="45%"
+                        android:textSize="@dimen/d_13" />
                 </LinearLayout>
 
                 <ImageView
                     android:id="@+id/iv_cancel"
-                    android:layout_width="@dimen/d_40"
-                    android:layout_height="@dimen/d_40"
+                    android:layout_width="46dp"
+                    android:layout_height="match_parent"
                     android:layout_marginRight="10dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"

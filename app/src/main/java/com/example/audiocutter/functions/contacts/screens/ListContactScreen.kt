@@ -13,15 +13,10 @@ import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.core.contact.ContactManagerImpl
 import com.example.audiocutter.databinding.ListContactScreenBinding
 import com.example.audiocutter.functions.contacts.adapters.ContactCallback
 import com.example.audiocutter.functions.contacts.objects.ContactItemView
 import com.example.audiocutter.functions.contacts.adapters.ListContactAdapter
-import kotlinx.android.synthetic.main.list_contact_screen.*
-import kotlinx.android.synthetic.main.list_contact_screen.pb_audio_cutter
-import kotlinx.android.synthetic.main.my_studio_fragment.*
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -88,7 +83,7 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
 
 
         lifecycleScope.launch {
-            /*delay(250)*/
+//            delay(1250)
             mListContactViewModel.scan()
         }
 
@@ -125,9 +120,9 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
         })
     }
 
-    override fun itemOnClick(phoneNumber: String, fileName: String) {
+    override fun itemOnClick(phoneNumber: String, ringtonePath: String) {
         hideKeyboard()
-        viewStateManager.contactScreenOnItemClicked(this, phoneNumber, fileName)
+        viewStateManager.contactScreenOnItemClicked(this, phoneNumber, ringtonePath)
     }
 
     override fun onPostDestroy() {

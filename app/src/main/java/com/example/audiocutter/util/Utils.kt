@@ -6,16 +6,17 @@ import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.Typeface
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.provider.OpenableColumns
 import android.text.TextUtils
-import android.util.Log
 import android.util.TypedValue
+import androidx.core.content.res.ResourcesCompat
+import com.example.audiocutter.R
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import java.io.File
@@ -94,7 +95,8 @@ object Utils {
 
     // lay ten bai hat theo uri
     fun getNameByUri(context: Context, uri: String): String {
-        Log.d("giangtd", "getNameByUri: uri: " + uri)
+
+        /*Log.d("giangtd", "getNameByUri: uri: " + uri)
         var fileName = ""
         try {
             val newUri = Uri.parse(uri)
@@ -114,7 +116,10 @@ object Utils {
         if (fileName.isEmpty()) {
             fileName = File(uri).name
         }
-        return fileName
+        return fileName*/
+
+        val r = RingtoneManager.getRingtone(context, Uri.parse(uri))
+        return r.getTitle(context)
     }
 
     // lay path bai hat theo uri
@@ -169,6 +174,28 @@ object Utils {
         return false
     }
 
+    fun checkUriIsExits(context: Context, uri: String): Boolean {       // kiem tra uri co ton tai khong
+
+        val projecttion = arrayOf(MediaStore.MediaColumns.DATA)
+        val cursor: Cursor? = context.contentResolver.query(Uri.parse(uri), projecttion, null, null, null)
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                val filePath = cursor.getString(0);
+
+                if (File(filePath).exists()) {
+                    return true // do something if it exists
+                } else {
+                    return false    // File was not found
+                }
+            } else {
+                return false        // Uri was ok but no entry found.
+            }
+            cursor.close()
+        } else {
+            return false    // content Uri was invalid or some other error occurred
+        }
+    }
+
     // convert ky tu co dau sang khong dau
     fun covertToString(value: String?): String? {
         try {
@@ -192,6 +219,18 @@ object Utils {
         return df.format(time)
     }
 
+    fun getWidthTextPlayController(str: String, context: Context, textSize: Int): Float {
+        val paint = Paint()
+        paint.textSize = convertDp2Px(textSize, context)
+        val typeface: Typeface? = ResourcesCompat.getFont(context, R.font.sanfrancisco_medium)
+        typeface?.let {
+            paint.typeface = typeface
+        }
+        val result = Rect()
+        paint.getTextBounds(str, 0, str.length, result)
+        return result.width().toFloat()
+    }
+
 
     fun convertDp2Px(dip: Int, context: Context): Float {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip.toFloat(), context.resources.displayMetrics)
@@ -205,27 +244,24 @@ object Utils {
         return duration.toLong()
     }
 
-     fun getAlphaNumericString(n: Int): String? {
+    fun getAlphaNumericString(n: Int): String? {
 
         // chose a Character random from this String
-        val AlphaNumericString = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "0123456789"
-                + "abcdefghijklmnopqrstuvxyz")
+        val AlphaNumericString = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "0123456789" + "abcdefghijklmnopqrstuvxyz")
 
         // create StringBuffer size of AlphaNumericString
         val sb = StringBuilder(n)
-         for (i in 0 until n) {
+        for (i in 0 until n) {
 
-             // generate a random number between
-             // 0 to AlphaNumericString variable length
-             val index = (AlphaNumericString.length
-                     * Math.random()).toInt()
+            // generate a random number between
+            // 0 to AlphaNumericString variable length
+            val index = (AlphaNumericString.length * Math.random()).toInt()
 
-             // add Character one by one in end of sb
-             sb.append(AlphaNumericString[index])
-         }
-         return sb.toString()
-     }
+            // add Character one by one in end of sb
+            sb.append(AlphaNumericString[index])
+        }
+        return sb.toString()
+    }
 
     private fun getAllFileName(folder: Folder): HashSet<String> {
         val folderPath = ManagerFactory.getAudioFileManager().getFolderPath(folder)
@@ -275,7 +311,7 @@ object Utils {
     }
 
 
-     fun createValidFileName(name: String, typeFile: Folder): String {
+    fun createValidFileName(name: String, typeFile: Folder): String {
         val random = Random()
         val fileNameHash = getAllFileName(typeFile)
         var fileName = ""

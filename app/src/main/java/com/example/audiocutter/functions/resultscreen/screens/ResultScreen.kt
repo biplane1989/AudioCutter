@@ -1,4 +1,5 @@
 package com.example.audiocutter.functions.resultscreen.screens
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
@@ -32,7 +33,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         const val CUT = 1
     }
 
-    private  var audioFile: AudioFile?=null
+    private var audioFile: AudioFile? = null
     private lateinit var dialogAppShare: DialogAppShare
     private var isDoubleDeleteClicked = true
     private var isLoadingDone = false
@@ -153,7 +154,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         super.onPostCreate(savedInstanceState)
 
         mResultViewModel = ViewModelProviders.of(this).get(ResultViewModel::class.java)
-        mResultViewModel.init(safeArg)
+
+        mResultViewModel.init(safeArg)      // nhan data tu fragment truyen sang va editor audio
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -244,9 +246,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                 }
             }
             binding.llShare -> {
-                audioFile =
-                    ManagerFactory.getAudioEditorManager()
-                        .getLatestConvertingItem()?.outputAudioFile
+                audioFile = ManagerFactory.getAudioEditorManager()
+                    .getLatestConvertingItem()?.outputAudioFile
                 ShowDialogShareFile()
 
             }
@@ -259,6 +260,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
             }
         }
     }
+
     private fun ShowDialogShareFile() {
         dialogAppShare = DialogAppShare(requireContext())
         dialogAppShare.setOnCallBack(this)

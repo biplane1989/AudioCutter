@@ -71,7 +71,7 @@
             android:layout_width="match_parent"
             android:layout_height="?android:actionBarSize"
             android:layout_marginBottom="2dp"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
@@ -116,7 +116,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#F6F6F6"
-            app:layout_constraintTop_toTopOf="@id/cl_select" />
+            app:layout_constraintTop_toBottomOf="@id/cl_default" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_select"
