@@ -18,7 +18,6 @@ interface PermissionRequest : Observer<AppPermission> {
     fun getLifeCycle(): Lifecycle
     fun requestPermission()
     fun init() {
-
         getLifeCycle().addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
             private fun onCreated() {
