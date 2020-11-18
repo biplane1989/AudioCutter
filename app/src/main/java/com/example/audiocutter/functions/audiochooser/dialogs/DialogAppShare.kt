@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
@@ -14,10 +15,11 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.functions.audiochooser.adapters.AppShareAdapter
 import com.example.audiocutter.functions.audiochooser.objects.ItemAppShare
 import com.example.audiocutter.functions.audiochooser.objects.ItemAppShareView
+import com.example.audiocutter.util.Utils
 
 class DialogAppShare(val mContext: Context) : BaseDialog(), AppShareAdapter.AppShareListener {
     private lateinit var listData: MutableList<ItemAppShareView>
-    private lateinit var listTmp: MutableList<ItemAppShare>
+    private lateinit var listTmp: List<ItemAppShare>
     private lateinit var rvApp: RecyclerView
     private lateinit var ivCancel: ImageView
     private lateinit var appShareAdapter: AppShareAdapter
@@ -48,6 +50,7 @@ class DialogAppShare(val mContext: Context) : BaseDialog(), AppShareAdapter.AppS
         initList()
 
     }
+
     override fun onStart() {
         super.onStart()
         dialog?.window?.setLayout(
@@ -57,23 +60,28 @@ class DialogAppShare(val mContext: Context) : BaseDialog(), AppShareAdapter.AppS
     }
 
 
-
     private fun initList() {
         appShareAdapter = AppShareAdapter(mContext)
         appShareAdapter.setOnCallBack(this)
         listData = mutableListOf()
-        listTmp = ManagerFactory.getAudioFileManager().getListApprQueryReceiveData()
+        listTmp = Utils.getListAppQueryReceiveData(requireContext())
         listTmp.forEach { it ->
             listData.add(ItemAppShareView(it, false))
         }
-        listData.add(
-            ItemAppShareView(
-                ItemAppShare(
-                    "ShowMore",
-                    mContext.resources.getDrawable(R.drawable.ic_more_app_share)
-                ), true
+
+        val btnMoreDrawable = ContextCompat.getDrawable(mContext, R.drawable.ic_more_app_share)
+        btnMoreDrawable?.let {
+            listData.add(
+                ItemAppShareView(
+                    ItemAppShare(
+                        "ShowMore",
+                        it,
+                        mContext.packageName
+                    ), true
+                )
             )
-        )
+        }
+
         appShareAdapter.submitList(listData)
 
         rvApp.adapter = appShareAdapter
@@ -81,7 +89,7 @@ class DialogAppShare(val mContext: Context) : BaseDialog(), AppShareAdapter.AppS
 
     override fun shareApp(position: Int) {
         if (!listData[position].isCheckButton) {
-            mCallBack.shareFilesToAppsDialog(position)
+            mCallBack.shareFilesToAppsDialog(listTmp.get(position).app)
         } else {
             mCallBack.shareFileAudioToAppDevices()
         }
@@ -89,7 +97,7 @@ class DialogAppShare(val mContext: Context) : BaseDialog(), AppShareAdapter.AppS
 
     interface DialogAppListener {
         fun shareFileAudioToAppDevices()
-        fun shareFilesToAppsDialog(position: Int)
+        fun shareFilesToAppsDialog(pkgName: String)
     }
 
 }

@@ -320,7 +320,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
             val path = FileUtils.getPath(requireContext(), intent.data!!)
             path?.let {
-                val audio = ManagerFactory.getAudioFileManager().buildAudioFileAvailable(path)
+                val audio = ManagerFactory.getAudioFileManager().buildAudioFile(path)
                 viewStateManager.onCuttingItemClicked(this, AudioCutterView(audio))
             }
         }

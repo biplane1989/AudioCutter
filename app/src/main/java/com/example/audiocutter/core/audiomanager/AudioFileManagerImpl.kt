@@ -41,7 +41,7 @@ import kotlin.collections.HashSet
 
 object AudioFileManagerImpl : AudioFileManager {
     private lateinit var listAllAudios: ArrayList<AudioFile>
-    private lateinit var intent: Intent
+
     private const val APP_FOLDER_NAME = "AudioCutter"
     private const val CUTTING_FOLDER_NAME = "cutter"
     private const val MERGING_FOLDER_NAME = "merger"
@@ -62,7 +62,6 @@ object AudioFileManagerImpl : AudioFileManager {
     private val SIZE_GB = SIZE_MB * SIZE_KB
     private val TAG = AudioFileManagerImpl::class.java.name
     lateinit var mContext: Context
-    private lateinit var listAppShares: MutableList<ItemAppShare>
     private var initialized = false
     private var _listAllAudioFile = MutableLiveData<AudioFileScans>()
     private lateinit var audioCutter: AudioCutter
@@ -75,7 +74,6 @@ object AudioFileManagerImpl : AudioFileManager {
     private val _listCuttingAudios = MutableLiveData<AudioFileScans>()
     private val _listMeringAudios = MutableLiveData<AudioFileScans>()
     private val _listMixingAudios = MutableLiveData<AudioFileScans>()
-    private var listResolver = mutableListOf<ResolveInfo>()
     private var backgroundScope = CoroutineScope(Dispatchers.Default)
     private lateinit var mediaMetadataRetriever: MediaMetadataRetriever
     override fun init(context: Context) {
@@ -88,9 +86,7 @@ object AudioFileManagerImpl : AudioFileManager {
             }
             initialized = true
             mContext = context.applicationContext
-            intent = Intent()
-            intent.action = Intent.ACTION_SEND
-            intent.type = "audio/*"
+
             scanAllFile()
             unRegisterContentObserve()
             registerContentObserVerDeleted()
@@ -323,20 +319,6 @@ object AudioFileManagerImpl : AudioFileManager {
         return null;
     }
 
-    override fun getInfoAudioFile(type: Int): String? {
-        try {
-            return mediaMetadataRetriever.extractMetadata(type)!!
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } catch (e: NullPointerException) {
-
-        } catch (e: NumberFormatException) {
-
-        }
-        return ""
-    }
-
     override fun getInfoAudioFile(file: File?, type: Int): String? {
         try {
             if (file != null) {
@@ -352,17 +334,6 @@ object AudioFileManagerImpl : AudioFileManager {
 
         }
         return ""
-    }
-
-
-    @SuppressLint("SimpleDateFormat")
-    override fun getDateCreatFile(file: File?): String? {
-        var lastDate: String = ""
-        if (file != null) {
-            val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-            lastDate = simpleDateFormat.format(Date(file.lastModified()))
-        }
-        return lastDate
     }
 
 
@@ -447,51 +418,13 @@ object AudioFileManagerImpl : AudioFileManager {
     }
 
 
-    override fun buildAudioFileAvailable(filePath: String): AudioFile {
+    override fun buildAudioFile(filePath: String): AudioFile {
         for (item in listAllAudios) {
             if (filePath == item.file.absolutePath) {
                 audioFile = item
             }
         }
         return audioFile
-    }
-
-    override fun buildAudioFileUnAvailable(filePath: String): AudioFile {
-        mediaMetadataRetriever.setDataSource(filePath)
-        val fileAudio = File(filePath.trim())
-        var mimeType = ""
-        val abSolutePath = fileAudio.absolutePath.toString()
-        val audioInfo = ManagerFactory.getAudioCutter().getAudioInfo(filePath)
-
-        val uri = getUriByPath(fileAudio)
-        val duration = audioInfo!!.duration
-        if (abSolutePath.contains(".")) {
-            mimeType =
-                abSolutePath.substring(abSolutePath.lastIndexOf("."), abSolutePath.length)
-        }
-        var bitrate =
-            audioInfo.bitRate
-        var name = fileAudio.name
-        name = if (name.contains(".")) {
-            (name.substring(0, name.lastIndexOf(".")))
-        } else {
-            name
-        }
-        return AudioFile(
-            fileAudio,
-            name,
-            fileAudio.length(),
-            bitrate,
-            duration!!.toLong(),
-            uri,
-            getBitmapByPath(filePath),
-            getInfoAudioFile(MediaMetadataRetriever.METADATA_KEY_TITLE),
-            getInfoAudioFile(MediaMetadataRetriever.METADATA_KEY_ALBUM),
-            getInfoAudioFile(MediaMetadataRetriever.METADATA_KEY_ARTIST),
-            getDateCreatFile(fileAudio),
-            getInfoAudioFile(MediaMetadataRetriever.METADATA_KEY_GENRE),
-            mimeType
-        )
     }
 
     class AudioFileObserver(handler: Handler?) : ContentObserver(handler) {
@@ -514,23 +447,6 @@ object AudioFileManagerImpl : AudioFileManager {
         mContext.contentResolver.unregisterContentObserver(audioFileObserver)
     }
 
-
-    override fun insertFileToMediastore(file: File): Boolean {
-        return try {
-            MediaScannerConnection.scanFile(
-                mContext,
-                arrayOf(file.absolutePath),
-                null
-            ) { s, uri ->
-                Log.d("insertFile", "on complete ${uri}  string $s")
-            }
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
-    }
-
     override fun getFolderPath(typeFile: Folder): String {
         createNecessaryFolders()
         var pathParent = ""
@@ -547,59 +463,6 @@ object AudioFileManagerImpl : AudioFileManager {
     }
 
 
-    override suspend fun saveFile(audioFile: AudioFile, typeFile: Folder): StateFile =
-        withContext(Dispatchers.Main) {
-            createNecessaryFolders()
-            val stat = Environment.getExternalStorageDirectory().path
-
-            Log.d(TAG, "saveFileToExternal: $stat")
-            val file = File(stat)
-            val totalSize = file.totalSpace / SIZE_MB
-            val availableSize = file.usableSpace / SIZE_MB
-            val freeSize = file.freeSpace / SIZE_MB
-            val currentSize = audioFile.file.readBytes().size / SIZE_MB
-
-            Log.d(
-                TAG,
-                "infoCapacity: total $totalSize  available  \n $availableSize \n  freesize $freeSize   \n filesize $currentSize"
-            )
-            if (!audioFile.file.isFile) {
-                StateFile.STATE_FILE_NOT_FOUND
-
-            } else if (availableSize + currentSize < totalSize) {
-
-                val pathParent: String
-                try {
-                    pathParent = when (typeFile) {
-                        Folder.TYPE_CUTTER -> "$APP_FOLDER_PATH/${CUTTING_FOLDER_NAME}"
-                        Folder.TYPE_MERGER -> "$APP_FOLDER_PATH/${MERGING_FOLDER_NAME}"
-                        Folder.TYPE_MIXER -> "$APP_FOLDER_PATH/${MIXING_FOLDER_NAME}"
-                    }
-                    Log.d(TAG, "saveFileToExternal:pathParent $pathParent")
-
-                    val dic = File(pathParent)
-                    Log.d(TAG, "saveFileToExternal: ${dic.exists()}   ")
-                    if (!dic.exists()) {
-                        dic.mkdirs()
-                    }
-                    val fileChild = File(pathParent, audioFile.fileName)
-                    val fout = FileOutputStream(fileChild)
-                    fout.write(audioFile.file.readBytes())
-                    fout.close()
-                    StateFile.STATE_SAVE_SUCCESS
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    Log.d(TAG, "saveFileToExternal: ${e.printStackTrace()} ")
-                    StateFile.STATE_SAVE_FAIL
-                }
-            } else {
-                StateFile.STATE_FULL_MEMORY
-            }
-        }
-
-
-
-
     override fun getListAudioFileByType(typeFile: Folder): LiveData<AudioFileScans> {
         return when (typeFile) {
             Folder.TYPE_MIXER -> {
@@ -612,66 +475,6 @@ object AudioFileManagerImpl : AudioFileManager {
                 _listMeringAudios
             }
         }
-    }
-
-    override fun getUriByPath(itemFile: File): Uri? {
-
-        val folder = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-        val projection = arrayOf(MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DATA)
-        val cursor: Cursor = mContext.contentResolver.query(
-            folder,
-            projection,
-            MediaStore.Audio.Media.DATA + "=?",
-            arrayOf(itemFile.path),
-            null
-        )!!
-        try {
-            if (cursor.moveToFirst()) {
-                uri = Uri.parse(
-                    folder.toString() + File.separator + cursor.getString(
-                        cursor.getColumnIndex(MediaStore.Audio.Media._ID)
-                    )
-                )
-            }
-            return uri
-        } finally {
-            cursor.close()
-        }
-    }
-
-    override fun shareFileAudio(audioFile: AudioFile): Boolean {
-        return try {
-            val intent = Intent()
-            intent.action = Intent.ACTION_SEND
-            intent.putExtra(Intent.EXTRA_STREAM, audioFile.uri)
-            intent.type = "audio/*"
-            mContext.startActivity(Intent.createChooser(intent, "choose a sharing app"))
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
-    }
-
-
-    override fun getListApprQueryReceiveData(): MutableList<ItemAppShare> {
-        listResolver = mContext.packageManager.queryIntentActivities(intent, 0)
-        Log.d(TAG, "getListApprQueryReceiveData: ${listResolver.size}")
-        listAppShares = ArrayList()
-        for (info in listResolver) {
-            val item = ItemAppShare(
-                info.loadLabel(mContext.packageManager).toString(),
-                info.loadIcon(mContext.packageManager)
-            )
-            listAppShares.add(item)
-        }
-        return listAppShares
-
-    }
-
-    override fun getListReceiveData(): MutableList<ResolveInfo> {
-        return mContext.packageManager.queryIntentActivities(intent, 0)
-
     }
 
     override fun reNameToFileAudio(
@@ -750,13 +553,6 @@ object AudioFileManagerImpl : AudioFileManager {
         }
 
         return result
-    }
-
-    override  fun openWithApp( uri: Uri) {
-        val intent = Intent()
-        intent.action = Intent.ACTION_VIEW
-        intent.setDataAndType(uri, "audio/*")
-        mContext.startActivity(intent)
     }
 
 

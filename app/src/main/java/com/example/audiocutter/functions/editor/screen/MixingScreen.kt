@@ -97,8 +97,8 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     @SuppressLint("ClickableViewAccessibility", "InflateParams")
     private fun initViews() {
 
-        audioFile1 = ManagerFactory.getAudioFileManager().buildAudioFileAvailable(safeArg.pathAudio1)
-        audioFile2 = ManagerFactory.getAudioFileManager().buildAudioFileAvailable(safeArg.pathAudio2)
+        audioFile1 = ManagerFactory.getAudioFileManager().buildAudioFile(safeArg.pathAudio1)
+        audioFile2 = ManagerFactory.getAudioFileManager().buildAudioFile(safeArg.pathAudio2)
         durAudio1 = ManagerFactory.getAudioFileManager()
             .getInfoAudioFile(audioFile1.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
             .toString()
