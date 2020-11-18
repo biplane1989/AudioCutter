@@ -27,7 +27,8 @@ import com.example.audiocutter.util.Utils
 import java.text.SimpleDateFormat
 
 
-class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener, DialogAppShare.DialogAppListener {
+class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
+    DialogAppShare.DialogAppListener {
     companion object {
         const val MIX = 3
         const val MER = 2
@@ -61,14 +62,16 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         isLoadingDone = true
         it?.let {
             context?.let { context ->
-                binding.tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(it.time), context)
-                    .toInt() + 15
+                binding.tvTimeLife.width =
+                    Utils.getWidthText(simpleDateFormat.format(it.time), context)
+                        .toInt() + 15
             }
 
             binding.tvTitleMusic.text = it.fileName
             binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
 
-            binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(it.time.toInt()))
+            binding.tvTimeTotal.text =
+                String.format("/%s", simpleDateFormat.format(it.time.toInt()))
             binding.tvInfoMusic.setText(convertAudioSizeToString(it))
         }
         val cancelDialog = childFragmentManager.findFragmentByTag(CancelDialog.TAG)
@@ -149,7 +152,11 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     }
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.result_screen, container, false)
         mResultViewModel.getPendingProcessLiveData()
             .observe(viewLifecycleOwner, pendingProcessObserver)
@@ -185,7 +192,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
         binding.sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
-                binding.tvTimeLife.text = simpleDateFormat.format(binding.sbMusic.progress)             // update time cho tvTimeLife khi keo seekbar
+                binding.tvTimeLife.text =
+                    simpleDateFormat.format(binding.sbMusic.progress)             // update time cho tvTimeLife khi keo seekbar
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
@@ -230,7 +238,11 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
             }
             binding.llRingtone -> {
                 if (mResultViewModel.setRingTone()) {
-                    Toast.makeText(requireContext(), "Set Ringtone Successful !", Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        requireContext(),
+                        "Set Ringtone Successful !",
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 } else {
                     Toast.makeText(requireContext(), "Set Ringtone Fail !", Toast.LENGTH_SHORT)
@@ -250,7 +262,11 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
             binding.llNotification -> {
                 if (mResultViewModel.setNotification()) {
-                    Toast.makeText(requireContext(), "Set Notification Successful !", Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        requireContext(),
+                        "Set Notification Successful !",
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 } else {
                     Toast.makeText(requireContext(), "Set Notification Fail !", Toast.LENGTH_SHORT)
@@ -264,8 +280,10 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
             }
             binding.llContact -> {
-                viewStateManager.resultScreenSetContactItemClicked(this, ManagerFactory.getAudioEditorManager()
-                    .getLatestConvertingItem()?.outputAudioFile?.file!!.absolutePath)
+                viewStateManager.resultScreenSetContactItemClicked(
+                    this, ManagerFactory.getAudioEditorManager()
+                        .getLatestConvertingItem()?.outputAudioFile?.file!!.absolutePath
+                )
             }
             binding.llOpenwith -> {
 
@@ -281,15 +299,14 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
     override fun shareFileAudioToAppDevices() {
         dialogAppShare.dismiss()
-        ManagerFactory.getAudioFileManager().shareFileAudio(audioFile!!)
+        Utils.shareFileAudio(requireContext(), audioFile!!)
     }
 
-    override fun shareFilesToAppsDialog(position: Int) {
+    override fun shareFilesToAppsDialog(pkgName: String) {
         val intent = Intent()
         intent.putExtra(Intent.EXTRA_STREAM, audioFile!!.uri)
         intent.type = "audio/*"
-        intent.`package` = ManagerFactory.getAudioFileManager()
-            .getListReceiveData()[position].activityInfo.packageName
+        intent.`package` = pkgName
         intent.action = Intent.ACTION_SEND
         startActivity(intent)
     }
@@ -309,7 +326,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         requireView().isFocusableInTouchMode = true
         requireView().requestFocus()
         requireView().setOnKeyListener { v, keyCode, event ->
-            if (event.action === KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+            if (event.action == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
                 if (!isLoadingDone) {
                     if (childFragmentManager.findFragmentByTag(CancelDialog.TAG) == null) {                     // xu ly double click button
                         ManagerFactory.getAudioEditorManager().getLatestConvertingItem()?.let {

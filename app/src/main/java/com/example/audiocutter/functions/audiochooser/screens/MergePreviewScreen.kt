@@ -23,7 +23,6 @@ import com.example.audiocutter.databinding.MergePreviewScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergePreviewAdapter
 import com.example.audiocutter.functions.audiochooser.dialogs.MergeDialog
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
-import com.example.audiocutter.functions.mystudio.dialog.DeleteDialog
 import com.example.audiocutter.ui.audiochooser.merge.MyItemTouchHelper
 import com.example.audiocutter.ui.audiochooser.merge.WrapContentLinearLayoutManager
 import com.example.core.core.AudioFormat
@@ -69,7 +68,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         for (item in listAudioPath) {
             listPath.add(item)
 
-            newListAudio.add(AudioCutterView(ManagerFactory.getAudioFileManager().buildAudioFileAvailable(item), PlayerState.IDLE, false, 0L, 0L, false))
+            newListAudio.add(AudioCutterView(ManagerFactory.getAudioFileManager().buildAudioFile(item), PlayerState.IDLE, false, 0L, 0L, false))
 
         }
 
