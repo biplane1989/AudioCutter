@@ -109,7 +109,7 @@
 //        return liveDataCut
 //    }
 //
-//    override fun buildAudioFile(filePath: String): AudioFile {
+//    override fun buildAudioFileAvailable(filePath: String): AudioFile {
 //        return AudioFile(File(filePath), "file_name1", 10000, 128)
 //    }
 //

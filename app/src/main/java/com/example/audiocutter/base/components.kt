@@ -203,6 +203,7 @@ abstract class BaseFragment : Fragment() {
         Toast.makeText(context, yourString, Toast.LENGTH_SHORT).show()
     }
 
+
     protected fun getBaseActivity(): BaseActivity? {
         if (activity != null) {
             return activity as BaseActivity
@@ -319,4 +320,3 @@ abstract class BaseDialog : DialogFragment() {
         }
     }
 }
-

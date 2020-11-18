@@ -33,7 +33,7 @@
 //    val file = File(Environment.getExternalStorageDirectory().toString() + "/Music/lonely.mp3")
 //    val audioFile = AudioFile(file, "T o m a t o", 100000, 128, uri = Uri.parse(file.absolutePath))
 //
-//    //    val audioFile = ManagerFactory.getAudioFileManager().buildAudioFile(file.absolutePath)
+//    //    val audioFile = ManagerFactory.getAudioFileManager().buildAudioFileAvailable(file.absolutePath)
 //    val cuttingConfig = CuttingConfig(1)
 //    val mixConfig = MixingConfig(1)
 //    val merConfig = MergingConfig(AudioFormat.MP3)
@@ -45,8 +45,8 @@
 //        setContentView(R.layout.activity_result_test)
 //        val audioPath1 = intent.getStringExtra(AUDIO_FILE_PATH_KEY1)!!
 //        val audioPath2 = intent.getStringExtra(AUDIO_FILE_PATH_KEY2)!!
-//        val audioFile1 = ManagerFactory.getAudioFileManager().buildAudioFile(audioPath1)
-//        val audioFile2 = ManagerFactory.getAudioFileManager().buildAudioFile(audioPath2)
+//        val audioFile1 = ManagerFactory.getAudioFileManager().buildAudioFileAvailable(audioPath1)
+//        val audioFile2 = ManagerFactory.getAudioFileManager().buildAudioFileAvailable(audioPath2)
 //        val mergingConfig = MergingConfig(AudioFormat.MP3)
 //        val outFile = File(Environment.getExternalStorageDirectory()
 //            .toString() + "/Music/apple")

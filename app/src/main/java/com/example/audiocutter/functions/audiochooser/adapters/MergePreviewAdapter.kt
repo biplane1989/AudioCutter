@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.audiochooser.adapters
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
@@ -10,18 +11,19 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
+import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerState
+import com.example.audiocutter.functions.audiochooser.event.OnItemTouchHelper
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
-import com.example.audiocutter.functions.audiochooser.event.OnItemTouchHelper
 
 class MergePreviewAdapter(val mContext: Context) :
     ListAdapter<AudioCutterView, MergePreviewAdapter.MergeChooseHolder>(
         MergerChooserAudioDiff()
     ), OnItemTouchHelper {
 
-    var listAudios = mutableListOf<AudioCutterView>()
+    //var listAudios = mutableListOf<AudioCutterView>()
     lateinit var mCallback: AudioMergeChooseListener
     lateinit var mTouchHelper: ItemTouchHelper
 
@@ -32,11 +34,9 @@ class MergePreviewAdapter(val mContext: Context) :
     override fun submitList(list: List<AudioCutterView>?) {
 
         if (list != null) {
-            listAudios = ArrayList(list)
-            super.submitList(listAudios)
+            super.submitList(ArrayList(list))
         } else {
-            listAudios = ArrayList()
-            super.submitList(listAudios)
+            super.submitList(ArrayList())
         }
     }
 
@@ -69,7 +69,16 @@ class MergePreviewAdapter(val mContext: Context) :
                     holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
                 }
                 PlayerState.IDLE -> {
-                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
+                 val bitmap =   itemAudioFile.audioFile.bitmap
+                    if(bitmap!=null){
+                        holder.ivController.setImageBitmap(bitmap)
+                    }else{
+                        val bm = BitmapFactory.decodeResource(
+                            AudioFileManagerImpl.mContext.resources,
+                            R.drawable.ic_audiocutter_play
+                        )
+                        holder.ivController.setImageBitmap(bm)
+                    }
                 }
             }
         }
@@ -121,7 +130,17 @@ class MergePreviewAdapter(val mContext: Context) :
                     pgAudio.visibility = View.GONE
                     waveView.visibility = View.INVISIBLE
                     pgAudio.resetView()
-                    ivController.setImageResource(R.drawable.ic_audiocutter_play)
+                    val bitmap =   itemAudioFile.audioFile.bitmap
+                    if(bitmap!=null){
+                        ivController.setImageBitmap(bitmap)
+                    }else{
+                        val bm = BitmapFactory.decodeResource(
+                            AudioFileManagerImpl.mContext.resources,
+                            R.drawable.ic_audiocutter_play
+                        )
+                        ivController.setImageBitmap(bm)
+                    }
+
                 }
             }
 
@@ -135,11 +154,11 @@ class MergePreviewAdapter(val mContext: Context) :
         }
 
         private fun deleteAudio() {
-            mCallback.deleteAudio(adapterPosition)
+            mCallback.deleteAudio( getItem(adapterPosition))
         }
 
         private fun controllerAudio() {
-            val itemAudio = listAudios[adapterPosition]
+            val itemAudio = getItem(adapterPosition)
             if (adapterPosition == -1) {
                 return
             }
@@ -166,14 +185,19 @@ class MergePreviewAdapter(val mContext: Context) :
             return true
         }
 
-        override fun onShowPress(p0: MotionEvent?) {
+        override fun onShowPress(motionEvent: MotionEvent?) {
         }
 
-        override fun onSingleTapUp(p0: MotionEvent?): Boolean {
+        override fun onSingleTapUp(motionEvent: MotionEvent?): Boolean {
             return false
         }
 
-        override fun onScroll(p0: MotionEvent?, p1: MotionEvent?, p2: Float, p3: Float): Boolean {
+        override fun onScroll(
+            motionEvent: MotionEvent?,
+            p1: MotionEvent?,
+            p2: Float,
+            p3: Float
+        ): Boolean {
             return false
         }
 
@@ -193,7 +217,7 @@ class MergePreviewAdapter(val mContext: Context) :
         fun play(pos: Int)
         fun pause(pos: Int)
         fun resume(pos: Int)
-        fun deleteAudio(pos: Int)
+        fun deleteAudio( fileName: AudioCutterView)
         fun moveItemAudio(prePos: Int, nextPos: Int)
     }
 

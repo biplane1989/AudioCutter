@@ -21,7 +21,6 @@ class SetAsDialog(val mContext: Context) : DialogFragment(), View.OnClickListene
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.DialogTitle)
-        isCancelable = false
     }
 
     override fun onCreateView(

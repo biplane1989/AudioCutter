@@ -72,7 +72,7 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
             ResultScreen.CUT -> {
                 if (arg.listAudioPath.size == 1) {
                     val audioFile = ManagerFactory.getAudioFileManager()
-                        .buildAudioFile(arg.listAudioPath[0])
+                        .buildAudioFileAvailable(arg.listAudioPath[0])
                     ManagerFactory.getAudioEditorManager().cutAudio(audioFile, arg.cuttingConfig!!)
                 }
             }
@@ -80,7 +80,7 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
                 if (arg.listAudioPath.size >= 2) {
                     val listAudio = ArrayList<AudioFile>()
                     for (item in arg.listAudioPath) {
-                        listAudio.add(ManagerFactory.getAudioFileManager().buildAudioFile(item))
+                        listAudio.add(ManagerFactory.getAudioFileManager().buildAudioFileAvailable(item))
                     }
                     ManagerFactory.getAudioEditorManager()
                         .mergeAudio(listAudio, arg.mergingConfig!!)
@@ -89,9 +89,9 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
             ResultScreen.MIX -> {
                 if (arg.listAudioPath.size == 2) {
                     val audioFile1 = ManagerFactory.getAudioFileManager()
-                        .buildAudioFile(arg.listAudioPath[0])
+                        .buildAudioFileAvailable(arg.listAudioPath[0])
                     val audioFile2 = ManagerFactory.getAudioFileManager()
-                        .buildAudioFile(arg.listAudioPath[1])
+                        .buildAudioFileAvailable(arg.listAudioPath[1])
                     ManagerFactory.getAudioEditorManager()
                         .mixAudio(audioFile1, audioFile2, arg.mixingConfig!!)
                 }

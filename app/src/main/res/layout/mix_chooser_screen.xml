@@ -37,7 +37,7 @@
                     android:hint="@string/search_hint_text"
                     android:paddingStart="40dp"
                     android:singleLine="true"
-                    android:visibility="gone">
+                    android:visibility="invisible">
 
                     <requestFocus />
                 </EditText>
@@ -93,15 +93,6 @@
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_audiocutter_search" />
 
-                <ImageView
-                    android:id="@+id/iv_audio_mixer_screen_file"
-                    android:layout_width="?actionBarSize"
-                    android:layout_height="?actionBarSize"
-                    android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@id/iv_mixer_screen_search"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_audiocutter_file" />
 
                 <ImageView
                     android:id="@+id/iv_mixer_screen_close"

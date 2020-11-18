@@ -90,9 +90,8 @@ class MergePreviewModel : BaseViewModel() {
         mListAudio.addAll(listData)
     }
 
-    fun removeItemAudio(pos: Int): List<AudioCutterView> {
-        val atPosDelete = mListAudio[pos]
-        mListAudio.remove(atPosDelete)
+    fun removeItemAudio(item: AudioCutterView): List<AudioCutterView> {
+        mListAudio.remove(item)
         return mListAudio
     }
 

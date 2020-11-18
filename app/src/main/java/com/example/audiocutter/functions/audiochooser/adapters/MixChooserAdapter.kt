@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.audiochooser.adapters
 
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
+import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.ui.audiochooser.cut.ProgressView
@@ -76,8 +78,15 @@ class MixChooserAdapter(val mContext: Context) :
                 }
                 PlayerState.IDLE -> {
 //                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
-                    itemAudioFile.audioFile.bitmap?.let {
-                        holder.ivController.setImageBitmap(it)
+                    val bitmap =   itemAudioFile.audioFile.bitmap
+                    if(bitmap!=null){
+                        holder.ivController.setImageBitmap(bitmap)
+                    }else{
+                        val bm = BitmapFactory.decodeResource(
+                            AudioFileManagerImpl.mContext.resources,
+                            R.drawable.ic_audiocutter_play
+                        )
+                        holder.ivController.setImageBitmap(bm)
                     }
                 }
             }
@@ -154,8 +163,15 @@ class MixChooserAdapter(val mContext: Context) :
                     waveView.visibility = View.INVISIBLE
                     pgAudio.resetView()
 //                    ivController.setImageResource(R.drawable.ic_audiocutter_play)
-                    itemAudioFile.audioFile.bitmap?.let {
-                        ivController.setImageBitmap(it)
+                    val bitmap =   itemAudioFile.audioFile.bitmap
+                    if(bitmap!=null){
+                        ivController.setImageBitmap(bitmap)
+                    }else{
+                        val bm = BitmapFactory.decodeResource(
+                            AudioFileManagerImpl.mContext.resources,
+                            R.drawable.ic_audiocutter_play
+                        )
+                        ivController.setImageBitmap(bm)
                     }
                 }
             }
@@ -172,8 +188,8 @@ class MixChooserAdapter(val mContext: Context) :
             val item = getItem(adapterPosition)
             when (p0.id) {
                 R.id.iv_controller_audio_recent -> controllerAudio()
-                R.id.ln_menu_recent -> mCallBack.chooseItemAudio(adapterPosition, item.isCheckChooseItem)
-                R.id.ln_item_audio_mixer_screen -> mCallBack.chooseItemAudio(adapterPosition, item.isCheckChooseItem)
+                R.id.ln_menu_recent -> mCallBack.chooseItemAudio(getItem(adapterPosition), item.isCheckChooseItem)
+                R.id.ln_item_audio_mixer_screen -> mCallBack.chooseItemAudio(getItem(adapterPosition), item.isCheckChooseItem)
             }
         }
 
@@ -205,7 +221,7 @@ class MixChooserAdapter(val mContext: Context) :
         fun play(pos: Int)
         fun pause(pos: Int)
         fun resume(pos: Int)
-        fun chooseItemAudio(pos: Int, rs: Boolean)
+        fun chooseItemAudio(item: AudioCutterView, rs: Boolean)
     }
 }
 
