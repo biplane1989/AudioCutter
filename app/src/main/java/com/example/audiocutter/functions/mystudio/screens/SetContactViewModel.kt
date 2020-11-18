@@ -56,7 +56,6 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
                 } else {
                     isEmptyStatus.postValue(true)
                 }
-
             } else {
                 loadingStatus.postValue(true)
             }
@@ -120,7 +119,6 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
             for (item in mListContact) {
                 val contact = item.copy()
                 contact.isSearch = true
-
                 mListContact.set(index, contact)
                 index++
             }

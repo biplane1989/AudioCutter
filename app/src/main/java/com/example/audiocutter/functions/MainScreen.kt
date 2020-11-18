@@ -92,6 +92,8 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                 onFlashCallItemClicked()
             }
             binding.settingButton -> {
+
+                viewStateManager.mainScreenOnItemClickSetting(this)
             }
             binding.advertisementButton -> {
             }

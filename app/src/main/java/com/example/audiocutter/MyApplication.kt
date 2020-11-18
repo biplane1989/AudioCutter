@@ -22,12 +22,13 @@ class MyApplication : Application() {
     companion object {
         val CHANNEL_ID = "Audio Notification"
         val CHANNEL_NAME = "Audio Cutter"
+        val DESCRIPTION = "description"
     }
 
     private fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
-            channel.description = "Audio Cutter"
+            channel.description = DESCRIPTION
             channel.enableLights(true)
             channel.enableVibration(true)
             channel.lightColor = Color.GREEN

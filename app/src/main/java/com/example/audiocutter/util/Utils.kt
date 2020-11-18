@@ -114,7 +114,7 @@ object Utils {
     fun getPathByUri(context: Context, uri: String): String? {
         var audioTitle = ""
         val proj = arrayOf(MediaStore.Audio.Media.DATA)
-        var audioCursor: Cursor? =
+        val audioCursor: Cursor? =
             context.contentResolver.query(Uri.parse(uri), proj, null, null, null)
         try {
             if (audioCursor != null) {
@@ -183,20 +183,13 @@ object Utils {
             try {
                 if (cursor.moveToFirst()) {
                     val filePath = cursor.getString(0);
-
-                    if (File(filePath).exists()) {
-                        return true // do something if it exists
-                    } else {
-                        return false    // File was not found
-                    }
+                    return File(filePath).exists()
                 } else {
                     return false        // Uri was ok but no entry found.
                 }
             } finally {
                 cursor.close()
             }
-
-
         } else {
             return false    // content Uri was invalid or some other error occurred
         }
@@ -225,6 +218,7 @@ object Utils {
     }
 
 
+    @SuppressLint("SimpleDateFormat")
     fun convertTime(time: Int): String {
         if (time < 0) return "00:00"
         val df = SimpleDateFormat("mm:ss")

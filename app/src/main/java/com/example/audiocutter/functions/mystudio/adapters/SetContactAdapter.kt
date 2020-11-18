@@ -25,7 +25,7 @@ interface SetContactCallback {
 
 class SetContactAdapter(context: Context?, var contactCallback: SetContactCallback) : ListAdapter<SetContactItemView, RecyclerView.ViewHolder>(SetContactDiffCallBack()) {
 
-    var mContext: Context? = context
+    private var mContext: Context? = context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == SECTION_VIEW) {

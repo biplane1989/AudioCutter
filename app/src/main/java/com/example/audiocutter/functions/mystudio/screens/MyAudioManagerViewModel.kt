@@ -9,7 +9,7 @@ import com.example.audiocutter.functions.mystudio.objects.ActionData
 
 class MyAudioManagerViewModel : BaseViewModel() {
 
-    val actionLiveData: MutableLiveData<ActionData> = MutableLiveData()
+    private val actionLiveData: MutableLiveData<ActionData> = MutableLiveData()
 
     fun getAction(): LiveData<ActionData> {
         return actionLiveData

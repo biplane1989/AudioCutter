@@ -11,6 +11,7 @@ import android.provider.ContactsContract
 import android.text.TextUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.ContactManager
 import com.example.audiocutter.functions.contacts.objects.GetContactResult
 import com.example.audiocutter.objects.ContactItem
@@ -65,7 +66,7 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
                     }
                     if (cursor.moveToFirst()) {
                         do {
-//                            delay(1000)
+                            delay(1000)
                             if (!isActive || scanningState == ScanningState.WAITING_FOR_CANCELING) {
                                 break
                             }
@@ -130,12 +131,12 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
                                         ringtoneFilePath = ringtone
                                         filename = Utils.getNameByUri(appContext, ringtoneFilePath)
                                     } else {
-                                        filename = "Default ringtone"
+                                        filename = appContext.getString(R.string.contact_managerimpl_default_ringtone)
                                         ringtoneFilePath = ""
                                         isRingtoneDefault = true
                                     }
                                 } else {
-                                    filename = "Default ringtone"
+                                    filename = appContext.getString(R.string.contact_managerimpl_default_ringtone)
                                     ringtoneFilePath = ""
                                     isRingtoneDefault = true
                                 }
@@ -157,7 +158,6 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
                     scanningState = ScanningState.IDLE
                 }
             }
-
         }
     }
 
@@ -179,7 +179,6 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
     fun unRegisterContentObserve() {
         appContext.contentResolver.unregisterContentObserver(contactObserver)
     }
-
 
     override fun setup() {
         registerContentObserVerDeleted()

@@ -27,12 +27,12 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:gravity="start"
                 android:id="@+id/tv_contacts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="14dp"
                 android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:gravity="start"
                 android:text="@string/list_contact_title"
                 android:textColor="#2E3041"
                 android:textSize="18dp"
@@ -76,10 +76,10 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
-                android:layout_marginLeft="20dp"
                 android:id="@+id/edt_search"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
                 android:backgroundTint="#FFFFFF"
                 android:hint="Search..."
                 app:layout_constraintBottom_toBottomOf="@id/iv_search_close"
@@ -109,8 +109,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_contact"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="visible">
+            android:layout_height="match_parent">
 
             <ProgressBar
                 android:id="@+id/pb_audio_cutter"

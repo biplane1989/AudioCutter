@@ -15,9 +15,9 @@ import java.io.File
 
 object RingtonManagerImpl : RingtonManager {
 
-    val IS_ALARM = 1
-    val IS_NOTIFICATION = 2
-    val IS_RINGTONE = 3
+    private val IS_ALARM = 1
+    private val IS_NOTIFICATION = 2
+    private val IS_RINGTONE = 3
     lateinit var mContext: Context
 
     fun init(context: Context) {
@@ -47,41 +47,6 @@ object RingtonManagerImpl : RingtonManager {
         if (uri != null) {
             RingtoneManager.setActualDefaultRingtoneUri(mContext, RingtoneManager.TYPE_RINGTONE, uri)
             return true
-        }
-        return false
-    }
-
-    override fun setRingToneWithContactNumber(audioFile: AudioFile, contactNumber: String): Boolean {
-        val values = ContentValues()
-        val resolver: ContentResolver = mContext.getContentResolver()
-        val uri = getOrNew(audioFile.file.absolutePath, IS_RINGTONE)
-        if (uri != null) {
-            val lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, contactNumber)
-            val projection = arrayOf(ContactsContract.Contacts._ID, ContactsContract.Contacts.LOOKUP_KEY)
-            val cursor: Cursor? = mContext.getContentResolver()
-                .query(lookupUri, projection, null, null, null)
-
-            if (cursor != null) {
-                try {
-                    if (cursor.moveToFirst()) {
-                        do {
-                            // Get the contact lookup Uri
-                            val contactId = cursor.getLong(0)
-                            val lookupKey = cursor.getString(1)
-                            val contactUri = ContactsContract.Contacts.getLookupUri(contactId, lookupKey)
-                            val uriString = uri.toString()
-                            values.put(ContactsContract.Contacts.CUSTOM_RINGTONE, uriString)
-                            resolver.update(contactUri, values, null, null).toLong()
-                        } while (cursor.moveToNext())
-
-                    } else {
-                        return false
-                    }
-                } finally {
-                    if (!cursor.isClosed) cursor.close()
-                }
-                return true
-            }
         }
         return false
     }
@@ -161,7 +126,6 @@ object RingtonManagerImpl : RingtonManager {
     override fun setRingtoneDefault(uri: String, contactNumber: String): Boolean {
         val values = ContentValues()
         val resolver: ContentResolver = mContext.getContentResolver()
-//        if (uri != null) {
 
         Log.d("giangtd", "uri ringtone: " + uri)
         val lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, contactNumber)
@@ -188,7 +152,6 @@ object RingtonManagerImpl : RingtonManager {
             }
             return true
         }
-//        }
         return false
     }
 

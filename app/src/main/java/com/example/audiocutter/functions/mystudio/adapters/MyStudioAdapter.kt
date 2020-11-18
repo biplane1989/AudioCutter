@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.mystudio.adapters
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.media.MediaMetadataRetriever
 import android.util.Log
@@ -44,7 +45,8 @@ interface AudioCutterScreenCallback {
 class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallback) : ListAdapter<AudioFileView, RecyclerView.ViewHolder>(MusicDiffCallBack()) {
 
     private val TAG = "giangtd"
-    private var listAudios = ArrayList<AudioFileView>()
+
+    @SuppressLint("SimpleDateFormat")
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -65,10 +67,8 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
     override fun submitList(list: List<AudioFileView>?) {
         if (list != null) {
-            listAudios = ArrayList(list)
             super.submitList(ArrayList(list))
         } else {
-            listAudios = ArrayList()
             super.submitList(null)
         }
 
@@ -85,13 +85,14 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     }
 
     // khi chi thay doi 1 truong trong data
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
         super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
         } else {
             if (holder is SuccessViewHolder) {
-                val successViewHolder = holder as SuccessViewHolder
+//                val successViewHolder = holder as SuccessViewHolder
                 val newItem = payloads.firstOrNull() as AudioFileView
 
                 when (newItem.itemLoadStatus.deleteState) {
@@ -135,6 +136,9 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                         holder.tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
                         holder.sbMusic.progress = 0
                     }
+                    else -> {
+                        //nothing
+                    }
                 }
             } else {
                 val loadingViewHolder = holder as LoadingViewHolder
@@ -166,6 +170,8 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         val ivItemDelete: ImageView = itemView.findViewById(R.id.iv_item_delete)
         val llAudioHeader: LinearLayout = itemView.findViewById(R.id.ll_audio_item_header)
         val llItem: LinearLayout = itemView.findViewById(R.id.ll_item)
+
+        @SuppressLint("SetTextI18n")
         fun onBind() {
             val audioFileView = getItem(adapterPosition)
             var bitrate = audioFileView.audioFile.bitRate / 1000
@@ -179,7 +185,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 tvInfo.setText(((audioFileView.audioFile.size) / (1024)).toString() + " KB" + " | " + bitrate + "kb/s")
             }
 
-            tvTotal.text = "/" + simpleDateFormat.format(audioFileView.audioFile.time?.toInt())
+            tvTotal.text = "/" + simpleDateFormat.format(audioFileView.audioFile.time.toInt())
 
             if (audioFileView.isExpanded) {
                 llPlayMusic.visibility = View.VISIBLE
@@ -221,6 +227,9 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
                     sbMusic.progress = 0
                 }
+                else -> {
+                    //nothing
+                }
             }
 
             sbMusic.max = audioFileView.itemLoadStatus.duration
@@ -256,7 +265,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         }
 
         override fun onClick(view: View) {
-            val audioFileView = listAudios.get(adapterPosition)
+            val audioFileView = getItem(adapterPosition)
             when (view.id) {
                 R.id.ll_audio_item_header -> {
                     when (audioFileView.itemLoadStatus.deleteState) {
@@ -285,6 +294,9 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                                 audioCutterScreenCallback.stop(adapterPosition)
                             }
                         }
+                        else -> {
+                            //nothing
+                        }
                     }
                 }
                 R.id.iv_pause_play_music -> {
@@ -297,6 +309,9 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                         }
                         PlayerState.PLAYING -> {
                             audioCutterScreenCallback.pause(adapterPosition)
+                        }
+                        else -> {
+                            //nothing
                         }
                     }
                 }
@@ -316,6 +331,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         val ivCancel: ImageView = itemView.findViewById(R.id.iv_cancel)
         val tvWait: TextView = itemView.findViewById(R.id.tv_wait)
 
+        @SuppressLint("SetTextI18n")
         fun onBind() {
             val loadingItem = getItem(adapterPosition)
 
@@ -333,6 +349,9 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     pbLoading.progress = loadingItem.percent
                     tvLoading.text = loadingItem.percent.toString() + "%"
                 }
+                else -> {
+                    //nothing
+                }
             }
 
             tvTitle.setText(loadingItem.audioFile.fileName)
@@ -341,7 +360,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         }
 
         override fun onClick(view: View) {
-            val loadingItem = listAudios.get(adapterPosition)
+            val loadingItem = getItem(adapterPosition)
             when (view.id) {
                 R.id.iv_cancel -> {
                     audioCutterScreenCallback.cancelLoading(loadingItem.id)

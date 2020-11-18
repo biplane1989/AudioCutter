@@ -38,7 +38,7 @@ interface MainScreenViewStateManager {
         }
     }
 
-    fun mainScreenOnMyAudioItemClicked(baseFragment: BaseFragment, typeAudio: Int?= null) {
+    fun mainScreenOnMyAudioItemClicked(baseFragment: BaseFragment, typeAudio: Int? = null) {
         if (getViewStateMutable().getLastState() == ViewStateScreen.HOME_SCREEN) {
             getViewStateMutable().pushViewState(ViewStateScreen.MY_STUDIO_SCREEN)
 
@@ -47,6 +47,13 @@ interface MainScreenViewStateManager {
                 bundle.putInt(Constance.TYPE_AUDIO, typeAudio)
             }
             baseFragment.findNavController().navigate(R.id.go_to_my_studio_screen, bundle)
+        }
+    }
+
+    fun mainScreenOnItemClickSetting(baseFragment: BaseFragment) {
+        if (getViewStateMutable().getLastState() == ViewStateScreen.HOME_SCREEN) {
+            getViewStateMutable().pushViewState(ViewStateScreen.SETTING_SCREEN)
+            baseFragment.findNavController().navigate(R.id.main_go_to_setting_screen)
         }
     }
 }

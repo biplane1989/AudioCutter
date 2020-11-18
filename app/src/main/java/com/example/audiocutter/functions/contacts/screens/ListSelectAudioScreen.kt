@@ -35,16 +35,16 @@ import kotlinx.coroutines.launch
 
 
 class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.OnClickListener {
-    val TAG = "giangtd"
-    val safeArg: ListSelectAudioScreenArgs by navArgs()
-    lateinit var mListSelectAudioViewModel: ListSelectAudioViewModel
-    lateinit var mListSelectAdapter: ListSelectAdapter
-    val REQ_CODE_PICK_SOUNDFILE = 1990
-    var positionSelect = -1
-    lateinit var binding: ListContactSelectScreenBinding
+    private val TAG = "giangtd"
+    private val safeArg: ListSelectAudioScreenArgs by navArgs()
+    private lateinit var mListSelectAudioViewModel: ListSelectAudioViewModel
+    private lateinit var mListSelectAdapter: ListSelectAdapter
+    private val REQ_CODE_PICK_SOUNDFILE = 1990
+    private var positionSelect = -1
+    private lateinit var binding: ListContactSelectScreenBinding
 
     // observer data
-    val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
+    private val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
 
         if (listAudio != null) {
             mListSelectAdapter.submitList(ArrayList(listAudio))
@@ -177,9 +177,11 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             }
             binding.btnSave -> {
                 if (mListSelectAudioViewModel.setRingtone(safeArg.phoneNumber)) {
-                    Toast.makeText(context, "Set Ringtone Success !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
+                        .show()
                 } else {
-                    Toast.makeText(context, "Set Ringtone Failure !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
+                        .show()
                 }
                 requireActivity().onBackPressed()
             }
@@ -198,7 +200,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
                 intent.type = "audio/*"
 //                intent.type = "audio/mp3"
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                startActivityForResult(Intent.createChooser(intent, "Select a File "), REQ_CODE_PICK_SOUNDFILE)
+                startActivityForResult(Intent.createChooser(intent, getString(R.string.list_select_audio_screen_open_file_title)), REQ_CODE_PICK_SOUNDFILE)
             }
             binding.backButton -> {
                 requireActivity().onBackPressed()
@@ -213,9 +215,11 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
             path?.let {
                 if (mListSelectAudioViewModel.setRingtoneWithUri(safeArg.phoneNumber, path)) {
-                    Toast.makeText(context, "Set Ringtone Success !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
+                        .show()
                 } else {
-                    Toast.makeText(context, "Set Ringtone Failure !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }

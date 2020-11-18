@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.mystudio.screens
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -26,10 +27,10 @@ import kotlinx.android.synthetic.main.my_studio_screen.*
 
 class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickListener {
     private lateinit var binding: MyStudioScreenBinding
-    val TAG = "giangtd"
-    var isDeleteClicked = true
-    var tabPosition = -1
-    lateinit var myAudioManagerViewModel: MyAudioManagerViewModel
+    private val TAG = "giangtd"
+    private var isDeleteClicked = true
+    private var tabPosition = -1
+    private lateinit var myAudioManagerViewModel: MyAudioManagerViewModel
     private val safeArg: MyAudioManagerScreenArgs by navArgs()
 
 
@@ -127,6 +128,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     }
 
     // enable thanh tiêu đề của tablayout
+    @SuppressLint("ClickableViewAccessibility")
     fun setEnabledTablayout(isEnable: Boolean) {
         val tabLayout = binding.tabLayout.getChildAt(0) as LinearLayout
         for (i in 0 until tabLayout.childCount) {

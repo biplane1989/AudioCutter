@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.mystudio.dialog
 
+import android.annotation.SuppressLint
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.view.View
@@ -50,6 +51,7 @@ class InfoDialog : BaseDialog() {
         })
     }
 
+    @SuppressLint("SimpleDateFormat", "SetTextI18n")
     fun getData() {
         val simpleDateFormat = SimpleDateFormat("mm:ss")
 

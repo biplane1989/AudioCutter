@@ -136,9 +136,7 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
     }
 
     fun seekToAudio(cusorPos: Int) {
-//        runOnBackground {
         audioPlayer.seek(cusorPos)
-//        }
     }
 
     fun getPlayerInfo(): LiveData<PlayerInfo> {
@@ -164,17 +162,6 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
             return ManagerFactory.getRingtoneManager().setNotificationSound(it)
         }
         return false
-    }
-
-    fun share() {
-
-    }
-
-    fun setContact() {
-    }
-
-    fun openWith() {
-
     }
 
     override fun onCleared() {

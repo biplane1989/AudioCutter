@@ -24,18 +24,19 @@ import kotlin.collections.ArrayList
 class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(application) {
 
     private val mContext = getApplication<Application>().applicationContext
-    var isPlayingStatus = false
-    val TAG = "giangtd"
 
-    var isSeekBarStatus = false         // trang thai seekbar co dang duoc keo hay khong
+    //    var isPlayingStatus = false
+    private val TAG = "giangtd"
+
+    private var isSeekBarStatus = false         // trang thai seekbar co dang duoc keo hay khong
 
     private val audioPlayer = ManagerFactory.newAudioPlayer()
 
     private var mListAudioFileView = ArrayList<SelectItemView>()
     private val mAudioMediatorLiveData = MediatorLiveData<ArrayList<SelectItemView>>()
 
-    var loadingStatus: MutableLiveData<Boolean> = MutableLiveData()
-    var isEmptyStatus: MutableLiveData<Boolean> = MutableLiveData()
+    private var loadingStatus: MutableLiveData<Boolean> = MutableLiveData()
+    private var isEmptyStatus: MutableLiveData<Boolean> = MutableLiveData()
 
     fun getLoadingStatus(): LiveData<Boolean> {
         return loadingStatus
@@ -150,7 +151,6 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         runOnBackground {
             audioPlayer.play(mListAudioFileView.get(position).audioFile)
         }
-        isPlayingStatus = true
     }
 
     fun pauseAudio() {
@@ -259,7 +259,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
             for (audio in mListAudioFileView) {
                 if (audio.isSelect) {
                     return ManagerFactory.getRingtoneManager()
-                        .setRingToneWithContactNumber(audio.audioFile, phoneNumber)
+                        .setRingToneWithContactNumberandFilePath(audio.audioFile.file.absolutePath, phoneNumber)
                 }
             }
         }
@@ -267,7 +267,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     }
 
     fun setRingtoneWithUri(phoneNumber: String, uri: String): Boolean {
-        if (phoneNumber != null && uri != null) {
+        if (phoneNumber != "" && uri != "") {
             return ManagerFactory.getRingtoneManager()
                 .setRingToneWithContactNumberAndUri(uri, phoneNumber)
         }

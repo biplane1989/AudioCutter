@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.contacts.adapters
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.media.MediaMetadataRetriever
 import android.view.LayoutInflater
@@ -36,6 +37,8 @@ interface SelectAudioScreenCallback {
 
 class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback) : ListAdapter<SelectItemView, ListSelectAdapter.ViewHolder>(SelectAudioDiffCallBack()) {
     private val TAG = "giangtd"
+
+    @SuppressLint("SimpleDateFormat")
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -82,6 +85,9 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                         holder.tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
                         holder.sbMusic.progress = 0
                     }
+                    else -> {
+                        //nothing
+                    }
                 }
                 if (newItem.isSelect) {
                     holder.ivSelect.setImageResource(R.drawable.list_contact_select)
@@ -124,6 +130,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         val ivSelect: ImageView = itemView.findViewById(R.id.iv_select)
         val cvCarview: CardView = itemView.findViewById(R.id.cv_default)
 
+        @SuppressLint("SetTextI18n")
         fun bind() {
             val selectItemView = getItem(adapterPosition)
 
@@ -181,6 +188,9 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                         tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
                         sbMusic.progress = 0
                     }
+                    else -> {
+                        //nothing
+                    }
                 }
 
                 sbMusic.max = selectItemView.selectItemStatus.duration
@@ -231,6 +241,9 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                         }
                         PlayerState.PLAYING -> {
                             selectAudioScreenCallback.pause()
+                        }
+                        else -> {
+                            //nothing
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.resultscreen.screens
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
@@ -27,8 +28,7 @@ import com.example.audiocutter.util.Utils
 import java.text.SimpleDateFormat
 
 
-class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
-    DialogAppShare.DialogAppListener {
+class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener, DialogAppShare.DialogAppListener {
     companion object {
         const val MIX = 3
         const val MER = 2
@@ -37,13 +37,13 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
     private var audioFile: AudioFile? = null
     private lateinit var dialogAppShare: DialogAppShare
-    private var isDoubleDeleteClicked = true
     private var isLoadingDone = false
     private val safeArg: ResultScreenArgs by navArgs()
     private val TAG = "giangtd"
     private lateinit var binding: ResultScreenBinding
     private lateinit var mResultViewModel: ResultViewModel
-    private var dialog: CancelDialog? = null
+
+    @SuppressLint("SimpleDateFormat")
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
     val processDoneObserver = Observer<AudioFile> {         // observer trang thai done
@@ -62,16 +62,14 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         isLoadingDone = true
         it?.let {
             context?.let { context ->
-                binding.tvTimeLife.width =
-                    Utils.getWidthText(simpleDateFormat.format(it.time), context)
-                        .toInt() + 15
+                binding.tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(it.time), context)
+                    .toInt() + 15
             }
 
             binding.tvTitleMusic.text = it.fileName
             binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
 
-            binding.tvTimeTotal.text =
-                String.format("/%s", simpleDateFormat.format(it.time.toInt()))
+            binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(it.time.toInt()))
             binding.tvInfoMusic.setText(convertAudioSizeToString(it))
         }
         val cancelDialog = childFragmentManager.findFragmentByTag(CancelDialog.TAG)
@@ -89,6 +87,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         binding.btnCancel.visibility = View.VISIBLE
 
     }
+
+    @SuppressLint("SetTextI18n")
     val processingObserver = Observer<ConvertingItem> {     // observer trang thai processing
 
         binding.btnOrigin.visibility = View.VISIBLE
@@ -129,6 +129,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     }
 
     var isSeekBarStatus = false
+
+    @SuppressLint("SetTextI18n")
     val playInfoObserver = Observer<PlayerInfo> { playInfo ->       // observer info play music
 
         if (!isSeekBarStatus) {
@@ -147,16 +149,15 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                 PlayerState.PLAYING -> {
                     binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_pause)
                 }
+                else -> {
+                    //nothing
+                }
             }
         }
     }
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.result_screen, container, false)
         mResultViewModel.getPendingProcessLiveData()
             .observe(viewLifecycleOwner, pendingProcessObserver)
@@ -192,8 +193,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
         binding.sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
-                binding.tvTimeLife.text =
-                    simpleDateFormat.format(binding.sbMusic.progress)             // update time cho tvTimeLife khi keo seekbar
+                binding.tvTimeLife.text = simpleDateFormat.format(binding.sbMusic.progress)             // update time cho tvTimeLife khi keo seekbar
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
@@ -238,38 +238,31 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
             }
             binding.llRingtone -> {
                 if (mResultViewModel.setRingTone()) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Set Ringtone Successful !",
-                        Toast.LENGTH_SHORT
-                    )
+                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
                         .show()
                 } else {
-                    Toast.makeText(requireContext(), "Set Ringtone Fail !", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
                         .show()
                 }
             }
             binding.llAlarm -> {
 
                 if (mResultViewModel.setAlarm()) {
-                    Toast.makeText(requireContext(), "Set Alarm Successful !", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_alarm_successful), Toast.LENGTH_SHORT)
                         .show()
                 } else {
-                    Toast.makeText(requireContext(), "Set Alarm Fail !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_alarm_fail), Toast.LENGTH_SHORT)
+                        .show()
                 }
 
             }
 
             binding.llNotification -> {
                 if (mResultViewModel.setNotification()) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Set Notification Successful !",
-                        Toast.LENGTH_SHORT
-                    )
+                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_notification_successful), Toast.LENGTH_SHORT)
                         .show()
                 } else {
-                    Toast.makeText(requireContext(), "Set Notification Fail !", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_notification_fail), Toast.LENGTH_SHORT)
                         .show()
                 }
             }
@@ -280,10 +273,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
             }
             binding.llContact -> {
-                viewStateManager.resultScreenSetContactItemClicked(
-                    this, ManagerFactory.getAudioEditorManager()
-                        .getLatestConvertingItem()?.outputAudioFile?.file!!.absolutePath
-                )
+                viewStateManager.resultScreenSetContactItemClicked(this, ManagerFactory.getAudioEditorManager()
+                    .getLatestConvertingItem()?.outputAudioFile?.file!!.absolutePath)
             }
             binding.llOpenwith -> {
 

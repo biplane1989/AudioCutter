@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.my_studio_dialog_set_as.*
 
 class SetAsDialog : BaseDialog() {
 
-    var typeSet: Int = 0
+    private var typeSet: Int = 0
 
     companion object {
         val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
