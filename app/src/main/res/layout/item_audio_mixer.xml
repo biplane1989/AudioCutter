@@ -66,7 +66,7 @@
                     android:fontFamily="@font/sanfranciscodisplay_regular"
                     android:gravity="bottom"
                     android:text="@string/_2_1_mb_default"
-                    android:textSize="@dimen/d_13" />
+                    android:textSize="@dimen/d_14" />
 
                 <View
                     android:layout_width="0.5dp"
@@ -82,7 +82,7 @@
                     android:fontFamily="@font/sanfranciscodisplay_regular"
                     android:gravity="bottom"
                     android:text="@string/_128kb_s_default"
-                    android:textSize="@dimen/d_13" />
+                    android:textSize="@dimen/d_14" />
             </TableRow>
 
         </LinearLayout>

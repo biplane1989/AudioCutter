@@ -80,7 +80,7 @@
                     android:layout_marginTop="@dimen/d_5"
                     android:orientation="vertical"
                     android:paddingHorizontal="@dimen/d_16"
-                    android:paddingTop="@dimen/d_13"
+                    android:paddingTop="@dimen/d_14"
                     android:paddingBottom="@dimen/d_24">
 
                     <TextView
@@ -116,7 +116,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sanfranciscodisplay_bold"
-                            android:paddingLeft="@dimen/d_13"
+                            android:paddingLeft="@dimen/d_14"
                             android:text="Get Premium"
                             android:textColor="@color/colorWhite"
                             android:textSize="@dimen/d_16" />

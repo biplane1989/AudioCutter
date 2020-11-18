@@ -42,6 +42,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     }
     var currentPos = -1
 
+    @SuppressLint("SetTextI18n")
     private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
         if (listMusic == null) {
             binding.rvMerge.visibility = View.INVISIBLE
@@ -75,7 +76,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
                     }
                 }
             }
-            binding.tvCountFileMer.text = "${count} file"
+            binding.tvCountFileMer.text = "$count ${resources.getString(R.string.filecount)}"
         }
 
 

@@ -129,4 +129,12 @@
     <string name="version_settingscreen">Version</string>
     <string name="tv_ok_settings">OK</string>
     <string name="tv_cancel_settings">CANCEL</string>
+    <string name="filename_exist">The file name already exists</string>
+    <string name="name_mustbenull">Name must be null</string>
+    <string name="vietnam_text">Tiếng việt</string>
+    <string name="english_text">english</string>
+    <string name="kbps">kb/s</string>
+    <string name="megabyte">Mb</string>
+    <string name="kilobyte">Kb</string>
+    <string name="filecount">file</string>
 </resources>

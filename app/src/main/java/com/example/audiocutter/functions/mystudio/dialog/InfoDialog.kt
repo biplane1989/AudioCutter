@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.mystudio.dialog
 
+import android.annotation.SuppressLint
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.view.View
@@ -50,6 +51,7 @@ class InfoDialog : BaseDialog() {
         })
     }
 
+    @SuppressLint("SetTextI18n")
     fun getData() {
         val simpleDateFormat = SimpleDateFormat("mm:ss")
 
@@ -107,7 +109,7 @@ class InfoDialog : BaseDialog() {
             tv_album.text = UNKNOWN
         }
         if (!bitRate.isNullOrEmpty()) {
-            tv_birate.text = (bitRate.toInt() / 10000).toString() + " kb/s"
+            tv_birate.text = (bitRate.toInt() / 10000).toString() + resources.getString(R.string.kbps)
         } else {
             tv_birate.text = UNKNOWN
         }

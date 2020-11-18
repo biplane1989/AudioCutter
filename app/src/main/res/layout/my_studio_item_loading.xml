@@ -114,7 +114,7 @@
                         android:layout_marginLeft="10dp"
                         android:gravity="end"
                         android:text="45%"
-                        android:textSize="@dimen/d_13" />
+                        android:textSize="@dimen/d_14" />
                 </LinearLayout>
 
                 <ImageView

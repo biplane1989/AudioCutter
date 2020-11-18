@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.resultscreen.screens
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
@@ -68,7 +69,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
             }
 
             binding.tvTitleMusic.text = it.fileName
-            binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
+            binding.tvInfoMusic.text =
+                String.format("%s ${resources.getString(R.string.kbps)}", it.bitRate.toString())
 
             binding.tvTimeTotal.text =
                 String.format("/%s", simpleDateFormat.format(it.time.toInt()))
@@ -89,6 +91,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         binding.btnCancel.visibility = View.VISIBLE
 
     }
+
+    @SuppressLint("SetTextI18n")
     val processingObserver = Observer<ConvertingItem> {     // observer trang thai processing
 
         binding.btnOrigin.visibility = View.VISIBLE
@@ -99,11 +103,10 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         binding.llProgressbar.visibility = View.VISIBLE
         binding.llPlayMusic.visibility = View.GONE
         binding.btnCancel.visibility = View.VISIBLE
-
         binding.pbLoading.progress = it.percent
         binding.tvLoading.text = it.percent.toString() + "%"
         binding.tvTitleMusic.text = it.getFileName()
-        binding.tvInfoMusic.text = it.bitRate.toString() + "kb/s"
+        binding.tvInfoMusic.text = it.bitRate.toString() + resources.getString(R.string.kbps)
 
         isLoadingDone = false
     }

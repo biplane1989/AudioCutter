@@ -9,13 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.*
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.IViewModel
 import com.example.audiocutter.core.audiomanager.Folder
-import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MyStudioFragmentBinding
 import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
 import com.example.audiocutter.functions.mystudio.Constance
@@ -26,10 +26,6 @@ import com.example.audiocutter.functions.mystudio.objects.ActionData
 import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
-import kotlinx.android.synthetic.main.my_studio_fragment.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener,
@@ -282,7 +278,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                         this,
                         typeAudio,
                         audioFile.file.absolutePath,
-                        audioFile.mimeType!!
+                        audioFile.fileName
                     )
                     dialog.show(childFragmentManager, RenameDialog.TAG)
                 }
@@ -346,8 +342,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             else -> Folder.TYPE_MIXER
         }
         myStudioViewModel.renameAudio(newName, typeFolder, filePath)
-
-
     }
 
     // hanlder linterner on dialog set as
