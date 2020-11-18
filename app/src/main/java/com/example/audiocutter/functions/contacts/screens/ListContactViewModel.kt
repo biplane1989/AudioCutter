@@ -34,15 +34,14 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
 
     fun scan() {
         runOnBackground {
-//            loadingStatus.postValue(true)
-//            delay(2000)
+            loadingStatus.postValue(true)
             contactManager.scanContact()
         }
     }
 
     fun getData(): LiveData<List<ContactItemView>> {
         listContactItem.addSource(contactManager.getListContact()) { contacts ->
-//            loadingStatus.postValue(true)
+            loadingStatus.postValue(true)
             if (contacts.completed) {
                 loadingStatus.postValue(false)
                 if (contacts.listContactItem.size > 0) {
@@ -52,7 +51,6 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
                         newListContacItemView.add(ContactItemView("", "", item, false))
                     }
                     mListContact = getHeaderListLatter(newListContacItemView)
-//                    listContactItem.postValue(getHeaderListLatter(newListContacItemView))
                     listContactItem.postValue(mListContact)
                 } else {
                     isEmptyStatus.postValue(true)
@@ -111,20 +109,17 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
         return listContact
     }
 
-/*    fun searchContact(data: String): ArrayList<ContactItemView> {
-        listContactItem.value?.let {
-            val newListContact = ArrayList<ContactItemView>()
-            for (contact in it) {
-                if (contact.contactHeader.toUpperCase(Locale.ROOT)
-                        .contains(data.toUpperCase(Locale.ROOT))) {
-                    newListContact.add(contact)
-                }
-            }
-//            listContactItem.postValue(newListContact)
-            return newListContact
+    fun refesherData() {
+        var index = 0
+        for (item in mListContact) {
+            val newItem = item.copy()
+            newItem.isSearch = true
+
+            mListContact.set(index, newItem)
+            index++
         }
-        return ArrayList()
-    }*/
+        listContactItem.postValue(mListContact)
+    }
 
     fun searchContact(data: String) {
         if (data.equals("")) {

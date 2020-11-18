@@ -32,6 +32,7 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
     private val listContactObserver = Observer<List<ContactItemView>> { listContact ->
         if (listContact != null) {
             listContactAdapter.submitList(ArrayList(listContact))
+//            mListContactViewModel.searchContact("")     // search va truyen sang man hinh selectScreen, sau do back lai thi load lai list
         }
     }
 
@@ -65,9 +66,7 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
         binding = DataBindingUtil.inflate(inflater, R.layout.list_contact_screen, container, false)
 
         runOnUI {
-//            listContactAdapter.submitList(mListContactViewModel.searchContact(""))          // search va truyen sang man hinh selectScreen, sau do back lai thi load lai list
-            mListContactViewModel.searchContact("")
-            // loi observe hoi lai tai
+            mListContactViewModel.refesherData()
             mListContactViewModel.getIsEmptyStatus()
                 .observe(viewLifecycleOwner, isEmptyStatusObserver)
 
@@ -84,10 +83,10 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
         mListContactViewModel = ViewModelProviders.of(this).get(ListContactViewModel::class.java)
         listContactAdapter = ListContactAdapter(context, this)
 
-//        lifecycleScope.launch {
+        lifecycleScope.launch {
 //            delay(1250)
             mListContactViewModel.scan()
-//        }
+        }
 
         mListContactViewModel.getData()
             .observe(this, listContactObserver)          // loi observe hoi lai tai
@@ -110,15 +109,7 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
             }
 
             override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
-//                if (mListContactViewModel.searchContact(textChange.toString()).size <= 0) {
-//                    binding.clContact.visibility = View.GONE
-//                    binding.clNoContact.visibility = View.VISIBLE
-//                } else {
-//                    binding.clContact.visibility = View.VISIBLE
-//                    binding.clNoContact.visibility = View.GONE
-//                    listContactAdapter.submitList(mListContactViewModel.searchContact(textChange.toString()))
                 mListContactViewModel.searchContact(textChange.toString())
-//                }
             }
         })
     }
@@ -127,6 +118,7 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
         hideKeyboard()
         viewStateManager.contactScreenOnItemClicked(this, phoneNumber, ringtonePath)
     }
+
 
     override fun onPostDestroy() {
         super.onPostDestroy()
