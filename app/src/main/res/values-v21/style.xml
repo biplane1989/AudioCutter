@@ -13,17 +13,20 @@
     <style name="DialogConvert" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:windowSoftInputMode">stateHidden|adjustResize</item>
     </style>
-
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/medium_fade_in</item>
+        <item name="android:windowExitAnimation">@anim/medium_fade_out</item>
+    </style>
     <style name="DialogGray" parent="@style/Theme.AppCompat.Light">
         <item name="windowNoTitle">true</item>
         <item name="android:windowFrame">@null</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowBackground">@color/colorControlHighlight</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowTitleStyle">@null</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
-        <item name="android:windowSoftInputMode">stateHidden|adjustResize</item>
+        <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
 
     </style>
 
