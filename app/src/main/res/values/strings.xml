@@ -60,7 +60,7 @@
     <string name="my_studio_delete_fail">Delete Fail !</string>
     <string name="list_contact_select_btn_save">SAVE</string>
     <string name="list_contact_select_bottom_title">Select File</string>
-    <string name="list_contact_select_title">Select</string>
+    <string name="list_contact_select_title">Select Ringtone</string>
     <string name="list_contact_notification_no_contact">No Contact</string>
     <string name="list_contact_notification_no_result">No Result</string>
     <string name="list_contact_title">Contacts</string>

@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -15,8 +16,11 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.util.Util
 import com.example.audiocutter.R
+import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
+import com.example.audiocutter.functions.contacts.adapters.ListSelectAdapter
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.objects.DeleteState
@@ -42,14 +46,14 @@ interface AudioCutterScreenCallback {
     fun onStartSeekBar()
 }
 
-class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallback) : ListAdapter<AudioFileView, RecyclerView.ViewHolder>(MusicDiffCallBack()) {
+class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallback, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<AudioFileView, AudioCutterAdapter.MyStudioHolder>(MusicDiffCallBack()) {
 
     private val TAG = "giangtd"
 
     @SuppressLint("SimpleDateFormat")
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyStudioHolder {
         return if (viewType == SUCCESS_VIEW) {
             SuccessViewHolder(LayoutInflater.from(parent.context)
                 .inflate(R.layout.my_studio_screen_item, parent, false))
@@ -65,6 +69,17 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         }
     }
 
+    override fun onViewAttachedToWindow(holder: MyStudioHolder) {       // khi view dc hien thi tren man hinh
+        super.onViewAttachedToWindow(holder)
+        holder.onViewAttachedToWindow()
+
+    }
+
+    override fun onViewDetachedFromWindow(holder: MyStudioHolder) {     // khi view bi destroy tren man hinh
+        super.onViewDetachedFromWindow(holder)
+        holder.onViewDetachedFromWindow()
+    }
+
     override fun submitList(list: List<AudioFileView>?) {
         if (list != null) {
             super.submitList(ArrayList(list))
@@ -74,7 +89,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MyStudioHolder, position: Int) {
         if (SUCCESS_VIEW == getItemViewType(position)) {
             val successViewHolder = holder as SuccessViewHolder
             successViewHolder.onBind()
@@ -86,7 +101,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
     // khi chi thay doi 1 truong trong data
     @SuppressLint("SetTextI18n")
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+    override fun onBindViewHolder(holder: MyStudioHolder, position: Int, payloads: MutableList<Any>) {
         super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
@@ -155,8 +170,67 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         }
     }
 
-    inner class SuccessViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner abstract class MyStudioHolder(itemView: View) : RecyclerView.ViewHolder(itemView), LifecycleOwner {
+        /* val sbMusic: SeekBar = itemView.findViewById(R.id.sb_music)
+         val tvTimeLife: TextView = itemView.findViewById(R.id.tv_time_life)
+         private var isSeekBarStatus = false       */  // trang thai seekbar co dang duoc keo hay khong
 
+        private var lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)      // tao 1 lifecycleRegistry
+
+        override fun getLifecycle(): Lifecycle {                                                // gan lifecycleRegistry tu dinh nghia cho class
+            return lifecycleRegistry
+        }
+
+        /*private fun updatePlayInfor(playerInfo: PlayerInfo) {
+
+            playerState = playerInfo.playerState
+          *//*  sbMusic.max = playerInfo.duration
+            sbMusic.progress = playerInfo.posision
+            tvTimeLife.text = simpleDateFormat.format(playerInfo.posision)
+
+
+            when (playerInfo.playerState) {
+                PlayerState.PLAYING -> {
+                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
+                }
+                PlayerState.PAUSE -> {
+                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
+
+                }
+                PlayerState.IDLE -> {
+                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
+                    tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
+                    sbMusic.progress = 0
+                }
+                else -> {
+                    //nothing
+                }
+            }*//*
+        }*/
+        open fun onViewAttachedToWindow() {                                                // gan view vao trong windows do minh tu viet
+            lifecycleRegistry.currentState = Lifecycle.State.STARTED                  // livedata o trang thai is Active thi moi hoat dong STARTED or RESUMED
+            /*  audioPlayer.getPlayerInfo().observe(this, object : Observer<PlayerInfo> {
+                  override fun onChanged(playerInfo: PlayerInfo) {
+                      playerInfo.currentAudio?.let {
+                          if (!isSeekBarStatus && adapterPosition != -1) {                            // khi summitlist: ham onViewDetachedFromWindow() vua chay va  audioPlayer.getPlayerInfo().observe cung chay nen adapterPosition = -1 (chua kip lay data)
+                              val audioFileView = getItem(adapterPosition)
+                              if (audioFileView.getFilePath() == it.getFilePath()) {
+                                  updatePlayInfor(playerInfo)
+                              }
+                          }
+                      }
+                  }
+              })*/
+        }
+
+        open fun onViewDetachedFromWindow() {                                                // go~ view ra khoi windows do minh tu viet
+            lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        }
+    }
+
+    inner class SuccessViewHolder(itemView: View) : MyStudioHolder(itemView), View.OnClickListener {
+        val sbMusic: SeekBar = itemView.findViewById(R.id.sb_music)
+        val tvTimeLife: TextView = itemView.findViewById(R.id.tv_time_life)
         val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar)
         val ivSetting: ImageView = itemView.findViewById(R.id.iv_setting)
         val tvTitle: TextView = itemView.findViewById(R.id.tv_title_music)
@@ -164,12 +238,61 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
         val llPlayMusic: LinearLayout = itemView.findViewById(R.id.ll_play_music)
         val ivPausePlay: ImageView = itemView.findViewById(R.id.iv_pause_play_music)
-        val sbMusic: SeekBar = itemView.findViewById(R.id.sb_music)
-        val tvTimeLife: TextView = itemView.findViewById(R.id.tv_time_life)
+
         val tvTotal: TextView = itemView.findViewById(R.id.tv_time_total)
         val ivItemDelete: ImageView = itemView.findViewById(R.id.iv_item_delete)
         val llAudioHeader: LinearLayout = itemView.findViewById(R.id.ll_audio_item_header)
         val llItem: LinearLayout = itemView.findViewById(R.id.ll_item)
+
+        var playerState: PlayerState = PlayerState.IDLE
+        private var isSeekBarStatus = false      // trang thai seekbar co dang duoc keo hay khong
+
+        private fun updatePlayInfor(playerInfo: PlayerInfo) {
+
+            playerState = playerInfo.playerState
+            sbMusic.max = playerInfo.duration
+            sbMusic.progress = playerInfo.posision
+            tvTimeLife.text = simpleDateFormat.format(playerInfo.posision)
+
+
+            when (playerInfo.playerState) {
+                PlayerState.PLAYING -> {
+                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
+                }
+                PlayerState.PAUSE -> {
+                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
+
+                }
+                PlayerState.IDLE -> {
+                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
+                    tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
+                    sbMusic.progress = 0
+                }
+                else -> {
+                    //nothing
+                }
+            }
+        }
+
+        override fun onViewAttachedToWindow() {
+            super.onViewAttachedToWindow()
+            audioPlayer.getPlayerInfo().observe(this, object : Observer<PlayerInfo> {
+                override fun onChanged(playerInfo: PlayerInfo) {
+                    playerInfo.currentAudio?.let {
+                        if (!isSeekBarStatus && adapterPosition != -1) {                            // khi summitlist: ham onViewDetachedFromWindow() vua chay va  audioPlayer.getPlayerInfo().observe cung chay nen adapterPosition = -1 (chua kip lay data)
+                            val audioFileView = getItem(adapterPosition)
+                            if (audioFileView.getFilePath() == it.getFilePath()) {
+                                updatePlayInfor(playerInfo)
+                            }
+                        }
+                    }
+                }
+            })
+        }
+
+        override fun onViewDetachedFromWindow() {
+            super.onViewDetachedFromWindow()
+        }
 
         @SuppressLint("SetTextI18n")
         fun onBind() {
@@ -214,7 +337,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
             }
 
-            when (audioFileView.itemLoadStatus.playerState) {
+           /* when (audioFileView.itemLoadStatus.playerState) {
                 PlayerState.PLAYING -> {
                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
                 }
@@ -230,16 +353,16 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 else -> {
                     //nothing
                 }
-            }
+            }*/
 
-            sbMusic.max = audioFileView.itemLoadStatus.duration
+//            sbMusic.max = audioFileView.itemLoadStatus.duration
 
             tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(audioFileView.audioFile.time), itemView.context)
                 .toInt() + 15
 
-            tvTimeLife.text = simpleDateFormat.format(audioFileView.itemLoadStatus.currPos)
+//            tvTimeLife.text = simpleDateFormat.format(audioFileView.itemLoadStatus.currPos)
 
-            sbMusic.progress = audioFileView.itemLoadStatus.currPos
+//            sbMusic.progress = audioFileView.itemLoadStatus.currPos
 
             llAudioHeader.setOnClickListener(this)
 
@@ -323,7 +446,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         }
     }
 
-    inner class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class LoadingViewHolder(itemView: View) : MyStudioHolder(itemView), View.OnClickListener {
 
         val pbLoading: ProgressBar = itemView.findViewById(R.id.pb_loading)
         val tvTitle: TextView = itemView.findViewById(R.id.tv_title_music)

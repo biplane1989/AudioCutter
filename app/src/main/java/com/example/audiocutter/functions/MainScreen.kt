@@ -179,9 +179,7 @@ class MainScreen : BaseFragment(), View.OnClickListener {
     }
 
     private fun onFlashCallItemClicked() {
-
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -229,6 +227,4 @@ class MainScreen : BaseFragment(), View.OnClickListener {
         contactPermissionRequest.init()
         writeSettingPermissionRequest.init()
     }
-
-
 }

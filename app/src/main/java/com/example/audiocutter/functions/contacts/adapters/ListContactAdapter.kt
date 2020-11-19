@@ -83,31 +83,23 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 val itemViewHolder = holder as ItemViewHolder
                 val newItem = payloads.firstOrNull() as ContactItemView
 
-                if (newItem.isSearch) {
-                    newItem.contactItem.thumb?.let {
-                        Glide.with(mContext!!).load(it)
-                            .transition(DrawableTransitionOptions.withCrossFade()).dontAnimate()
-                            .into(itemViewHolder.ivAvatar)
-                    }
+                newItem.contactItem.thumb?.let {
+                    Glide.with(mContext!!).load(it)
+                        .transition(DrawableTransitionOptions.withCrossFade()).dontAnimate()
+                        .into(itemViewHolder.ivAvatar)
+                }
 
-                    if (!newItem.contactItem.isRingtoneDefault) {
-                        itemViewHolder.tvRingtoneDefault.visibility = View.GONE
-                        itemViewHolder.cvDefault.visibility = View.GONE
-                        itemViewHolder.tvRingtone.visibility = View.VISIBLE
-                        itemViewHolder.tvRingtone.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)  // get name song by uri    | sua contactItem = newItem
-                    } else {
-                        itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
-                        itemViewHolder.cvDefault.visibility = View.VISIBLE
-                        itemViewHolder.tvRingtone.visibility = View.GONE
-                        itemViewHolder.tvRingtoneDefault.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
-
-                    }
-
-                    itemViewHolder.itemView.visibility = View.VISIBLE
-                    itemViewHolder.itemView.setLayoutParams(RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+                if (!newItem.contactItem.isRingtoneDefault) {
+                    itemViewHolder.tvRingtoneDefault.visibility = View.GONE
+                    itemViewHolder.cvDefault.visibility = View.GONE
+                    itemViewHolder.tvRingtone.visibility = View.VISIBLE
+                    itemViewHolder.tvRingtone.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)  // get name song by uri    | sua contactItem = newItem
                 } else {
-                    itemViewHolder.itemView.visibility = View.GONE
-                    itemViewHolder.itemView.setLayoutParams(RecyclerView.LayoutParams(0, 0))
+                    itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
+                    itemViewHolder.cvDefault.visibility = View.VISIBLE
+                    itemViewHolder.tvRingtone.visibility = View.GONE
+                    itemViewHolder.tvRingtoneDefault.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
+
                 }
             }
         }
@@ -124,36 +116,28 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
         fun onBind() {
             val contentItem = getItem(adapterPosition)
 
-            if (contentItem.isSearch) {
-                tvName.text = contentItem.contactItem.name
+            tvName.text = contentItem.contactItem.name
 
-                contentItem.contactItem.thumb?.let {
-                    Glide.with(itemView).load(it)
-                        .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
-                        .into(ivAvatar)
-                }
-
-                if (!contentItem.contactItem.isRingtoneDefault) {
-
-                    tvRingtoneDefault.visibility = View.GONE
-                    cvDefault.visibility = View.GONE
-                    tvRingtone.visibility = View.VISIBLE
-                    tvRingtone.text = contentItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
-                } else {
-                    tvRingtoneDefault.visibility = View.VISIBLE
-                    cvDefault.visibility = View.VISIBLE
-                    tvRingtone.visibility = View.GONE
-                    tvRingtoneDefault.text = contentItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
-                }
-
-                clItemContact.setOnClickListener(this)
-                itemView.visibility = View.VISIBLE
-                itemView.setLayoutParams(RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
-            } else {
-                itemView.visibility = View.GONE
-                itemView.setLayoutParams(RecyclerView.LayoutParams(0, 0))
+            contentItem.contactItem.thumb?.let {
+                Glide.with(itemView).load(it)
+                    .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
+                    .into(ivAvatar)
             }
 
+            if (!contentItem.contactItem.isRingtoneDefault) {
+
+                tvRingtoneDefault.visibility = View.GONE
+                cvDefault.visibility = View.GONE
+                tvRingtone.visibility = View.VISIBLE
+                tvRingtone.text = contentItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
+            } else {
+                tvRingtoneDefault.visibility = View.VISIBLE
+                cvDefault.visibility = View.VISIBLE
+                tvRingtone.visibility = View.GONE
+                tvRingtoneDefault.text = contentItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
+            }
+
+            clItemContact.setOnClickListener(this)
         }
 
         override fun onClick(view: View?) {
@@ -173,15 +157,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
 
         fun onBind() {
             val headerItem = getItem(adapterPosition)
-
-            if (headerItem.isSearch) {
-                tvHeader.text = headerItem.contactHeader.get(0).toUpperCase().toString()
-                itemView.visibility = View.VISIBLE
-                itemView.setLayoutParams(RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
-            } else {
-                itemView.visibility = View.GONE
-                itemView.setLayoutParams(RecyclerView.LayoutParams(0, 0))
-            }
+            tvHeader.text = headerItem.contactHeader.get(0).toUpperCase().toString()
         }
     }
 

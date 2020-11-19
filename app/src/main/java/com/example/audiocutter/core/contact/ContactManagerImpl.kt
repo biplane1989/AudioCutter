@@ -66,7 +66,7 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
                     }
                     if (cursor.moveToFirst()) {
                         do {
-                            delay(1000)
+//                            delay(1000)
                             if (!isActive || scanningState == ScanningState.WAITING_FOR_CANCELING) {
                                 break
                             }

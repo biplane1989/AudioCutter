@@ -32,7 +32,6 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
     private val listContactObserver = Observer<List<ContactItemView>> { listContact ->
         if (listContact != null) {
             listContactAdapter.submitList(ArrayList(listContact))
-//            mListContactViewModel.searchContact("")     // search va truyen sang man hinh selectScreen, sau do back lai thi load lai list
         }
     }
 
@@ -56,7 +55,7 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
         }
     }
 
-    fun init() {
+    private fun init() {
         binding.rvListContact.layoutManager = LinearLayoutManager(context)
         binding.rvListContact.setHasFixedSize(true)
         binding.rvListContact.adapter = listContactAdapter

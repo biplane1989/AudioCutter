@@ -31,8 +31,8 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
     private lateinit var binding: MyStudioContactScreenBinding
 
     private val TAG = "giangtd4"
-    lateinit var listContactAdapter: SetContactAdapter
-    lateinit var mListContactViewModel: SetContactViewModel
+    private lateinit var listContactAdapter: SetContactAdapter
+    private lateinit var mListContactViewModel: SetContactViewModel
     private val safeArg: SetContactScreenArgs by navArgs()      // truyen du lieu qua navigation
 
     companion object {
@@ -49,7 +49,7 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
     }
 
     // observer data
-    val listContactObserver = Observer<List<SetContactItemView>> { listContact ->
+    private val listContactObserver = Observer<List<SetContactItemView>> { listContact ->
         if (listContact != null) {
             listContactAdapter.submitList(ArrayList(listContact))
         }
@@ -86,7 +86,7 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
         }
     }
 
-    fun init() {
+    private fun init() {
         binding.rvListContact.layoutManager = LinearLayoutManager(context)
         binding.rvListContact.setHasFixedSize(true)
         binding.rvListContact.adapter = listContactAdapter

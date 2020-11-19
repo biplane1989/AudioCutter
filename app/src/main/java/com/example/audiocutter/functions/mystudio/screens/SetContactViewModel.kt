@@ -3,11 +3,13 @@ package com.example.audiocutter.functions.mystudio.screens
 import android.app.Application
 import android.content.Context
 import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.functions.mystudio.objects.SetContactItemView
 import com.example.audiocutter.objects.ContactItem
 import com.example.audiocutter.util.Utils
@@ -22,10 +24,13 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
 
     private var loadingStatus: MutableLiveData<Boolean> = MutableLiveData()
     private var isEmptyStatus: MutableLiveData<Boolean> = MutableLiveData()
-    private val listContactItem = MediatorLiveData<List<SetContactItemView>>()
-    private val isSelectItem = MutableLiveData<Boolean>()
+
+    private val mContactMediatorLivedata = MediatorLiveData<List<SetContactItemView>>()
 
     private var mListContact = ArrayList<SetContactItemView>()
+    private var mListSearch = ArrayList<SetContactItemView>()
+
+    private val isSelectItem = MutableLiveData<Boolean>()
 
     init {
         isSelectItem.postValue(false)
@@ -39,7 +44,7 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
     }
 
     fun getData(): LiveData<List<SetContactItemView>> {
-        listContactItem.addSource(contactManager.getListContact()) { contacts ->
+        mContactMediatorLivedata.addSource(contactManager.getListContact()) { contacts ->
             if (contacts.completed) {
                 loadingStatus.postValue(false)
                 if (contacts.listContactItem.size > 0) {
@@ -49,7 +54,7 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
                         newListContacItemView.add(SetContactItemView("", "", item, false))
                     }
                     val listContact = getHeaderListLatter(newListContacItemView)
-                    listContactItem.postValue(listContact)
+                    mContactMediatorLivedata.postValue(listContact)
                     for (item in listContact) {
                         mListContact.add(item)
                     }
@@ -60,7 +65,7 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
                 loadingStatus.postValue(true)
             }
         }
-        return listContactItem
+        return mContactMediatorLivedata
     }
 
     fun getLoadingStatus(): LiveData<Boolean> {
@@ -114,57 +119,72 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
     }
 
     fun searchContact(data: String) {
-        if (data.equals("")) {
-            var index = 0
+        var index = 0                   // dong bo hoa mListSearch va mListContact
+        if (mListSearch.size > 0) {
             for (item in mListContact) {
-                val contact = item.copy()
-                contact.isSearch = true
-                mListContact.set(index, contact)
+                for (searchItem in mListSearch) {
+                    if (TextUtils.equals(item.contactItem.phoneNumber, searchItem.contactItem.phoneNumber) && TextUtils.equals(item.searchHeader, searchItem.searchHeader) && item.isHeader == searchItem.isHeader) {
+                        mListContact.set(index, searchItem)
+                        break
+                    }
+                }
                 index++
             }
+        }
+        mListSearch.clear()
+        if (data.equals("")) {
+            mContactMediatorLivedata.postValue(mListContact)
         } else {
-            var index = 0
             for (item in mListContact) {
-                val contact = item.copy()
                 if (item.searchHeader.toUpperCase(Locale.ROOT)
                         .contains(data.toUpperCase(Locale.ROOT))) {
-                    contact.isSearch = true
-                } else {
-                    contact.isSearch = false
+                    mListSearch.add(item)
                 }
-                mListContact.set(index, contact)
-                index++
             }
+            mContactMediatorLivedata.postValue(mListSearch)
         }
 
-        isEmptyStatus.postValue(true)
-        for (item in mListContact) {
-            if (item.isSearch) {
+        if (mListSearch.size > 0) {
+            isEmptyStatus.postValue(false)
+        } else {
+            if (data.equals("")) {
                 isEmptyStatus.postValue(false)
+            } else {
+                isEmptyStatus.postValue(true)
             }
         }
-        listContactItem.postValue(mListContact)
     }
 
     fun updateIsSelectItem(phoneNumber: String) {
+        var newContactList = ArrayList<SetContactItemView>()
+        if (mListSearch.size > 0) {
+            newContactList = mListSearch
+
+            for (item in mListContact) {    // khi la listSearch thi reset lai cho mListContact
+                item.isSelect = false
+            }
+
+        } else {
+            newContactList = mListContact
+        }
 
         var index = 0
-        for (item in mListContact) {
+        for (item in newContactList) {
             if (TextUtils.equals(item.contactItem.phoneNumber, phoneNumber)) {
                 val newContact = item.copy()
                 newContact.isSelect = true
-                mListContact.set(index, newContact)
+                newContactList.set(index, newContact)
                 isSelectItem.postValue(true)
 
             } else {
                 val newContact = item.copy()
                 newContact.isSelect = false
-                mListContact.set(index, newContact)
+                newContactList.set(index, newContact)
             }
             index++
         }
 
-        listContactItem.postValue(mListContact)
+        mContactMediatorLivedata.postValue(newContactList)
     }
 
     fun setRingtoneForContact(filePath: String): Boolean {
@@ -177,26 +197,26 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
         return false
     }
 
-    // check ringtone contact co phai la ringtone default khong?
-    fun checkRingtoneDefault(context: Context, uri: String): Boolean {
-        if (TextUtils.equals(uri, Utils.getUriRingtoneDefault(context).toString())) return true
-        return false
-    }
+    /* // check ringtone contact co phai la ringtone default khong?
+     private fun checkRingtoneDefault(context: Context, uri: String): Boolean {
+         if (TextUtils.equals(uri, Utils.getUriRingtoneDefault(context).toString())) return true
+         return false
+     }
 
-    // set lai ringtone mac dinh cho list contact
-    fun setListDefaultRingtone(context: Context, listContact: List<ContactItem>): List<ContactItem> {
-        val newListContact = ArrayList<ContactItem>()
-        for (item in listContact) {
-            if (checkRingtoneDefault(context, item.ringtone.toString())) {
-                val newItem = item.copy()
-                newItem.ringtone = null
-                newListContact.add(newItem)
-            } else {
-                newListContact.add(item)
-            }
-        }
-        return newListContact
-    }
+      // set lai ringtone mac dinh cho list contact
+      private fun setListDefaultRingtone(context: Context, listContact: List<ContactItem>): List<ContactItem> {
+          val newListContact = ArrayList<ContactItem>()
+          for (item in listContact) {
+              if (checkRingtoneDefault(context, item.ringtone.toString())) {
+                  val newItem = item.copy()
+                  newItem.ringtone = null
+                  newListContact.add(newItem)
+              } else {
+                  newListContact.add(item)
+              }
+          }
+          return newListContact
+      }*/
 
     override fun onCleared() {
         super.onCleared()

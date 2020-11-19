@@ -12,7 +12,6 @@ object Constance {
 
     val TYPE_AUDIO_TO_NOTIFICATION = "TYPE_AUDIO_TO_NOTIFICATION"
     val TIME_LIFE_DEFAULT = "00:00"
-    val TIME_TOTAL_DEFAULT = "/00:00"
     val RINGTONE_TYPE = 0
     val ALARM_TYPE = 1
     val NOTIFICATION_TYPE = 2

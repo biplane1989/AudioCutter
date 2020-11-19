@@ -19,5 +19,9 @@ class AudioFile(
     val dateAdded: String? = "",
     val genre: String? = "",
     val mimeType: String? = ""
-)
+){
+    fun getFilePath():String{
+        return file.absolutePath
+    }
+}
 

@@ -42,11 +42,12 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     private val TAG = "giangtd"
     private lateinit var binding: ResultScreenBinding
     private lateinit var mResultViewModel: ResultViewModel
+    private var isSeekBarStatus = false
 
     @SuppressLint("SimpleDateFormat")
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
-    val processDoneObserver = Observer<AudioFile> {         // observer trang thai done
+    private val processDoneObserver = Observer<AudioFile> {         // observer trang thai done
 
         binding.btnBack.visibility = View.VISIBLE
         binding.ivHome.visibility = View.VISIBLE
@@ -77,7 +78,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
             cancelDialog.dismiss()
         }
     }
-    val pendingProcessObserver = Observer<String> {     // observer trang thai pending
+    private val pendingProcessObserver = Observer<String> {     // observer trang thai pending
         binding.tvWait.visibility = View.VISIBLE
         binding.llProgressbar.visibility = View.GONE
         binding.llPlayMusic.visibility = View.GONE
@@ -89,7 +90,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     }
 
     @SuppressLint("SetTextI18n")
-    val processingObserver = Observer<ConvertingItem> {     // observer trang thai processing
+    private val processingObserver = Observer<ConvertingItem> {     // observer trang thai processing
 
         binding.btnOrigin.visibility = View.VISIBLE
         binding.btnBack.visibility = View.GONE
@@ -127,8 +128,6 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         str.append("kb/s")
         return str.toString()
     }
-
-    var isSeekBarStatus = false
 
     @SuppressLint("SetTextI18n")
     val playInfoObserver = Observer<PlayerInfo> { playInfo ->       // observer info play music

@@ -93,7 +93,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         onReceivedAction(it.action, it.data as Int)
     }
 
-    fun onReceivedAction(action: String, type: Int) {
+    private fun onReceivedAction(action: String, type: Int) {
         if (action in arrayListOf(Constance.ACTION_CHECK_DELETE, Constance.ACTION_DELETE_ALL)) if (type != (typeAudio as Int)) {
             return
         }
@@ -152,7 +152,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         }
     }
 
-    fun init() {
+    private fun init() {
         binding.rvListAudioCutter.layoutManager = LinearLayoutManager(context)
         binding.rvListAudioCutter.adapter = audioCutterAdapter
     }
@@ -160,7 +160,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         myStudioViewModel = ViewModelProviders.of(this).get(MyStudioViewModel::class.java)
-        audioCutterAdapter = AudioCutterAdapter(this)
+        audioCutterAdapter = AudioCutterAdapter(this, myStudioViewModel.getAudioPlayer(), lifecycleScope)
         typeAudio = requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
 
         myStudioViewModel.init(typeAudio)

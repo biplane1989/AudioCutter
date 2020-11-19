@@ -10,6 +10,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.audiomanager.Folder
+import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
@@ -35,6 +36,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     private var mListAudioFileScans = ArrayList<AudioFileView>()
 
     private var mListFileLoading = ArrayList<AudioFileView>()
+
+    private val actionLiveData: MutableLiveData<ActionData> = MutableLiveData()
 
     private val pathName = "${Environment.getExternalStorageDirectory()}/AudioCutter/mixer"
 
@@ -130,11 +133,11 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             mergeList()
             mAudioMediatorLiveData.postValue(mListAudio)
         }
-        mAudioMediatorLiveData.addSource(audioPlayer.getPlayerInfo()) {
-            if (!isSeekBarStatus) {
-                updatePlayerInfo(it)
-            }
-        }
+        /*  mAudioMediatorLiveData.addSource(audioPlayer.getPlayerInfo()) {
+              if (!isSeekBarStatus) {
+                  updatePlayerInfo(it)
+              }
+          }*/
         mAudioMediatorLiveData.addSource(ManagerFactory.getAudioEditorManager()
             .getCurrentProcessingItem()) {
             if (it != null) {
@@ -146,6 +149,10 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     fun getListAudioFile(): MediatorLiveData<ArrayList<AudioFileView>> {
         return mAudioMediatorLiveData
+    }
+
+    fun getAudioPlayer(): AudioPlayer {
+        return audioPlayer
     }
 
     private fun mergeList() {
@@ -179,7 +186,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     // update loading item khi editor
-    fun updateLoadingProgressbar(newItem: ConvertingItem) {
+    private fun updateLoadingProgressbar(newItem: ConvertingItem) {
         val newItemConverting = AudioFileView(AudioFile(File(pathName), newItem.getFileName(), 100), false, ItemLoadStatus(), newItem.state, newItem.percent, newItem.id)
         if (!mListAudio.isEmpty()) {
             var index = 0
@@ -551,7 +558,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         return false
     }
 
-    fun getAudioFileByUri(uri: String): AudioFile? {
+    private fun getAudioFileByUri(uri: String): AudioFile? {
         for (item in mListAudio) {
             if (TextUtils.equals(item.audioFile.uri.toString(), uri)) return item.audioFile
         }
@@ -563,8 +570,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         ManagerFactory.getAudioFileManager().reNameToFileAudio(newName, audioFile, typeFolder)
 
     }
-
-    val actionLiveData: MutableLiveData<ActionData> = MutableLiveData()
 
     fun getAction(): LiveData<ActionData> {
         return actionLiveData
