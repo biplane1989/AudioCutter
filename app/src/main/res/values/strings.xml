@@ -137,4 +137,11 @@
     <string name="megabyte">Mb</string>
     <string name="kilobyte">Kb</string>
     <string name="filecount">file</string>
+    <string name="audio_merged">Audio Merged</string>
+    <string name="_2_file_to_be_merged">2 file to be merged</string>
+    <string name="merger">MERGER</string>
+    <string name="mix">MIX</string>
+    <string name="file_name">File name</string>
+    <string name="set">SET</string>
+    <string name="english">English</string>
 </resources>

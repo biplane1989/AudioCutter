@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -15,56 +15,61 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_height="@dimen/size_item_dialog"
                 android:fontFamily="@font/sanfranciscodisplay_bold"
                 android:gravity="center"
                 android:text="@string/dialog_advanced_title"
                 android:textColor="@color/dialog_advanced_title_color"
-                android:textSize="20dp" />
+                android:textSize="@dimen/header_size" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/sanfranciscodisplay_medium"
-                android:gravity="center"
-                android:text="@string/dialog_advanced_fade_in"
-                android:textColor="@color/dialog_advanced_title_fade_color"
-                android:textSize="12dp" />
-
-            <com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
-                android:id="@+id/spinner_fade_in"
+            <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/d_48"
-                android:layout_marginLeft="24dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginRight="24dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/sanfranciscodisplay_medium"
-                android:gravity="center"
-                android:text="@string/dialog_advanced_fade_out"
-                android:textColor="@color/dialog_advanced_title_fade_color"
-                android:textSize="12dp" />
+                android:layout_marginTop="@dimen/margin_item_dialog">
 
-            <com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
-                android:id="@+id/spinner_fade_out"
+                <TextView
+                    android:layout_width="@dimen/d_70"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_item_dialog"
+
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:text="@string/dialog_advanced_fade_in"
+                    android:textColor="@color/dialog_advanced_title_fade_color"
+                    android:textSize="@dimen/text_size_edt" />
+
+                <com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
+                    android:id="@+id/spinner_fade_in"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/size_item_dialog"
+                    android:layout_marginHorizontal="@dimen/margin_item_dialog" />
+            </TableRow>
+
+            <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/d_48"
-                android:layout_marginLeft="24dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginRight="24dp" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_item_dialog">
+
+                <TextView
+                    android:layout_width="@dimen/d_70"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_item_dialog"
+                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:text="@string/dialog_advanced_fade_out"
+                    android:textColor="@color/dialog_advanced_title_fade_color"
+                    android:textSize="@dimen/text_size_edt" />
+
+                <com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
+                    android:id="@+id/spinner_fade_out"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/size_item_dialog"
+                    android:layout_marginHorizontal="@dimen/margin_item_dialog" />
+            </TableRow>
+
 
             <LinearLayout
+                android:layout_height="@dimen/size_item_dialog"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/d_48"
-                android:layout_marginTop="21dp"
+                android:layout_marginTop="@dimen/margin_item_dialog"
                 android:orientation="horizontal"
                 android:weightSum="2">
 
@@ -78,9 +83,10 @@
                     android:gravity="center"
                     android:text="@string/my_studio_dialog_btn_cancel"
                     android:textColor="@color/dialog_advanced_cancel_color"
-                    android:textSize="14dp" />
+                    android:textSize="@dimen/text_size_button" />
 
                 <TextView
+
                     android:id="@+id/ok_tv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -90,7 +96,7 @@
                     android:gravity="center"
                     android:text="@string/dialog_advance_ok"
                     android:textColor="@color/dialog_advanced_ok_color"
-                    android:textSize="14dp" />
+                    android:textSize="@dimen/text_size_button" />
             </LinearLayout>
 
         </LinearLayout>

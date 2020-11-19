@@ -27,18 +27,19 @@
 
             <ImageView
                 android:id="@+id/iv_delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
                 android:src="@drawable/my_studio_dialog_icon_delete_successfully"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                android:scaleType="centerInside"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/iv_close"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
                 android:background="?attr/selectableItemBackground"
                 android:scaleType="centerInside"
                 android:src="@drawable/my_studio_dialog_icon_close"
@@ -47,9 +48,8 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_height="@dimen/d_48"
+                android:paddingHorizontal="@dimen/d_16"
                 android:fontFamily="@font/sanfranciscodisplay_bold"
                 android:gravity="center"
                 android:text="Deleted Successfully"

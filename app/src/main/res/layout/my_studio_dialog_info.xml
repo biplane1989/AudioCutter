@@ -9,12 +9,12 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginRight="24dp"
+        android:layout_marginStart="@dimen/d_24"
+        android:layout_marginLeft="@dimen/d_24"
+        android:layout_marginEnd="@dimen/d_24"
+        android:layout_marginRight="@dimen/d_24"
         android:orientation="vertical"
-        app:cardCornerRadius="5dp"
+        app:cardCornerRadius="@dimen/d_5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -23,7 +23,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="20dp">
+            android:padding="@dimen/d_16">
 
             <TextView
                 android:id="@+id/tv_info"
@@ -33,7 +33,7 @@
                 android:fontFamily="@font/sanfranciscodisplay_bold"
                 android:text="@string/my_studio_dialog_info"
                 android:textColor="#2E3041"
-                android:textSize="20dp"
+                android:textSize="@dimen/text_size_header"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -42,7 +42,7 @@
                 android:id="@+id/ll_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/d_16"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toTopOf="@id/tv_ok"
                 app:layout_constraintTop_toBottomOf="@+id/tv_info">
@@ -50,7 +50,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/d_10"
                     android:orientation="horizontal">
 
                     <TextView
@@ -59,7 +59,7 @@
                         android:layout_weight="0.3"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
                         android:text="@string/my_studio_dialog_file"
-                        android:textSize="14dp"
+                        android:textSize="@dimen/text_size_info"
                         android:textStyle="bold" />
 
                     <TextView
@@ -68,13 +68,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
-                        android:textSize="14dp" />
+                        android:textSize="@dimen/text_size_info" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/d_10"
                     android:orientation="horizontal">
 
                     <TextView
@@ -83,7 +83,7 @@
                         android:layout_weight="0.3"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
                         android:text="@string/my_studio_dialog_location"
-                        android:textSize="14dp"
+                        android:textSize="@dimen/text_size_info"
                         android:textStyle="bold" />
 
                     <TextView
@@ -92,13 +92,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
-                        android:textSize="14dp" />
+                        android:textSize="@dimen/text_size_info" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/d_10"
                     android:orientation="horizontal">
 
                     <TextView
@@ -107,7 +107,7 @@
                         android:layout_weight="0.3"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
                         android:text="@string/my_studio_dialog_size"
-                        android:textSize="14dp"
+                        android:textSize="@dimen/text_size_info"
                         android:textStyle="bold" />
 
                     <TextView
@@ -116,13 +116,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
-                        android:textSize="14dp" />
+                        android:textSize="@dimen/text_size_info" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/d_10"
                     android:orientation="horizontal">
 
                     <TextView
@@ -131,7 +131,7 @@
                         android:layout_weight="0.3"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
                         android:text="@string/my_studio_dialog_date"
-                        android:textSize="14dp"
+                        android:textSize="@dimen/text_size_info"
                         android:textStyle="bold" />
 
                     <TextView
@@ -140,13 +140,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
-                        android:textSize="14dp" />
+                        android:textSize="@dimen/text_size_info" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/d_10"
                     android:orientation="horizontal">
 
                     <TextView
@@ -155,7 +155,7 @@
                         android:layout_weight="0.3"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
                         android:text="@string/my_studio_dialog_format"
-                        android:textSize="14dp"
+                        android:textSize="@dimen/text_size_info"
                         android:textStyle="bold" />
 
                     <TextView
@@ -164,13 +164,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
-                        android:textSize="14dp" />
+                        android:textSize="@dimen/text_size_info" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/d_10"
                     android:orientation="horizontal">
 
                     <TextView
@@ -179,7 +179,7 @@
                         android:layout_weight="0.3"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
                         android:text="@string/my_studio_dialog_length"
-                        android:textSize="14dp"
+                        android:textSize="@dimen/text_size_info"
                         android:textStyle="bold" />
 
                     <TextView
@@ -188,13 +188,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
-                        android:textSize="14dp" />
+                        android:textSize="@dimen/text_size_info" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/d_10"
                     android:orientation="horizontal">
 
                     <TextView
@@ -203,7 +203,7 @@
                         android:layout_weight="0.3"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
                         android:text="@string/my_studio_dialog_bitrate"
-                        android:textSize="14dp"
+                        android:textSize="@dimen/text_size_info"
                         android:textStyle="bold" />
 
                     <TextView
@@ -212,13 +212,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
-                        android:textSize="14dp" />
+                        android:textSize="@dimen/text_size_info" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/d_10"
                     android:orientation="horizontal">
 
                     <TextView
@@ -227,7 +227,7 @@
                         android:layout_weight="0.3"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
                         android:text="@string/my_studio_dialog_channel"
-                        android:textSize="14dp"
+                        android:textSize="@dimen/text_size_info"
                         android:textStyle="bold" />
 
                     <TextView
@@ -236,13 +236,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
-                        android:textSize="14dp" />
+                        android:textSize="@dimen/text_size_info" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/d_10"
                     android:orientation="horizontal">
 
                     <TextView
@@ -251,7 +251,7 @@
                         android:layout_weight="0.3"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
                         android:text="@string/my_studio_dialog_frequency"
-                        android:textSize="14dp"
+                        android:textSize="@dimen/text_size_info"
                         android:textStyle="bold" />
 
                     <TextView
@@ -260,13 +260,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
-                        android:textSize="14dp" />
+                        android:textSize="@dimen/text_size_info" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/d_10"
                     android:orientation="horizontal">
 
                     <TextView
@@ -275,7 +275,7 @@
                         android:layout_weight="0.3"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
                         android:text="@string/my_studio_dialog_title"
-                        android:textSize="14dp"
+                        android:textSize="@dimen/text_size_info"
                         android:textStyle="bold" />
 
                     <TextView
@@ -284,13 +284,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
-                        android:textSize="14dp" />
+                        android:textSize="@dimen/text_size_info" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/d_10"
                     android:orientation="horizontal">
 
                     <TextView
@@ -299,7 +299,7 @@
                         android:layout_weight="0.3"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
                         android:text="@string/my_studio_dialog_artist"
-                        android:textSize="14dp"
+                        android:textSize="@dimen/text_size_info"
                         android:textStyle="bold" />
 
                     <TextView
@@ -308,13 +308,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
-                        android:textSize="14dp" />
+                        android:textSize="@dimen/text_size_info" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/d_10"
                     android:orientation="horizontal">
 
                     <TextView
@@ -323,7 +323,7 @@
                         android:layout_weight="0.3"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
                         android:text="@string/my_studio_dialog_album"
-                        android:textSize="14dp"
+                        android:textSize="@dimen/text_size_info"
                         android:textStyle="bold" />
 
                     <TextView
@@ -332,13 +332,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
-                        android:textSize="14dp" />
+                        android:textSize="@dimen/text_size_info" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/d_10"
                     android:orientation="horizontal">
 
                     <TextView
@@ -347,7 +347,7 @@
                         android:layout_weight="0.3"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
                         android:text="@string/my_studio_dialog_genre"
-                        android:textSize="14dp"
+                        android:textSize="@dimen/text_size_info"
                         android:textStyle="bold" />
 
                     <TextView
@@ -356,22 +356,22 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
                         android:fontFamily="@font/sanfranciscodisplay_medium"
-                        android:textSize="14dp" />
+                        android:textSize="@dimen/text_size_info" />
                 </LinearLayout>
 
             </LinearLayout>
 
             <TextView
                 android:id="@+id/tv_ok"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="10dp"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
+                android:layout_marginTop="@dimen/d_16"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:gravity="center"
                 android:text="@string/my_studio_dialog_ok"
                 android:textColor="#FDAA74"
-                android:textSize="14dp"
+                android:textSize="@dimen/text_size_info"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

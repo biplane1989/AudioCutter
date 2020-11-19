@@ -34,9 +34,8 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
+                    android:layout_height="@dimen/size_item_dialog"
+                    android:paddingHorizontal="@dimen/margin_item_dialog"
                     android:fontFamily="@font/sanfranciscodisplay_bold"
                     android:gravity="center"
                     android:text="Audio Mixer"
@@ -48,9 +47,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginRight="12dp"
+                android:layout_marginTop="@dimen/margin_item_dialog"
+                android:paddingHorizontal="@dimen/margin_item_dialog"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:gravity="start"
                 android:text="File Name"
@@ -58,22 +56,21 @@
                 android:textSize="12dp" />
 
             <EditText
-
                 android:id="@+id/edt_file_name"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="14dp"
-                android:layout_marginRight="12dp"
-                android:layout_marginBottom="32dp"
+                android:layout_height="@dimen/size_item_dialog"
+                android:layout_marginTop="@dimen/margin_item_dialog"
+                android:layout_marginHorizontal="@dimen/margin_item_dialog"
+                android:layout_marginBottom="@dimen/margin_item_dialog"
+                android:background="@drawable/bg_edt_ctm"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:hint="Audio Mix"
                 android:textColor="#2E3041"
-                android:textSize="16dp" />
+                android:textSize="@dimen/text_size_edt" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/d_40">
+                android:layout_height="@dimen/size_item_dialog">
 
                 <TextView
                     android:id="@+id/tv_cancel_dialog_filename"
@@ -85,7 +82,7 @@
                     android:gravity="center"
                     android:text="@string/my_studio_dialog_btn_cancel"
                     android:textColor="#BDBDBD"
-                    android:textSize="18dp"
+                    android:textSize="@dimen/text_size_button"
                     android:visibility="visible" />
 
                 <TextView
@@ -96,9 +93,9 @@
                     android:background="?attr/selectableItemBackground"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="MIX"
+                    android:text="@string/mix"
                     android:textColor="#FDAA74"
-                    android:textSize="18dp" />
+                    android:textSize="@dimen/text_size_button" />
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

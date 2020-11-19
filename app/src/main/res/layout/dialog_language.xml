@@ -9,12 +9,12 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginRight="24dp"
+        android:layout_marginStart="@dimen/d_24"
+        android:layout_marginLeft="@dimen/d_24"
+        android:layout_marginEnd="@dimen/d_24"
+        android:layout_marginRight="@dimen/d_24"
         android:orientation="vertical"
-        app:cardCornerRadius="8dp"
+        app:cardCornerRadius="@dimen/d_8"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -34,14 +34,13 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
+                    android:layout_height="@dimen/d_48"
+                    android:paddingHorizontal="@dimen/d_16"
                     android:fontFamily="@font/sanfranciscodisplay_bold"
                     android:gravity="center"
                     android:text="Language"
                     android:textColor="#2E3041"
-                    android:textSize="20sp"
+                    android:textSize="@dimen/text_size_header"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -50,40 +49,37 @@
                 android:id="@+id/rg_set_language"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginRight="16dp">
+                android:layout_marginTop="@dimen/margin_item_dialog"
+                android:paddingHorizontal="@dimen/d_16">
 
                 <RadioButton
                     android:id="@+id/rb_vietnam"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="12dp"
                     android:buttonTint="#FDAA74"
                     android:checked="true"
+                    android:paddingVertical="@dimen/margin_item_dialog"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:shadowColor="#FDAA74"
                     android:text="Viet Nam"
-                    android:textSize="16sp" />
+                    android:textSize="@dimen/text_size_edt" />
 
                 <RadioButton
                     android:id="@+id/rb_english"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="12dp"
                     android:buttonTint="#FDAA74"
+                    android:paddingVertical="@dimen/d_16"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
-                    android:text="English"
-                    android:textSize="16sp" />
+                    android:text="@string/english"
+                    android:textSize="@dimen/text_size_edt" />
 
             </RadioGroup>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/d_40"
-                android:layout_marginTop="20dp">
+                android:layout_height="@dimen/d_48"
+                android:layout_marginTop="@dimen/margin_item_dialog">
 
                 <TextView
                     android:id="@+id/tv_cancel_dialog_setting_language"
@@ -95,7 +91,7 @@
                     android:gravity="center"
                     android:text="@string/tv_cancel_settings"
                     android:textColor="#BDBDBD"
-                    android:textSize="18dp"
+                    android:textSize="@dimen/text_size_button"
                     android:visibility="visible" />
 
                 <TextView
@@ -108,7 +104,7 @@
                     android:gravity="center"
                     android:text="@string/tv_ok_settings"
                     android:textColor="#FDAA74"
-                    android:textSize="18dp" />
+                    android:textSize="@dimen/text_size_button" />
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

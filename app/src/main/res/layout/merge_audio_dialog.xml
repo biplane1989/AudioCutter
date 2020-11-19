@@ -35,14 +35,13 @@
                 <TextView
                     android:id="@+id/tv_count_file_dialog"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
+                    android:layout_height="@dimen/d_48"
+                    android:paddingHorizontal="@dimen/margin_item_dialog"
                     android:fontFamily="@font/sanfranciscodisplay_bold"
                     android:gravity="center"
-                    android:text="2 file to be merged"
+                    android:text="@string/_2_file_to_be_merged"
                     android:textColor="#2E3041"
-                    android:textSize="20dp"
+                    android:textSize="@dimen/text_size_button"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -50,27 +49,25 @@
                 android:id="@+id/tv_old_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="12dp"
+                android:layout_marginTop="@dimen/margin_item_dialog"
+                android:paddingHorizontal="@dimen/margin_item_dialog"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:text="@string/my_studio_dialog_rename_file_name"
                 android:textColor="#2E3041"
-                android:textSize="12dp" />
+                android:textSize="@dimen/d_12" />
 
             <EditText
                 android:id="@+id/edt_filename_dialog"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="12dp"
-                android:layout_marginBottom="16dp"
-                android:backgroundTint="#FDAA74"
+                android:layout_height="@dimen/d_48"
+
+                android:layout_marginHorizontal="@dimen/margin_item_dialog"
+                android:layout_marginVertical="@dimen/margin_item_dialog"
+                android:background="@drawable/bg_edt_ctm"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
-                android:hint="Audio Merged"
+                android:hint="@string/audio_merged"
                 android:textColor="#2E3041"
-                android:textSize="16dp" />
+                android:textSize="@dimen/text_size_edt" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -97,7 +94,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="MERGER"
+                    android:text="@string/merger"
                     android:textColor="#FDAA74"
                     android:textSize="18dp" />
             </LinearLayout>

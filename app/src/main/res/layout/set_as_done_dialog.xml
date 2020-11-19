@@ -28,8 +28,8 @@
             <ImageView
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:id="@+id/iv_cancal_dialog_done"
-                android:layout_width="@dimen/d_56"
-                android:layout_height="@dimen/d_56"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
                 android:scaleType="centerInside"
                 android:layout_gravity="right"
                 android:src="@drawable/ic_cancel_dialog" />
@@ -39,18 +39,17 @@
                 android:id="@+id/edt_new_name"
                 android:layout_width="match_parent"
                 android:layout_gravity="center"
-                android:layout_height="80dp"
-                android:layout_marginTop="8dp"
+                android:layout_height="@dimen/d_80"
                 android:src="@drawable/ic_setas_done" />
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="@dimen/size_item_dialog"
                 android:fontFamily="@font/sanfranciscodisplay_bold"
                 android:gravity="center"
                 android:text="@string/successfully"
                 android:textColor="#2E3041"
-                android:textSize="20dp"
+                android:textSize="@dimen/text_size_header"
                 android:textStyle="bold" />
 
         </LinearLayout>

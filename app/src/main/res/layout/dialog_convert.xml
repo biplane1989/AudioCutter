@@ -13,19 +13,18 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_height="@dimen/size_item_dialog"
             android:fontFamily="@font/sanfranciscodisplay_bold"
             android:gravity="center"
             android:text="@string/dialog_convert_title"
             android:textColor="@color/dialog_advanced_title_color"
-            android:textSize="20dp" />
+            android:textSize="@dimen/d_20" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="24dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginLeft="@dimen/margin_item"
+            android:layout_marginTop="@dimen/margin_item"
             android:fontFamily="@font/sanfranciscodisplay_medium"
             android:gravity="center"
             android:text="@string/dialog_convert_file_name"
@@ -36,14 +35,14 @@
 
             android:id="@+id/name_edt"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="24dp"
-
-            android:layout_marginRight="24dp"
+            android:layout_height="@dimen/d_48"
+            android:layout_marginHorizontal="@dimen/margin_item"
+            android:background="@drawable/bg_edt_ctm"
+            android:hint="@string/file_name"
             android:fontFamily="@font/sanfranciscodisplay_medium"
             android:singleLine="true"
             android:textColor="@color/dialog_advanced_text_sniper_color"
-            android:textSize="16dp"
+            android:textSize="@dimen/text_size_edt"
             android:theme="@style/editTextTheme" />
 
         <LinearLayout
@@ -54,7 +53,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
+                android:layout_marginLeft="@dimen/margin_item"
                 android:layout_marginTop="12dp"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:gravity="center"
@@ -65,10 +64,10 @@
             <com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
                 android:id="@+id/spinner_format"
                 android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:layout_marginLeft="24dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginRight="24dp" />
+                android:layout_height="@dimen/d_48"
+                android:layout_marginLeft="@dimen/margin_item"
+                android:layout_marginTop="@dimen/d_12"
+                android:layout_marginRight="@dimen/margin_item" />
 
         </LinearLayout>
 
@@ -81,7 +80,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
+                android:layout_marginLeft="@dimen/margin_item"
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:gravity="center"
@@ -92,10 +91,10 @@
             <com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
                 android:id="@+id/spinner_bitrate"
                 android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:layout_marginLeft="24dp"
+                android:layout_height="@dimen/d_48"
+                android:layout_marginLeft="@dimen/margin_item"
                 android:layout_marginTop="12dp"
-                android:layout_marginRight="24dp" />
+                android:layout_marginRight="@dimen/margin_item" />
 
         </LinearLayout>
 
@@ -108,7 +107,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
+                android:layout_marginLeft="@dimen/margin_item"
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:gravity="center"
@@ -123,7 +122,7 @@
                 <com.google.android.material.slider.Slider
                     android:id="@+id/seekbar"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/d_48"
                     android:layout_marginLeft="15dp"
                     android:layout_toLeftOf="@id/percent_tv"
                     android:theme="@style/themeSeekbar"
@@ -140,7 +139,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginRight="24dp"
+                    android:layout_marginRight="@dimen/margin_item"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="right"
                     android:text="100%"
@@ -153,7 +152,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/d_40"
+            android:layout_height="@dimen/d_48"
             android:layout_marginBottom="30dp"
             android:orientation="horizontal"
             android:weightSum="2">
