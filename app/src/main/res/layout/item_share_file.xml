@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="?actionBarSize"
+    android:layout_height="wrap_content"
     android:paddingHorizontal="@dimen/d_16"
+    android:paddingVertical="@dimen/d_8"
     android:background="?attr/selectableItemBackground"
     android:orientation="horizontal">
 
@@ -11,14 +12,14 @@
     <ImageView
         android:id="@+id/iv_icon_app"
         android:layout_width="?actionBarSize"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/d_56"
         android:scaleType="centerInside"
          />
     <TextView
         android:id="@+id/tv_app_share"
         android:layout_width="match_parent"
         android:paddingHorizontal="@dimen/d_16"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/d_56"
         android:textSize="@dimen/text_size_button"
         android:fontFamily="@font/sanfranciscodisplay_medium"
         android:textColor="@color/colorBlack"

@@ -430,7 +430,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         intent.type = "audio/*"
         intent.`package` = pkgName
         intent.action = Intent.ACTION_SEND
-        startActivity(intent)
+      requireActivity().startActivity(intent)
     }
 
     //ToDo ("fragment nao  su dung thi override")
