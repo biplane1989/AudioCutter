@@ -21,6 +21,7 @@ class MainActivity : BaseActivity() {
         handleNotificationIntent(intent)
     }
 
+
     override fun createView(savedInstanceState: Bundle?) {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
     }

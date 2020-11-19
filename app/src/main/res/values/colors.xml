@@ -38,4 +38,6 @@
     <color name="colorBlue">#2196F3</color>
     <color name="colorBlackAlpha">#9E2E3041</color>
     <color name="colorWhiteAlpha">#00FFFFFF</color>
+    <color name="colorHintText">#B9B9B9</color>
+    <color name="colorControlHighlight">#66000000</color>
 </resources>
