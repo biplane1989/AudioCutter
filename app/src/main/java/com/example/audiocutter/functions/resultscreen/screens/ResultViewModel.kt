@@ -117,7 +117,7 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
             audioFile?.let {
                 when (audioPlayer.getPlayerInfoData().playerState) {
                     PlayerState.IDLE -> {
-                        audioPlayer.play(AudioFile(it.file, it.fileName, it.size, it.bitRate, it.time, Uri.parse(it.file.absolutePath)))
+                        audioPlayer.play(AudioFile(it.file, it.fileName, it.size, it.bitRate, it.duration, Uri.parse(it.file.absolutePath)))
                     }
                     PlayerState.PAUSE -> {
                         audioPlayer.resume()

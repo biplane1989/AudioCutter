@@ -15,7 +15,6 @@ class RenameDialog : BaseDialog() {
 
     companion object {
         val TAG = "DeleteDialog"
-        val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
         val BUNDLE_TYPE_KEY = "BUNDLE_TYPE_KEY"
         val BUNDLE_PATH_KEY = "BUNDLE_PATH_KEY"
         lateinit var dialogListener: RenameDialogListener

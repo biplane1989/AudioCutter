@@ -4,15 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
-import android.graphics.Bitmap
-import android.graphics.Paint
-import android.graphics.Rect
-import android.graphics.Typeface
+import android.graphics.*
+import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.TypedValue
@@ -23,7 +20,10 @@ import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.functions.audiochooser.objects.ItemAppShare
 import com.example.audiocutter.objects.AudioFile
+import com.example.core.core.AudioInfor
+import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.InputStream
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 import java.util.*
@@ -33,14 +33,12 @@ import kotlin.collections.HashSet
 
 object Utils {
     val KEY_SEND_PATH = "key_send_path"
-    val KEY_SEND_AUDIO = "key_send_audio"
     val FIVE_SECOND = 5000
     val TIME_CHANGE = 100
     private const val APP_FOLDER_NAME = "AudioCutter"
     private const val CUTTING_FOLDER_NAME = "cutter"
     private const val MERGING_FOLDER_NAME = "merger"
     private const val MIXING_FOLDER_NAME = "mixer"
-    private val APP_FOLDER_PATH = "${Environment.getExternalStorageDirectory()}/${APP_FOLDER_NAME}"
 
     @JvmStatic
     fun dpToPx(context: Context, dp: Float): Float {
@@ -387,6 +385,52 @@ object Utils {
             e.printStackTrace()
             false
         }
+    }
+
+    private fun getName(file: File): String {
+        val fileName = file.name
+        val index = fileName.lastIndexOf(".")
+
+        if (index != -1) {
+            return fileName.substring(0, index)
+        }
+        return fileName
+    }
+
+    private fun getBitmapByPath(path: String?): Bitmap? {
+        try {
+            val mmr = MediaMetadataRetriever()
+            mmr.setDataSource(path)
+            var inputStream: InputStream? = null
+            if (mmr.embeddedPicture != null) {
+                inputStream = ByteArrayInputStream(mmr.embeddedPicture)
+            }
+            mmr.release()
+
+            return BitmapFactory.decodeStream(inputStream)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    fun convertToAudioFile(audioInfor: AudioInfor, modified: Long, mediaId: String): AudioFile {
+        val file = File(audioInfor.filePath)
+        return AudioFile(
+            file,
+            getName(file),
+            audioInfor.size,
+            audioInfor.bitRate,
+            audioInfor.duration,
+            Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString() + File.separator + mediaId),
+            getBitmapByPath(file.absolutePath),
+            audioInfor.title,
+            audioInfor.alBum,
+            audioInfor.artist,
+            modified,
+            audioInfor.genre,
+            audioInfor.format
+        )
     }
 
 }
