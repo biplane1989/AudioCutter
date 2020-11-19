@@ -17,6 +17,7 @@ class RenameDialog : BaseDialog() {
         val TAG = "DeleteDialog"
         val BUNDLE_TYPE_KEY = "BUNDLE_TYPE_KEY"
         val BUNDLE_PATH_KEY = "BUNDLE_PATH_KEY"
+        val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
         lateinit var dialogListener: RenameDialogListener
 
         @JvmStatic
@@ -40,11 +41,11 @@ class RenameDialog : BaseDialog() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, R.style.DialogGray)
-       /* dialog?.let {
-            dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            val width = ((requireContext().resources?.displayMetrics?.widthPixels)!! * 0.90).toInt()
-            dialog!!.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        }*/
+        /* dialog?.let {
+             dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+             val width = ((requireContext().resources?.displayMetrics?.widthPixels)!! * 0.90).toInt()
+             dialog!!.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+         }*/
 
 
     }
