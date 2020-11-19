@@ -31,7 +31,7 @@
                     android:focusableInTouchMode="true"
                     android:background="@color/colorWhite"
                     android:hint="Search..."
-                    android:paddingStart="40dp"
+                    android:paddingStart="@dimen/d_72"
                     android:singleLine="true"
                     android:visibility="invisible">
 
@@ -74,7 +74,7 @@
                         android:fontFamily="@font/sanfranciscodisplay_bold"
                         android:text="@string/audio_cutter_name_actionbar"
                         android:textColor="@color/colorBlack"
-
+android:paddingLeft="@dimen/d_16"
                         android:textSize="@dimen/d_18" />
                 </TableRow>
 

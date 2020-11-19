@@ -37,4 +37,5 @@
     <color name="colorGraySeekbar">#E0E0E0</color>
     <color name="colorBlue">#2196F3</color>
     <color name="colorBlackAlpha">#9E2E3041</color>
+    <color name="colorWhiteAlpha">#00FFFFFF</color>
 </resources>

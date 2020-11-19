@@ -30,7 +30,7 @@
                     android:background="@color/colorWhite"
                     android:focusableInTouchMode="true"
                     android:hint="@string/search_hint_text"
-                    android:paddingStart="40dp"
+                    android:paddingStart="@dimen/d_72"
                     android:singleLine="true"
                     android:visibility="invisible">
 
@@ -47,6 +47,7 @@
                     android:src="@drawable/ic_audiocutter_back" />
 
                 <TextView
+                    android:paddingLeft="@dimen/d_16"
                     android:id="@+id/tv_mer_screen"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"

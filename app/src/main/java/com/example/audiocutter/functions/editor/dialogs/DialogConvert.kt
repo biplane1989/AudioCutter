@@ -9,6 +9,7 @@ import com.example.audiocutter.R
 import com.example.audiocutter.activities.acttest.CoreTestActivity
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audiomanager.Folder
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
 import com.example.audiocutter.util.PreferencesHelper
@@ -147,6 +148,11 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
     private fun checkValid(name: String): Boolean {
         if (name.isEmpty()) {
             edtNameFile.error = "Name must not be empty"
+            edtNameFile.requestFocus()
+            return false
+        }
+        if (ManagerFactory.getAudioFileManager().checkFileNameDuplicate(name, Folder.TYPE_CUTTER)) {
+            edtNameFile.error = "Name already exist"
             edtNameFile.requestFocus()
             return false
         }

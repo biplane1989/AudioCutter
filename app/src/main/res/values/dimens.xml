@@ -31,4 +31,5 @@
     <dimen name="d_24">24dp</dimen>
     <dimen name="d_48">48dp</dimen>
     <dimen name="d_12">12dp</dimen>
+    <dimen name="d_72">72dp</dimen>
 </resources>
