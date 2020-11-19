@@ -27,6 +27,7 @@ import java.io.File
 import java.util.*
 
 class MyStudioViewModel(application: Application) : BaseAndroidViewModel(application) {
+
     private val audioPlayer = ManagerFactory.newAudioPlayer()
 
     private val mAudioMediatorLiveData = MediatorLiveData<ArrayList<AudioFileView>>()
@@ -464,19 +465,20 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         return mListAudio
     }
 
-    // khi chuyển sang tab khác thì stop audio
+    // khi chuyển sang tab khác thì stop audio va reset trang thai audio
     fun stopMediaPlayerWhenTabSelect() {
+        audioPlayer.stop()
         //   khi play nhạc reset lại trạng thái các item khác
         var index = 0
         for (item in mListAudio) {
             val newItem = item.copy()
             newItem.isExpanded = false
-            val itemLoadStatus = newItem.itemLoadStatus.copy()
-            newItem.itemLoadStatus = itemLoadStatus
-            mListAudio[index] = newItem
+//            val itemLoadStatus = newItem.itemLoadStatus.copy()
+//            newItem.isExpanded = false
+            mListAudio.set(index, newItem)
             index++
         }
-        audioPlayer.stop()
+        mAudioMediatorLiveData.postValue(mListAudio)
     }
 
     fun resumeAudioAndChangeStatus(position: Int) {

@@ -3,6 +3,7 @@ package com.example.audiocutter.functions.mystudio.adapters
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.media.MediaMetadataRetriever
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -135,26 +136,28 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     holder.llItem.setBackgroundColor(Color.WHITE)
                     holder.llItem.setPadding(0, 0, 0, 0)
                 }
-                holder.sbMusic.max = newItem.itemLoadStatus.duration
-                holder.tvTimeLife.text = simpleDateFormat.format(newItem.itemLoadStatus.currPos)
-                holder.sbMusic.progress = newItem.itemLoadStatus.currPos
 
-                when (newItem.itemLoadStatus.playerState) {
-                    PlayerState.PLAYING -> {
-                        holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_pause)
-                    }
-                    PlayerState.PAUSE -> {
-                        holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
-                    }
-                    PlayerState.IDLE -> {
-                        holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
-                        holder.tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
-                        holder.sbMusic.progress = 0
-                    }
-                    else -> {
-                        //nothing
-                    }
-                }
+
+                /* holder.sbMusic.max = newItem.itemLoadStatus.duration
+                 holder.tvTimeLife.text = simpleDateFormat.format(newItem.itemLoadStatus.currPos)
+                 holder.sbMusic.progress = newItem.itemLoadStatus.currPos
+
+                 when (newItem.itemLoadStatus.playerState) {
+                     PlayerState.PLAYING -> {
+                         holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_pause)
+                     }
+                     PlayerState.PAUSE -> {
+                         holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
+                     }
+                     PlayerState.IDLE -> {
+                         holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
+                         holder.tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
+                         holder.sbMusic.progress = 0
+                     }
+                     else -> {
+                         //nothing
+                     }
+                 }*/
             } else {
                 val loadingViewHolder = holder as LoadingViewHolder
                 val newItem = payloads.firstOrNull() as AudioFileView
@@ -171,56 +174,14 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     }
 
     inner abstract class MyStudioHolder(itemView: View) : RecyclerView.ViewHolder(itemView), LifecycleOwner {
-        /* val sbMusic: SeekBar = itemView.findViewById(R.id.sb_music)
-         val tvTimeLife: TextView = itemView.findViewById(R.id.tv_time_life)
-         private var isSeekBarStatus = false       */  // trang thai seekbar co dang duoc keo hay khong
-
         private var lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)      // tao 1 lifecycleRegistry
 
         override fun getLifecycle(): Lifecycle {                                                // gan lifecycleRegistry tu dinh nghia cho class
             return lifecycleRegistry
         }
 
-        /*private fun updatePlayInfor(playerInfo: PlayerInfo) {
-
-            playerState = playerInfo.playerState
-          *//*  sbMusic.max = playerInfo.duration
-            sbMusic.progress = playerInfo.posision
-            tvTimeLife.text = simpleDateFormat.format(playerInfo.posision)
-
-
-            when (playerInfo.playerState) {
-                PlayerState.PLAYING -> {
-                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
-                }
-                PlayerState.PAUSE -> {
-                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
-
-                }
-                PlayerState.IDLE -> {
-                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
-                    tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
-                    sbMusic.progress = 0
-                }
-                else -> {
-                    //nothing
-                }
-            }*//*
-        }*/
         open fun onViewAttachedToWindow() {                                                // gan view vao trong windows do minh tu viet
             lifecycleRegistry.currentState = Lifecycle.State.STARTED                  // livedata o trang thai is Active thi moi hoat dong STARTED or RESUMED
-            /*  audioPlayer.getPlayerInfo().observe(this, object : Observer<PlayerInfo> {
-                  override fun onChanged(playerInfo: PlayerInfo) {
-                      playerInfo.currentAudio?.let {
-                          if (!isSeekBarStatus && adapterPosition != -1) {                            // khi summitlist: ham onViewDetachedFromWindow() vua chay va  audioPlayer.getPlayerInfo().observe cung chay nen adapterPosition = -1 (chua kip lay data)
-                              val audioFileView = getItem(adapterPosition)
-                              if (audioFileView.getFilePath() == it.getFilePath()) {
-                                  updatePlayInfor(playerInfo)
-                              }
-                          }
-                      }
-                  }
-              })*/
         }
 
         open fun onViewDetachedFromWindow() {                                                // go~ view ra khoi windows do minh tu viet
@@ -246,14 +207,17 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
         var playerState: PlayerState = PlayerState.IDLE
         private var isSeekBarStatus = false      // trang thai seekbar co dang duoc keo hay khong
+        var filePath: String = ""
+        var lastFilePath :String = ""
 
         private fun updatePlayInfor(playerInfo: PlayerInfo) {
+
+            filePath = playerInfo.currentAudio?.getFilePath().toString()
 
             playerState = playerInfo.playerState
             sbMusic.max = playerInfo.duration
             sbMusic.progress = playerInfo.posision
             tvTimeLife.text = simpleDateFormat.format(playerInfo.posision)
-
 
             when (playerInfo.playerState) {
                 PlayerState.PLAYING -> {
@@ -274,13 +238,14 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             }
         }
 
+
         override fun onViewAttachedToWindow() {
             super.onViewAttachedToWindow()
+            val audioFileView = getItem(adapterPosition)
             audioPlayer.getPlayerInfo().observe(this, object : Observer<PlayerInfo> {
                 override fun onChanged(playerInfo: PlayerInfo) {
                     playerInfo.currentAudio?.let {
                         if (!isSeekBarStatus && adapterPosition != -1) {                            // khi summitlist: ham onViewDetachedFromWindow() vua chay va  audioPlayer.getPlayerInfo().observe cung chay nen adapterPosition = -1 (chua kip lay data)
-                            val audioFileView = getItem(adapterPosition)
                             if (audioFileView.getFilePath() == it.getFilePath()) {
                                 updatePlayInfor(playerInfo)
                             }
@@ -337,23 +302,23 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
             }
 
-           /* when (audioFileView.itemLoadStatus.playerState) {
-                PlayerState.PLAYING -> {
-                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
-                }
-                PlayerState.PAUSE -> {
-                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
+            /* when (audioFileView.itemLoadStatus.playerState) {
+                 PlayerState.PLAYING -> {
+                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
+                 }
+                 PlayerState.PAUSE -> {
+                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
 
-                }
-                PlayerState.IDLE -> {
-                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
-                    tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
-                    sbMusic.progress = 0
-                }
-                else -> {
-                    //nothing
-                }
-            }*/
+                 }
+                 PlayerState.IDLE -> {
+                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
+                     tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
+                     sbMusic.progress = 0
+                 }
+                 else -> {
+                     //nothing
+                 }
+             }*/
 
 //            sbMusic.max = audioFileView.itemLoadStatus.duration
 
@@ -376,13 +341,15 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
 
                 override fun onStartTrackingTouch(p0: SeekBar?) {
-                    audioCutterScreenCallback.onStartSeekBar()
+//                    audioCutterScreenCallback.onStartSeekBar()
+                    isSeekBarStatus = true
 
                 }
 
                 override fun onStopTrackingTouch(p0: SeekBar?) {
-                    audioCutterScreenCallback.seekTo(sbMusic.progress)
-
+//                    audioCutterScreenCallback.seekTo(sbMusic.progress)
+                    audioPlayer.seek(sbMusic.progress)
+                    isSeekBarStatus = false
                 }
             })
         }
@@ -403,18 +370,23 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                         }
                     }
 
-                    when (audioFileView.itemLoadStatus.playerState) {
+//                    when (audioFileView.itemLoadStatus.playerState) {
+                    when (playerState) {
                         PlayerState.IDLE -> {
                         }
                         PlayerState.PAUSE -> {
                             // khi ở trạng thái delete sẽ không stop dc
                             if (audioFileView.itemLoadStatus.deleteState == DeleteState.HIDE) {
-                                audioCutterScreenCallback.stop(adapterPosition)
+//                                audioCutterScreenCallback.stop(adapterPosition)
+                                audioPlayer.stop()
+                                playerState = PlayerState.IDLE
                             }
                         }
                         PlayerState.PLAYING -> {
                             if (audioFileView.itemLoadStatus.deleteState == DeleteState.HIDE) {
-                                audioCutterScreenCallback.stop(adapterPosition)
+//                                audioCutterScreenCallback.stop(adapterPosition)
+                                audioPlayer.stop()
+                                playerState = PlayerState.IDLE
                             }
                         }
                         else -> {
@@ -423,15 +395,20 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     }
                 }
                 R.id.iv_pause_play_music -> {
-                    when (audioFileView.itemLoadStatus.playerState) {
+                    when (playerState) {
                         PlayerState.IDLE -> {
-                            audioCutterScreenCallback.play(adapterPosition)
+//                            audioCutterScreenCallback.play(adapterPosition)       //TODO can check lai
+                            lifecycleCoroutineScope.launch {
+                                audioPlayer.play(audioFileView.audioFile)
+                            }
                         }
                         PlayerState.PAUSE -> {
-                            audioCutterScreenCallback.resume(adapterPosition)
+//                            audioCutterScreenCallback.resume(adapterPosition)
+                            audioPlayer.resume()
                         }
                         PlayerState.PLAYING -> {
-                            audioCutterScreenCallback.pause(adapterPosition)
+//                            audioCutterScreenCallback.pause(adapterPosition)
+                            audioPlayer.pause()
                         }
                         else -> {
                             //nothing
