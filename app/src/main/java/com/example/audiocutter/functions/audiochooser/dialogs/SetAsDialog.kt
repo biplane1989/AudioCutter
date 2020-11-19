@@ -28,7 +28,7 @@ class SetAsDialog(val mContext: Context) : DialogFragment(), View.OnClickListene
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        rootView = LayoutInflater.from(mContext).inflate(R.layout.setas_dialog, container, false)
+        rootView = LayoutInflater.from(mContext).inflate(R.layout.cutchooser_setas_dialog, container, false)
         initViews()
         return rootView
     }

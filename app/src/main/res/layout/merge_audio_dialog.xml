@@ -51,16 +51,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_item_dialog"
                 android:paddingHorizontal="@dimen/margin_item_dialog"
+                android:singleLine="true"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:text="@string/my_studio_dialog_rename_file_name"
                 android:textColor="#2E3041"
                 android:textSize="@dimen/d_12" />
 
             <EditText
+                android:theme="@style/editTextTheme"
                 android:id="@+id/edt_filename_dialog"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/d_48"
-
+                android:singleLine="true"
                 android:layout_marginHorizontal="@dimen/margin_item_dialog"
                 android:layout_marginVertical="@dimen/margin_item_dialog"
                 android:background="@drawable/bg_edt_ctm"

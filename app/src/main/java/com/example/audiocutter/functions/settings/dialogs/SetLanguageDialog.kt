@@ -29,7 +29,7 @@ class SetLanguageDialog(val mContext: Context) : DialogFragment(), View.OnClickL
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        rootView = LayoutInflater.from(mContext).inflate(R.layout.dialog_language, container, false)
+        rootView = LayoutInflater.from(mContext).inflate(R.layout.settingscrren_language_dialog, container, false)
         initViews()
         return rootView
     }

@@ -61,9 +61,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/size_item_dialog"
                 android:layout_marginHorizontal="@dimen/margin_item_dialog"
-           android:layout_marginVertical="@dimen/margin_item_dialog"
-           android:background="@drawable/bg_edt_ctm"
-
+                android:layout_marginVertical="@dimen/margin_item_dialog"
+                android:background="@drawable/bg_edt_ctm"
+                android:theme="@style/editTextTheme"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
                 android:hint="@string/file_name"
                 android:textColor="#2E3041"

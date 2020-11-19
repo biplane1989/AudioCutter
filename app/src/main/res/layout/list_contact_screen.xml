@@ -81,6 +81,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#FFFFFF"
+                android:singleLine="true"
                 android:hint="Search..."
                 app:layout_constraintBottom_toBottomOf="@id/iv_search_close"
                 app:layout_constraintEnd_toStartOf="@id/iv_clear"
@@ -88,6 +89,7 @@
                 app:layout_constraintTop_toTopOf="@id/iv_search_close" />
 
             <ImageView
+
                 android:id="@+id/iv_clear"
                 android:layout_width="36dp"
                 android:layout_height="36dp"

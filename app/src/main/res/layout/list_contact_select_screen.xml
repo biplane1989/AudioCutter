@@ -84,12 +84,14 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
+                android:theme="@style/editTextTheme"
                 android:id="@+id/edt_search"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="12dp"
                 android:backgroundTint="#F6F6F6"
-                android:hint="Search..."
+                android:singleLine="true"
+                android:hint="@string/search"
                 app:layout_constraintBottom_toBottomOf="@id/iv_search_close"
                 app:layout_constraintEnd_toStartOf="@id/iv_clear"
                 app:layout_constraintStart_toEndOf="@id/iv_search_close"

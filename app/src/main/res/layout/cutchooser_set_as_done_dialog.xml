@@ -27,7 +27,7 @@
 
             <ImageView
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:id="@+id/iv_cancal_dialog_done"
+                android:id="@+id/iv_cancel_dialog_done"
                 android:layout_width="?actionBarSize"
                 android:layout_height="?actionBarSize"
                 android:scaleType="centerInside"

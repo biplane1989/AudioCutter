@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
@@ -88,7 +87,7 @@ class DialogAppShare(val mContext: Context) : BaseDialog(), AppShareAdapter.AppS
 
     override fun shareApp(position: Int) {
         if (!listData[position].isCheckButton) {
-            mCallBack.shareFilesToAppsDialog(listTmp.get(position).app)
+            mCallBack.shareFilesToAppsDialog(listTmp[position].pkgName)
         } else {
             mCallBack.shareFileAudioToAppDevices()
         }
