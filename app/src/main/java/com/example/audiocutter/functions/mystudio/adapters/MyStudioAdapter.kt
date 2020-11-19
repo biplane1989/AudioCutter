@@ -1,7 +1,6 @@
 package com.example.audiocutter.functions.mystudio.adapters
 
 import android.graphics.Color
-import android.media.MediaMetadataRetriever
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,11 +9,7 @@ import android.widget.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.util.Util
 import com.example.audiocutter.R
-import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.objects.AudioFileView
@@ -23,9 +18,6 @@ import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
 import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 
 interface AudioCutterScreenCallback {
@@ -179,7 +171,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 tvInfo.setText(((audioFileView.audioFile.size) / (1024)).toString() + " KB" + " | " + bitrate + "kb/s")
             }
 
-            tvTotal.text = "/" + simpleDateFormat.format(audioFileView.audioFile.time?.toInt())
+            tvTotal.text = "/" + simpleDateFormat.format(audioFileView.audioFile.duration?.toInt())
 
             if (audioFileView.isExpanded) {
                 llPlayMusic.visibility = View.VISIBLE
@@ -225,7 +217,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
             sbMusic.max = audioFileView.itemLoadStatus.duration
 
-            tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(audioFileView.audioFile.time), itemView.context)
+            tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(audioFileView.audioFile.duration), itemView.context)
                 .toInt() + 15
 
             tvTimeLife.text = simpleDateFormat.format(audioFileView.itemLoadStatus.currPos)

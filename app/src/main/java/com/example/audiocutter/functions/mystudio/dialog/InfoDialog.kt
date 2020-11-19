@@ -53,32 +53,7 @@ class InfoDialog : BaseDialog() {
     fun getData() {
         val simpleDateFormat = SimpleDateFormat("mm:ss")
 
-
-        val artist = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(File(requireArguments().getString(BUNDLE_FILE_PATH)
-                .toString()), MediaMetadataRetriever.METADATA_KEY_ARTIST)
-        val album = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(File(requireArguments().getString(BUNDLE_FILE_PATH)
-                .toString()), MediaMetadataRetriever.METADATA_KEY_ALBUM)
-        val bitRate = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(File(requireArguments().getString(BUNDLE_FILE_PATH)
-                .toString()), MediaMetadataRetriever.METADATA_KEY_BITRATE)
-        val title = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(File(requireArguments().getString(BUNDLE_FILE_PATH)
-                .toString()), MediaMetadataRetriever.METADATA_KEY_TITLE)
-        val duration = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(File(requireArguments().getString(BUNDLE_FILE_PATH)
-                .toString()), MediaMetadataRetriever.METADATA_KEY_DURATION)
-        val genre = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(File(requireArguments().getString(BUNDLE_FILE_PATH)
-                .toString()), MediaMetadataRetriever.METADATA_KEY_GENRE)
-        val date = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(File(requireArguments().getString(BUNDLE_FILE_PATH)
-                .toString()), MediaMetadataRetriever.METADATA_KEY_DATE)
-
-
-
-        if (requireArguments().getString(BUNDLE_FILE_PATH) != null) {
+        /*if (requireArguments().getString(BUNDLE_FILE_PATH) != null) {
             val size = File(requireArguments().getString(BUNDLE_FILE_PATH).toString()).length()
             val index = requireArguments().getString(BUNDLE_FILE_PATH)?.lastIndexOf(".")
             val format = requireArguments().getString(BUNDLE_FILE_PATH)
@@ -134,7 +109,7 @@ class InfoDialog : BaseDialog() {
             tv_date.text = date
         } else {
             tv_date.text = UNKNOWN
-        }
+        }*/
 
     }
 }

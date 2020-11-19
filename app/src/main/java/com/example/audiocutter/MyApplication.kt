@@ -11,6 +11,7 @@ import com.example.audiocutter.permissions.PermissionManager
 import com.example.audiocutter.util.PreferencesHelper
 
 class MyApplication : Application() {
+
     override fun onCreate() {
         super.onCreate()
         PreferencesHelper.start(applicationContext)

@@ -66,12 +66,12 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
         listAudio.add(item3)
         listAudio.add(item4)
 
-        runOnUI {
+      /*  runOnUI {
             var a = System.currentTimeMillis()
             Log.e(TAG, "createView: " )
             val audioMergingInfo = audioCutterImpl.getAudioInfo(listAudio[1].file.absolutePath)
             Log.e(TAG, "createView: ${audioMergingInfo}" )
-        }
+        }*/
 
     }
 

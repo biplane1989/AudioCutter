@@ -1,7 +1,6 @@
 package com.example.audiocutter.functions.contacts.adapters
 
 import android.graphics.Color
-import android.media.MediaMetadataRetriever
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.audiocutter.R
-import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.functions.mystudio.Constance
@@ -142,10 +140,10 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                         .into(ivAvatar)
                 }
 
-                tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(selectItemView.audioFile.time), itemView.context)
+                tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(selectItemView.audioFile.duration), itemView.context)
                     .toInt() + 15
 
-                tvTotal.text = "/" + simpleDateFormat.format(selectItemView.audioFile.time.toInt())
+                tvTotal.text = "/" + simpleDateFormat.format(selectItemView.audioFile.duration.toInt())
 
                 if (selectItemView.isExpanded) {
                     llPlayMusic.visibility = View.VISIBLE
