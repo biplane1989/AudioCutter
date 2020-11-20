@@ -106,8 +106,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                         isEmptyStatus.postValue(true)
                     }
                 }
-
-                if (mListAudioFileScans.size <= 0) {        // lan dau tien data rong
+                mListAudioFileScans.clear()
+              /*  if (mListAudioFileScans.size <= 0) {        // lan dau tien data rong
                     for (item in it.listAudioFiles) {
                         mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
                     }
@@ -123,8 +123,11 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                         mListAudioFileScans.add(item)
                         Log.d(TAG, "synchronizedData: newList : " + item.isExpanded)
                     }
-                }
+                }*/
 
+                for (item in it.listAudioFiles) {
+                    mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
+                }
 //                mAudioMediatorLiveData.postValue(mListAudio)
             }
             mergeList()
