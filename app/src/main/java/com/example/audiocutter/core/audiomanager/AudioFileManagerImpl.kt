@@ -3,7 +3,6 @@ package com.example.audiocutter.core.audiomanager
 import android.content.ContentValues
 import android.content.Context
 import android.database.ContentObserver
-import android.media.MediaMetadataRetriever
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Environment
@@ -25,8 +24,6 @@ import com.example.core.utils.FileUtil
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import java.io.File
-import java.lang.NullPointerException
-import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -36,7 +33,8 @@ import kotlin.collections.HashSet
 object AudioFileManagerImpl : AudioFileManager {
     private val TAG = "AudioFileManagerImpl"
     private val listAllAudioData = ArrayList<AudioFile>()
-    private val audioFileMap = HashMap<String, AudioFile>()
+    private val filePathMapAudioFile = HashMap<String, AudioFile>()
+    private val uriPathSet = HashSet<String>()
 
     private const val APP_FOLDER_NAME = "AudioCutter"
     private const val CUTTING_FOLDER_NAME = "cutter"
@@ -139,6 +137,7 @@ object AudioFileManagerImpl : AudioFileManager {
         listAllAudios.postValue(AudioFileScans(ArrayList(), StateLoad.LOADING))
         withLock {
             listAllAudioData.clear()
+            uriPathSet.clear()
             queryMediaStore { mediaId, filePath, dateStr ->
                 val file = File(filePath)
                 Log.d(TAG, "scanning file ${filePath}")
@@ -146,6 +145,7 @@ object AudioFileManagerImpl : AudioFileManager {
                     val audioFile = readOrGetCacheAudioFile(filePath, mediaId, dateStr)
                     audioFile?.let {
                         listAllAudioData.add(it)
+                        uriPathSet.add(it.uri.toString())
                     }
                 }
             }
@@ -165,12 +165,12 @@ object AudioFileManagerImpl : AudioFileManager {
         mediaId: String,
         modified: Long
     ): AudioFile? {
-        val cachedAudioFile = audioFileMap.get(filePath)
+        val cachedAudioFile = filePathMapAudioFile.get(filePath)
         if (cachedAudioFile?.modified != modified) {
             synchronized(this) {
                 val audioInfo = FileUtil.getAudioInfo(filePath)
                 audioInfo?.let {
-                    audioFileMap.put(
+                    filePathMapAudioFile.put(
                         filePath,
                         Utils.convertToAudioFile(
                             it,
@@ -183,7 +183,7 @@ object AudioFileManagerImpl : AudioFileManager {
 
 
         }
-        return audioFileMap.get(filePath)
+        return filePathMapAudioFile.get(filePath)
     }
 
     private fun checkFolder(filePath: String): Folder? {
@@ -199,6 +199,9 @@ object AudioFileManagerImpl : AudioFileManager {
         return null
     }
 
+    override fun hasUri(uri: String): Boolean {
+        return uriPathSet.contains(uri)
+    }
 
     override fun findAllAudioFiles(): LiveData<AudioFileScans> {
         return listAllAudios
@@ -257,7 +260,7 @@ object AudioFileManagerImpl : AudioFileManager {
                                 }
                             }
                             listAllAudioData.add(audioFile)
-                            audioFileMap.put(audioFile.getFilePath(), audioFile)
+                            filePathMapAudioFile.put(audioFile.getFilePath(), audioFile)
                             listAllAudios.postValue(
                                 AudioFileScans(
                                     listAllAudioData,
