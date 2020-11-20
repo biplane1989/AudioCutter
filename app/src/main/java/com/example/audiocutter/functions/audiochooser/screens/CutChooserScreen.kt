@@ -44,8 +44,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         when (it) {
             1 -> {
                 showProgressBar(true)
-                binding.ivEmptyListCutter.visibility = View.INVISIBLE
-                binding.tvEmptyListCutter.visibility = View.INVISIBLE
             }
             0 -> {
                 showProgressBar(false)
@@ -57,13 +55,22 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     }
     var currentPos = -1
 
-    private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        if (listMusic.isEmpty() || listMusic == null) {
-            showEmptyList()
-        } else {
-            audioCutterAdapter.submitList(ArrayList(listMusic))
-            showList()
+    private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
+        if(listMusic == null){
+            binding.rvAudioCutter.visibility= View.INVISIBLE
+        }else{
+            if (listMusic.isEmpty()) {
+                showEmptyList()
+
+            } else {
+
+                audioCutterAdapter.submitList(ArrayList(listMusic))
+                showList()
+                showProgressBar(false)
+
+            }
         }
+
     }
 
 
@@ -171,7 +178,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     }
 
     private fun showList() {
-        showProgressBar(false)
         binding.rvAudioCutter.visibility = View.VISIBLE
         binding.ivEmptyListCutter.visibility = View.INVISIBLE
         binding.tvEmptyListCutter.visibility = View.INVISIBLE

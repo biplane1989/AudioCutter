@@ -19,6 +19,7 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.MixingScreenBinding
+import com.example.audiocutter.ext.convertToAudioDuration
 import com.example.audiocutter.functions.editor.dialogs.MixerDialog
 import com.example.audiocutter.functions.editor.dialogs.FileNameDialogListener
 import com.example.audiocutter.functions.mystudio.dialog.CancelDialog
@@ -99,13 +100,9 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
         audioFile1 = ManagerFactory.getAudioFileManager().buildAudioFile(safeArg.pathAudio1)
         audioFile2 = ManagerFactory.getAudioFileManager().buildAudioFile(safeArg.pathAudio2)
-        durAudio1 = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(audioFile1.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
-            .toString()
+        durAudio1 = audioFile1.duration.toString()
 
-        durAudio2 = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(audioFile2.file, MediaMetadataRetriever.METADATA_KEY_DURATION)
-            .toString()
+        durAudio2 = audioFile2.duration.toString()
         listData.add(audioFile1)
         listData.add(audioFile2)
 
@@ -239,7 +236,6 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     override fun setVolumeAudio1(value: Float, min: Float, max: Float) {
         var newValueSound =
             Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
-        Log.d("1010", "setVolumeAudio1: ${newValueSound.toFloat()}")
         if (newValueSound > 1) {
             newValueSound = 1.0
         }

@@ -10,7 +10,7 @@
     <string name="main_screen_flash_call_text">Flash Call</string>
     <string name="ToastExceed">You can select only 2 item</string>
     <string name="file_merged">file to be merged</string>
-
+<string name="Choose_in_app_inten">"Choose a sharing app"</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -143,4 +143,12 @@
     <string name="set_contact_ringtone_screen_set_ringtone_fail">Set RingTone Fail !</string>
     <string name="list_select_audio_screen_open_file_title">\"Select a File \"</string>
     <string name="contact_managerimpl_default_ringtone">Default ringtone</string>
+    <string name="filename_exist">The file name already exists</string>
+    <string name="name_mustbenull">Name must be null</string>
+    <string name="vietnam_text">Tiếng việt</string>
+    <string name="english_text">english</string>
+    <string name="kbps">kb/s</string>
+    <string name="megabyte">Mb</string>
+    <string name="kilobyte">Kb</string>
+    <string name="filecount">file</string>
 </resources>

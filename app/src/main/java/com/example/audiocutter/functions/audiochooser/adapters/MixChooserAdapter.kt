@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.audiochooser.adapters
 
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
@@ -118,24 +119,25 @@ class MixChooserAdapter(val mContext: Context) :
             lnItem.setOnClickListener(this)
         }
 
+        @SuppressLint("SetTextI18n")
         fun bind() {
             val itemAudioFile = getItem(position)
             var bitRate = itemAudioFile.audioFile.bitRate / 1000
             if (bitRate > 320) {
                 bitRate = 320
             }
-            tvBitrateAudio.text = "${bitRate}kbp/s"
+            tvBitrateAudio.text = "${bitRate}${mContext.resources.getString(R.string.kbps)}"
 
             tvNameAudio.text = itemAudioFile.audioFile.fileName
             var size = (itemAudioFile.audioFile.size.toDouble() / SIZE_MB)
 
             if (size >= 1) {
                 size = Math.floor(size * 10) / 10
-                tvSizeAudio.text = "$size Mb"
+                tvSizeAudio.text = "$size ${mContext.resources.getString(R.string.megabyte)}"
             } else {
                 size = (itemAudioFile.audioFile.size.toDouble() / 1024)
                 size = Math.floor(size * 10) / 10
-                tvSizeAudio.text = "$size Kb"
+                tvSizeAudio.text = "$size ${mContext.resources.getString(R.string.kilobyte)}"
             }
 
             when (itemAudioFile.isCheckDistance) {

@@ -1,17 +1,12 @@
 package com.example.audiocutter.functions.audiochooser.dialogs
 
-import android.annotation.SuppressLint
-import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.FragmentManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audiomanager.Folder
-import com.example.audiocutter.functions.mystudio.dialog.DeleteDialog
-import com.example.audiocutter.functions.mystudio.dialog.DeleteDialogListener
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.util.Utils
 import kotlinx.android.synthetic.main.merge_audio_dialog.*
 
@@ -109,6 +104,11 @@ class MergeDialog() : BaseDialog(), View.OnClickListener {
     private fun checkValid(name: String): Boolean {
         if (name.isEmpty()) {
             edt_filename_dialog.error = "Name must be null"
+            edt_filename_dialog.requestFocus()
+            return false
+        }
+        if (ManagerFactory.getAudioFileManager().checkFileNameDuplicate(name, Folder.TYPE_MERGER)) {
+            edt_filename_dialog.error = "Name already exist"
             edt_filename_dialog.requestFocus()
             return false
         }

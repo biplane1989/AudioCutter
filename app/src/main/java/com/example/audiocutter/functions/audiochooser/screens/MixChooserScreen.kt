@@ -33,8 +33,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         when (it) {
             1 -> {
                 showProgressBar(true)
-                binding.ivEmptyListMixer.visibility = View.INVISIBLE
-                binding.tvEmptyListMixer.visibility = View.INVISIBLE
+
             }
             0 -> {
                 showProgressBar(false)
@@ -45,25 +44,41 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         }
     }
 
-    private val listAudioObserver = Observer<List<AudioCutterView>> {
-        if (it.isEmpty() || it == null) {
-            showEmptyList()
+    private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
+
+        if (listMusic == null) {
+            binding.rvMixer.visibility = View.INVISIBLE
         } else {
-            audioMixAdapter.submitList(ArrayList(it))
-            showList()
-        }
-        var count = 0
-        it.forEach {
-            if (it.isCheckChooseItem) {
-                count++
-                if (count >= 2) {
-                    setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
-                } else {
-                    setColorButtonNext(R.color.colorgray, R.drawable.bg_next_audio_disabled, false)
+            if (listMusic.isEmpty()) {
+                showEmptyList()
+            } else {
+
+                audioMixAdapter.submitList(ArrayList(listMusic))
+                showList()
+                showProgressBar(false)
+            }
+            var count = 0
+            listMusic.forEach {
+                if (it.isCheckChooseItem) {
+                    count++
+                    if (count >= 2) {
+                        setColorButtonNext(
+                            R.color.colorWhite,
+                            R.drawable.bg_next_audio_enabled,
+                            true
+                        )
+                    } else {
+                        setColorButtonNext(
+                            R.color.colorgray,
+                            R.drawable.bg_next_audio_disabled,
+                            false
+                        )
+                    }
                 }
             }
+            binding.tvCountFile.text = "${count} file"
         }
-        binding.tvCountFile.text = "${count} file"
+
 
     }
 

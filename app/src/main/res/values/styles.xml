@@ -14,7 +14,7 @@
     <declare-styleable name="TestView">
         <attr name="textRandom" format="string" />
     </declare-styleable>
-    
+
 
     <declare-styleable name="MaterialSpinner" tools:ignore="ResourceName">
         <attr name="ms_arrow_tint" format="color" />
@@ -22,13 +22,13 @@
         <attr name="ms_background_color" format="color" />
         <attr name="ms_text_color" format="color" />
         <attr name="ms_dropdown_max_height" format="dimension" />
-        <attr format="dimension" name="ms_dropdown_height">
+        <attr name="ms_dropdown_height" format="dimension">
             <enum name="fill_parent" value="-1" />
             <enum name="match_parent" value="-1" />
-            <enum name="wrap_content" value="-2"/>
+            <enum name="wrap_content" value="-2" />
         </attr>
-        <attr format="integer" name="ms_background_selector"/>
-        <attr format="dimension" name="ms_padding_top"/>
+        <attr name="ms_background_selector" format="integer" />
+        <attr name="ms_padding_top" format="dimension" />
         <attr name="ms_padding_left" format="dimension" />
         <attr name="ms_padding_bottom" format="dimension" />
         <attr name="ms_padding_right" format="dimension" />
@@ -74,16 +74,17 @@
         <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
         <item name="android:gravity">center</item>
     </style>
+
     <style name="DialogGray" parent="@style/Theme.AppCompat.Light">
-        <item name="colorControlHighlight">@color/colorWhite</item>
+        <item name="colorControlHighlight">@color/colorControlHighlight</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowFrame">@null</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowBackground">@color/colorHintText</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowTitleStyle">@null</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
-        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
         <item name="android:gravity">center</item>
     </style>
 

@@ -27,52 +27,56 @@ class MixChooserModel : BaseViewModel() {
     var isChooseItem = false
 
     private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>>()
-
     init {
+
         _listAudioFiles.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
+            var listAudioFiles:List<AudioCutterView>?=null
+
             when (it.state) {
                 StateLoad.LOADING -> {
                     _stateLoadProgress.postValue(1)
                 }
                 StateLoad.LOADDONE -> {
                     _stateLoadProgress.postValue(0)
+                    val tmpList = ArrayList<AudioCutterView>()
+                    it.listAudioFiles.forEach {
+                        tmpList.add(AudioCutterView(it))
+                    }
+                    listAudioFiles = tmpList
                 }
                 StateLoad.LOADFAIL -> {
                     _stateLoadProgress.postValue(-1)
                 }
             }
-            val listAudioViews = ArrayList<AudioCutterView>()
-            it.listAudioFiles.forEach {
-                listAudioViews.add(AudioCutterView(it))
-            }
-            _listAudioFiles.postValue(listAudioViews)
+
+
+            _listAudioFiles.postValue(listAudioFiles)
 
         }
     }
-
-    private val _listFilteredAudioFiles = liveData<List<AudioCutterView>> {
+    private val _listFilteredAudioFiles = liveData<List<AudioCutterView>?> {
         emitSource(_listAudioFiles.map {
-            val listResult = ArrayList(it)
-            if (!filterText.isEmpty()) {
-                listResult.clear()
-                it.forEach { item ->
-                    val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
-                        filterText.toLowerCase(
-                            Locale.getDefault()
+            var listResult:List<AudioCutterView>?=null
+            if(it != null){
+                listResult = ArrayList(it)
+                if (filterText.isNotEmpty()) {
+                    it.forEach { item ->
+                        val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
+                            filterText.toLowerCase(Locale.getDefault())
                         )
-                    )
-                    if (rs) {
-                        listResult.add(item)
+                        if (rs) {
+                            listResult.add(item)
+                        }
                     }
                 }
             }
+
 
             listResult
         })
     }
 
-
-    fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
+    fun getAllAudioFile(): LiveData<List<AudioCutterView>?> {
         return _listFilteredAudioFiles
     }
 

@@ -7,7 +7,7 @@ import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.arthenica.mobileffmpeg.FFprobe
 import com.arthenica.mobileffmpeg.Level
-import com.example.core.Utils.Utils
+import com.example.core.utils.FileUtil
 import kotlinx.coroutines.*
 import java.io.File
 import java.util.*
@@ -102,7 +102,7 @@ class AudioCutterImpl : AudioCutter {
                 }
                 Config.RETURN_CODE_CANCEL -> {
                     updateItemLiveData(audioFileCore, 0, FFMpegState.CANCEL)
-                    Utils.deleteFile(fileCutPath)
+                    FileUtil.deleteFile(fileCutPath)
                 }
                 else -> {
                     Log.e(
@@ -238,7 +238,7 @@ class AudioCutterImpl : AudioCutter {
                 }
                 Config.RETURN_CODE_CANCEL -> {
                     updateItemLiveData(audioFileCore, 0, FFMpegState.CANCEL)
-                    Utils.deleteFile(filePath)
+                    FileUtil.deleteFile(filePath)
                 }
                 else -> {
                     Log.e(
@@ -303,7 +303,7 @@ class AudioCutterImpl : AudioCutter {
                 }
                 Config.RETURN_CODE_CANCEL -> {
                     updateItemLiveData(audioFileCore, 0, FFMpegState.CANCEL)
-                    Utils.deleteFile(pathFileMerge)
+                    FileUtil.deleteFile(pathFileMerge)
                 }
                 else -> {
                     Log.e(
@@ -344,26 +344,6 @@ class AudioCutterImpl : AudioCutter {
         audioFileCore.bitRate = bitRate
         audioFileCore.time = fileTime
         audioFileCore.mimeType = fileType
-    }
-
-    override fun getAudioInfo(filePath: String): AudioInformation? {
-        val info = FFprobe.getMediaInformation(filePath)
-        info?.let {
-            val duration = info.duration.replace(".", "").toLong() / 1000
-            Log.d(TAG, "getAudioInfo: $info")
-            return AudioInformation(
-                info.filename.substring(
-                    info.filename.lastIndexOf("/") + 1,
-                    info.filename.lastIndexOf(".")
-                ),
-                info.bitrate.toInt(),
-                duration,
-                info.size.toLong(),
-                filePath,
-                info.format
-            )
-        }
-        return null
     }
 
     companion object {

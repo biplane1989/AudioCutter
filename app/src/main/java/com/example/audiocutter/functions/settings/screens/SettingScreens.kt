@@ -39,20 +39,16 @@ class SettingScreens : BaseFragment(), SetLanguageDialog.DialogSettingsListener 
     override fun setLanguage(item: Int) {
         when (item) {
             1 -> {
-                binding.tvLanguageSettings.text = "english"
+                binding.tvLanguageSettings.text = resources.getString(R.string.english_text)
 
                 val res = requireContext().resources
                 val dm: DisplayMetrics = res.displayMetrics
                 val conf: Configuration = res.configuration
                 conf.setLocale(Locale("Vi")) // API 17+ only.
                 res.updateConfiguration(conf, dm)
-
-                showToast("english")
             }
             0 -> {
-
-                binding.tvLanguageSettings.text = "vietnam"
-                showToast("vietnam")
+                binding.tvLanguageSettings.text = resources.getString(R.string.vietnam_text)
             }
         }
     }

@@ -112,18 +112,18 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
                 bitRate = 320
             }
 
-            tvBitrateAudio.text = "${bitRate}kbp/s"
+            tvBitrateAudio.text = "${bitRate}${mContext.resources.getString(R.string.kbps)}"
 
             tvNameAudio.text = itemAudioFile.audioFile.fileName
             var size = (itemAudioFile.audioFile.size.toDouble() / SIZE_MB)
 
             if (size >= 1) {
                 size = floor(size * 10) / 10
-                tvSizeAudio.text = "$size Mb"
+                tvSizeAudio.text = "$size ${mContext.resources.getString(R.string.megabyte)}"
             } else {
                 size = (itemAudioFile.audioFile.size.toDouble() / 1024)
                 size = floor(size * 10) / 10
-                tvSizeAudio.text = "$size Kb"
+                tvSizeAudio.text = "$size ${mContext.resources.getString(R.string.kilobyte)}"
             }
 
             when (itemAudioFile.isCheckDistance) {

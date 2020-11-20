@@ -5,7 +5,9 @@ import android.view.View
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audiomanager.Folder
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.util.Utils
+import kotlinx.android.synthetic.main.merge_audio_dialog.*
 import kotlinx.android.synthetic.main.mix_dialog_file_name.*
 
 class MixerDialog : BaseDialog() {
@@ -70,6 +72,11 @@ class MixerDialog : BaseDialog() {
     private fun checkValid(name: String): Boolean {
         if (name.isEmpty()) {
             edt_file_name.error = "Name must be null"
+            edt_file_name.requestFocus()
+            return false
+        }
+        if (ManagerFactory.getAudioFileManager().checkFileNameDuplicate(name, Folder.TYPE_MIXER)) {
+            edt_file_name.error = "Name already exist"
             edt_file_name.requestFocus()
             return false
         }

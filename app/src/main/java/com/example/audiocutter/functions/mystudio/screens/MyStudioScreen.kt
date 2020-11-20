@@ -247,11 +247,17 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     ShowDialogShareFile()
                 }
                 R.id.rename -> {
-                    val dialog = RenameDialog.newInstance(this, typeAudio, audioFile.file.absolutePath, audioFile.mimeType!!)
+                    val dialog = RenameDialog.newInstance(
+                        this,
+                        typeAudio,
+                        audioFile.file.absolutePath,
+                        audioFile.fileName
+                    )
                     dialog.show(childFragmentManager, RenameDialog.TAG)
                 }
                 R.id.info -> {
-                    val dialog = InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
+                    val dialog =
+                        InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
                     dialog.show(childFragmentManager, InfoDialog.TAG)
                 }
                 R.id.delete -> {
@@ -299,7 +305,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     // hanlder linterner on dialog rename
-    override fun onRenameClick(name: String, type: Int, filePath: String) {
+    override fun onRenameClick(newName: String, type: Int, filePath: String) {
         /**handle data rename change name to file insert to mediastore**/
         val typeFolder: Folder = when (type) {
             0 -> Folder.TYPE_CUTTER
@@ -308,7 +314,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
             else -> Folder.TYPE_MIXER
         }
-        myStudioViewModel.renameAudio(name, typeFolder, filePath)
+        myStudioViewModel.renameAudio(newName, typeFolder, filePath)
 
 
     }

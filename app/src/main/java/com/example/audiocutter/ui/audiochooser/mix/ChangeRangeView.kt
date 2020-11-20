@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.View
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.ext.convertToAudioDuration
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
@@ -286,11 +287,7 @@ class ChangeRangeView @JvmOverloads constructor(
                 )
                 drawTextDurationMin(
                     canvas,
-                    Utils.convertTime(
-                        ManagerFactory.getAudioFileManager().getInfoAudioFile(
-                            audioFile1.file, MediaMetadataRetriever.METADATA_KEY_DURATION
-                        )!!.toInt()
-                    )
+                    audioFile1.duration.convertToAudioDuration()
                 )
             } else {
                 drawText(
@@ -300,12 +297,7 @@ class ChangeRangeView @JvmOverloads constructor(
                 )
                 drawTextDurationMin(
                     canvas,
-                    Utils.convertTime(
-                        ManagerFactory.getAudioFileManager().getInfoAudioFile(
-                            audioFile2.file,
-                            MediaMetadataRetriever.METADATA_KEY_DURATION
-                        )!!.toInt()
-                    )
+                    audioFile2.duration.convertToAudioDuration()
                 )
             }
         } catch (e: NumberFormatException) {
@@ -549,26 +541,14 @@ class ChangeRangeView @JvmOverloads constructor(
         this.audioFile1 = audioFile1
         this.audioFile2 = audioFile2
 
-        durationAudio1 = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(audioFile1.file, MediaMetadataRetriever.METADATA_KEY_DURATION)!!
-            .toInt()
-        durationAudio2 = ManagerFactory.getAudioFileManager()
-            .getInfoAudioFile(audioFile2.file, MediaMetadataRetriever.METADATA_KEY_DURATION)!!
-            .toInt()
+        durationAudio1 = audioFile1.duration.toInt()
+        durationAudio2 = audioFile2.duration.toInt()
         Log.d("manhnq", "duration:  $durationAudio1 - duration2 : $durationAudio2")
         val rs = durationAudio1 > durationAudio2
         duration = if (!rs) {
-            (ManagerFactory.getAudioFileManager()
-                .getInfoAudioFile(
-                    audioFile2.file, MediaMetadataRetriever
-                        .METADATA_KEY_DURATION
-                ))!!.toInt()
+            audioFile2.duration.toInt()
         } else {
-            (ManagerFactory.getAudioFileManager()
-                .getInfoAudioFile(
-                    audioFile1.file, MediaMetadataRetriever
-                        .METADATA_KEY_DURATION
-                ))!!.toInt()
+            audioFile1.duration.toInt()
         }
 
     }

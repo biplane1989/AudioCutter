@@ -1,7 +1,10 @@
 package com.example.audiocutter.functions.mystudio.dialog
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audiomanager.Folder
@@ -12,9 +15,9 @@ class RenameDialog : BaseDialog() {
 
     companion object {
         val TAG = "DeleteDialog"
-        val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
         val BUNDLE_TYPE_KEY = "BUNDLE_TYPE_KEY"
         val BUNDLE_PATH_KEY = "BUNDLE_PATH_KEY"
+        val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
         lateinit var dialogListener: RenameDialogListener
 
         @JvmStatic
@@ -22,13 +25,14 @@ class RenameDialog : BaseDialog() {
             listener: RenameDialogListener,
             type: Int,
             filePath: String,
-            mimeType: String
+            name: String
         ): RenameDialog {
             this.dialogListener = listener
             val dialog = RenameDialog()
             val bundle = Bundle()
             bundle.putInt(BUNDLE_TYPE_KEY, type)
             bundle.putString(BUNDLE_PATH_KEY, filePath)
+            bundle.putString(BUNDLE_NAME_KEY, name)
             dialog.arguments = bundle
             return dialog
         }
@@ -37,6 +41,12 @@ class RenameDialog : BaseDialog() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, R.style.DialogGray)
+        /* dialog?.let {
+             dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+             val width = ((requireContext().resources?.displayMetrics?.widthPixels)!! * 0.90).toInt()
+             dialog!!.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+         }*/
+
 
     }
 
@@ -46,12 +56,12 @@ class RenameDialog : BaseDialog() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        tv_cancel_dialog_delete.setOnClickListener {
+        edt_new_name.setText(requireArguments().getString(BUNDLE_NAME_KEY, ""))
+        tv_cancel_dialog.setOnClickListener {
             dialog?.dismiss()
         }
 
-        tv_rename_dialog_delete.setOnClickListener {
+        tv_rename_dialog.setOnClickListener {
 
             if (checkValid(edt_new_name.text.toString())) {
                 dialogListener.onRenameClick(
@@ -76,14 +86,14 @@ class RenameDialog : BaseDialog() {
                 Folder.TYPE_MIXER
         }
         if (name.isEmpty()) {
-            edt_new_name.error = "Name must be null"
+            edt_new_name.error = context?.resources?.getString(R.string.name_mustbenull)
             edt_new_name.requestFocus()
             return false
         }
         if (ManagerFactory.getAudioFileManager()
                 .checkFileNameDuplicate(edt_new_name.text.toString(), typeFolder)
         ) {
-            edt_new_name.error = "The file name already exists"
+            edt_new_name.error = context?.resources?.getString(R.string.filename_exist)
             edt_new_name.requestFocus()
             return false
         }

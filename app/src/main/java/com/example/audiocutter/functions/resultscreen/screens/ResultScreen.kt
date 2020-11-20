@@ -100,11 +100,10 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         binding.llProgressbar.visibility = View.VISIBLE
         binding.llPlayMusic.visibility = View.GONE
         binding.btnCancel.visibility = View.VISIBLE
-
         binding.pbLoading.progress = it.percent
         binding.tvLoading.text = it.percent.toString() + "%"
         binding.tvTitleMusic.text = it.getFileName()
-        binding.tvInfoMusic.text = it.bitRate.toString() + "kb/s"
+        binding.tvInfoMusic.text = it.bitRate.toString() + resources.getString(R.string.kbps)
 
         isLoadingDone = false
     }
