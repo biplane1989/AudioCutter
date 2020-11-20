@@ -589,8 +589,11 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     fun renameAudio(newName: String, typeFolder: Folder, filePath: String) {
-        val audioFile = ManagerFactory.getAudioFileManager().buildAudioFile(filePath)
-        ManagerFactory.getAudioFileManager().renameToFileAudio(newName, audioFile, typeFolder)
+        val audioFile = ManagerFactory.getAudioFileManager().findAudioFile(filePath)
+        audioFile?.let {
+            ManagerFactory.getAudioFileManager().renameToFileAudio(newName, it, typeFolder)
+        }
+
 
     }
 

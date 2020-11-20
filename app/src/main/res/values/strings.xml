@@ -151,4 +151,5 @@
     <string name="megabyte">Mb</string>
     <string name="kilobyte">Kb</string>
     <string name="filecount">file</string>
+    <string name="audio_file_is_not_found">Audio file is not found</string>
 </resources>
