@@ -253,7 +253,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         }
         if (rs) {
             dialog.dismiss()
-            dialogDone.show()
+            dialogDone.show(childFragmentManager, SetAsDoneDialog::class.java.name)
         } else {
             Toast.makeText(requireContext(), "set as fail", Toast.LENGTH_SHORT).show()
         }

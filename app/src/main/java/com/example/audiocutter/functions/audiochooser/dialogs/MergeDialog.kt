@@ -2,7 +2,6 @@ package com.example.audiocutter.functions.audiochooser.dialogs
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.DialogFragment
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audiomanager.Folder
@@ -40,41 +39,22 @@ class MergeDialog() : BaseDialog(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.merge_audio_dialog)
-//        initViews()
 
-//        setCancelable(false)
 
-//        setCanceledOnTouchOutside(false)
-
-        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.DialogGray)
+        setStyle(STYLE_NO_TITLE, R.style.DialogGray)
     }
 
-//    fun setOnCallBack(event: MergeDialogListener) {
-//        mCallback = event
-//    }
-
-    private fun initViews() {
-        edt_filename_dialog.setText(Utils.genNewAudioFileName(Folder.TYPE_MERGER))
-        tv_cancel_dialog_merge.setOnClickListener(this)
-        tv_ok_dialog_merge.setOnClickListener(this)
-    }
-
-//    @SuppressLint("SetTextI18n")
-//    override fun show() {
-//        super.show()
-//        tv_count_file_dialog.text = "$countFile ${context.getString(R.string.file_merged)}"
-//    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         countFile = requireArguments().getInt(BUNDLE_NAME_KEY)
         tv_count_file_dialog.text = "$countFile ${context?.getString(R.string.file_merged)}"
-
-        edt_filename_dialog.setText(Utils.genNewAudioFileName(Folder.TYPE_MERGER))
+        val newName = Utils.genNewAudioFileName(Folder.TYPE_MERGER)
+        edt_filename_dialog.setText(newName)
         tv_cancel_dialog_merge.setOnClickListener(this)
         tv_ok_dialog_merge.setOnClickListener(this)
+        edt_filename_dialog.setSelection(newName.length)
     }
 
 //    override fun show(manager: FragmentManager, tag: String?) {

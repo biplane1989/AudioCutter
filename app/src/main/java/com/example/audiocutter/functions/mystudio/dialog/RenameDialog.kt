@@ -1,10 +1,9 @@
 package com.example.audiocutter.functions.mystudio.dialog
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audiomanager.Folder
@@ -12,6 +11,9 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import kotlinx.android.synthetic.main.my_studio_dialog_rename.*
 
 class RenameDialog : BaseDialog() {
+    private lateinit var edtNewName: EditText
+    private lateinit var tvCancel: TextView
+    private lateinit var tvRename: TextView
 
     companion object {
         val TAG = "DeleteDialog"
@@ -21,12 +23,7 @@ class RenameDialog : BaseDialog() {
         lateinit var dialogListener: RenameDialogListener
 
         @JvmStatic
-        fun newInstance(
-            listener: RenameDialogListener,
-            type: Int,
-            filePath: String,
-            name: String
-        ): RenameDialog {
+        fun newInstance(listener: RenameDialogListener, type: Int, filePath: String, name: String): RenameDialog {
             this.dialogListener = listener
             val dialog = RenameDialog()
             val bundle = Bundle()
@@ -54,36 +51,33 @@ class RenameDialog : BaseDialog() {
         return R.layout.my_studio_dialog_rename
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        edt_new_name.setText(requireArguments().getString(BUNDLE_NAME_KEY, ""))
-        tv_cancel_dialog.setOnClickListener {
-            dialog?.dismiss()
+    override fun initViews(view: View, savedInstanceState: Bundle?) {
+        val newName = requireArguments().getString(BUNDLE_NAME_KEY, "")
+        edtNewName = view.findViewById(R.id.edt_new_name)
+        tvCancel = view.findViewById(R.id.tv_cancel_dialog)
+        tvRename = view.findViewById(R.id.tv_rename_dialog)
+        edtNewName.setText(newName)
+        tvCancel.setOnClickListener {
+            dismiss()
         }
-
-        tv_rename_dialog.setOnClickListener {
-
+        tvRename.setOnClickListener {
             if (checkValid(edt_new_name.text.toString())) {
-                dialogListener.onRenameClick(
-                    edt_new_name.text.toString(),
-                    requireArguments().getInt(BUNDLE_TYPE_KEY),
-                    requireArguments().getString(BUNDLE_PATH_KEY, "")
-                )
+                dialogListener.onRenameClick(edt_new_name.text.toString(), requireArguments().getInt(BUNDLE_TYPE_KEY), requireArguments().getString(BUNDLE_PATH_KEY, ""))
                 dismiss()
             }
         }
+        edtNewName.setSelection(newName.length)
+
     }
+
 
     private fun checkValid(name: String): Boolean {
         val typeFolder: Folder = when (requireArguments().getInt(BUNDLE_TYPE_KEY)) {
-            0 ->
-                Folder.TYPE_CUTTER
+            0 -> Folder.TYPE_CUTTER
 
-            1 ->
-                Folder.TYPE_MERGER
+            1 -> Folder.TYPE_MERGER
 
-            else ->
-                Folder.TYPE_MIXER
+            else -> Folder.TYPE_MIXER
         }
         if (name.isEmpty()) {
             edt_new_name.error = context?.resources?.getString(R.string.name_mustbenull)

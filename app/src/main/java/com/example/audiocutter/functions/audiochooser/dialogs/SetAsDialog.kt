@@ -20,7 +20,7 @@ class SetAsDialog(val mContext: Context) : DialogFragment(), View.OnClickListene
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.DialogTitle)
+        setStyle(STYLE_NORMAL, R.style.DialogGray)
     }
 
     override fun onCreateView(

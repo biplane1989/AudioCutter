@@ -9,13 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.*
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.IViewModel
 import com.example.audiocutter.core.audiomanager.Folder
-import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MyStudioFragmentBinding
 import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
 import com.example.audiocutter.functions.mystudio.Constance
@@ -26,10 +27,6 @@ import com.example.audiocutter.functions.mystudio.objects.ActionData
 import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
-import kotlinx.android.synthetic.main.my_studio_fragment.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, CancelDialogListener, DialogAppShare.DialogAppListener {
@@ -44,6 +41,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     private lateinit var audioFile: AudioFile
     private lateinit var dialogShare: DialogAppShare
 
+
     override fun setMenuVisibility(menuVisible: Boolean) {      // su kien khi chuyen tab
         super.setMenuVisibility(menuVisible)
         if (menuVisible) {
@@ -55,6 +53,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             }
         }
     }
+
 
     private val listAudioObserver = Observer<List<AudioFileView>> { listAudio ->
 
@@ -247,17 +246,11 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     ShowDialogShareFile()
                 }
                 R.id.rename -> {
-                    val dialog = RenameDialog.newInstance(
-                        this,
-                        typeAudio,
-                        audioFile.file.absolutePath,
-                        audioFile.fileName
-                    )
+                    val dialog = RenameDialog.newInstance(this, typeAudio, audioFile.file.absolutePath, audioFile.fileName)
                     dialog.show(childFragmentManager, RenameDialog.TAG)
                 }
                 R.id.info -> {
-                    val dialog =
-                        InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
+                    val dialog = InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
                     dialog.show(childFragmentManager, InfoDialog.TAG)
                 }
                 R.id.delete -> {

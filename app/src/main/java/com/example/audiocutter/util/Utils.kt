@@ -13,6 +13,8 @@ import android.os.Build
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.TypedValue
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.res.ResourcesCompat
 import com.example.audiocutter.R
 import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
@@ -269,6 +271,18 @@ object Utils {
         }
         return sb.toString()
     }
+
+
+     fun hideKeyboard(context: Context, view:View) {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+     fun showKeyboard(context: Context) {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+    }
+
 
     private fun getAllFileName(folder: Folder): HashSet<String> {
         val folderPath = ManagerFactory.getAudioFileManager().getFolderPath(folder)

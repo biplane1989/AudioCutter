@@ -1,42 +1,63 @@
 package com.example.audiocutter.activities.acttest.testnm
 
-import android.app.AlertDialog
+import android.app.Activity
+import android.media.AudioFormat
+import android.media.AudioManager
+import android.media.AudioTrack
 import android.os.Bundle
-import android.widget.Toast
+import android.os.Handler
 import com.example.audiocutter.R
-import com.example.audiocutter.base.BaseActivity
-import com.example.audiocutter.functions.settings.screens.SettingScreens
-import kotlinx.android.synthetic.main.act_test.*
-import java.io.File
+import kotlin.experimental.and
 
 
-class TestAct : BaseActivity() {
-    val path = "/storage/emulated/0/AudioCutter/mixer/aloha - Copy (4).mp3"
-    val file = File(path)
-    private lateinit var frg: SettingScreens
+class TestAct : Activity() {
 
-
-    override fun createView(savedInstanceState: Bundle?) {
-        setContentView(R.layout.act_test)
-//        frg = SettingScreens()
-//        supportFragmentManager.beginTransaction().replace(R.id.ln_main, frg).commit()
-        bt_test.setOnClickListener {
-            val dialog = AlertDialog.Builder(this).create()
-            dialog.setTitle("hello")
-            dialog.setMessage("cai gi the ban oi")
-            dialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK") { _, _ -> dialog.dismiss() }
-
-            dialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel") { _, _ ->
-                Toast.makeText(this, "sao the ban oi", Toast.LENGTH_SHORT).show()
-            }
-
-            dialog.show()
-        }
-
-    }
-
-
+//    private val duration = 3 // seconds
+//    private val sampleRate = 8000
+//    private val numSamples = duration * sampleRate
+//    private val sample = DoubleArray(numSamples)
+//    private val freqOfTone = 440.0 // hz
+//    private val generatedSnd = ByteArray(2 * numSamples)
+//    var handler: Handler = Handler()
+//
+//
+//    public override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setContentView(R.layout.act_test)
+//    }
+//
+//    override fun onResume() {
+//        super.onResume()
+//
+//        val thread = Thread {
+//            genTone()
+//            handler.post(Runnable { playSound() })
+//        }
+//        thread.start()
+//    }
+//
+//    fun genTone() {
+//        // fill out the array
+//        for (i in 0 until numSamples) {
+//            sample[i] = Math.sin(2 * Math.PI * i / (sampleRate / freqOfTone))
+//        }
+//
+//        // convert to 16 bit pcm sound array
+//        // assumes the sample buffer is normalised.
+//        var idx = 0
+//        for (dVal in sample) {
+//            // scale to maximum amplitude
+//            val `val` = (dVal * 32767).toShort()
+//            // in 16 bit wav PCM, first byte is the low order byte
+//            generatedSnd[idx++] = (`val` and 0x00ff).toByte()
+//            generatedSnd[idx++] = (`val` and 0xff00.toShort() >>> 8).toByte()
+//        }
+//    }
+//
+//    fun playSound() {
+//        val audioTrack = AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, numSamples, AudioTrack.MODE_STATIC)
+//        audioTrack.write(generatedSnd, 0, generatedSnd.size)
+//        audioTrack.play()
+//    }
 }
-
-
 

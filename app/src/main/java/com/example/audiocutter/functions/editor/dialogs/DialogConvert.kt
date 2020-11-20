@@ -77,9 +77,8 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
         tvConvert = view.findViewById(R.id.dialog_convert_ok_tv)
 
         seekBarVolume.value = volume.toFloat()
-        edtNameFile.setText(
-            Utils.genNewAudioFileName(Folder.TYPE_CUTTER)
-        )
+        val newName = Utils.genNewAudioFileName(Folder.TYPE_CUTTER)
+        edtNameFile.setText(newName)
         tvPercent.text = String.format(Locale.ENGLISH, "%d%%", volume)
 
         spinnerFormat.apply {
@@ -94,6 +93,7 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
             selectedIndex = positionBitrate
             setOnItemSelectedListener { view, position, id, item -> positionBitrate = position }
         }
+        edtNameFile.setSelection(newName.length)
     }
 
     private fun getData() {

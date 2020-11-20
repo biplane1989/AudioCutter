@@ -3,7 +3,6 @@ package com.example.audiocutter.core.audiomanager
 import android.content.ContentValues
 import android.content.Context
 import android.database.ContentObserver
-import android.media.MediaMetadataRetriever
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Environment
@@ -11,7 +10,9 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.core.manager.AudioFileManager
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.objects.AudioFile
@@ -24,7 +25,6 @@ import com.example.core.utils.FileUtil
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import java.io.File
-import java.lang.NullPointerException
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.collections.ArrayList
@@ -341,27 +341,22 @@ object AudioFileManagerImpl : AudioFileManager {
                 }
             }
             val file = audioFile.file
-            val pathNew = "$subPath/$newName${audioFile.mimeType}"
+
+            /***
+             * more item "." to left of mimetype
+             * **/
+            val pathNew = "$subPath/$newName.${audioFile.mimeType}"
+
             val fileNew = File(pathNew)
             file.renameTo(fileNew)
 
             val values = ContentValues()
-            values.put(
-                MediaStore.Audio.AudioColumns.DISPLAY_NAME,
-                "$newName${audioFile.mimeType}"
-            )
-            Log.d(TAG, "reNameToFileAudio: path $pathNew")
+            values.put(MediaStore.Audio.AudioColumns.DISPLAY_NAME, "$newName.${audioFile.mimeType}")
+            Log.d(TAG, "reNameToFileAudio: mimetype  ${audioFile.mimeType}")
 
-            val rows: Int = mContext.contentResolver.update(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values,
-                null, null
-            )
+            val rows: Int = mContext.contentResolver.update(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values, null, null)
             Log.d(TAG, "insertFile: rows $rows")
-            MediaScannerConnection.scanFile(
-                mContext,
-                arrayOf(fileNew.absolutePath),
-                null
-            ) { s, uri ->
+            MediaScannerConnection.scanFile(mContext, arrayOf(fileNew.absolutePath), null) { s, uri ->
                 Log.d("insertFile", "on complete ${uri}  string $s")
             }
 

@@ -7,7 +7,6 @@ import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.util.Utils
-import kotlinx.android.synthetic.main.merge_audio_dialog.*
 import kotlinx.android.synthetic.main.mix_dialog_file_name.*
 
 class MixerDialog : BaseDialog() {
@@ -67,6 +66,7 @@ class MixerDialog : BaseDialog() {
                 }
             }
         }
+        edt_file_name.setSelection(name.length)
     }
 
     private fun checkValid(name: String): Boolean {

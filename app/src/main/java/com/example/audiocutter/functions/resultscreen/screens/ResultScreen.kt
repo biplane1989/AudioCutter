@@ -207,6 +207,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
 
     override fun onClick(view: View?) {
+        audioFile = ManagerFactory.getAudioEditorManager()
+            .getLatestConvertingItem()?.outputAudioFile
         when (view) {
             binding.ivPausePlayMusic -> {
                 runOnUI {
@@ -265,20 +267,23 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                 }
             }
             binding.llShare -> {
-                audioFile = ManagerFactory.getAudioEditorManager()
-                    .getLatestConvertingItem()?.outputAudioFile
                 ShowDialogShareFile()
 
             }
             binding.llContact -> {
-                viewStateManager.resultScreenSetContactItemClicked(this, ManagerFactory.getAudioEditorManager()
-                    .getLatestConvertingItem()?.outputAudioFile?.file!!.absolutePath)
+                audioFile?.let {
+                    viewStateManager.resultScreenSetContactItemClicked(this, audioFile!!.file!!.absolutePath)
+                }
+
             }
             binding.llOpenwith -> {
-
+                audioFile?.let {
+                    Utils.openWithApp(requireContext(), audioFile!!.uri!!)
+                }
             }
         }
     }
+
 
     private fun ShowDialogShareFile() {
         dialogAppShare = DialogAppShare(requireContext())
