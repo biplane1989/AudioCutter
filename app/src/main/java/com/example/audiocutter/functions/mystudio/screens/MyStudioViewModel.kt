@@ -31,6 +31,9 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     private val audioPlayer = ManagerFactory.newAudioPlayer()
 
+    private val loadingProcessingItem = ManagerFactory.getAudioEditorManager()
+        .getCurrentProcessingItem()
+
     private val mAudioMediatorLiveData = MediatorLiveData<ArrayList<AudioFileView>>()
 
     private var mListAudio = ArrayList<AudioFileView>()
@@ -44,8 +47,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     private val pathName = "${Environment.getExternalStorageDirectory()}/AudioCutter/mixer"
 
     private val TAG = "giangtd"
-
-    private var isSeekBarStatus = false         // trang thai seekbar co dang duoc keo hay khong
 
     // kiểm tra có đang ở trạng thái checkbox delete ko
     private var isDeleteStatus = false
@@ -107,30 +108,30 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                     }
                 }
                 mListAudioFileScans.clear()
-              /*  if (mListAudioFileScans.size <= 0) {        // lan dau tien data rong
-                    for (item in it.listAudioFiles) {
-                        mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
-                    }
-                } else {                                    // khi da co data sau moi lan load data thi phai dong bo lai data
-                    val newListAudioFile = ArrayList<AudioFileView>()
-                    for (item in it.listAudioFiles) {
-                        newListAudioFile.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
-                    }
 
-                    val newList = synchronizedData(mListAudioFileScans, newListAudioFile)
-                    mListAudioFileScans.clear()
-                    for (item in newList) {
-                        mListAudioFileScans.add(item)
-                        Log.d(TAG, "synchronizedData: newList : " + item.isExpanded)
-                    }
-                }*/
+//                if (mListAudioFileScans.size <= 0) {        // lan dau tien data rong
+//                    for (item in it.listAudioFiles) {
+//                        mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
+//                    }
+//                } else {                                    // khi da co data sau moi lan load data thi phai dong bo lai data
+//                    val newListAudioFile = ArrayList<AudioFileView>()
+//                    for (item in it.listAudioFiles) {
+//                        newListAudioFile.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
+//                    }
+//
+//                    val newList = synchronizedData(mListAudioFileScans, newListAudioFile)
+//                    mListAudioFileScans.clear()
+//                    for (item in newList) {
+//                        mListAudioFileScans.add(item)
+//                        Log.d(TAG, "synchronizedData: newList : " + item.isExpanded)
+//                    }
+//                }
 
                 for (item in it.listAudioFiles) {
                     mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
                 }
-//                mAudioMediatorLiveData.postValue(mListAudio)
+                mergeList()
             }
-            mergeList()
         }
 
         mAudioMediatorLiveData.addSource(listLoading) {
@@ -148,13 +149,20 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                     }
                 }
             }
+            if (it.size > 0) {
+                isEmptyStatus.postValue(false)
+            }
             mergeList()
-//            mAudioMediatorLiveData.postValue(mListAudio)
         }
         mAudioMediatorLiveData.addSource(ManagerFactory.getAudioEditorManager()
             .getCurrentProcessingItem()) {
             if (it != null) {
-                updateLoadingProgressbar(it)
+                //updateLoadingProgressbar(it)
+                if (newItem.state == ConvertingState.SUCCESS) {
+                    loadingDone.postValue(true)
+                } else {
+                    loadingDone.postValue(false)
+                }
             }
         }
 //        }
@@ -187,6 +195,10 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     fun getAudioPlayer(): AudioPlayer {
         return audioPlayer
+    }
+
+    fun getLoadingProcessingItem(): LiveData<ConvertingItem> {
+        return loadingProcessingItem
     }
 
     private fun mergeList() {
@@ -222,7 +234,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     // update loading item khi editor
     private fun updateLoadingProgressbar(newItem: ConvertingItem) {
-        val newItemConverting = AudioFileView(AudioFile(File(pathName), newItem.getFileName(), 100), false, ItemLoadStatus(), newItem.state, newItem.percent, newItem.id)
+        /*val newItemConverting = AudioFileView(AudioFile(File(pathName), newItem.getFileName(), 100), false, ItemLoadStatus(), newItem.state, newItem.percent, newItem.id)
         if (!mListAudio.isEmpty()) {
             var index = 0
             for (item in mListAudio) {
@@ -241,7 +253,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             }
         }
         mAudioMediatorLiveData.postValue(mListAudio)
-
+*/
         if (newItem.state == ConvertingState.SUCCESS) {
             loadingDone.postValue(true)
         } else {
@@ -262,7 +274,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     // xử lý button check delete
-    fun checkItemPosition(pos: Int): List<AudioFileView> {
+    fun checkItemPosition(pos: Int) {
         val audioFileView = mListAudio.get(pos).copy()
         if (audioFileView.itemLoadStatus.deleteState == DeleteState.UNCHECK) {
             val itemLoadStatus = audioFileView.itemLoadStatus.copy()
@@ -274,7 +286,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             audioFileView.itemLoadStatus = itemLoadStatus
         }
         mListAudio[pos] = audioFileView
-        return mListAudio
+
+        mAudioMediatorLiveData.postValue(mListAudio)
     }
 
     // chuyển trạng thái all item -> delete status
@@ -295,7 +308,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     // chuyển trạng thái từ delete status -> more
-    fun changeAutoItemToMore(): List<AudioFileView> {
+    fun changeAutoItemToMore() {
         val copy = ArrayList<AudioFileView>()
         mListAudio.forEach {
             val audioFileView = it.copy()
@@ -307,18 +320,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         // update trang thai undelete
         isDeleteStatus = false
         mListAudio = copy
-        return mListAudio
-    }
 
-    private fun isCheckAllUpdateData(): Boolean {  // khi loading xong item kiem tra xem co o trang thai check all hay khong
-        var index = 0
-        while (mListAudioFileScans.size > index) {
-            if (mListAudioFileScans.get(index).itemLoadStatus.deleteState == DeleteState.UNCHECK) {
-                return false
-            }
-            index++
-        }
-        return true
+        mAudioMediatorLiveData.postValue(mListAudio)
     }
 
     // check trạng thái có phải check all status ko
@@ -382,7 +385,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     suspend fun deleteAllItemSelected(typeAudio: Int): Boolean {
 
         return runAndWaitOnBackground {
-            val listAudioItems: List<AudioFile> = mListAudio.filter { it.itemLoadStatus.deleteState == DeleteState.CHECKED }
+            val listAudioItems: List<AudioFile> = mListAudio.filter { it.itemLoadStatus.deleteState == DeleteState.CHECKED }        // list<AudioFile> da duoc viet dang exstent funtion
                 .toListAudioFiles()
             var folder = Folder.TYPE_MIXER
             when (typeAudio) {
@@ -397,7 +400,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 }
             }
 
-            if (listAudioItems.any { it.getFilePath() == audioPlayer.getPlayerInfoData().currentAudio?.getFilePath() }) {
+            if (listAudioItems.any { it.getFilePath() == audioPlayer.getPlayerInfoData().currentAudio?.getFilePath() }) {       // kiem tra neu dang phat nhac thi stop laiFload
                 audioPlayer.stop()
             }
             ManagerFactory.getAudioFileManager().deleteFile(listAudioItems, folder)
@@ -407,7 +410,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     suspend fun deleteItem(pathFolder: String, typeAudio: Int): Boolean {
         val listAudioItems = ArrayList<AudioFile>()
         return runAndWaitOnBackground {
-            var result = false
             mListAudio.forEach {
                 if (TextUtils.equals(it.audioFile.file.absoluteFile.toString(), pathFolder)) {
                     listAudioItems.add(it.audioFile)
@@ -426,14 +428,14 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                     folder = Folder.TYPE_MIXER
                 }
             }
-            if (ManagerFactory.getAudioFileManager().deleteFile(listAudioItems, folder)) {
-                result = true
+            if (listAudioItems.any { it.getFilePath() == audioPlayer.getPlayerInfoData().currentAudio?.getFilePath() }) {
+                audioPlayer.stop()
             }
-            result
+            ManagerFactory.getAudioFileManager().deleteFile(listAudioItems, folder)
         }
     }
 
-    fun showPlayingAudio(position: Int): List<AudioFileView> {
+    fun showPlayingAudio(position: Int) {
 
         //   khi play nhạc reset lại trạng thái các item khác
         var index = 0
@@ -459,34 +461,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             audioFileView.isExpanded = true
             mListAudio.set(position, audioFileView)
         }
-        return mListAudio
-    }
-
-    // chuyen trang thai play nhac
-    fun playingAudioAndchangeStatus(position: Int) {
-        runOnBackground {               //  truong hop ket qua cua file loadding uri se bi null
-            if (mListAudio.get(position).audioFile.uri == null) {
-                val uri = Uri.parse(mListAudio.get(position).audioFile.file.absolutePath)
-                mListAudio.get(position).audioFile.uri = uri
-            }
-            audioPlayer.play(mListAudio.get(position).audioFile)
-        }
-    }
-
-    fun pauseAudioAndChangeStatus(position: Int) {
-        audioPlayer.pause()
-    }
-
-    fun stopAudioAndChangeStatus(position: Int): List<AudioFileView> {
-        audioPlayer.stop()
-
-        val audioFileView = mListAudio.get(position).copy()
-        val itemLoadStatus = audioFileView.itemLoadStatus.copy()
-        itemLoadStatus.playerState = PlayerState.IDLE
-        audioFileView.itemLoadStatus = itemLoadStatus
-
-        mListAudio.set(position, audioFileView)
-        return mListAudio
+        mAudioMediatorLiveData.postValue(mListAudio)
     }
 
     // khi chuyển sang tab khác thì stop audio va reset trang thai audio
@@ -497,50 +472,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         for (item in mListAudio) {
             val newItem = item.copy()
             newItem.isExpanded = false
-//            val itemLoadStatus = newItem.itemLoadStatus.copy()
-//            newItem.isExpanded = false
             mListAudio.set(index, newItem)
             index++
-        }
-        mAudioMediatorLiveData.postValue(mListAudio)
-    }
-
-    fun resumeAudioAndChangeStatus(position: Int) {
-        audioPlayer.resume()
-    }
-
-    fun seekToAudio(cusorPos: Int) {
-        audioPlayer.seek(cusorPos)
-        isSeekBarStatus = false
-    }
-
-    fun startSeekBar() {
-        isSeekBarStatus = true
-    }
-
-    private fun updatePlayerInfo(playerInfo: PlayerInfo) {
-        var selectedPosition = -1
-        var i = 0
-        while (i < mListAudio.size) {
-            if (mListAudio.get(i).audioFile.file.absoluteFile.equals(playerInfo.currentAudio!!.file.absoluteFile)) {
-                selectedPosition = i
-                break
-            }
-            i++
-        }
-
-        if (selectedPosition == -1) {
-            audioPlayer.stop()
-        } else {
-            val audioFileView = mListAudio.get(selectedPosition).copy()
-            // update
-            val itemLoadStatus = audioFileView.itemLoadStatus.copy()
-            itemLoadStatus.duration = playerInfo.duration
-            itemLoadStatus.currPos = playerInfo.posision
-            itemLoadStatus.playerState = playerInfo.playerState
-            audioFileView.itemLoadStatus = itemLoadStatus
-
-            mListAudio[selectedPosition] = audioFileView
         }
         mAudioMediatorLiveData.postValue(mListAudio)
     }

@@ -152,4 +152,5 @@
     <string name="kilobyte">Kb</string>
     <string name="filecount">file</string>
     <string name="audio_file_is_not_found">Audio file is not found</string>
+    <string name="my_studio_delete_successfull">Delete Successfull</string>
 </resources>

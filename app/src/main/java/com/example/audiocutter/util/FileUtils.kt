@@ -33,7 +33,7 @@ object FileUtils {
      * @param uri     The Uri to query.
      */
     @SuppressLint("NewApi")
-    fun getPath(context: Context, uri: Uri): String? {
+    fun getUriPath(context: Context, uri: Uri): String? {
         // Check here to KITKAT or new version
         val isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
         var selection: String? = null
