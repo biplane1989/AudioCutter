@@ -25,7 +25,7 @@ import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
 import java.io.File
-import java.util.*
+import kotlin.collections.ArrayList
 
 class MyStudioViewModel(application: Application) : BaseAndroidViewModel(application) {
 
@@ -93,9 +93,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         }
         mAudioMediatorLiveData.addSource(listScaners) {             // khi data co su thay doi thi se goi vao ham nay
             runOnBackground {
-//                delay(3000)
-                mListAudioFileScans.clear()
-                Log.d("taihhhhh", "state ${it.state}")
+
                 if (it.state == StateLoad.LOADING) {
                     isEmptyStatus.postValue(false)
                     loadingStatus.postValue(true)
@@ -108,13 +106,28 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                         isEmptyStatus.postValue(true)
                     }
                 }
-                for (item in it.listAudioFiles) {
-                    mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
 
+                if (mListAudioFileScans.size <= 0) {        // lan dau tien data rong
+                    for (item in it.listAudioFiles) {
+                        mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
+                    }
+                } else {                                    // khi da co data sau moi lan load data thi phai dong bo lai data
+                    val newListAudioFile = ArrayList<AudioFileView>()
+                    for (item in it.listAudioFiles) {
+                        newListAudioFile.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
+                    }
+
+                    val newList = synchronizedData(mListAudioFileScans, newListAudioFile)
+                    mListAudioFileScans.clear()
+                    for (item in newList) {
+                        mListAudioFileScans.add(item)
+                        Log.d(TAG, "synchronizedData: newList : " + item.isExpanded)
+                    }
                 }
-                mergeList()
-                mAudioMediatorLiveData.postValue(mListAudio)
+
+//                mAudioMediatorLiveData.postValue(mListAudio)
             }
+            mergeList()
         }
 
         mAudioMediatorLiveData.addSource(listLoading) {
@@ -133,13 +146,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 }
             }
             mergeList()
-            mAudioMediatorLiveData.postValue(mListAudio)
+//            mAudioMediatorLiveData.postValue(mListAudio)
         }
-        /*  mAudioMediatorLiveData.addSource(audioPlayer.getPlayerInfo()) {
-              if (!isSeekBarStatus) {
-                  updatePlayerInfo(it)
-              }
-          }*/
         mAudioMediatorLiveData.addSource(ManagerFactory.getAudioEditorManager()
             .getCurrentProcessingItem()) {
             if (it != null) {
@@ -147,6 +155,27 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             }
         }
 //        }
+    }
+
+    private fun synchronizedData(oldList: ArrayList<AudioFileView>, newList: List<AudioFileView>): ArrayList<AudioFileView> {
+        val newListAudioFileView = ArrayList<AudioFileView>()
+        for (itemB in newList) {
+            for (itemA in oldList) {
+                if (TextUtils.equals(itemA.getFilePath(), itemB.getFilePath())) {
+                    newListAudioFileView.add(itemA)
+                    Log.d(TAG, "synchronizedData: itemA " + itemA.isExpanded)
+                    break
+                }
+                newListAudioFileView.add(itemB)
+                Log.d(TAG, "synchronizedData: itemB " + itemA.isExpanded)
+            }
+        }
+        for (item in newListAudioFileView) {
+            if (TextUtils.equals(audioPlayer.getPlayerInfoData().currentAudio?.getFilePath(), item.getFilePath())) {
+                item.itemLoadStatus.playerState = audioPlayer.getPlayerInfoData().playerState
+            }
+        }
+        return newListAudioFileView
     }
 
     fun getListAudioFile(): MediatorLiveData<ArrayList<AudioFileView>> {
@@ -176,6 +205,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 }
             }
         }
+        mAudioMediatorLiveData.postValue(mListAudio)
     }
 
     private fun isDoubleDisplay(filePath: String): Boolean {        // kiem tra xem item o listloading co ton tai trong list scan hay khong

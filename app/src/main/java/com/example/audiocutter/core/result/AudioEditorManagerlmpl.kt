@@ -159,6 +159,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
                 val audioResult = ManagerFactory.getAudioCutter()
                     .mix(audioCore1, audioCore2, item.mixingConfig)
+
                 val audioFile = AudioFile(audioResult.file, audioResult.fileName, audioResult.size, audioResult.bitRate, audioResult.time, Uri.parse(audioResult.file.toString()))
                 if (Build.VERSION.SDK_INT < 29) {
                     audioFile.uri = addMediaStore(audioFile.file.absolutePath.toString())
