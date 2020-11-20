@@ -3,9 +3,7 @@ package com.example.audiocutter.core.contact
 import android.content.Context
 import android.database.ContentObserver
 import android.database.Cursor
-import android.media.RingtoneManager
 import android.net.Uri
-import android.os.Build
 import android.os.Handler
 import android.provider.ContactsContract
 import android.text.TextUtils
@@ -33,6 +31,9 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
     private var scanningState = ScanningState.IDLE
 
 
+
+
+
     override fun scanContact() {
         if (scanningState == ScanningState.WAITING_FOR_CANCELING) {
             return
@@ -49,27 +50,25 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
             contactLiveData.postValue(GetContactResult(false))
 
             val newListContact: ArrayList<ContactItem> = ArrayList()
-            val projecttion = arrayOf(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Phone.PHOTO_URI, ContactsContract.CommonDataKinds.Phone.CUSTOM_RINGTONE)
-            val cursor: Cursor? = appContext.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projecttion, null, null, null)
+            val projection = arrayOf(ContactsContract.CommonDataKinds.Phone.CONTACT_ID, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Phone.PHOTO_URI, ContactsContract.CommonDataKinds.Phone.CUSTOM_RINGTONE)
+            val cursor: Cursor? = appContext.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, null, null, null)
 
             cursor?.let {
-                val nameIndex = cursor.getColumnIndex(projecttion[0])
-                val numberIndex = cursor.getColumnIndex(projecttion[1])
-                val photoIndex = cursor.getColumnIndex(projecttion[2])
-                val ringtoneIndex = cursor.getColumnIndex(projecttion[3])
+                val idIndex = cursor.getColumnIndex(projection[0])
+                val nameIndex = cursor.getColumnIndex(projection[2])
+                val numberIndex = cursor.getColumnIndex(projection[3])
+                val photoIndex = cursor.getColumnIndex(projection[4])
+                val ringtoneIndex = cursor.getColumnIndex(projection[5])
                 try {
-                    var defaultRingtone = ""
-                    if (Utils.getUriRingtoneDefault(appContext) == null) {
-                        defaultRingtone = ""
-                    } else {
-                        defaultRingtone = Utils.getUriRingtoneDefault(appContext).toString()
-                    }
+                    val defaultRingtone = Utils.getUriRingtoneDefault(appContext) ?: ""
+
                     if (cursor.moveToFirst()) {
                         do {
 //                            delay(1000)
                             if (!isActive || scanningState == ScanningState.WAITING_FOR_CANCELING) {
                                 break
                             }
+                            val id = cursor.getString(idIndex)
                             val name = cursor.getString(nameIndex)
                             val number = cursor.getString(numberIndex)
                             val photoUri = cursor.getString(photoIndex)
@@ -142,7 +141,7 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
                                 }
                             }
 
-                            val contactItem = ContactItem(name, number, photoUri, ringtoneFilePath, isRingtoneDefault, filename)
+                            val contactItem = ContactItem(id, name, number, photoUri, ringtoneFilePath, isRingtoneDefault, filename)
                             newListContact.add(contactItem)
 
                             oldRingtoneDefault = defaultRingtone
