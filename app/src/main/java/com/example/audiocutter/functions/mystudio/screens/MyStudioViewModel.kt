@@ -157,8 +157,9 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         mAudioMediatorLiveData.addSource(ManagerFactory.getAudioEditorManager()
             .getCurrentProcessingItem()) {
             if (it != null) {
-                //updateLoadingProgressbar(it)
-                if (newItem.state == ConvertingState.SUCCESS) {
+//                updateLoadingProgressbar(it)
+
+                if (it.state == ConvertingState.SUCCESS) {
                     loadingDone.postValue(true)
                 } else {
                     loadingDone.postValue(false)
@@ -234,7 +235,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     // update loading item khi editor
     private fun updateLoadingProgressbar(newItem: ConvertingItem) {
-        /*val newItemConverting = AudioFileView(AudioFile(File(pathName), newItem.getFileName(), 100), false, ItemLoadStatus(), newItem.state, newItem.percent, newItem.id)
+/*        val newItemConverting = AudioFileView(AudioFile(File(pathName), newItem.getFileName(), 100), false, ItemLoadStatus(), newItem.state, newItem.percent, newItem.id)
         if (!mListAudio.isEmpty()) {
             var index = 0
             for (item in mListAudio) {
@@ -252,13 +253,13 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 }
             }
         }
-        mAudioMediatorLiveData.postValue(mListAudio)
-*/
-        if (newItem.state == ConvertingState.SUCCESS) {
-            loadingDone.postValue(true)
-        } else {
-            loadingDone.postValue(false)
-        }
+        mAudioMediatorLiveData.postValue(mListAudio)*/
+
+//        if (newItem.state == ConvertingState.SUCCESS) {
+//            loadingDone.postValue(true)
+//        } else {
+//            loadingDone.postValue(false)
+//        }
     }
 
     fun getLoadingStatus(): LiveData<Boolean> {

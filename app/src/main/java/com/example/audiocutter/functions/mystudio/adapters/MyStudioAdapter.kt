@@ -25,6 +25,7 @@ import com.example.audiocutter.functions.contacts.adapters.ListSelectAdapter
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.objects.DeleteState
+import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
@@ -41,7 +42,7 @@ interface AudioCutterScreenCallback {
     fun cancelLoading(id: Int)
 }
 
-class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallback, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<AudioFileView, AudioCutterAdapter.MyStudioHolder>(MusicDiffCallBack()) {
+class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallback, val audioPlayer: AudioPlayer, val loadingProcessingItem: LiveData<ConvertingItem>, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<AudioFileView, AudioCutterAdapter.MyStudioHolder>(MusicDiffCallBack()) {
 
     private val TAG = "giangtd"
 
@@ -136,12 +137,12 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 val newItem = payloads.firstOrNull() as AudioFileView
                 val convertingItem = getItem(position)
 
-                loadingViewHolder.pbLoading.max = 100
-                loadingViewHolder.pbLoading.progress = convertingItem.percent
-
-                loadingViewHolder.tvTitle.setText(convertingItem.audioFile.fileName)
-
-                loadingViewHolder.tvLoading.text = newItem.percent.toString() + "%"
+//                loadingViewHolder.pbLoading.max = 100
+//                loadingViewHolder.pbLoading.progress = convertingItem.percent
+//
+//                loadingViewHolder.tvTitle.setText(convertingItem.audioFile.fileName)
+//
+//                loadingViewHolder.tvLoading.text = newItem.percent.toString() + "%"
             }
         }
     }
@@ -290,6 +291,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 override fun onStartTrackingTouch(p0: SeekBar?) {
                     isSeekBarStatus = true
                 }
+
                 override fun onStopTrackingTouch(p0: SeekBar?) {
                     audioPlayer.seek(sbMusic.progress)
                     isSeekBarStatus = false
@@ -368,6 +370,50 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         val tvWait: TextView = itemView.findViewById(R.id.tv_wait)
 
         @SuppressLint("SetTextI18n")
+        private fun updatePlayInfor(convertingItem: ConvertingItem) {
+            when (convertingItem.state) {
+                ConvertingState.WAITING -> {
+                    tvWait.visibility = View.VISIBLE
+                    pbLoading.visibility = View.GONE
+                    tvLoading.visibility = View.GONE
+                }
+                ConvertingState.PROGRESSING -> {
+                    tvWait.visibility = View.GONE
+                    pbLoading.visibility = View.VISIBLE
+                    tvLoading.visibility = View.VISIBLE
+                    pbLoading.max = 100
+                    pbLoading.progress = convertingItem.percent
+                    tvLoading.text = convertingItem.percent.toString() + "%"
+
+                    Log.d(TAG, "updatePlayInfor: onChanged progress: "+convertingItem.percent )
+                }
+                else -> {
+                    //nothing
+                }
+            }
+        }
+
+        override fun onViewAttachedToWindow() {
+            super.onViewAttachedToWindow()
+
+            loadingProcessingItem.observe(this, object : Observer<ConvertingItem> {
+                override fun onChanged(convertingItem: ConvertingItem) {
+                    val loadingItem = getItem(adapterPosition)
+                    if (adapterPosition != -1) {
+                        if (loadingItem.id == convertingItem.id) {
+                            Log.d(TAG, "onChanged: loadingItem id: " + loadingItem.id + "  convertingItem.id " + convertingItem.id)
+                            updatePlayInfor(convertingItem)
+                        }
+                    }
+                }
+            })
+        }
+
+        override fun onViewDetachedFromWindow() {
+            super.onViewDetachedFromWindow()
+        }
+
+        @SuppressLint("SetTextI18n")
         fun onBind() {
             val loadingItem = getItem(adapterPosition)
 
@@ -382,8 +428,8 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     pbLoading.visibility = View.VISIBLE
                     tvLoading.visibility = View.VISIBLE
                     pbLoading.max = 100
-                    pbLoading.progress = loadingItem.percent
-                    tvLoading.text = loadingItem.percent.toString() + "%"
+//                    pbLoading.progress = loadingItem.percent
+//                    tvLoading.text = loadingItem.percent.toString() + "%"
                 }
                 else -> {
                     //nothing
@@ -400,7 +446,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             when (view.id) {
                 R.id.iv_cancel -> {
                     audioCutterScreenCallback.cancelLoading(loadingItem.id)
-                    Log.d(TAG, "onClick: ")
                 }
             }
         }
