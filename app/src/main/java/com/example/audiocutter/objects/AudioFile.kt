@@ -20,8 +20,10 @@ class AudioFile(
     val genre: String? = "",
     val mimeType: String? = "",
     var modifiedStr: String=""
-) {
-
+){
+    fun getFilePath():String{
+        return file.absolutePath
+    }
     init {
         if (modified == -1L) {
             modifiedStr = ""

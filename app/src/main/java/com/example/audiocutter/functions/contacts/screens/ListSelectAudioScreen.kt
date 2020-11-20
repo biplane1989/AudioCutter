@@ -7,44 +7,37 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.*
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.ListContactSelectScreenBinding
 import com.example.audiocutter.functions.contacts.adapters.ListSelectAdapter
 import com.example.audiocutter.functions.contacts.adapters.SelectAudioScreenCallback
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.util.FileUtils
-import kotlinx.android.synthetic.main.list_contact_select_screen.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.OnClickListener {
-    val TAG = "giangtd"
-    val safeArg: ListSelectAudioScreenArgs by navArgs()
-    lateinit var mListSelectAudioViewModel: ListSelectAudioViewModel
-    lateinit var mListSelectAdapter: ListSelectAdapter
-    val REQ_CODE_PICK_SOUNDFILE = 1990
-    var positionSelect = -1
-    lateinit var binding: ListContactSelectScreenBinding
+    private val TAG = "giangtd"
+    private val safeArg: ListSelectAudioScreenArgs by navArgs()
+    private lateinit var mListSelectAudioViewModel: ListSelectAudioViewModel
+    private lateinit var mListSelectAdapter: ListSelectAdapter
+    private val REQ_CODE_PICK_SOUNDFILE = 1990
+    private var positionSelect = -1
+    private lateinit var binding: ListContactSelectScreenBinding
 
     // observer data
-    val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
+    private val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
 
         if (listAudio != null) {
             mListSelectAdapter.submitList(ArrayList(listAudio))
@@ -74,7 +67,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         }
     }
 
-    fun init() {
+    private fun init() {
         binding.rvListSelectAudio.layoutManager = LinearLayoutManager(context)
         binding.rvListSelectAudio.setHasFixedSize(true)
         binding.rvListSelectAudio.adapter = mListSelectAdapter
@@ -98,7 +91,8 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
         mListSelectAudioViewModel = ViewModelProviders.of(this)
             .get(ListSelectAudioViewModel::class.java)
-        mListSelectAdapter = ListSelectAdapter(this)
+
+        mListSelectAdapter = ListSelectAdapter(this, mListSelectAudioViewModel.getAudioPlayer(), lifecycleScope)
 
         val fileUri = safeArg.uri
         mListSelectAudioViewModel.init(fileUri)
@@ -123,49 +117,14 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             }
 
             override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
-                /* if (mListSelectAudioViewModel.searchAudioFile(textChange.toString()).size <= 0) {
-                     binding.clSelect.visibility = View.GONE
-                     binding.clBottom.visibility = View.GONE
-                     binding.clNoAudio.visibility = View.VISIBLE
-                 } else {
-                     binding.clSelect.visibility = View.VISIBLE
-                     binding.clBottom.visibility = View.VISIBLE
-                     binding.clNoAudio.visibility = View.GONE
-                     mListSelectAdapter.submitList(mListSelectAudioViewModel.searchAudioFile(textChange.toString()))
-                 }*/
                 mListSelectAudioViewModel.searchAudioFile(textChange.toString())
             }
         })
     }
 
-    override fun play(position: Int) {
-        mListSelectAudioViewModel.playAudio(position)
-    }
-
-    override fun pause() {
-        mListSelectAudioViewModel.pauseAudio()
-    }
-
-    override fun resume() {
-        mListSelectAudioViewModel.resumeAudio()
-    }
-
-    override fun stop(position: Int) {
-        mListSelectAudioViewModel.stopAudio(position)
-
-    }
-
-    override fun seekTo(cusorPos: Int) {
-        mListSelectAudioViewModel.seekToAudio(cusorPos)
-    }
-
-    override fun onStartSeekBar() {
-        mListSelectAudioViewModel.startSeekBar()
-    }
 
     override fun isShowPlayingAudio(positition: Int) {
         positionSelect = positition
-//        mListSelectAdapter.submitList(mListSelectAudioViewModel.showPlayingAudio(positition))
         mListSelectAudioViewModel.showPlayingAudio(positition)
     }
 
@@ -187,9 +146,11 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             }
             binding.btnSave -> {
                 if (mListSelectAudioViewModel.setRingtone(safeArg.phoneNumber)) {
-                    Toast.makeText(context, "Set Ringtone Success !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
+                        .show()
                 } else {
-                    Toast.makeText(context, "Set Ringtone Failure !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
+                        .show()
                 }
                 requireActivity().onBackPressed()
             }
@@ -206,9 +167,8 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
                 }
                 intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                 intent.type = "audio/*"
-//                intent.type = "audio/mp3"
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                startActivityForResult(Intent.createChooser(intent, "Select a File "), REQ_CODE_PICK_SOUNDFILE)
+                startActivityForResult(Intent.createChooser(intent, getString(R.string.list_select_audio_screen_open_file_title)), REQ_CODE_PICK_SOUNDFILE)
             }
             binding.backButton -> {
                 requireActivity().onBackPressed()
@@ -223,9 +183,11 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
             path?.let {
                 if (mListSelectAudioViewModel.setRingtoneWithUri(safeArg.phoneNumber, path)) {
-                    Toast.makeText(context, "Set Ringtone Success !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
+                        .show()
                 } else {
-                    Toast.makeText(context, "Set Ringtone Failure !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }

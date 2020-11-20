@@ -23,17 +23,17 @@ import kotlinx.coroutines.launch
 
 class ResultService : LifecycleService() {
 
-    val TAG = "giangtd"
+    private val TAG = "giangtd"
     private val mBinder: IBinder = MyBinder()
     private lateinit var mBuilder: NotificationCompat.Builder
     private lateinit var manager: NotificationManagerCompat
-    var strContent: String? = ""
+    private var strContent: String? = ""
 
-    val progressMax = 100
-    var serviceForegroundID = -1
-    var TYPE_AUDIO = -1
+    private val progressMax = 100
+    private var serviceForegroundID = -1
+    private var TYPE_AUDIO = -1
 
-    val processObserver = Observer<ConvertingItem> { it ->
+    private val processObserver = Observer<ConvertingItem> { it ->
         if (it != null) {
             Log.d(TAG, "ResultService percent : " + it.percent + "   status : " + it.state)
             builderNotification(it.getFileName())
@@ -48,6 +48,9 @@ class ResultService : LifecycleService() {
                     sendNotificationFail(it.id)
 //                    stopForeground(serviceForegroundID)
 //                    sendNotificationFail(serviceForegroundID)
+                }
+                else -> {
+                    //nothing
                 }
             }
         }
@@ -75,7 +78,7 @@ class ResultService : LifecycleService() {
         return START_STICKY
     }
 
-    fun observerData() {
+    private fun observerData() {
         ManagerFactory.getAudioEditorManager().getCurrentProcessingItem()
             .observe(this, processObserver)
     }
@@ -89,8 +92,7 @@ class ResultService : LifecycleService() {
         stopForeground(true)
     }
 
-    fun resultIntent(): Intent {
-        Log.d("002", "resultIntent: type audio: " + TYPE_AUDIO)
+    private fun resultIntent(): Intent {
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             setAction(Constance.NOTIFICATION_ACTION_EDITOR)
@@ -99,7 +101,7 @@ class ResultService : LifecycleService() {
         return intent
     }
 
-    fun builderNotification(audioTitle: String) {           // build 1 notification
+    private fun builderNotification(audioTitle: String) {           // build 1 notification
         val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(), 0)
 
         mBuilder = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
@@ -108,17 +110,19 @@ class ResultService : LifecycleService() {
             .setOnlyAlertOnce(true).setProgress(progressMax, 0, true).setAutoCancel(true)
     }
 
-    fun sendNotificationComplte(notificationID: Int) {          // send 1 notification khi hoan thanh
-        mBuilder.setContentText("Loading complete").setProgress(0, 0, false).setOngoing(false)
+    private fun sendNotificationComplte(notificationID: Int) {          // send 1 notification khi hoan thanh
+        mBuilder.setContentText(getString(R.string.result_sercice_loading_complete))
+            .setProgress(0, 0, false).setOngoing(false)
         manager.notify(notificationID, mBuilder.build())
     }
 
-    fun sendNotificationFail(notificationID: Int) {
-        mBuilder.setContentText("Fail").setProgress(0, 0, false).setOngoing(false)
+    private fun sendNotificationFail(notificationID: Int) {
+        mBuilder.setContentText(getString(R.string.result_service_loading_fail))
+            .setProgress(0, 0, false).setOngoing(false)
         manager.notify(notificationID, mBuilder.build())
     }
 
-    fun sendNotification(notificationID: Int, data: Int, convertingState: ConvertingState) {        // send 1 notification
+    private fun sendNotification(notificationID: Int, data: Int, convertingState: ConvertingState) {        // send 1 notification
 
         when (convertingState) {
             ConvertingState.PROGRESSING -> {
@@ -127,25 +131,30 @@ class ResultService : LifecycleService() {
                 manager.notify(notificationID, mBuilder.build())
             }
             ConvertingState.SUCCESS -> {
-                mBuilder.setContentText("Loading complete").setProgress(0, 0, false)
-                    .setOngoing(false)
+                mBuilder.setContentText(getString(R.string.result_service_loading_complete))
+                    .setProgress(0, 0, false).setOngoing(false)
                 manager.notify(notificationID, mBuilder.build())
             }
             ConvertingState.ERROR -> {
 //                stopForeground(serviceForegroundID)
-                mBuilder.setContentText("Fail").setProgress(0, 0, false).setOngoing(false)
+                mBuilder.setContentText(getString(R.string.result_service_loading_fail))
+                    .setProgress(0, 0, false).setOngoing(false)
                 manager.notify(notificationID, mBuilder.build())
+            }
+            else -> {
+                //nothing
             }
         }
     }
 
-    fun builderForegroundService() {        // build foreground service
+    private fun builderForegroundService() {        // build foreground service
         val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(), PendingIntent.FLAG_CANCEL_CURRENT)
 
         val notification = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
-            .setContentTitle("Audio Cutter Loading").setSmallIcon(R.drawable.list_contact_icon_back)
-            .setContentText(strContent).setContentIntent(resultPendingIntent).setOngoing(true)
-            .setOnlyAlertOnce(true).setProgress(progressMax, 0, true).setAutoCancel(true).build()
+            .setContentTitle(getString(R.string.result_service_content_title))
+            .setSmallIcon(R.drawable.list_contact_icon_back).setContentText(strContent)
+            .setContentIntent(resultPendingIntent).setOngoing(true).setOnlyAlertOnce(true)
+            .setProgress(progressMax, 0, true).setAutoCancel(true).build()
 
         startForeground(serviceForegroundID, notification)
     }

@@ -16,14 +16,13 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.audiocutter.R
 import com.example.audiocutter.functions.contacts.objects.ContactItemView
-import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.util.Utils
 import java.util.*
 
 
 interface ContactCallback {
 
-    fun itemOnClick(phoneNumber: String, fileName: String)
+    fun itemOnClick(phoneNumber: String, ringtonePath: String)
 }
 
 class ListContactAdapter(context: Context?, var contactCallback: ContactCallback) : ListAdapter<ContactItemView, RecyclerView.ViewHolder>(ContactDiffCallBack()) {
@@ -116,6 +115,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
 
         fun onBind() {
             val contentItem = getItem(adapterPosition)
+
             tvName.text = contentItem.contactItem.name
 
             contentItem.contactItem.thumb?.let {
@@ -157,7 +157,6 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
 
         fun onBind() {
             val headerItem = getItem(adapterPosition)
-
             tvHeader.text = headerItem.contactHeader.get(0).toUpperCase().toString()
         }
     }

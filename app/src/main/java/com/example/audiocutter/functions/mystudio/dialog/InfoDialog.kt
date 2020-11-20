@@ -84,7 +84,7 @@ class InfoDialog : BaseDialog() {
             tv_album.text = UNKNOWN
         }
         if (!bitRate.isNullOrEmpty()) {
-            tv_birate.text = (bitRate.toInt() / 10000).toString() + resources.getString(R.string.kbps)
+            tv_birate.text = (bitRate.toInt() / 10000).toString() + " kb/s"
         } else {
             tv_birate.text = UNKNOWN
         }

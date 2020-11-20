@@ -31,7 +31,7 @@ interface IViewModel : LifecycleOwner {
 }
 
 abstract class BaseViewModel : ViewModel(), IViewModel {
-    private lateinit var lifecycleRegistry: LifecycleRegistry
+    private var lifecycleRegistry: LifecycleRegistry
 
     init {
         lifecycleRegistry = LifecycleRegistry(this)

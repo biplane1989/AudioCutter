@@ -192,9 +192,6 @@ object FileUtils {
         val sdcardPath = getStoragePath(context, true)
         fullPath = sdcardPath + relativePath
 
-
-        Log.d("giangtd", "sdcardPath: " + sdcardPath + " is exit : " + File(sdcardPath).exists())
-        Log.d("giangtd", "fullPath: " + fullPath + " is exit: " + File(fullPath).exists())
         return fullPath
     }
 
@@ -209,13 +206,15 @@ object FileUtils {
             val getPath = storageVolumeClazz.getMethod("getPath")
             val isRemovable = storageVolumeClazz.getMethod("isRemovable")
             val result = getVolumeList.invoke(mStorageManager)
-            val length: Int = java.lang.reflect.Array.getLength(result)
-            for (i in 0 until length) {
-                val storageVolumeElement: Any = java.lang.reflect.Array.get(result, i)
-                val paths = getPath.invoke(storageVolumeElement) as String
-                val removable = isRemovable.invoke(storageVolumeElement) as Boolean
-                if (removable == isExternal) {
-                    path = paths
+            result?.let {
+                val length: Int = java.lang.reflect.Array.getLength(result)
+                for (i in 0 until length) {
+                    val storageVolumeElement: Any = java.lang.reflect.Array.get(result, i)!!
+                    val paths = getPath.invoke(storageVolumeElement) as String
+                    val removable = isRemovable.invoke(storageVolumeElement) as Boolean
+                    if (removable == isExternal) {
+                        path = paths
+                    }
                 }
             }
         } catch (e: java.lang.Exception) {

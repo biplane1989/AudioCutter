@@ -9,13 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.IViewModel
 import com.example.audiocutter.core.audiomanager.Folder
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MyStudioFragmentBinding
 import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
 import com.example.audiocutter.functions.mystudio.Constance
@@ -26,11 +26,13 @@ import com.example.audiocutter.functions.mystudio.objects.ActionData
 import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
+import kotlinx.android.synthetic.main.my_studio_fragment.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
-class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener,
-    SetAsDialogListener, DeleteDialogListener, CancelDialogListener,
-    DialogAppShare.DialogAppListener {
+class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, CancelDialogListener, DialogAppShare.DialogAppListener {
 
     private lateinit var binding: MyStudioFragmentBinding
     private val TAG = "giangtd"
@@ -45,16 +47,16 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     override fun setMenuVisibility(menuVisible: Boolean) {      // su kien khi chuyen tab
         super.setMenuVisibility(menuVisible)
         if (menuVisible) {
-            Log.d(TAG, "setMenuVisibility: TRUE")
+            // true
         } else {
-            Log.d(TAG, "setMenuVisibility: FALE")
+            //fail
             if (this.isVisible) {
                 myStudioViewModel.stopMediaPlayerWhenTabSelect()
             }
         }
     }
 
-    val listAudioObserver = Observer<List<AudioFileView>> { listAudio ->
+    private val listAudioObserver = Observer<List<AudioFileView>> { listAudio ->
 
         listAudio?.let {
             audioCutterAdapter.submitList(ArrayList(listAudio))
@@ -91,12 +93,8 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         onReceivedAction(it.action, it.data as Int)
     }
 
-    fun onReceivedAction(action: String, type: Int) {
-        if (action in arrayListOf(
-                Constance.ACTION_CHECK_DELETE,
-                Constance.ACTION_DELETE_ALL
-            )
-        ) if (type != (typeAudio as Int)) {
+    private fun onReceivedAction(action: String, type: Int) {
+        if (action in arrayListOf(Constance.ACTION_CHECK_DELETE, Constance.ACTION_DELETE_ALL)) if (type != (typeAudio as Int)) {
             return
         }
         when (action) {
@@ -118,21 +116,12 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     binding.clDeleteAll.visibility = View.GONE
                 }
                 runOnUI {
-                    if (myStudioViewModel.deleteAllItemSelected(
-                            requireArguments().getInt(
-                                BUNDLE_NAME_KEY
-                            )
-                        )
-                    ) { // nếu delete thành công thì sẽ hiện dialog thành công
+                    if (myStudioViewModel.deleteAllItemSelected(requireArguments().getInt(BUNDLE_NAME_KEY))) { // nếu delete thành công thì sẽ hiện dialog thành công
                         Log.d(TAG, "onReceivedAction: DeleteSuccessfullyDialog")
                         val dialog = DeleteSuccessfullyDialog()
                         dialog.show(childFragmentManager, DeleteSuccessfullyDialog.TAG)
                     } else {
-                        Toast.makeText(
-                            context,
-                            getString(R.string.my_studio_delete_fail),
-                            Toast.LENGTH_SHORT
-                        )
+                        Toast.makeText(context, getString(R.string.my_studio_delete_fail), Toast.LENGTH_SHORT)
                             .show()
                     }
                 }
@@ -142,17 +131,9 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             }
             Constance.ACTION_CHECK_DELETE -> {
                 if (!myStudioViewModel.isChecked()) {
-                    sendFragmentAction(
-                        MyAudioManagerScreen::class.java.name,
-                        Constance.ACTION_DELETE,
-                        Constance.FALSE
-                    )           // false
+                    sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_DELETE, Constance.FALSE)           // false
                 } else {
-                    sendFragmentAction(
-                        MyAudioManagerScreen::class.java.name,
-                        Constance.ACTION_DELETE,
-                        Constance.TRUE
-                    )           // true
+                    sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_DELETE, Constance.TRUE)           // true
                 }
             }
         }
@@ -171,7 +152,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         }
     }
 
-    fun init() {
+    private fun init() {
         binding.rvListAudioCutter.layoutManager = LinearLayoutManager(context)
         binding.rvListAudioCutter.adapter = audioCutterAdapter
     }
@@ -179,19 +160,14 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         myStudioViewModel = ViewModelProviders.of(this).get(MyStudioViewModel::class.java)
-        audioCutterAdapter = AudioCutterAdapter(this)
-        typeAudio =
-            requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
+        audioCutterAdapter = AudioCutterAdapter(this, myStudioViewModel.getAudioPlayer(), lifecycleScope)
+        typeAudio = requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
 
         myStudioViewModel.init(typeAudio)
         myStudioViewModel.getListAudioFile().observe(this, listAudioObserver)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_fragment, container, false)
         runOnUI {
 //            myStudioViewModel.getListAudioFile().observe(viewLifecycleOwner, listAudioObserver)
@@ -256,10 +232,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                 }
                 R.id.contacs -> {
                     // contacs screen
-                    viewStateManager.myStudioSetContactItemClicked(
-                        this,
-                        audioFile.file.absolutePath
-                    )
+                    viewStateManager.myStudioSetContactItemClicked(this, audioFile.file.absolutePath)
                 }
                 R.id.open_with -> {
                     audioFile.uri?.let {
@@ -342,6 +315,8 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             else -> Folder.TYPE_MIXER
         }
         myStudioViewModel.renameAudio(newName, typeFolder, filePath)
+
+
     }
 
     // hanlder linterner on dialog set as
@@ -349,35 +324,28 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         when (type) {
             Constance.RINGTONE_TYPE -> {
                 if (myStudioViewModel.setRingTone(uri)) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Set Ringtone Successful !",
-                        Toast.LENGTH_SHORT
-                    )
+                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
                         .show()
                 } else {
-                    Toast.makeText(requireContext(), "Set Ringtone Fail !", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
                         .show()
                 }
             }
             Constance.ALARM_TYPE -> {
                 if (myStudioViewModel.setAlarm(uri)) {
-                    Toast.makeText(requireContext(), "Set Alarm Successful !", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_alarm_successful), Toast.LENGTH_SHORT)
                         .show()
                 } else {
-                    Toast.makeText(requireContext(), "Set Alarm Fail !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_alarm_fail), Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
             Constance.NOTIFICATION_TYPE -> {
                 if (myStudioViewModel.setNotification(uri)) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Set Notification Successful !",
-                        Toast.LENGTH_SHORT
-                    )
+                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_notification_successful), Toast.LENGTH_SHORT)
                         .show()
                 } else {
-                    Toast.makeText(requireContext(), "Set Notification Fail !", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_notification_fail), Toast.LENGTH_SHORT)
                         .show()
                 }
             }
@@ -387,19 +355,11 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     // click delete button on dialog delete
     override fun onDeleteClick(pathFolder: String) {
         runOnUI {
-            if (myStudioViewModel.deleteItem(
-                    pathFolder,
-                    requireArguments().getInt(BUNDLE_NAME_KEY)
-                )
-            ) { // nếu delete thành công thì sẽ hiện dialog thành công
+            if (myStudioViewModel.deleteItem(pathFolder, requireArguments().getInt(BUNDLE_NAME_KEY))) { // nếu delete thành công thì sẽ hiện dialog thành công
                 val dialog = DeleteSuccessfullyDialog()
                 dialog.show(childFragmentManager, DeleteSuccessfullyDialog.TAG)
             } else {
-                Toast.makeText(
-                    context,
-                    getString(R.string.my_studio_delete_fail),
-                    Toast.LENGTH_SHORT
-                )
+                Toast.makeText(context, getString(R.string.my_studio_delete_fail), Toast.LENGTH_SHORT)
                     .show()
             }
         }
@@ -424,7 +384,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         Utils.shareFileAudio(requireContext(), audioFile)
     }
 
-    override fun shareFilesToAppsDialog(pkgName:String) {
+    override fun shareFilesToAppsDialog(pkgName: String) {
         val intent = Intent()
         intent.putExtra(Intent.EXTRA_STREAM, audioFile.uri)
         intent.type = "audio/*"

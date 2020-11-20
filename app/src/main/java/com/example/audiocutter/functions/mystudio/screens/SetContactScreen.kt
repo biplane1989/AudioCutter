@@ -30,9 +30,9 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
 
     private lateinit var binding: MyStudioContactScreenBinding
 
-    val TAG = "giangtd4"
-    lateinit var listContactAdapter: SetContactAdapter
-    lateinit var mListContactViewModel: SetContactViewModel
+    private val TAG = "giangtd4"
+    private lateinit var listContactAdapter: SetContactAdapter
+    private lateinit var mListContactViewModel: SetContactViewModel
     private val safeArg: SetContactScreenArgs by navArgs()      // truyen du lieu qua navigation
 
     companion object {
@@ -49,7 +49,7 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
     }
 
     // observer data
-    val listContactObserver = Observer<List<SetContactItemView>> { listContact ->
+    private val listContactObserver = Observer<List<SetContactItemView>> { listContact ->
         if (listContact != null) {
             listContactAdapter.submitList(ArrayList(listContact))
         }
@@ -76,19 +76,17 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
     }
 
 
-    private val isSelectObserver = Observer<Boolean> {
-        if (it) {
+    private val isSelectObserver = Observer<Boolean> { status ->
+        if (status) {
             binding.ivOk.visibility = View.VISIBLE
             binding.tvOk.visibility = View.VISIBLE
 
             binding.ivNotOk.visibility = View.GONE
             binding.tvNotOk.visibility = View.GONE
-        } else {
-
         }
     }
 
-    fun init() {
+    private fun init() {
         binding.rvListContact.layoutManager = LinearLayoutManager(context)
         binding.rvListContact.setHasFixedSize(true)
         binding.rvListContact.adapter = listContactAdapter
@@ -181,10 +179,12 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
             }
             binding.ivOk -> {
                 if (mListContactViewModel.setRingtoneForContact(safeArg.pathUri)) {
-                    Toast.makeText(context, "Set RingTone Success !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.set_contact_ringtone_screen_set_ringtone_successfull), Toast.LENGTH_SHORT)
+                        .show()
                     requireActivity().onBackPressed()
                 } else {
-                    Toast.makeText(context, "Set RingTone Fail !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.set_contact_ringtone_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }

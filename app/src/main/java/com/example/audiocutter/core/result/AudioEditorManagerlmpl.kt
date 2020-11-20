@@ -2,6 +2,7 @@ package com.example.audiocutter.core.result
 
 import android.app.ActivityManager
 import android.content.*
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.IBinder
@@ -27,15 +28,15 @@ import java.io.File
 
 object AudioEditorManagerlmpl : AudioEditorManager {
 
-    lateinit var mContext: Context
-    val TAG = "giangtd"
+    private lateinit var mContext: Context
+    private val TAG = "giangtd"
 
-    val CUT_AUDIO = 0
-    val MER_AUDIO = 1
-    val MIX_AUDIO = 2
+    private val CUT_AUDIO = 0
+    private val MER_AUDIO = 1
+    private val MIX_AUDIO = 2
 
-    var mService: ResultService? = null
-    var mIsBound: Boolean = false
+    private var mService: ResultService? = null
+    private var mIsBound: Boolean = false
 
     private val listConvertingItemData = ArrayList<ConvertingItem>()
     private val listConvertingItems = MutableLiveData<List<ConvertingItem>>()  // list chung
@@ -128,7 +129,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     }
 
     private suspend fun processItem(item: ConvertingItem) = withContext(Dispatchers.Default) {      // thuc hien mix or mer or cut
-        Log.d("taih", "processItem cut")
+
         mainScope.launch {
             notifyConvertingItemChanged(null)
 
@@ -145,6 +146,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 val audioFile = AudioFile(audioResult.file, audioResult.fileName, audioResult.size, audioResult.bitRate, audioResult.time, Uri.parse(audioResult.file.toString()))
                 if (Build.VERSION.SDK_INT < 29) {
                     audioFile.uri = addMediaStore(audioFile.file.absolutePath.toString())
+//                    addMediaStore(audioFile.file.absolutePath.toString())
                 }
                 item.outputAudioFile = audioFile
             }
@@ -160,6 +162,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 val audioFile = AudioFile(audioResult.file, audioResult.fileName, audioResult.size, audioResult.bitRate, audioResult.time, Uri.parse(audioResult.file.toString()))
                 if (Build.VERSION.SDK_INT < 29) {
                     audioFile.uri = addMediaStore(audioFile.file.absolutePath.toString())
+//                    addMediaStore(audioFile.file.absolutePath.toString())
                 }
                 item.outputAudioFile = audioFile
             }
@@ -172,6 +175,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 val audioFile = AudioFile(audioResult.file, audioResult.fileName, audioResult.size, audioResult.bitRate, audioResult.time, Uri.parse(audioResult.file.toString()))
                 if (Build.VERSION.SDK_INT < 29) {
                     audioFile.uri = addMediaStore(audioFile.file.absolutePath.toString())
+//                    addMediaStore(audioFile.file.absolutePath.toString())
                 }
                 item.outputAudioFile = audioFile        // gan lai audio file tu audioresult duoc tra ve sau khi cutting cho ConvertingItem
             }
@@ -187,7 +191,19 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         }
     }
 
-    private fun addMediaStore(filePath: String): Uri? {
+//    private fun addMediaStore(filePath: String): Boolean {
+//        return try {
+//            MediaScannerConnection.scanFile(mContext, arrayOf(filePath), null) { s, uri ->
+//                Log.d("insertFile", "on complete ${uri}  string $s")
+//            }
+//            true
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            false
+//        }
+//    }
+
+    private fun addMediaStore(filePath: String): Uri? {         // do man hinh result can dung uri
         val resolver: ContentResolver = RingtonManagerImpl.mContext.getContentResolver()
         val file = File(filePath)
         if (file.exists()) {
@@ -222,8 +238,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         val processingItem = getProcessingItem()
         if (processingItem == null) {
             processNextItem()
-        } else {
-
         }
         listConvertingItems.postValue(listConvertingItemData)
 
@@ -249,8 +263,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         val processingItem = getProcessingItem()
         if (processingItem == null) {
             processNextItem()
-        } else {
-
         }
         listConvertingItems.postValue(listConvertingItemData)
 
@@ -275,18 +287,16 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         val processingItem = getProcessingItem()
         if (processingItem == null) {
             processNextItem()
-        } else {
-
         }
         listConvertingItems.postValue(listConvertingItemData)
     }
 
-    override fun cancel(id: Int) {              // cancel 1 tien trinh loading
+    override fun cancel(int: Int) {              // cancel 1 tien trinh loading
         mainScope.launch {
             val iterator: MutableIterator<ConvertingItem> = listConvertingItemData.iterator()
             while (iterator.hasNext()) {
                 val value = iterator.next()
-                if (value.id == id) {
+                if (value.id == int) {
                     when (value.state) {
                         ConvertingState.WAITING -> {
                             iterator.remove()
@@ -294,7 +304,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                         ConvertingState.PROGRESSING -> {
                             iterator.remove()
                             ManagerFactory.getAudioCutter().cancelTask()
-                            mService?.cancelNotidication(id)
+                            mService?.cancelNotidication(int)
+                        }
+                        else -> {
+                            // nothing
                         }
                     }
                 }
