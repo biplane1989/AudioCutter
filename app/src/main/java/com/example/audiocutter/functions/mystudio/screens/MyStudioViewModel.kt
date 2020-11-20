@@ -98,15 +98,21 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                     isEmptyStatus.postValue(false)
                     loadingStatus.postValue(true)
                 }
-                if (it.state == StateLoad.LOADDONE) {       // khi loading xong thi check co data hay khong de show man hinh empty data
-                    loadingStatus.postValue(false)
+                if (it.state == StateLoad.LOADDONE) {
+                    // khi loading xong thi check co data hay khong de show man hinh empty data
+
+
+                    Log.d("taihhhhh", "type ${typeAudio}  ${it.listAudioFiles.size}")
+
+
+                    /*loadingStatus.postValue(false)
                     if (!it.listAudioFiles.isEmpty()) {
                         isEmptyStatus.postValue(false)
                     } else {
                         isEmptyStatus.postValue(true)
-                    }
+                    }*/
                 }
-                mListAudioFileScans.clear()
+                //mListAudioFileScans.clear()
               /*  if (mListAudioFileScans.size <= 0) {        // lan dau tien data rong
                     for (item in it.listAudioFiles) {
                         mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
@@ -125,12 +131,12 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                     }
                 }*/
 
-                for (item in it.listAudioFiles) {
+              /*  for (item in it.listAudioFiles) {
                     mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
-                }
+                }*/
 //                mAudioMediatorLiveData.postValue(mListAudio)
             }
-            mergeList()
+            //mergeList()
         }
 
         mAudioMediatorLiveData.addSource(listLoading) {

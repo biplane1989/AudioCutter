@@ -68,7 +68,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                     convertingState = ConvertingState.SUCCESS
                 }
             }
-            Log.e(TAG, "init: ${audioMering.percent}" + " convertingState: " + audioMering.state + " listConvertingItemData size: " + listConvertingItemData.size)
+            Log.e(
+                TAG,
+                "init: ${audioMering.percent}" + " convertingState: " + audioMering.state + " listConvertingItemData size: " + listConvertingItemData.size
+            )
             currentProcessingItem.value?.let {
 
                 it.percent = audioMering.percent
@@ -128,59 +131,95 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         currentProcessingItem.postValue(item)
     }
 
-    private suspend fun processItem(item: ConvertingItem) = withContext(Dispatchers.Default) {      // thuc hien mix or mer or cut
+    private suspend fun processItem(item: ConvertingItem) =
+        withContext(Dispatchers.Default) {      // thuc hien mix or mer or cut
 
-        mainScope.launch {
-            notifyConvertingItemChanged(null)
+            mainScope.launch {
+                notifyConvertingItemChanged(null)
 
-            item.state = ConvertingState.PROGRESSING
-            notifyConvertingItemChanged(item)
-            var audioResult: AudioCore? = null
-            if (item is MergingConvertingItem) {
-                val listAudioCore = ArrayList<AudioCore>()
-                item.listAudioFiles.forEach {
-                    listAudioCore.add(AudioCore(it.file, it.fileName, it.size, it.bitRate, it.duration, it.mimeType))
+                item.state = ConvertingState.PROGRESSING
+                notifyConvertingItemChanged(item)
+                var audioResult: AudioCore? = null
+                if (item is MergingConvertingItem) {
+                    val listAudioCore = ArrayList<AudioCore>()
+                    item.listAudioFiles.forEach {
+                        listAudioCore.add(
+                            AudioCore(
+                                it.file,
+                                it.fileName,
+                                it.size,
+                                it.bitRate,
+                                it.duration,
+                                it.mimeType
+                            )
+                        )
+                    }
+                    audioResult = ManagerFactory.getAudioCutter()
+                        .merge(
+                            listAudioCore,
+                            item.mergingConfig.fileName,
+                            item.mergingConfig.audioFormat,
+                            item.mergingConfig.pathFolder
+                        )
                 }
-                audioResult = ManagerFactory.getAudioCutter()
-                    .merge(listAudioCore, item.mergingConfig.fileName, item.mergingConfig.audioFormat, item.mergingConfig.pathFolder)
-            }
 
-            if (item is MixingConvertingItem) {
-                currentProcessingItem.postValue(item)
+                if (item is MixingConvertingItem) {
+                    currentProcessingItem.postValue(item)
 
-                val audioCore1 = AudioCore(item.audioFile1.file, item.audioFile1.fileName, item.audioFile1.size, item.audioFile1.bitRate, item.audioFile1.duration, item.audioFile1.mimeType)
-                val audioCore2 = AudioCore(item.audioFile2.file, item.audioFile2.fileName, item.audioFile2.size, item.audioFile2.bitRate, item.audioFile2.duration, item.audioFile2.mimeType)
+                    val audioCore1 = AudioCore(
+                        item.audioFile1.file,
+                        item.audioFile1.fileName,
+                        item.audioFile1.size,
+                        item.audioFile1.bitRate,
+                        item.audioFile1.duration,
+                        item.audioFile1.mimeType
+                    )
+                    val audioCore2 = AudioCore(
+                        item.audioFile2.file,
+                        item.audioFile2.fileName,
+                        item.audioFile2.size,
+                        item.audioFile2.bitRate,
+                        item.audioFile2.duration,
+                        item.audioFile2.mimeType
+                    )
 
-                audioResult = ManagerFactory.getAudioCutter()
-                    .mix(audioCore1, audioCore2, item.mixingConfig)
-            }
+                    audioResult = ManagerFactory.getAudioCutter()
+                        .mix(audioCore1, audioCore2, item.mixingConfig)
+                }
 
-            if (item is CuttingConvertingItem) {
+                if (item is CuttingConvertingItem) {
 
-                val audioCore = AudioCore(item.audioFile.file, item.audioFile.fileName, item.audioFile.size, item.audioFile.bitRate, item.audioFile.duration, item.audioFile.mimeType)
-                audioResult = ManagerFactory.getAudioCutter().cut(audioCore, item.cuttingConfig)
+                    val audioCore = AudioCore(
+                        item.audioFile.file,
+                        item.audioFile.fileName,
+                        item.audioFile.size,
+                        item.audioFile.bitRate,
+                        item.audioFile.duration,
+                        item.audioFile.mimeType
+                    )
+                    audioResult = ManagerFactory.getAudioCutter().cut(audioCore, item.cuttingConfig)
 
-            }
+                }
 
-            audioResult?.let {
-                ManagerFactory.getAudioFileManager().buildAudioFile(it.file.absolutePath) {
-                    it?.let {
-                        item.outputAudioFile = it
-                        notifyConvertingItemChanged(item)
+                audioResult?.let {
+                    ManagerFactory.getAudioFileManager().buildAudioFile(it.file.absolutePath) {
+                        it?.let {
+                            item.outputAudioFile = it
+                            notifyConvertingItemChanged(item)
+                        }
                     }
                 }
+
+                synchronized(listConvertingItemData) {
+                    listConvertingItemData.remove(item)
+                }
+                // demo dong bo data voi luu tru thu muc trong mystudio
+                listConvertingItems.postValue(listConvertingItemData)
+
+
+                processNextItem()
             }
-
-            synchronized(listConvertingItemData) {
-                listConvertingItemData.remove(item)
-            }
-            // demo dong bo data voi luu tru thu muc trong mystudio
-            listConvertingItems.postValue(listConvertingItemData)
-
-
-            processNextItem()
         }
-    }
 
 //    private fun addMediaStore(filePath: String): Boolean {
 //        return try {
@@ -194,7 +233,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 //        }
 //    }
 
-    override fun cutAudio(audioFile: AudioFile, cuttingConfig: AudioCutConfig) {        // add them 1 item loai cut vao list
+    override fun cutAudio(
+        audioFile: AudioFile,
+        cuttingConfig: AudioCutConfig
+    ) {        // add them 1 item loai cut vao list
 
         if (!isMyServiceRunning(ResultService::class.java)) {
             notifyConvertingItemChanged(null)
@@ -205,7 +247,13 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             }
         }
         currConvertingId++
-        val item = CuttingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile, cuttingConfig)
+        val item = CuttingConvertingItem(
+            currConvertingId,
+            ConvertingState.WAITING,
+            0,
+            audioFile,
+            cuttingConfig
+        )
         synchronized(listConvertingItemData) {
             listConvertingItemData.add(item)
             latestConvertingItem = item
@@ -219,7 +267,11 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
     }
 
-    override fun mixAudio(audioFile1: AudioFile, audioFile2: AudioFile, mixingConfig: AudioMixConfig) {
+    override fun mixAudio(
+        audioFile1: AudioFile,
+        audioFile2: AudioFile,
+        mixingConfig: AudioMixConfig
+    ) {
 
         if (!isMyServiceRunning(ResultService::class.java)) {
             notifyConvertingItemChanged(null)
@@ -230,7 +282,14 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             }
         }
         currConvertingId++
-        val item = MixingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile1, audioFile2, mixingConfig)
+        val item = MixingConvertingItem(
+            currConvertingId,
+            ConvertingState.WAITING,
+            0,
+            audioFile1,
+            audioFile2,
+            mixingConfig
+        )
         synchronized(listConvertingItemData) {
             listConvertingItemData.add(item)
             latestConvertingItem = item
@@ -255,7 +314,13 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             }
         }
         currConvertingId++
-        val item = MergingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, listAudioFiles, mergingConfig)
+        val item = MergingConvertingItem(
+            currConvertingId,
+            ConvertingState.WAITING,
+            0,
+            listAudioFiles,
+            mergingConfig
+        )
         synchronized(listConvertingItemData) {
             listConvertingItemData.add(item)
             latestConvertingItem = item
