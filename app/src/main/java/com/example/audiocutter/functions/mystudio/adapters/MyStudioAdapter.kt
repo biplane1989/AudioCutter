@@ -208,9 +208,11 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         var playerState: PlayerState = PlayerState.IDLE
         private var isSeekBarStatus = false      // trang thai seekbar co dang duoc keo hay khong
         var filePath: String = ""
-        var lastFilePath :String = ""
+        var lastFilePath: String = ""
 
         private fun updatePlayInfor(playerInfo: PlayerInfo) {
+
+            val audioFileView = getItem(adapterPosition)
 
             filePath = playerInfo.currentAudio?.getFilePath().toString()
 

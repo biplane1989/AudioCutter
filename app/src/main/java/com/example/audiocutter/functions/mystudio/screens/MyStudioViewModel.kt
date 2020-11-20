@@ -14,6 +14,7 @@ import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
+import com.example.audiocutter.ext.toListAudioFiles
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.ItemLoadStatus
 import com.example.audiocutter.functions.mystudio.objects.ActionData
@@ -347,18 +348,9 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     suspend fun deleteAllItemSelected(typeAudio: Int): Boolean {
 
-        val listAudioItems = ArrayList<AudioFile>()
         return runAndWaitOnBackground {
-            val result: Boolean
-            mListAudio.forEach {
-                if (it.itemLoadStatus.deleteState == DeleteState.CHECKED) {
-                    if (it.itemLoadStatus.playerState != PlayerState.IDLE) {
-                        audioPlayer.stop()
-                    }
-                    listAudioItems.add(it.audioFile)
-                }
-            }
-
+            val listAudioItems: List<AudioFile> = mListAudio.filter { it.itemLoadStatus.deleteState == DeleteState.CHECKED }
+                .toListAudioFiles()
             var folder = Folder.TYPE_MIXER
             when (typeAudio) {
                 0 -> {
@@ -371,12 +363,11 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                     folder = Folder.TYPE_MIXER
                 }
             }
-            if (ManagerFactory.getAudioFileManager().deleteFile(listAudioItems, folder)) {
-                result = true
-            } else {
-                result = false
+
+            if (listAudioItems.any { it.getFilePath() == audioPlayer.getPlayerInfoData().currentAudio?.getFilePath() }) {
+                audioPlayer.stop()
             }
-            result
+            ManagerFactory.getAudioFileManager().deleteFile(listAudioItems, folder)
         }
     }
 
