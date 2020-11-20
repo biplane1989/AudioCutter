@@ -183,10 +183,10 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                     .into(ivAvatar)
             }
 
-            tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(selectItemView.audioFile.time), itemView.context)
+            tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(selectItemView.audioFile.duration), itemView.context)
                 .toInt() + 15
 
-            tvTotal.text = "/" + simpleDateFormat.format(selectItemView.audioFile.time.toInt())
+            tvTotal.text = "/" + simpleDateFormat.format(selectItemView.audioFile.duration.toInt())
 
             if (selectItemView.isExpanded) {
                 llPlayMusic.visibility = View.VISIBLE

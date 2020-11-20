@@ -63,14 +63,14 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         isLoadingDone = true
         it?.let {
             context?.let { context ->
-                binding.tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(it.time), context)
+                binding.tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(it.duration), context)
                     .toInt() + 15
             }
 
             binding.tvTitleMusic.text = it.fileName
             binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
 
-            binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(it.time.toInt()))
+            binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(it.duration.toInt()))
             binding.tvInfoMusic.setText(convertAudioSizeToString(it))
         }
         val cancelDialog = childFragmentManager.findFragmentByTag(CancelDialog.TAG)

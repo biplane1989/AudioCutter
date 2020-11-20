@@ -275,7 +275,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 tvInfo.setText(((audioFileView.audioFile.size) / (1024)).toString() + " KB" + " | " + bitrate + "kb/s")
             }
 
-            tvTotal.text = "/" + simpleDateFormat.format(audioFileView.audioFile.time.toInt())
+            tvTotal.text = "/" + simpleDateFormat.format(audioFileView.audioFile.duration.toInt())
 
             if (audioFileView.isExpanded) {
                 llPlayMusic.visibility = View.VISIBLE
@@ -324,7 +324,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
 //            sbMusic.max = audioFileView.itemLoadStatus.duration
 
-            tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(audioFileView.audioFile.time), itemView.context)
+            tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(audioFileView.audioFile.duration), itemView.context)
                 .toInt() + 15
 
 //            tvTimeLife.text = simpleDateFormat.format(audioFileView.itemLoadStatus.currPos)
