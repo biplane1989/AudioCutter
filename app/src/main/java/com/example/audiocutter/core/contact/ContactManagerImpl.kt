@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Handler
 import android.provider.ContactsContract
 import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.R
@@ -55,10 +56,10 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
 
             cursor?.let {
                 val idIndex = cursor.getColumnIndex(projection[0])
-                val nameIndex = cursor.getColumnIndex(projection[2])
-                val numberIndex = cursor.getColumnIndex(projection[3])
-                val photoIndex = cursor.getColumnIndex(projection[4])
-                val ringtoneIndex = cursor.getColumnIndex(projection[5])
+                val nameIndex = cursor.getColumnIndex(projection[1])
+                val numberIndex = cursor.getColumnIndex(projection[2])
+                val photoIndex = cursor.getColumnIndex(projection[3])
+                val ringtoneIndex = cursor.getColumnIndex(projection[4])
                 try {
                     val defaultRingtone = Utils.getUriRingtoneDefault(appContext) ?: ""
 
@@ -78,7 +79,6 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
                             var isRingtoneDefault = true
                             var ringtoneFilePath = ""
                             var filename = ""
-
                             if (Utils.checkUriIsExits(appContext, defaultRingtone)) {           // check co ton tai hay khong
                                 if (TextUtils.equals(oldRingtoneDefault, defaultRingtone)) {
                                     if (ringtone != null) {

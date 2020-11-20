@@ -228,14 +228,7 @@ object AudioFileManagerImpl : AudioFileManager {
 
     override fun buildAudioFile(filePath: String, listener: BuildAudioCompleted) {
         if (File(filePath).exists()) {
-            val oldAudioFile = findAudioFile(filePath)
-            oldAudioFile?.let {
-                withLock {
-                    listAllAudioData.remove(it)
-                }
-                insertToMediaStore(filePath, listener)
-
-            } ?: listener(null)
+            insertToMediaStore(filePath, listener)
         } else {
             listener(null)
         }
@@ -257,6 +250,12 @@ object AudioFileManagerImpl : AudioFileManager {
                             uri
                         )
                         withLock {
+                            val oldAudioFile = findAudioFile(filePath)
+                            oldAudioFile?.let {
+                                withLock {
+                                    listAllAudioData.remove(it)
+                                }
+                            }
                             listAllAudioData.add(audioFile)
                             audioFileMap.put(audioFile.getFilePath(), audioFile)
                             listAllAudios.postValue(
@@ -421,6 +420,7 @@ object AudioFileManagerImpl : AudioFileManager {
                 audioFileManagerScope.launch {
                     val listTmp =
                         filterAudioByFolder(it.listAudioFiles, Folder.TYPE_CUTTER)
+                    Log.d("taihhhhh", "listCuttingAudios  ${listTmp.size}")
                     listCuttingAudios.postValue(
                         AudioFileScans(
                             listTmp,
@@ -441,6 +441,7 @@ object AudioFileManagerImpl : AudioFileManager {
                 audioFileManagerScope.launch {
                     val listTmp =
                         filterAudioByFolder(it.listAudioFiles, Folder.TYPE_MERGER)
+
                     listMeringAudios.postValue(
                         AudioFileScans(
                             listTmp,
@@ -461,6 +462,8 @@ object AudioFileManagerImpl : AudioFileManager {
                 audioFileManagerScope.launch {
                     val listTmp =
                         filterAudioByFolder(it.listAudioFiles, Folder.TYPE_MIXER)
+
+                    Log.d("taihhhhh", "listMixingAudios  ${listTmp.size}")
                     listMixingAudios.postValue(
                         AudioFileScans(
                             listTmp,
