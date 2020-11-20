@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -62,7 +63,13 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
     override fun onPostCreate(savedInstanceState: Bundle?) {
         cuttingViewModel = ViewModelProvider(this).get(CuttingViewModel::class.java)
         audioPath = safeArg.pathAudio
-        cuttingViewModel.restore(audioPath)
+        if (!cuttingViewModel.restore(audioPath)) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.audio_file_is_not_found),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     override fun onCreateView(
@@ -242,6 +249,13 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
         }
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if(cuttingViewModel.getAudioFile() == null){
+            requireActivity().onBackPressed()
+        }
+    }
+
     override fun onCountAudioSelected(positionMs: Long, isFirstTime: Boolean) {
         val longDurationMsToStringMs = Utils.longDurationMsToStringMs(positionMs)
         binding.timeAudioTv.text = longDurationMsToStringMs
@@ -259,12 +273,14 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
                 cuttingViewModel.pauseAudio()
             }
             binding.tickIv -> {
-                DialogConvert.showDialogConvert(
-                    childFragmentManager,
-                    this,
-                    cuttingViewModel.getAudioFile(),
-                    cuttingViewModel.getNameSuggestion()
-                )
+                cuttingViewModel.getAudioFile()?.let {
+                    DialogConvert.showDialogConvert(
+                        childFragmentManager,
+                        this,
+                        it,
+                        cuttingViewModel.getNameSuggestion()
+                    )
+                }
             }
             binding.increaseStartTimeIv -> {
                 mEditView.setStartTimeMs(mEditView.getTimeStart() + Utils.TIME_CHANGE)
@@ -380,8 +396,10 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
 
         audioConfig.pathFolder = cuttingViewModel.getStorageFolder()
 
+        cuttingViewModel.getAudioFile()?.let {
+            viewStateManager.editorSaveCutingAudio(this, it, audioCutConfig)
+        }
 
-        viewStateManager.editorSaveCutingAudio(this, cuttingViewModel.getAudioFile(), audioCutConfig)
 
     }
 

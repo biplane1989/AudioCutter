@@ -13,6 +13,7 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.audiocutter.core.manager.AudioFileManager
+import com.example.audiocutter.core.manager.BuildAudioCompleted
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
@@ -152,7 +153,10 @@ object AudioFileManagerImpl : AudioFileManager {
         if (isActive) {
             listAllAudios.postValue(AudioFileScans(listAllAudioData, StateLoad.LOADDONE))
         }
-        Log.d(TAG, "end scanning ${listAllAudioData.size} duration ${System.currentTimeMillis()-startTime}")
+        Log.d(
+            TAG,
+            "end scanning ${listAllAudioData.size} duration ${System.currentTimeMillis() - startTime}"
+        )
 
     }
 
@@ -163,10 +167,20 @@ object AudioFileManagerImpl : AudioFileManager {
     ): AudioFile? {
         val cachedAudioFile = audioFileMap.get(filePath)
         if (cachedAudioFile?.modified != modified) {
-            val audioInfo = FileUtil.getAudioInfo(filePath)
-            audioInfo?.let {
-                audioFileMap.put(filePath, Utils.convertToAudioFile(it, modified, mediaId))
+            synchronized(this) {
+                val audioInfo = FileUtil.getAudioInfo(filePath)
+                audioInfo?.let {
+                    audioFileMap.put(
+                        filePath,
+                        Utils.convertToAudioFile(
+                            it,
+                            modified,
+                            Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString() + File.separator + mediaId)
+                        )
+                    )
+                }
             }
+
 
         }
         return audioFileMap.get(filePath)
@@ -212,21 +226,59 @@ object AudioFileManagerImpl : AudioFileManager {
         return rs
     }
 
+    override fun buildAudioFile(filePath: String, listener: BuildAudioCompleted) {
+        if (File(filePath).exists()) {
+            val oldAudioFile = findAudioFile(filePath)
+            oldAudioFile?.let {
+                withLock {
+                    listAllAudioData.remove(it)
+                }
+                insertToMediaStore(filePath, listener)
 
-    private fun getDateByDateAdded(date: Long): String? {
-        val time = Date(date * 1000)
-        val cal = Calendar.getInstance()
-        cal.time = time
-        val day = cal.get(Calendar.DAY_OF_MONTH)
-        val month = cal.get(Calendar.MONTH)
-        val year = cal.get(Calendar.YEAR)
-        val hours = cal.get(Calendar.HOUR_OF_DAY)
-        val minutes = cal.get(Calendar.MINUTE)
-
-        return "$hours:$minutes , $day/$month/$year"
+            } ?: listener(null)
+        } else {
+            listener(null)
+        }
     }
 
-    private fun getAudioFileFromPath(filePath: String): AudioFile? {
+    private fun insertToMediaStore(filePath: String, listener: BuildAudioCompleted) {
+        MediaScannerConnection.scanFile(
+            mContext,
+            arrayOf(filePath),
+            null
+        ) { s, uri ->
+            audioFileManagerScope.launch {
+                synchronized(this) {
+                    val audioInfo = FileUtil.getAudioInfo(filePath)
+                    if (audioInfo != null) {
+                        val audioFile = Utils.convertToAudioFile(
+                            audioInfo,
+                            System.currentTimeMillis(),
+                            uri
+                        )
+                        withLock {
+                            listAllAudioData.add(audioFile)
+                            audioFileMap.put(audioFile.getFilePath(), audioFile)
+                            listAllAudios.postValue(
+                                AudioFileScans(
+                                    listAllAudioData,
+                                    StateLoad.LOADDONE
+                                )
+                            )
+                        }
+                        listener(audioFile)
+                    } else {
+                        listener(null)
+                    }
+                }
+
+            }
+        }
+    }
+
+
+    override fun findAudioFile(filePath: String): AudioFile? {
+
         withLock {
             listAllAudioData.forEach {
                 if (it.file.absolutePath == filePath) {
@@ -235,47 +287,6 @@ object AudioFileManagerImpl : AudioFileManager {
             }
         }
         return null
-    }
-
-    override fun buildAudioFile(filePath: String): AudioFile {
-        var audioFile: AudioFile? = null
-        if (File(filePath).exists()) {
-            audioFile = getAudioFileFromPath(filePath)
-            if (audioFile == null) {
-
-                val audioInfo = FileUtil.getAudioInfo(filePath)
-                audioInfo?.let {
-                    val resolver = mContext.contentResolver
-                    val values = ContentValues()
-                    values.put(MediaStore.Audio.AudioColumns.DISPLAY_NAME, audioInfo.fileName)
-                    values.put(MediaStore.Audio.AudioColumns.DATA, it.filePath)
-                    values.put(MediaStore.Audio.AudioColumns.TITLE, it.title)
-                    values.put(MediaStore.Audio.AudioColumns.SIZE, it.size)
-                    values.put(
-                        MediaStore.Audio.AudioColumns.MIME_TYPE,
-                        "audio/{${audioInfo.format}}"
-                    )
-                    val uri = resolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values)
-                    uri?.let {
-                        it.lastPathSegment?.toLong()?.let { id ->
-                            audioFile = Utils.convertToAudioFile(
-                                audioInfo,
-                                System.currentTimeMillis(),
-                                id.toString()
-                            )
-                        }
-
-                    }
-
-                }
-            }
-        }
-        if (audioFile == null) {
-            val file = File(filePath)
-            // fake Audio
-            audioFile = AudioFile(file, file.name, file.length(), 128, 1)
-        }
-        return audioFile!!
     }
 
 

@@ -408,7 +408,7 @@ object Utils {
         return null
     }
 
-    fun convertToAudioFile(audioInfor: AudioInfor, modified: Long, mediaId: String): AudioFile {
+    fun convertToAudioFile(audioInfor: AudioInfor, modified: Long, uri:Uri): AudioFile {
         val file = File(audioInfor.filePath)
         return AudioFile(
             file,
@@ -416,7 +416,7 @@ object Utils {
             audioInfor.size,
             audioInfor.bitRate,
             audioInfor.duration,
-            Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString() + File.separator + mediaId),
+            uri ,
             getBitmapByPath(file.absolutePath),
             audioInfor.title,
             audioInfor.alBum,
