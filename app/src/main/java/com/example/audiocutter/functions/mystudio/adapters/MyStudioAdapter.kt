@@ -42,7 +42,7 @@ interface AudioCutterScreenCallback {
     fun cancelLoading(id: Int)
 }
 
-class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallback, val audioPlayer: AudioPlayer, val loadingProcessingItem: LiveData<ConvertingItem>, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<AudioFileView, AudioCutterAdapter.MyStudioHolder>(MusicDiffCallBack()) {
+class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallback, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<AudioFileView, AudioCutterAdapter.MyStudioHolder>(MusicDiffCallBack()) {
 
     private val TAG = "giangtd"
 
@@ -137,12 +137,13 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 val newItem = payloads.firstOrNull() as AudioFileView
                 val convertingItem = getItem(position)
 
-//                loadingViewHolder.pbLoading.max = 100
-//                loadingViewHolder.pbLoading.progress = convertingItem.percent
-//
-//                loadingViewHolder.tvTitle.setText(convertingItem.audioFile.fileName)
-//
-//                loadingViewHolder.tvLoading.text = newItem.percent.toString() + "%"
+                loadingViewHolder.pbLoading.max = 100
+                loadingViewHolder.pbLoading.progress = convertingItem.percent
+
+                loadingViewHolder.tvTitle.setText(convertingItem.audioFile.fileName)
+
+                loadingViewHolder.tvLoading.text = newItem.percent.toString() + "%"
+
             }
         }
     }
@@ -184,7 +185,13 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         var filePath: String = ""
 
         private fun updatePlayInfor(playerInfo: PlayerInfo) {
+            val audioFileView = getItem(adapterPosition)
             filePath = playerInfo.currentAudio?.getFilePath().toString()
+
+            if (audioFileView.getFilePath().equals(filePath)){
+                llPlayMusic.visibility = View.VISIBLE
+                llItem.setBackgroundResource(R.drawable.my_studio_item_bg)
+            }
 
             playerState = playerInfo.playerState
             sbMusic.max = playerInfo.duration
@@ -370,50 +377,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         val tvWait: TextView = itemView.findViewById(R.id.tv_wait)
 
         @SuppressLint("SetTextI18n")
-        private fun updatePlayInfor(convertingItem: ConvertingItem) {
-            when (convertingItem.state) {
-                ConvertingState.WAITING -> {
-                    tvWait.visibility = View.VISIBLE
-                    pbLoading.visibility = View.GONE
-                    tvLoading.visibility = View.GONE
-                }
-                ConvertingState.PROGRESSING -> {
-                    tvWait.visibility = View.GONE
-                    pbLoading.visibility = View.VISIBLE
-                    tvLoading.visibility = View.VISIBLE
-                    pbLoading.max = 100
-                    pbLoading.progress = convertingItem.percent
-                    tvLoading.text = convertingItem.percent.toString() + "%"
-
-                    Log.d(TAG, "updatePlayInfor: onChanged progress: "+convertingItem.percent )
-                }
-                else -> {
-                    //nothing
-                }
-            }
-        }
-
-        override fun onViewAttachedToWindow() {
-            super.onViewAttachedToWindow()
-
-            loadingProcessingItem.observe(this, object : Observer<ConvertingItem> {
-                override fun onChanged(convertingItem: ConvertingItem) {
-                    val loadingItem = getItem(adapterPosition)
-                    if (adapterPosition != -1) {
-                        if (loadingItem.id == convertingItem.id) {
-                            Log.d(TAG, "onChanged: loadingItem id: " + loadingItem.id + "  convertingItem.id " + convertingItem.id)
-                            updatePlayInfor(convertingItem)
-                        }
-                    }
-                }
-            })
-        }
-
-        override fun onViewDetachedFromWindow() {
-            super.onViewDetachedFromWindow()
-        }
-
-        @SuppressLint("SetTextI18n")
         fun onBind() {
             val loadingItem = getItem(adapterPosition)
 
@@ -428,8 +391,8 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     pbLoading.visibility = View.VISIBLE
                     tvLoading.visibility = View.VISIBLE
                     pbLoading.max = 100
-//                    pbLoading.progress = loadingItem.percent
-//                    tvLoading.text = loadingItem.percent.toString() + "%"
+                    pbLoading.progress = loadingItem.percent
+                    tvLoading.text = loadingItem.percent.toString() + "%"
                 }
                 else -> {
                     //nothing
@@ -446,6 +409,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             when (view.id) {
                 R.id.iv_cancel -> {
                     audioCutterScreenCallback.cancelLoading(loadingItem.id)
+                    Log.d(TAG, "onClick: ")
                 }
             }
         }
