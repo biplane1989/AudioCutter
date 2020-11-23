@@ -100,7 +100,7 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
 
             val firstContact = newListContact.get(0).contactHeader  // neu co cac ky tu dac biet thi them 1 header = "#"
             if (!firstContact[0].isLetter()) {
-                listContact.add(SetContactItemView("#", "", ContactItem("", "", null, null, false, ""), true))
+                listContact.add(SetContactItemView("#", "", ContactItem("","", "", null, null, false, ""), true))
             }
             var lastHeader: String? = ""
             for (contact in newListContact) {           // gom cac contact vao chung 1 header

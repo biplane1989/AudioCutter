@@ -8,5 +8,5 @@ interface ContactManager {
     fun setup()
     fun release()
     fun getListContact(): LiveData<GetContactResult>
-    fun scanContact()
+    suspend fun scanContact()
 }

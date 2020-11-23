@@ -11,13 +11,17 @@ import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import java.io.File
 
+typealias BuildAudioCompleted = (AudioFile?) -> Unit
+
 interface AudioFileManager {
     fun init(appContext: Context)
     fun findAllAudioFiles(): LiveData<AudioFileScans>
-    fun buildAudioFile(filePath: String): AudioFile
+    fun findAudioFile(filePath: String): AudioFile?
+    fun buildAudioFile(filePath: String, listener: BuildAudioCompleted)
     fun deleteFile(listAudioFile: List<AudioFile>, typeFile: Folder): Boolean
     fun getListAudioFileByType(typeFile: Folder): LiveData<AudioFileScans>
     fun getFolderPath(typeFile: Folder): String
     fun renameToFileAudio(newName: String, audioFile: AudioFile, typeFile: Folder): Boolean
     fun checkFileNameDuplicate(name: String, typeFile: Folder): Boolean
+    fun hasUri(uri: String): Boolean
 }

@@ -72,15 +72,22 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
             ResultScreen.CUT -> {
                 if (arg.listAudioPath.size == 1) {
                     val audioFile = ManagerFactory.getAudioFileManager()
-                        .buildAudioFile(arg.listAudioPath[0])
-                    ManagerFactory.getAudioEditorManager().cutAudio(audioFile, arg.cuttingConfig!!)
+                        .findAudioFile(arg.listAudioPath[0])
+                    audioFile?.let {
+                        ManagerFactory.getAudioEditorManager().cutAudio(it, arg.cuttingConfig!!)
+                    }
+
                 }
             }
             ResultScreen.MER -> {
                 if (arg.listAudioPath.size >= 2) {
                     val listAudio = ArrayList<AudioFile>()
                     for (item in arg.listAudioPath) {
-                        listAudio.add(ManagerFactory.getAudioFileManager().buildAudioFile(item))
+                        val audioFile = ManagerFactory.getAudioFileManager().findAudioFile(item)
+                        audioFile?.let {
+                            listAudio.add(it)
+                        }
+
                     }
                     ManagerFactory.getAudioEditorManager()
                         .mergeAudio(listAudio, arg.mergingConfig!!)
@@ -89,11 +96,16 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
             ResultScreen.MIX -> {
                 if (arg.listAudioPath.size == 2) {
                     val audioFile1 = ManagerFactory.getAudioFileManager()
-                        .buildAudioFile(arg.listAudioPath[0])
+                        .findAudioFile(arg.listAudioPath[0])
                     val audioFile2 = ManagerFactory.getAudioFileManager()
-                        .buildAudioFile(arg.listAudioPath[1])
-                    ManagerFactory.getAudioEditorManager()
-                        .mixAudio(audioFile1, audioFile2, arg.mixingConfig!!)
+                        .findAudioFile(arg.listAudioPath[1])
+                    audioFile1?.let {
+                        audioFile2?.let {
+                            ManagerFactory.getAudioEditorManager()
+                                .mixAudio(audioFile1, audioFile2, arg.mixingConfig!!)
+                        }
+                    }
+
                 }
             }
         }
@@ -117,7 +129,16 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
             audioFile?.let {
                 when (audioPlayer.getPlayerInfoData().playerState) {
                     PlayerState.IDLE -> {
-                        audioPlayer.play(AudioFile(it.file, it.fileName, it.size, it.bitRate, it.duration, Uri.parse(it.file.absolutePath)))
+                        audioPlayer.play(
+                            AudioFile(
+                                it.file,
+                                it.fileName,
+                                it.size,
+                                it.bitRate,
+                                it.duration,
+                                Uri.parse(it.file.absolutePath)
+                            )
+                        )
                     }
                     PlayerState.PAUSE -> {
                         audioPlayer.resume()

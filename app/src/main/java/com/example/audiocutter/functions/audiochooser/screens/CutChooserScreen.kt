@@ -324,10 +324,13 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         if (requestCode == REQ_CODE_PICK_SOUNDFILE && resultCode == Activity.RESULT_OK && intent != null) {
 
-            val path = FileUtils.getPath(requireContext(), intent.data!!)
+            val path = FileUtils.getUriPath(requireContext(), intent.data!!)
             path?.let {
-                val audio = ManagerFactory.getAudioFileManager().buildAudioFile(path)
-                viewStateManager.onCuttingItemClicked(this, AudioCutterView(audio))
+                val audio = ManagerFactory.getAudioFileManager().findAudioFile(it)
+                audio?.let {
+                    viewStateManager.onCuttingItemClicked(this, AudioCutterView(audio))
+                }
+
             }
         }
     }

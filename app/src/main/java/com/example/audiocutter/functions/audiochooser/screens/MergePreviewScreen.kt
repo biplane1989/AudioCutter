@@ -34,10 +34,11 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     private val safeArg: MergePreviewScreenArgs by navArgs()
     private lateinit var listAudioPath: Array<String>
-    private lateinit var listPath : ArrayList<String>
+    private lateinit var listPath: ArrayList<String>
 
-        private val TAG = "manhqn"
-//    private val TAG = "giangtd"
+    private val TAG = "manhqn"
+
+    //    private val TAG = "giangtd"
     private lateinit var binding: MergePreviewScreenBinding
     private lateinit var audioMerAdapter: MergePreviewAdapter
     private lateinit var audioMerModel: MergePreviewModel
@@ -47,7 +48,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     private val playerInfoObserver = Observer<PlayerInfo> {
         audioMerAdapter.submitList(audioMerModel.updateMediaInfo(it))
     }
-
     override fun onPause() {
         super.onPause()
         audioMerModel.pause()
@@ -67,8 +67,21 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
         for (item in listAudioPath) {
             listPath.add(item)
+            val audioFile =  ManagerFactory.getAudioFileManager().findAudioFile(item)
+            audioFile?.let {
+                listPath.add(item)
+                newListAudio.add(
+                    AudioCutterView(
+                        audioFile,
+                        PlayerState.IDLE,
+                        false,
+                        0L,
+                        0L,
+                        false
+                    )
+                )
+            }
 
-            newListAudio.add(AudioCutterView(ManagerFactory.getAudioFileManager().buildAudioFile(item), PlayerState.IDLE, false, 0L, 0L, false))
 
         }
 

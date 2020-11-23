@@ -9,14 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.IViewModel
 import com.example.audiocutter.core.audiomanager.Folder
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MyStudioFragmentBinding
 import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
 import com.example.audiocutter.functions.mystudio.Constance
@@ -27,6 +26,11 @@ import com.example.audiocutter.functions.mystudio.objects.ActionData
 import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.my_studio_fragment.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, CancelDialogListener, DialogAppShare.DialogAppListener {
@@ -41,7 +45,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     private lateinit var audioFile: AudioFile
     private lateinit var dialogShare: DialogAppShare
 
-
     override fun setMenuVisibility(menuVisible: Boolean) {      // su kien khi chuyen tab
         super.setMenuVisibility(menuVisible)
         if (menuVisible) {
@@ -53,7 +56,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             }
         }
     }
-
 
     private val listAudioObserver = Observer<List<AudioFileView>> { listAudio ->
 
@@ -106,7 +108,8 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                 }
             }
             Constance.ACTION_HIDE -> {  // trang thai undelete
-                audioCutterAdapter.submitList(myStudioViewModel.changeAutoItemToMore())
+//                audioCutterAdapter.submitList(myStudioViewModel.changeAutoItemToMore())
+                myStudioViewModel.changeAutoItemToMore()
                 binding.clDeleteAll.visibility = View.GONE
                 binding.ivCheck.setImageResource(R.drawable.my_studio_screen_icon_uncheck)
             }
@@ -116,12 +119,12 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                 }
                 runOnUI {
                     if (myStudioViewModel.deleteAllItemSelected(requireArguments().getInt(BUNDLE_NAME_KEY))) { // nếu delete thành công thì sẽ hiện dialog thành công
-                        Log.d(TAG, "onReceivedAction: DeleteSuccessfullyDialog")
-                        val dialog = DeleteSuccessfullyDialog()
-                        dialog.show(childFragmentManager, DeleteSuccessfullyDialog.TAG)
+
+                        val mySnackbar = Snackbar.make(requireView(), getString(R.string.my_studio_delete_successfull), Snackbar.LENGTH_LONG)
+                        mySnackbar.show()
                     } else {
-                        Toast.makeText(context, getString(R.string.my_studio_delete_fail), Toast.LENGTH_SHORT)
-                            .show()
+                        val mySnackbar = Snackbar.make(requireView(), getString(R.string.my_studio_delete_fail), Snackbar.LENGTH_LONG)
+                        mySnackbar.show()
                     }
                 }
             }
@@ -192,30 +195,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         })
     }
 
-    override fun play(position: Int) {
-        myStudioViewModel.playingAudioAndchangeStatus(position)
-    }
-
-    override fun pause(position: Int) {
-        myStudioViewModel.pauseAudioAndChangeStatus(position)
-    }
-
-    override fun resume(position: Int) {
-        myStudioViewModel.resumeAudioAndChangeStatus(position)
-    }
-
-    override fun stop(position: Int) {
-        myStudioViewModel.stopAudioAndChangeStatus(position)
-    }
-
-    override fun seekTo(cusorPos: Int) {
-        myStudioViewModel.seekToAudio(cusorPos)
-    }
-
-    override fun onStartSeekBar() {
-        myStudioViewModel.startSeekBar()
-    }
-
     override fun showMenu(view: View, audioFile: AudioFile) { // click item setting
         val popup = android.widget.PopupMenu(context, view)
         popup.inflate(R.menu.output_audio_manager_screen_popup_menu)
@@ -281,12 +260,13 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     override fun checkDeletePos(position: Int) {
-        audioCutterAdapter.submitList(myStudioViewModel.checkItemPosition(position))
+//        audioCutterAdapter.submitList(myStudioViewModel.checkItemPosition(position))
+        myStudioViewModel.checkItemPosition(position)
         checkAllItemSelected()
     }
 
     override fun isShowPlayingAudio(positition: Int) {
-        audioCutterAdapter.submitList(myStudioViewModel.showPlayingAudio(positition))
+        myStudioViewModel.showPlayingAudio(positition)
     }
 
     override fun cancelLoading(id: Int) {      // cancel loading item
@@ -349,11 +329,12 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     override fun onDeleteClick(pathFolder: String) {
         runOnUI {
             if (myStudioViewModel.deleteItem(pathFolder, requireArguments().getInt(BUNDLE_NAME_KEY))) { // nếu delete thành công thì sẽ hiện dialog thành công
-                val dialog = DeleteSuccessfullyDialog()
-                dialog.show(childFragmentManager, DeleteSuccessfullyDialog.TAG)
+                val mySnackbar = Snackbar.make(requireView(), getString(R.string.my_studio_delete_successfull), Snackbar.LENGTH_LONG)
+                mySnackbar.show()
             } else {
-                Toast.makeText(context, getString(R.string.my_studio_delete_fail), Toast.LENGTH_SHORT)
-                    .show()
+                val mySnackbar = Snackbar.make(requireView(), getString(R.string.my_studio_delete_fail), Snackbar.LENGTH_LONG)
+                mySnackbar.show()
+
             }
         }
     }
