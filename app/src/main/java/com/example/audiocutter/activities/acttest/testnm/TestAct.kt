@@ -1,63 +1,41 @@
 package com.example.audiocutter.activities.acttest.testnm
 
-import android.app.Activity
-import android.media.AudioFormat
-import android.media.AudioManager
-import android.media.AudioTrack
+import android.Manifest
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
-import android.os.Handler
+import android.util.Log
+import androidx.annotation.RequiresApi
 import com.example.audiocutter.R
-import kotlin.experimental.and
+import com.example.audiocutter.base.BaseActivity
+import kotlinx.android.synthetic.main.act_test.*
 
 
-class TestAct : Activity() {
+class TestAct : BaseActivity() {
 
-//    private val duration = 3 // seconds
-//    private val sampleRate = 8000
-//    private val numSamples = duration * sampleRate
-//    private val sample = DoubleArray(numSamples)
-//    private val freqOfTone = 440.0 // hz
-//    private val generatedSnd = ByteArray(2 * numSamples)
-//    var handler: Handler = Handler()
-//
-//
-//    public override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.act_test)
-//    }
-//
-//    override fun onResume() {
-//        super.onResume()
-//
-//        val thread = Thread {
-//            genTone()
-//            handler.post(Runnable { playSound() })
-//        }
-//        thread.start()
-//    }
-//
-//    fun genTone() {
-//        // fill out the array
-//        for (i in 0 until numSamples) {
-//            sample[i] = Math.sin(2 * Math.PI * i / (sampleRate / freqOfTone))
-//        }
-//
-//        // convert to 16 bit pcm sound array
-//        // assumes the sample buffer is normalised.
-//        var idx = 0
-//        for (dVal in sample) {
-//            // scale to maximum amplitude
-//            val `val` = (dVal * 32767).toShort()
-//            // in 16 bit wav PCM, first byte is the low order byte
-//            generatedSnd[idx++] = (`val` and 0x00ff).toByte()
-//            generatedSnd[idx++] = (`val` and 0xff00.toShort() >>> 8).toByte()
-//        }
-//    }
-//
-//    fun playSound() {
-//        val audioTrack = AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, numSamples, AudioTrack.MODE_STATIC)
-//        audioTrack.write(generatedSnd, 0, generatedSnd.size)
-//        audioTrack.play()
-//    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun createView(savedInstanceState: Bundle?) {
+        setContentView(R.layout.act_test)
+        requestPermissions(arrayOf(Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_PHONE_STATE, Manifest.permission.PROCESS_OUTGOING_CALLS), 101)
+        val broadcast = MyBroadcast()
+        val intentFilter = IntentFilter()
+        intentFilter.addAction("android.intent.action.PHONE_STATE")
+        intentFilter.addAction("android.intent.action.NEW_OUTGOING_CALL")
+        intentFilter.addAction("android.provider.Telephony.SMS_RECEIVED")
+        intentFilter.addAction(Intent.ACTION_SCREEN_ON)
+        registerReceiver(broadcast, intentFilter)
+
+
+        bt_test.setOnClickListener {
+
+            UtilsTest.startFlash(this, "01010101010101010101")
+
+        }
+
+    }
+
+
 }
 

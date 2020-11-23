@@ -53,9 +53,10 @@
                 android:paddingHorizontal="@dimen/margin_item_dialog">
 
                 <RadioButton
+                    android:background="?attr/selectableItemBackground"
                     android:layout_marginBottom="@dimen/margin_item_dialog"
                     android:id="@+id/rb_ringtone"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="#FDAA74"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
@@ -64,9 +65,10 @@
                     android:textSize="@dimen/text_size_edt" />
 
                 <RadioButton
+                    android:background="?attr/selectableItemBackground"
                     android:layout_marginBottom="@dimen/margin_item_dialog"
                     android:id="@+id/rb_alarm"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="#FDAA74"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
@@ -74,8 +76,9 @@
                     android:textSize="@dimen/text_size_edt" />
 
                 <RadioButton
+                    android:background="?attr/selectableItemBackground"
                     android:id="@+id/rb_notification"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="#FDAA74"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
