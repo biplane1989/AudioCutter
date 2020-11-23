@@ -2,18 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/ln_main"
     android:fitsSystemWindows="true">
 
-    <Button
-        android:id="@+id/bt_test"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:text="test"
-        android:orientation="vertical">
+    <!--    <Button-->
+    <!--        android:id="@+id/bt_test"-->
+    <!--        android:layout_width="100dp"-->
+    <!--        android:layout_height="50dp"-->
+    <!--        android:layout_centerInParent="true"-->
+    <!--        android:gravity="center"-->
+    <!--        android:text="test"-->
+    <!--        android:orientation="vertical">-->
 
-    </Button>
+    <!--    </Button>-->
 
     <!--    <Button-->
     <!--        android:id="@+id/bt_off"-->
