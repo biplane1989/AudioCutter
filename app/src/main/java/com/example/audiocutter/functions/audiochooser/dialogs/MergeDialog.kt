@@ -1,7 +1,9 @@
 package com.example.audiocutter.functions.audiochooser.dialogs
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audiomanager.Folder
@@ -19,6 +21,7 @@ class MergeDialog() : BaseDialog(), View.OnClickListener {
         val TAG = "MergeDialog"
         val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
         lateinit var mCallback: MergeDialogListener
+        lateinit var mEdtName: EditText
 
         @JvmStatic
         fun newInstance(listener: MergeDialogListener, countFile: Int? = 0): MergeDialog {
@@ -47,20 +50,24 @@ class MergeDialog() : BaseDialog(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        mEdtName = view.findViewById(R.id.edt_filename_dialog)
         countFile = requireArguments().getInt(BUNDLE_NAME_KEY)
-        tv_count_file_dialog.text = "$countFile ${context?.getString(R.string.file_merged)}"
-        val newName = Utils.genNewAudioFileName(Folder.TYPE_MERGER)
-        edt_filename_dialog.setText(newName)
+        tv_count_file_dialog.text =
+            "%d %s".format(countFile, requireContext().getString(R.string.file_merged))
+        val newName = Utils.genAudioFileName(Folder.TYPE_MERGER)
+        mEdtName.setText(newName)
         tv_cancel_dialog_merge.setOnClickListener(this)
         tv_ok_dialog_merge.setOnClickListener(this)
-        edt_filename_dialog.setSelection(newName.length)
+        mEdtName.setSelection(newName.length)
+        mEdtName.post {
+            Utils.showKeyboard(requireContext(), mEdtName)
+        }
     }
 
-//    override fun show(manager: FragmentManager, tag: String?) {
-//        super.show(manager, tag)
-//
-//    }
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        Utils.hideKeyboard(requireContext(), mEdtName)
+    }
 
     override fun onClick(v: View) {
         when (v.id) {
@@ -69,8 +76,10 @@ class MergeDialog() : BaseDialog(), View.OnClickListener {
                 dismiss()
             }
             R.id.tv_ok_dialog_merge -> {
-                val name = Utils.createValidFileName(edt_filename_dialog.text.toString()
-                    .trim(), Folder.TYPE_MERGER)
+                val name = Utils.genAudioFileName(
+                    Folder.TYPE_MERGER,
+                    edt_filename_dialog.text.toString().trim()
+                )
                 if (checkValid(edt_filename_dialog.text.toString())) {
                     mCallback.mergeAudioFile(name)
                     dismiss()
@@ -83,12 +92,12 @@ class MergeDialog() : BaseDialog(), View.OnClickListener {
 
     private fun checkValid(name: String): Boolean {
         if (name.isEmpty()) {
-            edt_filename_dialog.error = "Name must be null"
+            edt_filename_dialog.error = getString(R.string.audio_name_is_not_empty)
             edt_filename_dialog.requestFocus()
             return false
         }
         if (ManagerFactory.getAudioFileManager().checkFileNameDuplicate(name, Folder.TYPE_MERGER)) {
-            edt_filename_dialog.error = "Name already exist"
+            edt_filename_dialog.error = getString(R.string.audio_name_this_name_is_already_existed)
             edt_filename_dialog.requestFocus()
             return false
         }

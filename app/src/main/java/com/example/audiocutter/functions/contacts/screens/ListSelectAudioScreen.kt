@@ -179,7 +179,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         if (requestCode == REQ_CODE_PICK_SOUNDFILE && resultCode == Activity.RESULT_OK && intent != null) {
 
-            val path = FileUtils.getPath(requireContext(), intent.data!!)
+            val path = FileUtils.getUriPath(requireContext(), intent.data!!)
 
             path?.let {
                 if (mListSelectAudioViewModel.setRingtoneWithUri(safeArg.phoneNumber, path)) {
