@@ -1,7 +1,6 @@
 package com.example.audiocutter.functions.mystudio.screens
 
 import android.app.Application
-import android.net.Uri
 import android.os.Environment
 import android.text.TextUtils
 import android.util.Log
@@ -12,8 +11,6 @@ import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.core.manager.PlayerInfo
-import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.ext.toListAudioFiles
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.ItemLoadStatus
@@ -24,6 +21,10 @@ import com.example.audiocutter.functions.resultscreen.objects.*
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.isActive
 import java.io.File
 import kotlin.collections.ArrayList
 
@@ -57,6 +58,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     private var loadingStatus: MutableLiveData<Boolean> = MutableLiveData()
     private var isEmptyStatus: MutableLiveData<Boolean> = MutableLiveData()
     private var loadingDone: MutableLiveData<Boolean> = MutableLiveData()
+
+    private var mergingJob: Job? = null
 
     init {
         audioPlayer.init(application.applicationContext)
@@ -92,49 +95,58 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 listLoading = ManagerFactory.getAudioEditorManager().getListMixingItems()
             }
         }
-        mAudioMediatorLiveData.addSource(listScaners) {             // khi data co su thay doi thi se goi vao ham nay
-            runOnBackground {
+        mAudioMediatorLiveData.addSource(listScaners) { // hi data co su thay doi thi se goi vao ham nay
+            waitingForMergingJobCompleted {
+                mergingJob = runOnBackground {
 
-                if (it.state == StateLoad.LOADING) {
-                    isEmptyStatus.postValue(false)
-                    loadingStatus.postValue(true)
-                }
-                if (it.state == StateLoad.LOADDONE) {       // khi loading xong thi check co data hay khong de show man hinh empty data
-                    loadingStatus.postValue(false)
-                    if (!it.listAudioFiles.isEmpty()) {
+                    if (it.state == StateLoad.LOADING) {
                         isEmptyStatus.postValue(false)
-                    } else {
-                        isEmptyStatus.postValue(true)
+                        loadingStatus.postValue(true)
                     }
-                }
+                    if (it.state == StateLoad.LOADDONE) {       // khi loading xong thi check co data hay khong de show man hinh empty data
+                        loadingStatus.postValue(false)
+                        if (!it.listAudioFiles.isEmpty()) {
+                            isEmptyStatus.postValue(false)
+                        } else {
+                            isEmptyStatus.postValue(true)
+                        }
+                    }
 
-                mListAudioFileScans.clear()
-                for (item in it.listAudioFiles) {
-                    mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
+                    mListAudioFileScans.clear()
+                    for (item in it.listAudioFiles) {
+                        mListAudioFileScans.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
+                    }
+                    mergeList()
                 }
-                mergeList()
             }
+
+
         }
 
         mAudioMediatorLiveData.addSource(listLoading) {
-            mListFileLoading.clear()
-            if (!it.isEmpty()) {
-                for (item in it) {
-                    if (item is CuttingConvertingItem) {
-                        mListFileLoading.add(AudioFileView(AudioFile(File(item.cuttingConfig.pathFolder), item.cuttingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
+            waitingForMergingJobCompleted {
+                mergingJob = runOnBackground {
+                    mListFileLoading.clear()
+                    if (!it.isEmpty()) {
+                        for (item in it) {
+                            if (item is CuttingConvertingItem) {
+                                mListFileLoading.add(AudioFileView(AudioFile(File(item.cuttingConfig.pathFolder), item.cuttingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
+                            }
+                            if (item is MergingConvertingItem) {
+                                mListFileLoading.add(AudioFileView(AudioFile(File(item.mergingConfig.pathFolder), item.mergingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
+                            }
+                            if (item is MixingConvertingItem) {
+                                mListFileLoading.add(AudioFileView(AudioFile(File(item.mixingConfig.pathFolder), item.mixingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
+                            }
+                        }
                     }
-                    if (item is MergingConvertingItem) {
-                        mListFileLoading.add(AudioFileView(AudioFile(File(item.mergingConfig.pathFolder), item.mergingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
+                    if (it.size > 0) {
+                        isEmptyStatus.postValue(false)
                     }
-                    if (item is MixingConvertingItem) {
-                        mListFileLoading.add(AudioFileView(AudioFile(File(item.mixingConfig.pathFolder), item.mixingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
-                    }
+                    mergeList()
+                    Log.d("001", "init: listLoading : " + Thread.currentThread())
                 }
             }
-            if (it.size > 0) {
-                isEmptyStatus.postValue(false)
-            }
-            mergeList()
         }
         mAudioMediatorLiveData.addSource(ManagerFactory.getAudioEditorManager()
             .getCurrentProcessingItem()) {
@@ -143,6 +155,13 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             }
         }
 //        }
+    }
+
+    private fun waitingForMergingJobCompleted(pendingFunction: () -> Unit) {        // khi mergingJob da chay xong thi moi chay ham pendingFunction
+        runOnBackground {
+            mergingJob?.cancelAndJoin()
+            pendingFunction()
+        }
     }
 
     fun showPlayingAudio(position: Int) {
@@ -187,13 +206,16 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         return loadingProcessingItem
     }
 
-    private fun mergeList() {
+    private suspend fun mergeList() = coroutineScope {
         mListAudio.clear()                      //  merger cu
         if (!mListFileLoading.isNullOrEmpty()) {
             mListAudio.addAll(mListFileLoading)
         }
         if (!mListAudioFileScans.isNullOrEmpty()) {
             for (item in mListAudioFileScans) {
+                if (!isActive) {                // khi nguoi dung cancel
+                    break
+                }
                 if (isDeleteStatus) {                           // khi dang o trang thai delete
                     item.itemLoadStatus.deleteState = DeleteState.UNCHECK
                 }
@@ -205,8 +227,10 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 }
             }
         }
-
-        mAudioMediatorLiveData.postValue(mListAudio)
+        if (isActive) {                 // o trang thai ton tai thi moi dc update
+            mAudioMediatorLiveData.postValue(mListAudio)
+        }
+        Log.d("001", "init: mergeList : " + Thread.currentThread())
     }
 
     private fun isDoubleDisplay(filePath: String): Boolean {        // kiem tra xem item o listloading co ton tai trong list scan hay khong
@@ -220,10 +244,13 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     // update loading item khi editor
     private fun updateLoadingProgressbar(newItem: ConvertingItem) {
+
+        Log.d(TAG, "updateLoadingProgressbar: pathName : " + newItem.getFileName() + " percent : " + newItem.percent + "id : "+ newItem.id)
         val newItemConverting = AudioFileView(AudioFile(File(pathName), newItem.getFileName(), 100), false, ItemLoadStatus(), newItem.state, newItem.percent, newItem.id)
         if (!mListAudio.isEmpty()) {
             var index = 0
-            for (item in mListAudio) {
+            for (item in mListAudio) {              // TODO
+                Log.d(TAG, "updateLoadingProgressbar: id "+ item.id + " new ID : "+ newItem.id)
                 if (item.id == newItem.id) {
                     mListAudio[index] = newItemConverting
                 }

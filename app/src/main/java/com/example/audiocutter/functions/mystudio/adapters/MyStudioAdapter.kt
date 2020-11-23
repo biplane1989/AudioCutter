@@ -137,6 +137,8 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 val newItem = payloads.firstOrNull() as AudioFileView
                 val convertingItem = getItem(position)
 
+                Log.d(TAG, "onBindViewHolder: convertingItem.percent : "+ convertingItem.percent)
+
                 loadingViewHolder.pbLoading.max = 100
                 loadingViewHolder.pbLoading.progress = convertingItem.percent
 
@@ -185,10 +187,11 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         var filePath: String = ""
 
         private fun updatePlayInfor(playerInfo: PlayerInfo) {
+
             val audioFileView = getItem(adapterPosition)
             filePath = playerInfo.currentAudio?.getFilePath().toString()
 
-            if (audioFileView.getFilePath().equals(filePath)){
+            if (audioFileView.getFilePath().equals(filePath)) {
                 llPlayMusic.visibility = View.VISIBLE
                 llItem.setBackgroundResource(R.drawable.my_studio_item_bg)
             }
