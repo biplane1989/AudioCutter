@@ -48,7 +48,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     private val playerInfoObserver = Observer<PlayerInfo> {
         audioMerAdapter.submitList(audioMerModel.updateMediaInfo(it))
     }
-
     override fun onPause() {
         super.onPause()
         audioMerModel.pause()

@@ -89,7 +89,8 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
         uriNameMap.put(uri, result)
         return result
     }
-    private suspend fun scan()= coroutineScope{
+
+    private suspend fun scan() = coroutineScope {
         contactLiveData.postValue(GetContactResult(false))
 
         val newListContact: ArrayList<ContactItem> = ArrayList()
@@ -161,14 +162,15 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
             oldRingtoneDefault = defaultRingtone
 
         }
-        if(isActive){
+        if (isActive) {
             contactLiveData.postValue(GetContactResult(true, newListContact))
         }
 
 
     }
+
     override suspend fun scanContact() {
-       notifyDiskChanged()
+        notifyDiskChanged()
     }
 
     inner class ContactObserver(handler: Handler?) :
