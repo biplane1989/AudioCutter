@@ -1,12 +1,12 @@
 package com.example.audiocutter.functions.editor.dialogs
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.FragmentManager
 import com.example.audiocutter.R
-import com.example.audiocutter.activities.acttest.CoreTestActivity
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
@@ -77,7 +77,7 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
         tvConvert = view.findViewById(R.id.dialog_convert_ok_tv)
 
         seekBarVolume.value = volume.toFloat()
-        val newName = Utils.genNewAudioFileName(Folder.TYPE_CUTTER)
+        val newName = Utils.genAudioFileName(Folder.TYPE_CUTTER)
         edtNameFile.setText(newName)
         tvPercent.text = String.format(Locale.ENGLISH, "%d%%", volume)
 
@@ -94,6 +94,9 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
             setOnItemSelectedListener { view, position, id, item -> positionBitrate = position }
         }
         edtNameFile.setSelection(newName.length)
+        edtNameFile.post{
+            Utils.showKeyboard(requireContext(), edtNameFile)
+        }
     }
 
     private fun getData() {
@@ -116,7 +119,8 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
         when (v?.id) {
             R.id.dialog_convert_ok_tv -> {
                 val name = Utils
-                    .createValidFileName(edtNameFile.text.toString().trim(), Folder.TYPE_CUTTER)
+                    .genAudioFileName(Folder.TYPE_CUTTER,
+                        edtNameFile.text.toString().trim())
                 if (checkValid(edtNameFile.text.toString().trim())) {
                     if (listener != null) {
                         listener!!.onAcceptConvert(
@@ -129,7 +133,7 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
                                 Effect.OFF,
                                 BitRate.values()[positionBitrate],
                                 AudioFormat.values()[positionFormat],
-                                CoreTestActivity.PATH_CUT_FOLDER
+                                ManagerFactory.getAudioFileManager().getFolderPath(Folder.TYPE_CUTTER)
                             )
                         )
                         addDataSharePre()
@@ -145,6 +149,10 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
 
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        Utils.hideKeyboard(requireContext(), edtNameFile)
+    }
     private fun checkValid(name: String): Boolean {
         if (name.isEmpty()) {
             edtNameFile.error = "Name must not be empty"

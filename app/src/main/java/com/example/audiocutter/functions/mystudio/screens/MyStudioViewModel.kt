@@ -513,8 +513,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         audioFile?.let {
             ManagerFactory.getAudioFileManager().renameToFileAudio(newName, it, typeFolder)
         }
-
-
     }
 
     fun getAction(): LiveData<ActionData> {

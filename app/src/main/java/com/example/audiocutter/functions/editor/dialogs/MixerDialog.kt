@@ -38,11 +38,11 @@ class MixerDialog : BaseDialog() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        edt_file_name.setText(Utils.genNewAudioFileName(Folder.TYPE_MIXER))
+        edt_file_name.setText(Utils.genAudioFileName(Folder.TYPE_MIXER))
         val name = Utils
-            .createValidFileName(
-                edt_file_name.text.toString().trim(),
-                Folder.TYPE_MIXER
+            .genAudioFileName(
+                Folder.TYPE_MIXER,
+                edt_file_name.text.toString().trim()
             )
 
         tv_cancel_dialog_filename.setOnClickListener {

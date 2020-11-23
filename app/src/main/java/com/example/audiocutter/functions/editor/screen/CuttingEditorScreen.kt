@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.editor.screen
+ package com.example.audiocutter.functions.editor.screen
 
 import android.os.Bundle
 import android.os.Handler

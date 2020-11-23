@@ -228,7 +228,7 @@ object AudioFileManagerImpl : AudioFileManager {
         return null
     }
 
-    override fun hasUri(uri: String): Boolean {
+    override fun hasAudioFileWithUri(uri: String): Boolean {
         return uriPathSet.contains(uri)
     }
 
@@ -368,8 +368,6 @@ object AudioFileManagerImpl : AudioFileManager {
         audioFile: AudioFile,
         typeFile: Folder
     ): Boolean {
-
-
         try {
             val subPath = when (typeFile) {
                 Folder.TYPE_MIXER -> {
@@ -386,20 +384,18 @@ object AudioFileManagerImpl : AudioFileManager {
             val pathNew = "$subPath/$newName.${audioFile.mimeType}"
             val fileNew = File(pathNew)
             file.renameTo(fileNew)
-
-            val values = ContentValues()
-            values.put(MediaStore.Audio.AudioColumns.DISPLAY_NAME, "$newName.${audioFile.mimeType}")
-            Log.d(TAG, "reNameToFileAudio: mimetype  ${audioFile.mimeType}")
-
-            val rows: Int = mContext.contentResolver.update(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values, null, null)
-            Log.d(TAG, "insertFile: rows $rows")
-            MediaScannerConnection.scanFile(mContext, arrayOf(fileNew.absolutePath), null) { s, uri ->
-                Log.d("insertFile", "on complete ${uri}  string $s")
+            MediaScannerConnection.scanFile(
+                mContext,
+                arrayOf(fileNew.absolutePath),
+                null
+            ) { s, uri ->
+                notifyDiskChanged()
             }
 
             return true
         } catch (e: Exception) {
             e.printStackTrace()
+            Log.d(TAG, "renameToFileAudio error ${e.message}")
             return false
         }
     }
@@ -429,7 +425,6 @@ object AudioFileManagerImpl : AudioFileManager {
                 result = true
             }
         }
-
         return result
     }
 
