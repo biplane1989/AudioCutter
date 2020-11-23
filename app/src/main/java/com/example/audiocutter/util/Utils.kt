@@ -275,11 +275,11 @@ class Utils {
         }
 
         @SuppressLint("SimpleDateFormat")
-        fun genAudioFileName(typeFile: Folder, newName:String=""): String {
+        fun genAudioFileName(typeFile: Folder, newName: String = ""): String {
             var baseFileName = ""
             val dateStr = SimpleDateFormat("dd_MM_yyyy").format(Date())
             val folderPath = ManagerFactory.getAudioFileManager().getFolderPath(typeFile)
-            if(newName.isEmpty()) {
+            if (newName.isEmpty()) {
                 when (typeFile) {
                     Folder.TYPE_CUTTER -> {
                         baseFileName = "cutting_file_$dateStr"
@@ -291,7 +291,7 @@ class Utils {
                         baseFileName = "mixing_file_$dateStr"
                     }
                 }
-            }else{
+            } else {
                 baseFileName = newName
             }
             val listBaseName = getAllFileNameFromFolder(folderPath)
