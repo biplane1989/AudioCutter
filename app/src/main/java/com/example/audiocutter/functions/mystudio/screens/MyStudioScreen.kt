@@ -162,7 +162,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         myStudioViewModel = ViewModelProviders.of(this).get(MyStudioViewModel::class.java)
-        audioCutterAdapter = AudioCutterAdapter(this, myStudioViewModel.getAudioPlayer(), lifecycleScope)
+        audioCutterAdapter = AudioCutterAdapter(this, myStudioViewModel.getAudioPlayer(), myStudioViewModel.getAudioEditorManager(), lifecycleScope)
         typeAudio = requireArguments().getInt(BUNDLE_NAME_KEY)  // lấy typeAudio của từng loại fragment
 
         myStudioViewModel.init(typeAudio)
@@ -364,7 +364,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         intent.type = "audio/*"
         intent.`package` = pkgName
         intent.action = Intent.ACTION_SEND
-      requireActivity().startActivity(intent)
+        requireActivity().startActivity(intent)
     }
 
     //ToDo ("fragment nao  su dung thi override")

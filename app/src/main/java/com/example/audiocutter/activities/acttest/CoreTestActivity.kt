@@ -79,7 +79,7 @@ class CoreTestActivity : BaseActivity(), View.OnClickListener {
         when (p0) {
             test_cut_bt -> {
                 runOnUI {
-                    audioFile = audioCutterImpl.cut(listAudio[4], AudioCutConfig(20.2f, 20.5f, 300, "testCut2", Effect.AFTER_3_S, Effect.AFTER_1_S, BitRate._128kb, AudioFormat.MP3, PATH_CUT_FOLDER))
+//                    audioFile = audioCutterImpl.cut(listAudio[4], AudioCutConfig(20.2f, 20.5f, 300, "testCut2", Effect.AFTER_3_S, Effect.AFTER_1_S, BitRate._128kb, AudioFormat.MP3, PATH_CUT_FOLDER))
                     Log.e(TAG, "cut: $audioFile ")
                 }
             }

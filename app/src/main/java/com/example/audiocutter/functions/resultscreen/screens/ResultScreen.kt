@@ -25,6 +25,7 @@ import com.example.audiocutter.functions.mystudio.dialog.CancelDialogListener
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
+import com.google.android.material.snackbar.Snackbar
 import java.text.SimpleDateFormat
 
 
@@ -66,7 +67,6 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                 binding.tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(it.duration), context)
                     .toInt() + 15
             }
-
             binding.tvTitleMusic.text = it.fileName
             binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
 
@@ -106,6 +106,13 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         binding.tvInfoMusic.text = it.bitRate.toString() + resources.getString(R.string.kbps)
 
         isLoadingDone = false
+    }
+
+    private val errorObserver = Observer<Boolean> {
+        if (it) {
+            val mySnackbar = Snackbar.make(requireView(), "Converting Error", Snackbar.LENGTH_LONG)
+            mySnackbar.show()
+        }
     }
 
     private fun convertAudioSizeToString(audioFile: AudioFile): String {
@@ -162,6 +169,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         mResultViewModel.getProcessingLiveData().observe(viewLifecycleOwner, processingObserver)
         mResultViewModel.getProcessDoneLiveData().observe(viewLifecycleOwner, processDoneObserver)
         mResultViewModel.getPlayerInfo().observe(viewLifecycleOwner, playInfoObserver)
+        mResultViewModel.getErrorLiveData().observe(viewLifecycleOwner, errorObserver)
         return binding.root
     }
 

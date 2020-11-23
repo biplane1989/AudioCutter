@@ -13,7 +13,7 @@ interface AudioEditorManager {
     fun mixAudio(audioFile1: AudioFile, audioFile2: AudioFile, mixingConfig: AudioMixConfig)
     fun mergeAudio(listAudioFiles: List<AudioFile>, mergingConfig: AudioMergingConfig)
     fun cancel(int: Int)
-    fun getCurrentProcessingItem(): LiveData<ConvertingItem>
+    fun getCurrentProcessingItem(): LiveData<ConvertingItem?>
     fun getListCuttingItems(): LiveData<List<ConvertingItem>>
     fun getListMergingItems(): LiveData<List<ConvertingItem>>
     fun getListMixingItems(): LiveData<List<ConvertingItem>>

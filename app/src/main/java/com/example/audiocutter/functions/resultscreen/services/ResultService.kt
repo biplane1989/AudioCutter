@@ -33,7 +33,7 @@ class ResultService : LifecycleService() {
     private var serviceForegroundID = -1
     private var TYPE_AUDIO = -1
 
-    private val processObserver = Observer<ConvertingItem> { it ->
+    private val processObserver = Observer<ConvertingItem?> { it ->
         if (it != null) {
             Log.d(TAG, "ResultService percent : " + it.percent + "   status : " + it.state)
             builderNotification(it.getFileName())
