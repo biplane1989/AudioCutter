@@ -46,6 +46,9 @@ object AudioFileManagerImpl : AudioFileManager {
     private var listAllAudios = MutableLiveData<AudioFileScans>()
     private lateinit var audioCutter: AudioCutter
     private var audioFileManagerScope = CoroutineScope(Dispatchers.Default)
+    private val listCuttingAudios = MutableLiveData<AudioFileScans>()
+    private val listMeringAudios = MutableLiveData<AudioFileScans>()
+    private val listMixingAudios = MutableLiveData<AudioFileScans>()
 
     private val lock = ReentrantLock()
 
@@ -83,18 +86,28 @@ object AudioFileManagerImpl : AudioFileManager {
         return true
     }
 
-    private fun filterAudioByFolder(
+    private suspend fun filterAudioByFolder(
         listAudioFiles: List<AudioFile>,
         folderFilter: Folder
     ): List<AudioFile> {
-        val tmpList = ArrayList<AudioFile>()
-        listAudioFiles.forEach {
-            val folder = checkFolder(it.file.absolutePath)
-            if (folder == folderFilter) {
-                tmpList.add(it)
+        return coroutineScope {
+            val tmpList = ArrayList<AudioFile>()
+            run list@{
+                listAudioFiles.forEach {
+                    if (!isActive) {
+                        return@list
+                    }
+                    val folder = checkFolder(it.file.absolutePath)
+                    if (folder == folderFilter) {
+                        tmpList.add(it)
+                    }
+                }
             }
+
+
+            tmpList
         }
-        return tmpList
+
     }
 
     private suspend fun queryMediaStore(filterFunc: (String, String, Long) -> Unit) =
@@ -134,7 +147,10 @@ object AudioFileManagerImpl : AudioFileManager {
     private suspend fun scan() = coroutineScope {
         Log.d(TAG, "start scanning")
         val startTime = System.currentTimeMillis()
-        listAllAudios.postValue(AudioFileScans(ArrayList(), StateLoad.LOADING))
+        changeStateLoading()
+        val listMergingAudio = ArrayList<AudioFile>()
+        val listCuttingAudio = ArrayList<AudioFile>()
+        val listMixingAudio = ArrayList<AudioFile>()
         withLock {
             listAllAudioData.clear()
             uriPathSet.clear()
@@ -146,17 +162,30 @@ object AudioFileManagerImpl : AudioFileManager {
                     audioFile?.let {
                         listAllAudioData.add(it)
                         uriPathSet.add(it.uri.toString())
+                        val folder = checkFolder(it.getFilePath())
+                        when (folder) {
+                            Folder.TYPE_CUTTER -> {
+                                listCuttingAudio.add(it)
+                            }
+                            Folder.TYPE_MERGER -> {
+                                listMergingAudio.add(it)
+                            }
+                            Folder.TYPE_MIXER -> {
+                                listMixingAudio.add(it)
+                            }
+                            else -> {
+                            }
+                        }
                     }
                 }
             }
         }
         if (isActive) {
             listAllAudios.postValue(AudioFileScans(listAllAudioData, StateLoad.LOADDONE))
+            listCuttingAudios.postValue(AudioFileScans(listCuttingAudio, StateLoad.LOADDONE))
+            listMeringAudios.postValue(AudioFileScans(listMergingAudio, StateLoad.LOADDONE))
+            listMixingAudios.postValue(AudioFileScans(listMixingAudio, StateLoad.LOADDONE))
         }
-        Log.d(
-            TAG,
-            "end scanning ${listAllAudioData.size} duration ${System.currentTimeMillis() - startTime}"
-        )
 
     }
 
@@ -414,69 +443,27 @@ object AudioFileManagerImpl : AudioFileManager {
         return result
     }
 
-    private val listCuttingAudios = MediatorLiveData<AudioFileScans>()
 
-    init {
-        listCuttingAudios.addSource(listAllAudios) {
-            listCuttingAudios.postValue(AudioFileScans(ArrayList(), StateLoad.LOADING))
-            if (it.state == StateLoad.LOADDONE) {
-                audioFileManagerScope.launch {
-                    val listTmp =
-                        filterAudioByFolder(it.listAudioFiles, Folder.TYPE_CUTTER)
-                    Log.d("taihhhhh", "listCuttingAudios  ${listTmp.size}")
-                    listCuttingAudios.postValue(
-                        AudioFileScans(
-                            listTmp,
-                            StateLoad.LOADDONE
-                        )
-                    )
-                }
-            }
-        }
-    }
-
-    private val listMeringAudios = MediatorLiveData<AudioFileScans>()
-
-    init {
-        listMeringAudios.addSource(listAllAudios) {
-            listMeringAudios.postValue(AudioFileScans(ArrayList(), StateLoad.LOADING))
-            if (it.state == StateLoad.LOADDONE) {
-                audioFileManagerScope.launch {
-                    val listTmp =
-                        filterAudioByFolder(it.listAudioFiles, Folder.TYPE_MERGER)
-
-                    listMeringAudios.postValue(
-                        AudioFileScans(
-                            listTmp,
-                            StateLoad.LOADDONE
-                        )
-                    )
-                }
-            }
-        }
-    }
-
-    private val listMixingAudios = MediatorLiveData<AudioFileScans>()
-
-    init {
-        listMixingAudios.addSource(listAllAudios) {
+    private fun changeStateLoading() {
+        var audioFileScan = listMixingAudios.value
+        if (audioFileScan == null || audioFileScan.state != StateLoad.LOADING) {
             listMixingAudios.postValue(AudioFileScans(ArrayList(), StateLoad.LOADING))
-            if (it.state == StateLoad.LOADDONE) {
-                audioFileManagerScope.launch {
-                    val listTmp =
-                        filterAudioByFolder(it.listAudioFiles, Folder.TYPE_MIXER)
-
-                    Log.d("taihhhhh", "listMixingAudios  ${listTmp.size}")
-                    listMixingAudios.postValue(
-                        AudioFileScans(
-                            listTmp,
-                            StateLoad.LOADDONE
-                        )
-                    )
-                }
-            }
         }
+        audioFileScan = listCuttingAudios.value
+        if (audioFileScan == null || audioFileScan.state != StateLoad.LOADING) {
+            listCuttingAudios.postValue(AudioFileScans(ArrayList(), StateLoad.LOADING))
+        }
+        audioFileScan = listMeringAudios.value
+        if (audioFileScan == null || audioFileScan.state != StateLoad.LOADING) {
+            listMeringAudios.postValue(AudioFileScans(ArrayList(), StateLoad.LOADING))
+        }
+        audioFileScan = listAllAudios.value
+        if (audioFileScan == null || audioFileScan.state != StateLoad.LOADING) {
+            listAllAudios.postValue(AudioFileScans(ArrayList(), StateLoad.LOADING))
+        }
+
     }
+
 
     private val scanFileChannel = Channel<Any>(Channel.CONFLATED)
     private var scanFileJob: Job? = null
