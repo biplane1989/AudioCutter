@@ -19,18 +19,23 @@ class MergeDialog() : BaseDialog(), View.OnClickListener {
 
     companion object {
         val TAG = "MergeDialog"
-        val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
+        private const val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
+        private const val SUGGESTION_NAME_KEY = "SUGGESTION_NAME_KEY"
         lateinit var mCallback: MergeDialogListener
         lateinit var mEdtName: EditText
 
         @JvmStatic
-        fun newInstance(listener: MergeDialogListener, countFile: Int? = 0): MergeDialog {
+        fun newInstance(
+            listener: MergeDialogListener,
+            countFile: Int = 0,
+            suggestionName: String
+        ): MergeDialog {
             this.mCallback = listener
             val dialog = MergeDialog()
             val bundle = Bundle()
-            countFile?.let {
-                bundle.putInt(BUNDLE_NAME_KEY, countFile)
-            }
+            bundle.putInt(BUNDLE_NAME_KEY, countFile)
+            bundle.putString(SUGGESTION_NAME_KEY, suggestionName)
+
             dialog.arguments = bundle
             return dialog
         }
@@ -54,7 +59,11 @@ class MergeDialog() : BaseDialog(), View.OnClickListener {
         countFile = requireArguments().getInt(BUNDLE_NAME_KEY)
         tv_count_file_dialog.text =
             "%d %s".format(countFile, requireContext().getString(R.string.file_merged))
-        val newName = Utils.genAudioFileName(Folder.TYPE_MERGER)
+        val newName = Utils.genAudioFileName(
+            Folder.TYPE_MERGER, prefixName = arguments?.getString(
+                SUGGESTION_NAME_KEY
+            ) ?: ""
+        )
         mEdtName.setText(newName)
         tv_cancel_dialog_merge.setOnClickListener(this)
         tv_ok_dialog_merge.setOnClickListener(this)

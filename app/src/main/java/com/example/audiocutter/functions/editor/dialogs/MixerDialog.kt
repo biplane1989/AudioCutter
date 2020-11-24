@@ -6,6 +6,7 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.functions.audiochooser.dialogs.MergeDialog
 import com.example.audiocutter.util.Utils
 import kotlinx.android.synthetic.main.mix_dialog_file_name.*
 
@@ -14,14 +15,15 @@ class MixerDialog : BaseDialog() {
 
     companion object {
         val TAG = "fileNameDialog"
-        val MIX_FILE_NAME_KEY = "MIX_FILE_NAME_KEY"
+        private const val SUGGESTION_NAME_KEY = "SUGGESTION_NAME_KEY"
         lateinit var dialogListener: FileNameDialogListener
 
         @JvmStatic
-        fun newInstance(listener: FileNameDialogListener): MixerDialog {
+        fun newInstance(listener: FileNameDialogListener, suggestionName: String): MixerDialog {
             this.dialogListener = listener
             val dialog = MixerDialog()
             val bundle = Bundle()
+            bundle.putString(SUGGESTION_NAME_KEY, suggestionName)
             dialog.arguments = bundle
             return dialog
         }
@@ -38,7 +40,7 @@ class MixerDialog : BaseDialog() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        edt_file_name.setText(Utils.genAudioFileName(Folder.TYPE_MIXER))
+        edt_file_name.setText(Utils.genAudioFileName(Folder.TYPE_MIXER, prefixName = arguments?.getString(SUGGESTION_NAME_KEY)?: ""))
         val name = Utils
             .genAudioFileName(
                 Folder.TYPE_MIXER,

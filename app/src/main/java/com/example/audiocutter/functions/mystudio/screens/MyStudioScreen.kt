@@ -287,8 +287,14 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
             else -> Folder.TYPE_MIXER
         }
-        myStudioViewModel.renameAudio(newName, typeFolder, filePath)
+        if(myStudioViewModel.renameAudio(newName, typeFolder, filePath)){
+            val mySnackbar = Snackbar.make(requireView(), getString(R.string.my_studio_rename_audio_file_successfull), Snackbar.LENGTH_LONG)
+            mySnackbar.show()
+        } else {
+            val mySnackbar = Snackbar.make(requireView(), getString(R.string.my_studio_rename_audio_file_fail), Snackbar.LENGTH_LONG)
+            mySnackbar.show()
 
+        }
 
     }
 

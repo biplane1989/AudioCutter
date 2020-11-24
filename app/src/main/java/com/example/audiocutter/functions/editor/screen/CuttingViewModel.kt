@@ -72,9 +72,6 @@ class CuttingViewModel : BaseViewModel() {
 
     }
 
-    fun getNameSuggestion(): String {
-        return ""
-    }
 
     fun getStorageFolder(): String {
         return ManagerFactory.getAudioFileManager().getFolderPath(Folder.TYPE_CUTTER)
