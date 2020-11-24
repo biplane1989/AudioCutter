@@ -5,16 +5,17 @@ import android.os.Bundle
 import androidx.annotation.RequiresApi
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
+import com.example.audiocutter.functions.flashcall.sreens.AppChooserScreen
 import com.example.audiocutter.functions.flashcall.sreens.FlashCallSceen
 
 
 class TestAct : BaseActivity() {
-    lateinit var frg: FlashCallSceen
+    lateinit var frg: AppChooserScreen
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun createView(savedInstanceState: Bundle?) {
         setContentView(R.layout.act_test)
-        frg = FlashCallSceen()
+        frg = AppChooserScreen()
         supportFragmentManager.beginTransaction().replace(R.id.ln_main, frg).commit()
 //        requestPermissions(arrayOf(Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_PHONE_STATE, Manifest.permission.PROCESS_OUTGOING_CALLS), 101)
 //        val broadcast = MyBroadcast()

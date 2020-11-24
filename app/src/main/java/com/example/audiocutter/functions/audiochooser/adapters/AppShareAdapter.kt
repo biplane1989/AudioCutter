@@ -43,7 +43,7 @@ class AppShareAdapter(val mContext: Context) :
 
     inner class AppShareHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
         View.OnClickListener {
-        val ivApp = itemView.findViewById<ImageView>(R.id.iv_icon_app)
+        val ivApp = itemView.findViewById<ImageView>(R.id.iv_icon_app_flash)
         val tvApp = itemView.findViewById<TextView>(R.id.tv_app_share)
 
         init {

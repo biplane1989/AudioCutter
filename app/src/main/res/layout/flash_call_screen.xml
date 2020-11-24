@@ -73,7 +73,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/d_12"
-                android:checked="false"
+                android:checked="true"
                 android:textColor="@color/colorBlack"
                 android:textOff="Off"
                 android:textOn="On"
@@ -86,6 +86,7 @@
 
 
         <ScrollView
+            android:overScrollMode="never"
             android:layout_below="@+id/rlt_actionbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent">

@@ -173,4 +173,5 @@
     <string name="continuity_flcall">Continuity</string>
     <string name="default_flcall">Default</string>
     <string name="number_flash_call_description"><![CDATA[Number of flashes when notified (sms & app)]]></string>
+    <string name="app">App</string>
 </resources>
