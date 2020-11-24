@@ -165,4 +165,12 @@
     <string name="audio_name_this_name_is_already_existed">This name is already existed</string>
     <string name="audio_flash_call_name_actionbar">Flash Call</string>
     <string name="text_flash_call">Important introduction: In terms of Android’s phones, you need to allow this application to run in the phone’s background, so that Flash would perform stably. You have to reject this application out of the restricted list, which is in the low power mode in your phone.</string>
+    <string name="incoming_call_flcall">Incoming call</string>
+    <string name="touch_to_select_an_application_flcall">Touch to select an application</string>
+    <string name="notification_flcall"><![CDATA[Notification for apps (sms & app)]]></string>
+    <string name="description_flash_off_flcall">Flash is not fired when in use</string>
+    <string name="choice_of_lightning_type_flcall">Choice of lightning type</string>
+    <string name="continuity_flcall">Continuity</string>
+    <string name="default_flcall">Default</string>
+    <string name="number_flash_call_description"><![CDATA[Number of flashes when notified (sms & app)]]></string>
 </resources>

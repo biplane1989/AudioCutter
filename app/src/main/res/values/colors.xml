@@ -7,7 +7,8 @@
     <color name="colorGray">#F6F6F6</color>
     <color name="colorgray">#8C8C8C</color>
     <color name="colorgray2">#9C9C9C</color>
-    <color name="colorgraySwitchCompat">#D2D4D5</color>
+    <color name="colorgraySwitchCompat">#B8B8B8</color>
+    <color name="colorgrayTrackSwitchCompat">#DBDBDB</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorwhite">#EFEDED</color>
     <color name="colorAlpha">#00FFFFFF</color>
@@ -41,4 +42,6 @@
     <color name="colorWhiteAlpha">#00FFFFFF</color>
     <color name="colorHintText">#B9B9B9</color>
     <color name="colorControlHighlight">#66000000</color>
+    <color name="colorYelowSwitchCompat">#FED4B9</color>
+    <color name="colorYelowTextViewFlashCall">#FFF8F1</color>
 </resources>
