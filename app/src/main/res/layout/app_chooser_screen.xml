@@ -23,7 +23,7 @@
 
 
             <ImageView
-                android:id="@+id/iv_cutter_screen_back"
+                android:id="@+id/iv_app_screen_back"
                 android:layout_width="?actionBarSize"
                 android:layout_height="?actionBarSize"
                 android:layout_centerVertical="true"
@@ -37,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/iv_cutter_screen_back"
+                android:layout_toRightOf="@id/iv_app_screen_back"
                 android:fontFamily="@font/sanfranciscodisplay_bold"
                 android:gravity="center"
                 android:paddingLeft="@dimen/d_16"

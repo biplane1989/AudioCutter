@@ -25,7 +25,7 @@ class AppFlashAdapter(val mContext: Context) : ListAdapter<AppChooserView, AppFl
 
     override fun onBindViewHolder(holder: AppFlashHolder, position: Int) {
         val item = getItem(position)
-        holder.ivApp.setImageBitmap(item.app.icon)
+        holder.ivApp.setImageDrawable(item.app.icon)
         holder.tvApp.text = item.app.name
         when (item.isChecked) {
             true -> {

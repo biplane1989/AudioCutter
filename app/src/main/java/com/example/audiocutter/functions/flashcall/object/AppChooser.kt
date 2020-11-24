@@ -1,5 +1,5 @@
 package com.example.audiocutter.functions.flashcall.`object`
 
-import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 
-data class AppChooser(var name: String, var icon: Bitmap, var pkgName: String)
+data class AppChooser(var name: String, var icon: Drawable, var pkgName: String)

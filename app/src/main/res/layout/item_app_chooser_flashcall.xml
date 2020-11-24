@@ -34,6 +34,7 @@
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/sw_chooser_app"
             android:layout_width="wrap_content"
+            app:switchMinWidth="@dimen/d_56"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/d_12"

@@ -14,7 +14,7 @@ import com.example.audiocutter.databinding.AppChooserScreenBinding
 import com.example.audiocutter.functions.flashcall.`object`.AppChooserView
 import com.example.audiocutter.functions.flashcall.adapters.AppFlashAdapter
 
-class AppChooserScreen : BaseFragment() {
+class AppChooserScreen : BaseFragment(), View.OnClickListener {
     private lateinit var binding: AppChooserScreenBinding
     private lateinit var appFlashAdapter: AppFlashAdapter
     private lateinit var appFlashModel: AppFlashModel
@@ -24,11 +24,22 @@ class AppChooserScreen : BaseFragment() {
         }
     }
 
+    private lateinit var mCallBack: SetTimeCallBack
+
+    fun setOnCallBack(event: SetTimeCallBack) {
+        mCallBack = event
+    }
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.app_chooser_screen, container, false)
         initList()
+        initViews()
         return binding.root
+    }
+
+    private fun initViews() {
+        binding.ivAppScreenBack.setOnClickListener(this)
     }
 
 
@@ -43,6 +54,19 @@ class AppChooserScreen : BaseFragment() {
         binding.rvAppChooserFlashcall.adapter = appFlashAdapter
         binding.rvAppChooserFlashcall.setHasFixedSize(true)
         binding.rvAppChooserFlashcall.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    override fun onClick(v: View) {
+        when (v) {
+            binding.ivAppScreenBack -> {
+                mCallBack.backs()
+            }
+        }
+    }
+
+    interface SetTimeCallBack {
+        /**test , when handle then delete**/
+        fun backs()
     }
 
 }

@@ -174,4 +174,8 @@
     <string name="default_flcall">Default</string>
     <string name="number_flash_call_description"><![CDATA[Number of flashes when notified (sms & app)]]></string>
     <string name="app">App</string>
+    <string name="flashing_type">Flashing type</string>
+    <string name="continuity_name">Continuity</string>
+    <string name="beat_name_flash_call">Beat</string>
+    <string name="test">TEST</string>
 </resources>

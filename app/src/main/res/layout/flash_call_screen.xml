@@ -68,6 +68,7 @@
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/sw_flash_call_mode"
+                app:switchMinWidth="56dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -143,6 +144,7 @@
 
 
                     <androidx.appcompat.widget.SwitchCompat
+                        app:switchMinWidth="56dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -157,6 +159,7 @@
                 </TableRow>
 
                 <TableRow
+                    android:id="@+id/tb_app_flashcall"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingVertical="@dimen/d_10">
@@ -199,6 +202,7 @@
                     <androidx.appcompat.widget.SwitchCompat
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        app:switchMinWidth="56dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="@dimen/d_12"
                         android:textColor="@color/colorBlack"
@@ -238,6 +242,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="@dimen/d_12"
+                        app:switchMinWidth="56dp"
                         android:textColor="@color/colorBlack"
                         android:textOff="Off"
                         android:textOn="On"
@@ -270,37 +275,47 @@
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/text_size_header" />
 
-                    <ImageView
-                        android:layout_width="@dimen/d_20"
-                        android:layout_height="@dimen/d_20"
-                        android:layout_centerVertical="true"
-                        android:layout_gravity="center_vertical"
-                        android:layout_toLeftOf="@+id/tv_continuty_flcall"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/ic_eclip_flcall" />
-
-                    <TextView
-                        android:id="@+id/tv_continuty_flcall"
+                    <TableRow
+                        android:id="@+id/tb_flash_type"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_centerVertical="true"
-                        android:layout_toLeftOf="@+id/iv_back_flcall"
-                        android:fontFamily="@font/sanfranciscodisplay_light"
-                        android:gravity="center_vertical"
-                        android:text="@string/continuity_flcall"
-                        android:textSize="@dimen/d_16"
-                        android:textStyle="bold" />
-
-                    <ImageView
-                        android:id="@+id/iv_back_flcall"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        android:layout_below="@+id/tb_lightning"
                         android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginRight="@dimen/d_5"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/ic_back_flcall" />
+                        android:background="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:layout_width="@dimen/d_20"
+                            android:layout_height="@dimen/d_20"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center_vertical"
+                            android:layout_toLeftOf="@+id/tv_continuty_flcall"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/ic_eclip_flcall" />
+
+                        <TextView
+                            android:id="@+id/tv_continuty_flcall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_centerVertical="true"
+                            android:layout_toLeftOf="@+id/iv_back_flcall"
+                            android:fontFamily="@font/sanfranciscodisplay_light"
+                            android:gravity="center_vertical"
+                            android:text="@string/continuity_flcall"
+                            android:textSize="@dimen/d_16"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:id="@+id/iv_back_flcall"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginRight="@dimen/d_5"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/ic_back_flcall" />
+                    </TableRow>
+
 
                     <TableRow
                         android:id="@+id/tb_lightning"
@@ -345,8 +360,14 @@
                     <SeekBar
                         android:id="@+id/sb_linghtning_speed_flcall"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/d_40"
-                        android:layout_below="@+id/tv_duration_flcall" />
+                        android:layout_height="@dimen/d_56"
+                        android:layout_below="@+id/tv_duration_flcall"
+                        android:max="300"
+                        android:maxHeight="5dp"
+                        android:progress="100"
+                        android:progressDrawable="@drawable/seekbar_style"
+                        android:thumb="@drawable/custom_thumb" />
+
 
                     <TableRow
                         android:layout_width="match_parent"
@@ -355,16 +376,18 @@
                         android:weightSum="2">
 
                         <TextView
+                            android:background="?attr/selectableItemBackground"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:fontFamily="@font/sanfranciscodisplay_medium"
                             android:gravity="center"
                             android:paddingVertical="@dimen/d_10"
-                            android:text="TEST"
+                            android:text="@string/test"
                             android:textSize="@dimen/d_20" />
 
                         <TextView
+                            android:background="?attr/selectableItemBackground"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
@@ -418,8 +441,13 @@
 
                     <SeekBar
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/d_40"
-                        android:layout_below="@+id/tb_number_flash" />
+                        android:layout_height="@dimen/d_56"
+                        android:layout_below="@+id/tb_number_flash"
+                        android:max="300"
+                        android:maxHeight="5dp"
+                        android:progress="100"
+                        android:progressDrawable="@drawable/seekbar_style"
+                        android:thumb="@drawable/custom_thumb" />
                 </RelativeLayout>
 
                 <View
@@ -465,6 +493,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
+                        app:switchMinWidth="56dp"
                         android:layout_marginEnd="@dimen/d_12"
                         android:textColor="@color/colorBlack"
                         android:textOff="Off"
@@ -505,6 +534,7 @@
                         android:layout_marginEnd="@dimen/d_12"
                         android:textColor="@color/colorBlack"
                         android:textOff="Off"
+                        app:switchMinWidth="56dp"
                         android:textOn="On"
                         android:textSize="@dimen/d_5"
                         app:thumbTint="@color/color_state_thumb"
@@ -543,6 +573,8 @@
                         android:textColor="@color/colorBlack"
                         android:textOff="Off"
                         android:textOn="On"
+                        app:switchMinWidth="56dp"
+
                         android:textSize="@dimen/d_5"
                         app:thumbTint="@color/color_state_thumb"
                         app:trackTint="@color/color_state_track" />
@@ -565,6 +597,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:textColor="@color/colorBlack"
                         android:fontFamily="@font/sanfranciscodisplay_regular"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="@dimen/d_16"
@@ -574,13 +607,14 @@
 
 
                     <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/sw_settime_flash"
                         android:layout_width="wrap_content"
+                        android:checked="false"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="@dimen/d_12"
                         android:textColor="@color/colorBlack"
-                        android:textOff="Off"
-                        android:textOn="On"
+                        app:switchMinWidth="56dp"
                         android:textSize="@dimen/d_5"
                         app:thumbTint="@color/color_state_thumb"
                         app:trackTint="@color/color_state_track" />
@@ -588,6 +622,8 @@
                 </TableRow>
 
                 <TableRow
+                    android:id="@+id/tb_start_time"
+                    android:background="?attr/selectableItemBackground"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingVertical="@dimen/d_10">
@@ -599,13 +635,14 @@
                         android:src="@drawable/ic_time1_flcall" />
 
                     <TextView
+                        android:id="@+id/tv_start_time"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:fontFamily="@font/sanfranciscodisplay_light"
                         android:gravity="center_vertical"
                         android:text="Start from"
-                        android:textColor="@color/colorBlack"
+                        android:textColor="@color/colorgray"
                         android:textSize="@dimen/d_16"
                         android:textStyle="bold" />
 
@@ -622,6 +659,8 @@
                 </TableRow>
 
                 <TableRow
+                    android:id="@+id/tb_end_time"
+                    android:background="?attr/selectableItemBackground"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingVertical="@dimen/d_10">
@@ -633,13 +672,14 @@
                         android:src="@drawable/ic_time2_flcall" />
 
                     <TextView
+                        android:id="@+id/tv_end_time"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:fontFamily="@font/sanfranciscodisplay_light"
                         android:gravity="center_vertical"
                         android:text="End"
-                        android:textColor="@color/colorBlack"
+                        android:textColor="@color/colorgray"
                         android:textSize="@dimen/d_16"
                         android:textStyle="bold" />
 
