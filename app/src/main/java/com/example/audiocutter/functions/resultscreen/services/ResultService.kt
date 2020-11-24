@@ -105,7 +105,7 @@ class ResultService : LifecycleService() {
         val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(), 0)
 
         mBuilder = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
-            .setSmallIcon(R.drawable.list_contact_icon_back).setContentTitle(audioTitle)
+            .setSmallIcon(R.drawable.notification_icon).setContentTitle(audioTitle)
             .setContentText(strContent).setOngoing(true).setContentIntent(resultPendingIntent)
             .setOnlyAlertOnce(true).setProgress(progressMax, 0, true).setAutoCancel(true)
     }
@@ -152,7 +152,7 @@ class ResultService : LifecycleService() {
 
         val notification = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
             .setContentTitle(getString(R.string.result_service_content_title))
-            .setSmallIcon(R.drawable.list_contact_icon_back).setContentText(strContent)
+            .setSmallIcon(R.drawable.notification_icon).setContentText(strContent)
             .setContentIntent(resultPendingIntent).setOngoing(true).setOnlyAlertOnce(true)
             .setProgress(progressMax, 0, true).setAutoCancel(true).build()
 

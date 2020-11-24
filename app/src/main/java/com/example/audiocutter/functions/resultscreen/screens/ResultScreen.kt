@@ -3,6 +3,7 @@ package com.example.audiocutter.functions.resultscreen.screens
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -220,6 +221,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         when (view) {
             binding.ivPausePlayMusic -> {
                 runOnUI {
+                    Log.d("001", "onClick: ")
                     mResultViewModel.playAudio()
                 }
             }

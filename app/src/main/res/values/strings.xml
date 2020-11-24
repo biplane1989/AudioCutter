@@ -41,7 +41,7 @@
     <string name="my_studio_title">My Studio</string>
     <string name="my_studio_dialog_delete_title">Delete file from device?</string>
     <string name="my_studio_dialog_delete_content">File will be deleted permanently.</string>
-    <string name="my_studio_dialog_btn_cancel">CANCEL</string>
+    <string name="my_studio_dialog_btn_yes">YES</string>
     <string name="my_studio_dialog_btn_delete">DELETE</string>
     <string name="my_studio_dialog_rename_title">Rename</string>
     <string name="my_studio_dialog_rename_file_name">File Name</string>
@@ -161,4 +161,8 @@
     <string name="search">Search...</string>
     <string name="audio_file_is_not_found">Audio file is not found</string>
     <string name="my_studio_delete_successfull">Delete Successfull</string>
+    <string name="my_studio_dialog_btn_no">NO</string>
+    <string name="my_studio_dialog_rename_cancel">CANCEL</string>
+    <string name="my_studio_dialog_delete_cancel">CANCEL</string>
+    <string name="my_studio_screen_converting_error">\" Converting Error \"</string>
 </resources>

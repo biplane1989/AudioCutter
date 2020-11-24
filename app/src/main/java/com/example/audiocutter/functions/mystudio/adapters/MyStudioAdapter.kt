@@ -38,6 +38,7 @@ interface AudioCutterScreenCallback {
     fun checkDeletePos(position: Int)
     fun isShowPlayingAudio(positition: Int)
     fun cancelLoading(id: Int)
+    fun errorConverting(fileName: String)
 }
 
 class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallback, val audioPlayer: AudioPlayer, val audioEditorManager: AudioEditorManager, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<AudioFileView, AudioCutterAdapter.MyStudioHolder>(MusicDiffCallBack()) {
@@ -120,6 +121,8 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                         holder.ivItemDelete.setImageResource(R.drawable.my_studio_screen_icon_checked)
                     }
                 }
+
+                Log.d(TAG, "onBindViewHolder: "+ newItem.isExpanded)
 
                 if (newItem.isExpanded) {
                     holder.llPlayMusic.visibility = View.VISIBLE
@@ -230,6 +233,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     //nothing
                 }
             }
+            
         }
 
 
@@ -269,7 +273,10 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
             tvTotal.text = "/" + simpleDateFormat.format(audioFileView.audioFile.duration.toInt())
 
+            Log.d(TAG, "onBind: 99999999999999 "+ audioFileView.isExpanded)
+
             if (audioFileView.isExpanded) {
+//                Log.d(TAG, "onBind: 99999999999999")
                 llPlayMusic.visibility = View.VISIBLE
                 llItem.setBackgroundResource(R.drawable.my_studio_item_bg)
             } else {
@@ -393,6 +400,8 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
 
         private fun updateItem(convertingItem: ConvertingItem) {
+
+            Log.d(TAG, "updateItem: percent : " + convertingItem.percent + "  status : " + convertingItem.state)
             when (convertingItem.state) {
 //                ConvertingState.WAITING -> {
 //                    tvWait.visibility = View.VISIBLE
@@ -409,9 +418,9 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
 
                 ConvertingState.ERROR -> {
-                    val mySnackbar = Snackbar.make(itemView, convertingItem.getFileName() + " Converting Error ", Snackbar.LENGTH_LONG)
-                    mySnackbar.show()
+                    audioCutterScreenCallback.errorConverting(convertingItem.getFileName())
                 }
+
                 else -> {
                     //nothing
                 }
@@ -424,10 +433,14 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             audioEditorManager.getCurrentProcessingItem()
                 .observe(this, object : Observer<ConvertingItem?> {
                     override fun onChanged(convertingItem: ConvertingItem?) {
+                        Log.d(TAG, "onChanged: convetring : " + convertingItem)
                         convertingItem?.let {
+                            Log.d(TAG, "onChanged: percent: " + convertingItem.percent + " status: " + convertingItem.state)
                             if (adapterPosition != -1) {
                                 val itemView = getItem(adapterPosition)
+                                Log.d(TAG, "onChanged: item ID : " + itemView.id + " it ID: " + it.id)
                                 if (itemView.id == it.id) {
+
                                     updateItem(it)
                                 }
                             }

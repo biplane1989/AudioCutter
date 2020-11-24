@@ -44,6 +44,8 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     private var dialog: CancelDialog? = null
     private lateinit var audioFile: AudioFile
     private lateinit var dialogShare: DialogAppShare
+    private val linearLayoutManager = LinearLayoutManager(context)
+
 
     override fun setMenuVisibility(menuVisible: Boolean) {      // su kien khi chuyen tab
         super.setMenuVisibility(menuVisible)
@@ -155,7 +157,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     private fun init() {
-        binding.rvListAudioCutter.layoutManager = LinearLayoutManager(context)
+        binding.rvListAudioCutter.layoutManager = linearLayoutManager
         binding.rvListAudioCutter.adapter = audioCutterAdapter
     }
 
@@ -267,6 +269,15 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
     override fun isShowPlayingAudio(positition: Int) {
         myStudioViewModel.showPlayingAudio(positition)
+
+        Log.d(TAG, "isShowPlayingAudio: ${linearLayoutManager.findLastVisibleItemPosition()}")
+        Log.d(TAG, "isShowPlayingAudio: ${linearLayoutManager.findLastCompletelyVisibleItemPosition()}")
+
+//        linearLayoutManager.scrollToPositionWithOffset(3, 250)
+
+        if (linearLayoutManager.findLastVisibleItemPosition() -1  == positition) {
+            linearLayoutManager.scrollToPositionWithOffset(positition, 50)
+        }
     }
 
     override fun cancelLoading(id: Int) {      // cancel loading item
@@ -275,6 +286,11 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             dialog!!.show(childFragmentManager, CancelDialog.TAG)
             isDeleteClicked = false
         }
+    }
+
+    override fun errorConverting(fileName: String) {
+        val mySnackbar = Snackbar.make(requireView(), fileName + getString(R.string.my_studio_screen_converting_error), Snackbar.LENGTH_LONG)
+        mySnackbar.show()
     }
 
     // hanlder linterner on dialog rename
@@ -297,29 +313,32 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         when (type) {
             Constance.RINGTONE_TYPE -> {
                 if (myStudioViewModel.setRingTone(uri)) {
-                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
-                        .show()
+
+                    val mySnackbar = Snackbar.make(requireView(), getString(R.string.result_screen_set_ringtone_successful), Snackbar.LENGTH_LONG)
+                    mySnackbar.show()
                 } else {
-                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
-                        .show()
+                    val mySnackbar = Snackbar.make(requireView(), getString(R.string.result_screen_set_ringtone_fail), Snackbar.LENGTH_LONG)
+                    mySnackbar.show()
                 }
             }
             Constance.ALARM_TYPE -> {
                 if (myStudioViewModel.setAlarm(uri)) {
-                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_alarm_successful), Toast.LENGTH_SHORT)
-                        .show()
+                    val mySnackbar = Snackbar.make(requireView(), getString(R.string.result_screen_set_alarm_successful), Snackbar.LENGTH_LONG)
+                    mySnackbar.show()
+
                 } else {
-                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_alarm_fail), Toast.LENGTH_SHORT)
-                        .show()
+                    val mySnackbar = Snackbar.make(requireView(), getString(R.string.result_screen_set_alarm_fail), Snackbar.LENGTH_LONG)
+                    mySnackbar.show()
+
                 }
             }
             Constance.NOTIFICATION_TYPE -> {
                 if (myStudioViewModel.setNotification(uri)) {
-                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_notification_successful), Toast.LENGTH_SHORT)
-                        .show()
+                    val mySnackbar = Snackbar.make(requireView(), getString(R.string.result_screen_set_notification_successful), Snackbar.LENGTH_LONG)
+                    mySnackbar.show()
                 } else {
-                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_notification_fail), Toast.LENGTH_SHORT)
-                        .show()
+                    val mySnackbar = Snackbar.make(requireView(), getString(R.string.result_screen_set_notification_fail), Snackbar.LENGTH_LONG)
+                    mySnackbar.show()
                 }
             }
         }
@@ -346,6 +365,10 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     override fun onCancelDeleteClick(id: Int) {        // cancel dialog
         myStudioViewModel.cancelLoading(id)
         isDeleteClicked = true
+
+        val mySnackbar = Snackbar.make(requireView(), getString(R.string.my_studio_delete_successfull), Snackbar.LENGTH_LONG)
+        mySnackbar.show()
+
     }
 
     override fun onCancelDialog() {

@@ -68,7 +68,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="@string/my_studio_dialog_btn_cancel"
+                    android:text="@string/my_studio_dialog_btn_no"
                     android:textColor="#BDBDBD"
                     android:textSize="@dimen/text_size_button"
                     android:visibility="visible" />
@@ -81,7 +81,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="@string/my_studio_dialog_btn_cancel"
+                    android:text="@string/my_studio_dialog_btn_yes"
                     android:textColor="#FDAA74"
                     android:textSize="@dimen/text_size_button" />
             </LinearLayout>
