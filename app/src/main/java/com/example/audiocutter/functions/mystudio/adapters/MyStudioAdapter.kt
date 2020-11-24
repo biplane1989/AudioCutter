@@ -36,7 +36,7 @@ import java.text.SimpleDateFormat
 interface AudioCutterScreenCallback {
     fun showMenu(view: View, audioFile: AudioFile)
     fun checkDeletePos(position: Int)
-    fun isShowPlayingAudio(positition: Int)
+    fun isShowPlayingAudio(positition: Int, heightItem: Float)
     fun cancelLoading(id: Int)
     fun errorConverting(fileName: String)
 }
@@ -122,7 +122,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     }
                 }
 
-                Log.d(TAG, "onBindViewHolder: "+ newItem.isExpanded)
+                Log.d(TAG, "onBindViewHolder: " + newItem.isExpanded)
 
                 if (newItem.isExpanded) {
                     holder.llPlayMusic.visibility = View.VISIBLE
@@ -152,15 +152,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                         loadingViewHolder.tvLoading.visibility = View.VISIBLE
                     }
                 }
-
-
-                /*           loadingViewHolder.pbLoading.max = 100
-                           loadingViewHolder.pbLoading.progress = convertingItem.percent
-
-                           loadingViewHolder.tvTitle.setText(convertingItem.audioFile.fileName)
-
-                           loadingViewHolder.tvLoading.text = newItem.percent.toString() + "%"*/
-
             }
         }
     }
@@ -233,7 +224,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     //nothing
                 }
             }
-            
+
         }
 
 
@@ -273,7 +264,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
             tvTotal.text = "/" + simpleDateFormat.format(audioFileView.audioFile.duration.toInt())
 
-            Log.d(TAG, "onBind: 99999999999999 "+ audioFileView.isExpanded)
+            Log.d(TAG, "onBind: 99999999999999 " + audioFileView.isExpanded)
 
             if (audioFileView.isExpanded) {
 //                Log.d(TAG, "onBind: 99999999999999")
@@ -340,7 +331,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                             audioCutterScreenCallback.checkDeletePos(adapterPosition)
                         }
                         DeleteState.HIDE -> {
-                            audioCutterScreenCallback.isShowPlayingAudio(adapterPosition)
+                            audioCutterScreenCallback.isShowPlayingAudio(adapterPosition, llItem.height.toFloat())
                         }
                     }
                     when (playerState) {

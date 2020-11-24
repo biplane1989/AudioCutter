@@ -157,7 +157,9 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     private fun init() {
+        linearLayoutManager.reverseLayout = true        // set positiion bottom item
         binding.rvListAudioCutter.layoutManager = linearLayoutManager
+
         binding.rvListAudioCutter.adapter = audioCutterAdapter
     }
 
@@ -267,16 +269,17 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         checkAllItemSelected()
     }
 
-    override fun isShowPlayingAudio(positition: Int) {
+    override fun isShowPlayingAudio(positition: Int, heightItem: Float) {
         myStudioViewModel.showPlayingAudio(positition)
 
         Log.d(TAG, "isShowPlayingAudio: ${linearLayoutManager.findLastVisibleItemPosition()}")
         Log.d(TAG, "isShowPlayingAudio: ${linearLayoutManager.findLastCompletelyVisibleItemPosition()}")
 
-//        linearLayoutManager.scrollToPositionWithOffset(3, 250)
+        if (linearLayoutManager.findLastVisibleItemPosition() == positition) {
+//            linearLayoutManager.scrollToPositionWithOffset(positition, Utils.dpToPx(requireContext(), heightItem)
+//                .toInt() + Utils.dpToPx(requireContext(), 34f).toInt()+1500)
 
-        if (linearLayoutManager.findLastVisibleItemPosition() -1  == positition) {
-            linearLayoutManager.scrollToPositionWithOffset(positition, 50)
+            linearLayoutManager.scrollToPositionWithOffset(positition, 1500)
         }
     }
 
