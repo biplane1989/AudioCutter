@@ -165,4 +165,5 @@
     <string name="my_studio_dialog_rename_cancel">CANCEL</string>
     <string name="my_studio_dialog_delete_cancel">CANCEL</string>
     <string name="my_studio_screen_converting_error">\" Converting Error \"</string>
+    <string name="audio_cutter_screen_dialog_convert_cancel">CANCEL</string>
 </resources>

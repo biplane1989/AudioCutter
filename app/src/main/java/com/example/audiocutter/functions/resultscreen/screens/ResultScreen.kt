@@ -111,9 +111,24 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
     private val errorObserver = Observer<Boolean> {
         if (it) {
-            val mySnackbar = Snackbar.make(requireView(), "Converting Error", Snackbar.LENGTH_LONG)
-            mySnackbar.show()
+            view?.let {
+                val mySnackbar = Snackbar.make(it, "Converting Error", Snackbar.LENGTH_LONG)
+                mySnackbar.show()
+            }
         }
+
+        binding.btnOrigin.visibility = View.VISIBLE
+        binding.btnBack.visibility = View.GONE
+        binding.ivHome.visibility = View.INVISIBLE
+        binding.tvWait.visibility = View.GONE
+        binding.clOpption.visibility = View.GONE
+        binding.llProgressbar.visibility = View.VISIBLE
+        binding.llPlayMusic.visibility = View.GONE
+        binding.btnCancel.visibility = View.VISIBLE
+        binding.tvLoading.visibility = View.GONE
+
+        binding.ivNotificationError.visibility = View.VISIBLE
+        isLoadingDone = false
     }
 
     private fun convertAudioSizeToString(audioFile: AudioFile): String {

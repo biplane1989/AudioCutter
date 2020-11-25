@@ -110,11 +110,11 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             if (it.state == StateLoad.LOADDONE) {       // khi loading xong thi check co data hay khong de show man hinh empty data
                 loadingStatus.postValue(false)
 
-                if (!it.listAudioFiles.isEmpty()) {
-                    isEmptyStatus.postValue(false)
-                } else {
-                    isEmptyStatus.postValue(true)
-                }
+//                if (!it.listAudioFiles.isEmpty()) {
+//                    isEmptyStatus.postValue(false)
+//                } else {
+//                    isEmptyStatus.postValue(true)
+//                }
                 mListScannedAudioFile.clear()
                 for (item in it.listAudioFiles) {
                     mListScannedAudioFile.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
@@ -139,13 +139,14 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                     }
                 }
             }
-            if (it.size > 0) {
-                isEmptyStatus.postValue(false)
-            }
+
+//            if (it.size > 0) {
+//                isEmptyStatus.postValue(false)
+//            }
+
             Log.d(TAG, "mergeList: 33 stauts: old listConvertingItems")
             Log.d(TAG, "mergeList: listConvertingItems  ${this@MyStudioViewModel}")
             notifyMergingListAudio()
-
         }
     }
 
@@ -200,11 +201,9 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     private suspend fun mergeList() = coroutineScope {
 
-//        run lst@{
         Log.d(TAG, "mergeList audio 1 ${this@MyStudioViewModel} size " + mListAudio.size)
         val filePathMapItemView = mListAudio.toMap()
         val newListAudio = ArrayList<AudioFileView>()
-        //mListAudio.clear()
         newListAudio.addAll(mListConvertingItems)
 
         val filePathMapConvertingItem = mListConvertingItems.toMap()
@@ -225,20 +224,26 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                         it.itemLoadStatus.deleteState = DeleteState.UNCHECK
                     }
                     if (isCheckAllStatus) {
-                        it.itemLoadStatus.deleteState = DeleteState.CHECKED
+//                        it.itemLoadStatus.deleteState = DeleteState.CHECKED
+                        it.itemLoadStatus.deleteState = DeleteState.UNCHECK
                     }
                     newListAudio.add(it)
                 }
             }
         }
 
-
         if (isActive) {                 // o trang thai ton tai thi moi dc update
             mListAudio.clear()
             mListAudio.addAll(newListAudio)
             Log.d(TAG, "mergeList audio 3 ${this@MyStudioViewModel} size " + newListAudio.size + "  mListScannedAudioFile " + mListScannedAudioFile.size)
+
             mAudioMediatorLiveData.postValue(mListAudio)
 
+            if (mListAudio.size > 0) {
+                isEmptyStatus.postValue(false)
+            } else {
+                isEmptyStatus.postValue(true)
+            }
         }
 
 
@@ -353,6 +358,14 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         return true
     }
 
+    fun isExitItemSelectDelete(): Boolean {
+        if (mListAudio.isEmpty()) {
+            return true
+        } else {
+            return false
+        }
+    }
+
     // check xem đã có ít nhất 1 item nào được check delete hay chưa
     fun isChecked(): Boolean {
         mListAudio.forEach {
@@ -383,6 +396,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             copy.add(audioFileView)
         }
         mListAudio = copy
+
         return mListAudio
     }
 
@@ -397,6 +411,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             copy.add(audioFileView)
         }
         mListAudio = copy
+        
         return mListAudio
     }
 
@@ -533,8 +548,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             Log.d(TAG, "onReceivedAction: 2")
             val typeAudio = fragmentMeta.data as Int
             when (fragmentMeta.action) {
-                Constance.ACTION_UNCHECK -> { // trang thai isdelete
-                    actionLiveData.postValue(ActionData(Constance.ACTION_UNCHECK, typeAudio))
+                Constance.ACTION_DELETE_STATUS -> { // trang thai isdelete
+                    actionLiveData.postValue(ActionData(Constance.ACTION_DELETE_STATUS, typeAudio))
                 }
                 Constance.ACTION_HIDE -> {  // trang thai undelete
                     actionLiveData.postValue(ActionData(Constance.ACTION_HIDE, typeAudio))

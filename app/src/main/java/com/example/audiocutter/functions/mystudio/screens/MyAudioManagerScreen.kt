@@ -2,7 +2,6 @@ package com.example.audiocutter.functions.mystudio.screens
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +21,6 @@ import com.example.audiocutter.functions.mystudio.dialog.DeleteDialog
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialogListener
 import com.example.audiocutter.functions.mystudio.objects.ActionData
 import com.google.android.material.tabs.TabLayout
-import kotlinx.android.synthetic.main.my_studio_screen.*
 
 
 class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickListener {
@@ -119,7 +117,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 binding.viewPager.setPagingEnabled(false)
                 setEnabledTablayout(true)
 
-                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_UNCHECK, Constance.NO_TYPE_AUDIO)
+                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_DELETE_STATUS, Constance.NO_TYPE_AUDIO)
             }
             binding.backButton -> {
                 requireActivity().onBackPressed()
