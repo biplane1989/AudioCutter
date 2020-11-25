@@ -6,6 +6,8 @@ import android.hardware.Camera
 import android.hardware.camera2.CameraManager
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.example.audiocutter.core.manager.FlashType
+import com.example.audiocutter.core.manager.LIGHTING_SPEED_DEFAULT
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.NUMBER_OF_FLASHES_DEFAULT
 import kotlinx.coroutines.*
@@ -83,12 +85,14 @@ private class AndroidMFlashSwitcher : FlashSwitcher {
 
 
 class FlashPlayer {
-    private lateinit var flashSwitcher: FlashSwitcher
+    private var flashSwitcher: FlashSwitcher
     private var blinkingFlashJob: Job? = null
     private val flashPlayerScope = CoroutineScope(Dispatchers.Default)
     private val flashPlayerChannel = Channel<Boolean>(Channel.CONFLATED)
     private var flashTime: Int = NUMBER_OF_FLASHES_DEFAULT
-    private var flashSpeed: Long = 2000
+    private var flashSpeed: Long = LIGHTING_SPEED_DEFAULT
+    private var flashType = FlashType.BEAT
+    private var isTestMode = false
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -107,11 +111,24 @@ class FlashPlayer {
                 if (isBlinkingFlash) {
                     var timeCounter = 0
                     while (timeCounter < flashTime) {
-                        flashSwitcher.turnOn()
-                        delay(50000)
-                        flashSwitcher.turnOff()
-                        delay(flashSpeed / 2)
-                        timeCounter += 1
+                        if (flashType == FlashType.CONTINUITY) {
+                            flashSwitcher.turnOn()
+                            delay(flashSpeed / 2)
+                            flashSwitcher.turnOff()
+                            delay(flashSpeed / 2)
+                        } else {
+                            for (i in 0..2) {
+                                flashSwitcher.turnOn()
+                                delay(50)
+                                flashSwitcher.turnOff()
+                                delay(50)
+                            }
+                            delay(flashSpeed)
+                        }
+                        if (!isTestMode) {
+                            timeCounter += 1
+                        }
+
                     }
                 } else {
                     blinkingFlashJob = flashPlayerScope.launch {
@@ -122,9 +139,16 @@ class FlashPlayer {
         }
     }
 
-    suspend fun startBlinkingFlash(time: Int, speed: Long) {
+    suspend fun startBlinkingFlash(
+        time: Int,
+        speed: Long,
+        flashType: FlashType,
+        isTestMode: Boolean = false
+    ) {
         flashTime = time
         flashSpeed = speed
+        this.flashType = flashType
+        this.isTestMode = isTestMode
         flashPlayerChannel.send(true)
     }
 

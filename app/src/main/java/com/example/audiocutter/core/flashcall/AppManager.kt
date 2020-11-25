@@ -171,7 +171,7 @@ class AppManager {
     }
 
     private fun buildAppInfo(pkgName: String): AppInfo {
-        val appInfo = AppInfo(getAppName(pkgName), pkgName)
+        val appInfo = AppInfo(pkgName, getAppName(pkgName))
         try {
             appInfo.icon =
                 ManagerFactory.getAppContext().packageManager.getApplicationIcon(appInfo.pkgName)

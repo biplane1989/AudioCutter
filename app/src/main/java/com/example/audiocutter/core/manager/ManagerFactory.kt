@@ -16,7 +16,7 @@ object ManagerFactory {
     private val mAudioCutter: AudioCutter = AudioCutterImpl()
     private val mRingtons = RingtonManagerImpl
     private val defaultAudioPlayer = AudioPlayerImpl()
-    private lateinit var flashCallSetting:FlashCallSetting
+    private lateinit var flashCallSetting: FlashCallSetting
     private lateinit var appContext: Context
 
 //    private val audioPlayer = AudioPlayerImpl()
@@ -31,10 +31,11 @@ object ManagerFactory {
         RingtonManagerImpl.init(appContext)
 //        AudioPlayerImpl().init(appContext)
         AudioEditorManagerlmpl.init(appContext)
-
         //FakeAudioFileManager.init(appContext)
+
         mAudioFileManager.init(appContext)
-        flashCallSetting = FlashCallSettingImpl()
+        flashCallSetting = FlashCallSettingImpl
+        flashCallSetting.setup(appContext)
     }
 
     fun getAppContext(): Context {
