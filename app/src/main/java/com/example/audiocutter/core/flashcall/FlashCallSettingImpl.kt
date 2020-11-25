@@ -226,10 +226,10 @@ object FlashCallSettingImpl : FlashCallSetting {
     }
 
     override fun changeFlashCallConfig(flashCallConfig: FlashCallConfig) {
-        if (this.flashCallConfig.value != flashCallConfig) {
+
             saveFlashCallConfig(flashCallConfig)
             this.flashCallConfig.postValue(restoreFlashCallConfig())
-        }
+
     }
 
     fun getFlashCallConfigData(): FlashCallConfig {

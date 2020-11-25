@@ -73,7 +73,6 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/d_12"
-                android:checked="true"
                 android:textColor="@color/colorBlack"
                 android:textOff="Off"
                 android:textOn="On"
@@ -147,6 +146,7 @@
 
 
                     <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/sw_incomming_call"
                         app:switchMinWidth="56dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -203,6 +203,7 @@
 
 
                     <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/sw_notifycation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:switchMinWidth="56dp"
@@ -241,6 +242,7 @@
 
 
                     <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/sw_in_use"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -338,6 +340,7 @@
                             android:textSize="@dimen/text_size_header" />
 
                         <TextView
+                            android:id="@+id/tv_default_speed"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/bg_default_flcall"
@@ -349,7 +352,7 @@
                     </TableRow>
 
                     <TextView
-                        android:id="@+id/tv_duration_flcall"
+                        android:id="@+id/tv_lightning_speed_flcall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/tb_lightning"
@@ -364,8 +367,8 @@
                         android:id="@+id/sb_linghtning_speed_flcall"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/d_56"
-                        android:layout_below="@+id/tv_duration_flcall"
-                        android:max="30"
+                        android:layout_below="@+id/tv_lightning_speed_flcall"
+                        android:max="50"
                         android:maxHeight="5dp"
                         android:progressDrawable="@drawable/seekbar_style"
                         android:thumb="@drawable/custom_thumb" />
@@ -387,6 +390,7 @@
                             android:gravity="center"
                             android:paddingVertical="@dimen/d_10"
                             android:text="@string/test"
+                            android:textColor="@color/colorgray"
                             android:textSize="@dimen/d_20" />
 
                         <TextView
@@ -439,7 +443,7 @@
                             android:layout_weight="0.3"
                             android:fontFamily="@font/sanfranciscodisplay_light"
                             android:text="2 times"
-                            android:id="@+id/tv_count_times"
+                            android:id="@+id/tv_numberOfLightning"
                             android:gravity="right"
                             android:textSize="@dimen/d_16" />
                     </TableRow>
@@ -447,7 +451,7 @@
                     <SeekBar
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/d_56"
-                        android:id="@+id/sb_count_flashes"
+                        android:id="@+id/sb_number_of_lightning"
                         android:layout_below="@+id/tb_number_flash"
                         android:max="10"
                         android:maxHeight="5dp"
@@ -496,6 +500,7 @@
 
 
                     <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/sw_bell_flashcall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -534,6 +539,7 @@
 
 
                     <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/sw_vibrate_flashcall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -572,6 +578,7 @@
 
 
                     <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/sw_silent_flash_call"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"

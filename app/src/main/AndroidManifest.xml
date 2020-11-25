@@ -44,7 +44,7 @@
         </provider>
 
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.acttest.testnm.TestAct"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustNothing">
             <intent-filter>
