@@ -60,6 +60,13 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                 cl_delete_all.visibility = View.VISIBLE
                 checkAllItemSelected()
             }
+
+//            if (myStudioViewModel.isExitItemSelectDelete()) {
+//                cl_delete_all.visibility = View.VISIBLE
+//                checkAllItemSelected()
+//            } else {
+//                cl_delete_all.visibility = View.GONE
+//            }
             audioCutterAdapter.submitList(ArrayList(listAudio))
 
         }
@@ -121,14 +128,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                 binding.ivCheck.setImageResource(R.drawable.my_studio_screen_icon_uncheck)
             }
             Constance.ACTION_DELETE_ALL -> {
-//                if (myStudioViewModel.isAllChecked()) {   // check nếu tất cả đã xóa thì ẩn nút selectall
-//                    binding.clDeleteAll.visibility = View.GONE
-//                }
-                if (myStudioViewModel.isExitItemSelectDelete()) {
-                    binding.clDeleteAll.visibility = View.GONE
-                } else {
-                    binding.clDeleteAll.visibility = View.VISIBLE
-                }
                 runOnUI {
                     if (myStudioViewModel.deleteAllItemSelected(requireArguments().getInt(BUNDLE_NAME_KEY))) { // nếu delete thành công thì sẽ hiện dialog thành công
                         view?.let {

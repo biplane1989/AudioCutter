@@ -190,15 +190,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         return audioPlayer
     }
 
-    private fun isExit(audioFileView: AudioFileView): Boolean {
-        for (itemOld in mListAudio) {
-            if (TextUtils.equals(audioFileView.getFilePath(), itemOld.getFilePath())) {
-                return true
-            }
-        }
-        return false
-    }
-
     private suspend fun mergeList() = coroutineScope {
 
         Log.d(TAG, "mergeList audio 1 ${this@MyStudioViewModel} size " + mListAudio.size)
@@ -212,7 +203,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
         run lst@{
             listAudioFileExcludedConvertingItems.forEach {
-
                 if (!isActive) {              // khi nguoi dung cancel
                     return@lst
                 }
@@ -223,10 +213,10 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                     if (isDeleteStatus) {                           // khi dang o trang thai delete
                         it.itemLoadStatus.deleteState = DeleteState.UNCHECK
                     }
-                    if (isCheckAllStatus) {
-//                        it.itemLoadStatus.deleteState = DeleteState.CHECKED
-                        it.itemLoadStatus.deleteState = DeleteState.UNCHECK
-                    }
+//                    if (isCheckAllStatus) {
+////                        it.itemLoadStatus.deleteState = DeleteState.CHECKED
+//                        it.itemLoadStatus.deleteState = DeleteState.UNCHECK
+//                    }
                     newListAudio.add(it)
                 }
             }
@@ -239,6 +229,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
             mAudioMediatorLiveData.postValue(mListAudio)
 
+            Log.d(TAG, "mergeList: list size: " + mListAudio.size + " ${this@MyStudioViewModel}")
             if (mListAudio.size > 0) {
                 isEmptyStatus.postValue(false)
             } else {
@@ -359,7 +350,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     fun isExitItemSelectDelete(): Boolean {
-        if (mListAudio.isEmpty()) {
+        if (!mListAudio.isEmpty() && isDeleteStatus) {
             return true
         } else {
             return false
@@ -411,7 +402,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             copy.add(audioFileView)
         }
         mListAudio = copy
-        
+
         return mListAudio
     }
 
