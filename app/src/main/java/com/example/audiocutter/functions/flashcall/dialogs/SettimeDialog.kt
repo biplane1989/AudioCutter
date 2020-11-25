@@ -13,6 +13,8 @@ class SettimeDialog : BaseDialog(), View.OnClickListener {
     private lateinit var tvOk: TextView
     private lateinit var tpTime: TimePicker
     private lateinit var mCallback: SettimeListener
+    private var hoursChooser = 0
+    private var minuteChooser = 0
 
 
     fun setOnCallBack(event: SettimeListener) {
@@ -30,11 +32,14 @@ class SettimeDialog : BaseDialog(), View.OnClickListener {
 
         tpTime.setOnTimeChangedListener { _, hour, minute ->
             Log.d("TAG", "initViews: hours $hour  minute $minute")
+            hoursChooser = hour
+            minuteChooser = minute
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        isCancelable = false
         setStyle(STYLE_NORMAL, R.style.DialogGray)
     }
 
@@ -45,7 +50,7 @@ class SettimeDialog : BaseDialog(), View.OnClickListener {
     override fun onClick(v: View) {
         when (v.id) {
             R.id.tv_ok_dialog_settime -> {
-                mCallback.prevFrg()
+                mCallback.changeTimeFlash(hoursChooser, minuteChooser)
             }
             R.id.tv_cancel_dialog_settime -> {
                 dismiss()
@@ -54,7 +59,7 @@ class SettimeDialog : BaseDialog(), View.OnClickListener {
     }
 
     interface SettimeListener {
-        fun prevFrg()
+        fun changeTimeFlash(hours: Int, minute: Int)
     }
 
 }

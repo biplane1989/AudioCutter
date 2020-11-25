@@ -262,6 +262,10 @@
     <fragment
         android:id="@+id/setting_screen"
         android:name="com.example.audiocutter.functions.settings.screens.SettingScreens"
-        tools:layout="@layout/setting_screen"></fragment>
+        tools:layout="@layout/setting_screen" />
+    <fragment
+        android:id="@+id/flash_call_screen"
+        android:name="com.example.audiocutter.functions.flashcall.sreens.FlashCallSceen"
+        tools:layout="@layout/setting_screen" />
 
 </navigation>

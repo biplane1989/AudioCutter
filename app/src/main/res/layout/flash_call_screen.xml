@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/d_16"
-                android:text="Flash blinks when a call comes in." />
+                android:text="@string/flash_blinks_when_a_call_comes_in_flahscall" />
         </LinearLayout>
 
         <RelativeLayout
@@ -57,10 +57,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/iv_cutter_screen_back"
+                android:layout_toEndOf="@id/iv_cutter_screen_back"
                 android:fontFamily="@font/sanfranciscodisplay_bold"
                 android:gravity="center"
-                android:paddingLeft="@dimen/d_16"
                 android:text="@string/audio_flash_call_name_actionbar"
                 android:textColor="@color/colorBlack"
                 android:textSize="@dimen/d_18" />
@@ -100,7 +99,8 @@
                 android:layout_height="wrap_content">
 
 
-                <TextView
+                <com.borjabravo.readmoretextview.ReadMoreTextView
+                    android:id="@+id/tv_description_flash_call"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/colorYelowTextViewFlashCall"
@@ -108,7 +108,10 @@
                     android:padding="@dimen/d_16"
                     android:text="@string/text_flash_call"
                     android:textColor="@color/colorBlack"
-                    android:textSize="@dimen/d_16" />
+                    android:textSize="@dimen/d_16"
+                    app:colorClickableText="@color/colorYelowDark"
+                    app:trimCollapsedText="Show more"
+                    app:trimMode="trimModeLength" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -293,7 +296,7 @@
                             android:src="@drawable/ic_eclip_flcall" />
 
                         <TextView
-                            android:id="@+id/tv_continuty_flcall"
+                            android:id="@+id/tv_typeflash_flcall"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_centerVertical="true"
@@ -362,9 +365,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/d_56"
                         android:layout_below="@+id/tv_duration_flcall"
-                        android:max="300"
+                        android:max="30"
                         android:maxHeight="5dp"
-                        android:progress="100"
                         android:progressDrawable="@drawable/seekbar_style"
                         android:thumb="@drawable/custom_thumb" />
 
@@ -376,6 +378,7 @@
                         android:weightSum="2">
 
                         <TextView
+                            android:id="@+id/tv_test_speed_flashcall"
                             android:background="?attr/selectableItemBackground"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -387,6 +390,7 @@
                             android:textSize="@dimen/d_20" />
 
                         <TextView
+                            android:id="@+id/tv_stop_test_speed_flashcall"
                             android:background="?attr/selectableItemBackground"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -435,6 +439,7 @@
                             android:layout_weight="0.3"
                             android:fontFamily="@font/sanfranciscodisplay_light"
                             android:text="2 times"
+                            android:id="@+id/tv_count_times"
                             android:gravity="right"
                             android:textSize="@dimen/d_16" />
                     </TableRow>
@@ -442,10 +447,11 @@
                     <SeekBar
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/d_56"
+                        android:id="@+id/sb_count_flashes"
                         android:layout_below="@+id/tb_number_flash"
-                        android:max="300"
+                        android:max="10"
                         android:maxHeight="5dp"
-                        android:progress="100"
+                        android:progress="1"
                         android:progressDrawable="@drawable/seekbar_style"
                         android:thumb="@drawable/custom_thumb" />
                 </RelativeLayout>
@@ -635,7 +641,7 @@
                         android:src="@drawable/ic_time1_flcall" />
 
                     <TextView
-                        android:id="@+id/tv_start_time"
+
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -644,10 +650,12 @@
                         android:text="Start from"
                         android:textColor="@color/colorgray"
                         android:textSize="@dimen/d_16"
+                        android:id="@+id/tv_start_time"
                         android:textStyle="bold" />
 
 
                     <TextView
+                        android:id="@+id/tv_start_time_choose"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:fontFamily="@font/sanfranciscodisplay_light"
@@ -685,6 +693,7 @@
 
 
                     <TextView
+                        android:id="@+id/tv_end_time_choose"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:fontFamily="@font/sanfranciscodisplay_light"
