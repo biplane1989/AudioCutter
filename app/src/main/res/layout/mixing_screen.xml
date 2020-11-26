@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -16,11 +17,11 @@
                 android:layout_height="@dimen/d_56">
 
                 <ImageView
-                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:id="@+id/iv_back_mixing"
                     android:layout_width="?actionBarSize"
                     android:layout_height="?actionBarSize"
                     android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_back_screen" />
 
@@ -37,29 +38,30 @@
 
                 <ImageView
                     android:id="@+id/iv_done_mixing"
-                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:layout_width="?actionBarSize"
                     android:layout_height="?actionBarSize"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_done_mixing" />
             </RelativeLayout>
 
         </LinearLayout>
+
         <View
-            android:background="@color/colorAlphaGray"
-            android:layout_below="@+id/rlt_actionbar_mixing"
             android:layout_width="match_parent"
-            android:layout_height="0.1dp"/>
+            android:layout_height="0.1dp"
+            android:layout_below="@+id/rlt_actionbar_mixing"
+            android:background="@color/colorAlphaGray" />
 
 
         <com.example.audiocutter.ui.audiochooser.mix.ChangeRangeView
-            android:layout_marginTop="16dp"
             android:id="@+id/cr_change_view_mixing"
-            android:layout_height="300dp"
             android:layout_width="match_parent"
-            android:layout_below="@id/rlt_actionbar_mixing" />
+            android:layout_height="300dp"
+            android:layout_below="@id/rlt_actionbar_mixing"
+            android:layout_marginTop="16dp" />
 
 
         <RelativeLayout
@@ -68,11 +70,12 @@
             android:layout_height="@dimen/d_70"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="@dimen/d_16">
-<View
-    android:layout_alignParentTop="true"
-    android:layout_width="match_parent"
-    android:layout_height="0.1dp"
-    android:background="@color/colorAlphaGray"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.1dp"
+                android:layout_alignParentTop="true"
+                android:background="@color/colorAlphaGray" />
 
             <RelativeLayout
                 android:id="@+id/rlt_play_mixing"
@@ -92,24 +95,24 @@
             </RelativeLayout>
 
             <ImageView
-                android:layout_marginRight="@dimen/d_16"
                 android:id="@+id/iv_previous_mixing"
                 android:layout_width="@dimen/d_56"
-                android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_height="@dimen/d_56"
                 android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/d_16"
                 android:layout_toLeftOf="@id/rlt_play_mixing"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_mixing_prev_5s" />
 
             <ImageView
-                android:layout_marginLeft="@dimen/d_16"
-                android:background="?attr/selectableItemBackgroundBorderless"
                 android:id="@+id/iv_next_mixing"
                 android:layout_width="@dimen/d_56"
                 android:layout_height="@dimen/d_56"
                 android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/d_16"
                 android:layout_toRightOf="@id/rlt_play_mixing"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_mixing_next_5s" />
 
@@ -117,38 +120,36 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:paddingVertical="@dimen/d_5"
             android:layout_height="@dimen/d_56"
             android:layout_above="@id/rlt_controller"
             android:layout_marginBottom="@dimen/d_10"
-            android:paddingHorizontal="@dimen/d_16">
+            android:paddingHorizontal="@dimen/d_16"
+            android:paddingVertical="@dimen/d_5">
 
             <TextView
-                android:gravity="center"
+                android:id="@+id/shorted_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/bg_next_audio_disabled"
                 android:fontFamily="@font/sanfranciscodisplay_medium"
+                android:gravity="center"
                 android:paddingHorizontal="@dimen/d_10"
                 android:text="@string/shorted_audio_mixing"
-                android:id="@+id/shorted_tv"
-                android:textColor="@color/colorgray"
-                />
+                android:textColor="@color/colorgray" />
 
             <TextView
-                android:gravity="center"
                 android:id="@+id/longest_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:layout_gravity="right"
                 android:background="@drawable/bg_next_audio_enabled"
-
                 android:fontFamily="@font/sanfranciscodisplay_medium"
+
+                android:gravity="center"
                 android:paddingHorizontal="@dimen/d_10"
                 android:text="@string/longgest_audio_mixing"
-                android:textColor="@color/colorWhite"
-                 />
+                android:textColor="@color/colorWhite" />
 
         </RelativeLayout>
 

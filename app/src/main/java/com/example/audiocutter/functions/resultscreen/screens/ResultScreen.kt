@@ -3,6 +3,7 @@ package com.example.audiocutter.functions.resultscreen.screens
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +26,7 @@ import com.example.audiocutter.functions.mystudio.dialog.CancelDialogListener
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
+import com.google.android.material.snackbar.Snackbar
 import java.text.SimpleDateFormat
 
 
@@ -66,7 +68,6 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                 binding.tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(it.duration), context)
                     .toInt() + 15
             }
-
             binding.tvTitleMusic.text = it.fileName
             binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
 
@@ -101,10 +102,35 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         binding.llPlayMusic.visibility = View.GONE
         binding.btnCancel.visibility = View.VISIBLE
         binding.pbLoading.progress = it.percent
+        binding.tvLoading.visibility = View.VISIBLE
         binding.tvLoading.text = it.percent.toString() + "%"
         binding.tvTitleMusic.text = it.getFileName()
         binding.tvInfoMusic.text = it.bitRate.toString() + resources.getString(R.string.kbps)
+        binding.ivNotificationError.visibility = View.GONE
 
+        isLoadingDone = false
+    }
+
+    private val errorObserver = Observer<Boolean> {
+        if (it) {
+            view?.let {
+                val mySnackbar = Snackbar.make(it, "Converting Error", Snackbar.LENGTH_LONG)
+                mySnackbar.show()
+            }
+        }
+
+        binding.btnOrigin.visibility = View.GONE
+        binding.tvWait.visibility = View.GONE
+        binding.clOpption.visibility = View.GONE
+        binding.llProgressbar.visibility = View.VISIBLE
+        binding.llPlayMusic.visibility = View.GONE
+        binding.tvLoading.visibility = View.GONE
+
+        binding.btnBack.visibility = View.VISIBLE
+        binding.ivHome.visibility = View.VISIBLE
+        binding.btnCancel.visibility = View.INVISIBLE
+
+        binding.ivNotificationError.visibility = View.VISIBLE
         isLoadingDone = false
     }
 
@@ -162,6 +188,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         mResultViewModel.getProcessingLiveData().observe(viewLifecycleOwner, processingObserver)
         mResultViewModel.getProcessDoneLiveData().observe(viewLifecycleOwner, processDoneObserver)
         mResultViewModel.getPlayerInfo().observe(viewLifecycleOwner, playInfoObserver)
+        mResultViewModel.getErrorLiveData().observe(viewLifecycleOwner, errorObserver)
         return binding.root
     }
 
@@ -212,6 +239,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         when (view) {
             binding.ivPausePlayMusic -> {
                 runOnUI {
+                    Log.d("001", "onClick: ")
                     mResultViewModel.playAudio()
                 }
             }

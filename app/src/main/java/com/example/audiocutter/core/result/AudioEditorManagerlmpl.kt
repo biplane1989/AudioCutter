@@ -74,6 +74,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 it.percent = audioMering.percent
                 it.state = convertingState
                 notifyConvertingItemChanged(it)
+                Log.d(TAG, "currentProcessingItem init: percent: " + it.percent + " status: " + it.state + " ID : " + it.id + " file name: " + it.getFileName())
             }
         }
     }
@@ -91,8 +92,8 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     }
 
     private fun getProcessingItem(): ConvertingItem? {              // get 1 item da duoc set lai status de loading
-        for (waitingItem in listConvertingItemData) {
-            if (waitingItem.state == ConvertingState.PROGRESSING) return waitingItem
+        for (item in listConvertingItemData) {
+            if (item.state == ConvertingState.PROGRESSING) return item
         }
         return null
     }
@@ -126,7 +127,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
     private fun notifyConvertingItemChanged(item: ConvertingItem?) {        // update trang thai loading item
         currentProcessingItem.postValue(item)
-        Log.d(TAG, "notifyConvertingItemChanged: percent"+ item?.percent)
+        Log.d(TAG, "notifyConvertingItemChanged: percent " + item?.percent + "ID : " + item?.id)
     }
 
     private suspend fun processItem(item: ConvertingItem) = withContext(Dispatchers.Default) {      // thuc hien mix or mer or cut
@@ -163,25 +164,35 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
             }
 
-            audioResult?.let {
-                ManagerFactory.getAudioFileManager().buildAudioFile(it.file.absolutePath) {
-                    it?.let {
-                        item.outputAudioFile = it
-
-                        item.state = ConvertingState.SUCCESS
-
-                        notifyConvertingItemChanged(item)
-                        latestConvertingItem = item
-                    }
-                }
-            }
-//
-//            notifyConvertingItemChanged(item)
-//            latestConvertingItem = item
-
             synchronized(listConvertingItemData) {
                 listConvertingItemData.remove(item)
             }
+
+            if (audioResult != null) {                  // converting progress co thanh cong hay khong
+                ManagerFactory.getAudioFileManager().buildAudioFile(audioResult.file.absolutePath) {
+                    it?.let {
+                        item.outputAudioFile = it
+                        item.state = ConvertingState.SUCCESS
+                        latestConvertingItem = item
+                    }
+                }
+                item.state = ConvertingState.SUCCESS
+                item.percent = 100
+                notifyConvertingItemChanged(item)
+
+//               item.outputAudioFile?.file?.delete()
+//                item.state = ConvertingState.ERROR
+//                notifyConvertingItemChanged(item)
+//                latestConvertingItem = null
+
+
+            } else {
+                item.state = ConvertingState.ERROR
+                notifyConvertingItemChanged(item)
+                latestConvertingItem = null
+                Log.d(TAG, "processItem: null")
+            }
+
             // demo dong bo data voi luu tru thu muc trong mystudio
             listConvertingItems.postValue(listConvertingItemData)
 
@@ -189,18 +200,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             processNextItem()
         }
     }
-
-//    private fun addMediaStore(filePath: String): Boolean {
-//        return try {
-//            MediaScannerConnection.scanFile(mContext, arrayOf(filePath), null) { s, uri ->
-//                Log.d("insertFile", "on complete ${uri}  string $s")
-//            }
-//            true
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            false
-//        }
-//    }
 
     override fun cutAudio(audioFile: AudioFile, cuttingConfig: AudioCutConfig) {        // add them 1 item loai cut vao list
 
@@ -305,7 +304,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         }
     }
 
-    override fun getCurrentProcessingItem(): LiveData<ConvertingItem> { // tra ra live data cho update progressbar
+    override fun getCurrentProcessingItem(): LiveData<ConvertingItem?> { // tra ra live data cho update progressbar
         return currentProcessingItem
     }
 

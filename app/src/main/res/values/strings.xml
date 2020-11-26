@@ -10,7 +10,7 @@
     <string name="main_screen_flash_call_text">Flash Call</string>
     <string name="ToastExceed">You can select only 2 item</string>
     <string name="file_merged">file to be merged</string>
-    <string name="Choose_in_app_inten">"Choose a sharing app"</string>
+<string name="Choose_in_app_inten">"Choose a sharing app"</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -41,7 +41,7 @@
     <string name="my_studio_title">My Studio</string>
     <string name="my_studio_dialog_delete_title">Delete file from device?</string>
     <string name="my_studio_dialog_delete_content">File will be deleted permanently.</string>
-    <string name="my_studio_dialog_btn_cancel">CANCEL</string>
+    <string name="my_studio_dialog_btn_yes">YES</string>
     <string name="my_studio_dialog_btn_delete">DELETE</string>
     <string name="my_studio_dialog_rename_title">Rename</string>
     <string name="my_studio_dialog_rename_file_name">File Name</string>
@@ -127,6 +127,7 @@
     <string name="about_settingscreen">About</string>
     <string name="privacy_policy_settingscreen">Privacy policy</string>
     <string name="version_settingscreen">Version</string>
+    <string name="common_cancel">CANCEL</string>
     <string name="tv_ok_settings">OK</string>
     <string name="tv_cancel_settings">CANCEL</string>
     <string name="result_sercice_loading_complete">Loading complete</string>
@@ -187,4 +188,10 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="flash_blinks_when_a_call_comes_in_flahscall">Flash blinks when a call comes in.</string>
     <string name="Continuity_flash_call">Continuity</string>
     <string name="beat_type_flash_call">Beat</string>
+    <string name="call_phone_guide_permission_step_2">Turn On Call Phone</string>
+    <string name="my_studio_dialog_btn_no">NO</string>
+    <string name="my_studio_dialog_rename_cancel">CANCEL</string>
+    <string name="my_studio_dialog_delete_cancel">CANCEL</string>
+    <string name="my_studio_screen_converting_error">\" Converting Error \"</string>
+    <string name="audio_cutter_screen_dialog_convert_cancel">CANCEL</string>
 </resources>

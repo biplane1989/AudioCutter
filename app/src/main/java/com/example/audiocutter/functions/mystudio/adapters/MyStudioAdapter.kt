@@ -11,16 +11,14 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.util.Util
 import com.example.audiocutter.R
-import com.example.audiocutter.core.manager.AudioPlayer
-import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.core.manager.PlayerInfo
-import com.example.audiocutter.core.manager.PlayerState
+import com.example.audiocutter.core.manager.*
 import com.example.audiocutter.functions.contacts.adapters.ListSelectAdapter
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.objects.AudioFileView
@@ -29,6 +27,7 @@ import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,23 +37,31 @@ import java.text.SimpleDateFormat
 interface AudioCutterScreenCallback {
     fun showMenu(view: View, audioFile: AudioFile)
     fun checkDeletePos(position: Int)
-    fun isShowPlayingAudio(positition: Int)
+    fun isShowPlayingAudio(position: Int)
     fun cancelLoading(id: Int)
+    fun errorConverting(fileName: String)
 }
 
-class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallback, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<AudioFileView, AudioCutterAdapter.MyStudioHolder>(MusicDiffCallBack()) {
+class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallback, val audioPlayer: AudioPlayer, val audioEditorManager: AudioEditorManager, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<AudioFileView, AudioCutterAdapter.MyStudioHolder>(MusicDiffCallBack()) {
 
     private val TAG = "giangtd"
 
     @SuppressLint("SimpleDateFormat")
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
+    private var mListAudio = ArrayList<AudioFileView>()
+    private lateinit var recyclerView: RecyclerView
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyStudioHolder {
+        recyclerView = parent as RecyclerView
         return if (viewType == SUCCESS_VIEW) {
             SuccessViewHolder(LayoutInflater.from(parent.context)
                 .inflate(R.layout.my_studio_screen_item, parent, false))
         } else LoadingViewHolder(LayoutInflater.from(parent.context)
             .inflate(R.layout.my_studio_item_loading, parent, false))
+
+
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -74,10 +81,12 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     override fun onViewDetachedFromWindow(holder: MyStudioHolder) {     // khi view bi destroy tren man hinh
         super.onViewDetachedFromWindow(holder)
         holder.onViewDetachedFromWindow()
+
     }
 
     override fun submitList(list: List<AudioFileView>?) {
         if (list != null) {
+            mListAudio = ArrayList(list)
             super.submitList(ArrayList(list))
         } else {
             super.submitList(null)
@@ -95,6 +104,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         }
     }
 
+
     // khi chi thay doi 1 truong trong data
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: MyStudioHolder, position: Int, payloads: MutableList<Any>) {
@@ -103,33 +113,43 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             onBindViewHolder(holder, position)
         } else {
             if (holder is SuccessViewHolder) {
-//                val successViewHolder = holder as SuccessViewHolder
+                val successViewHolder = holder as SuccessViewHolder
                 val newItem = payloads.firstOrNull() as AudioFileView
 
                 when (newItem.itemLoadStatus.deleteState) {
                     DeleteState.HIDE -> {
-                        holder.ivItemDelete.visibility = View.GONE
-                        holder.ivSetting.visibility = View.VISIBLE
+                        successViewHolder.ivItemDelete.visibility = View.GONE
+                        successViewHolder.ivSetting.visibility = View.VISIBLE
                     }
                     DeleteState.UNCHECK -> {
-                        holder.ivSetting.visibility = View.INVISIBLE
-                        holder.ivItemDelete.visibility = View.VISIBLE
-                        holder.ivItemDelete.setImageResource(R.drawable.my_studio_screen_icon_uncheck)
+                        successViewHolder.ivSetting.visibility = View.INVISIBLE
+                        successViewHolder.ivItemDelete.visibility = View.VISIBLE
+                        successViewHolder.ivItemDelete.setImageResource(R.drawable.my_studio_screen_icon_uncheck)
                     }
                     DeleteState.CHECKED -> {
-                        holder.ivSetting.visibility = View.INVISIBLE
-                        holder.ivItemDelete.visibility = View.VISIBLE
-                        holder.ivItemDelete.setImageResource(R.drawable.my_studio_screen_icon_checked)
+                        successViewHolder.ivSetting.visibility = View.INVISIBLE
+                        successViewHolder.ivItemDelete.visibility = View.VISIBLE
+                        successViewHolder.ivItemDelete.setImageResource(R.drawable.my_studio_screen_icon_checked)
                     }
                 }
 
+                Log.d(TAG, "onBindViewHolder: " + newItem.isExpanded)
+
                 if (newItem.isExpanded) {
-                    holder.llPlayMusic.visibility = View.VISIBLE
-                    holder.llItem.setBackgroundResource(R.drawable.my_studio_item_bg)
+                    successViewHolder.llPlayMusic.visibility = View.VISIBLE
+                    successViewHolder.llItem.setBackgroundResource(R.drawable.my_studio_item_bg)
+
+                    Log.d(TAG, "onBindViewHolder: 1")
+                    holder.itemView.post {
+                        if (holder.itemView.bottom > recyclerView.height) {
+                            recyclerView.smoothScrollBy(0, (holder.itemView.bottom - recyclerView.height))
+                        }
+                    }
+
                 } else {
-                    holder.llPlayMusic.visibility = View.GONE
-                    holder.llItem.setBackgroundColor(Color.WHITE)
-                    holder.llItem.setPadding(0, 0, 0, 0)
+                    successViewHolder.llPlayMusic.visibility = View.GONE
+                    successViewHolder.llItem.setBackgroundColor(Color.WHITE)
+                    successViewHolder.llItem.setPadding(0, 0, 0, 0)
                 }
 
             } else {
@@ -137,15 +157,20 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 val newItem = payloads.firstOrNull() as AudioFileView
                 val convertingItem = getItem(position)
 
-                Log.d(TAG, "onBindViewHolder: convertingItem.percent : "+ convertingItem.percent)
+                Log.d(TAG, "onBindViewHolder: convertingItem.percent : " + convertingItem.percent)
 
-                loadingViewHolder.pbLoading.max = 100
-                loadingViewHolder.pbLoading.progress = convertingItem.percent
-
-                loadingViewHolder.tvTitle.setText(convertingItem.audioFile.fileName)
-
-                loadingViewHolder.tvLoading.text = newItem.percent.toString() + "%"
-
+                when (newItem.convertingState) {
+                    ConvertingState.WAITING -> {
+                        loadingViewHolder.tvWait.visibility = View.VISIBLE
+                        loadingViewHolder.pbLoading.visibility = View.GONE
+                        loadingViewHolder.tvLoading.visibility = View.GONE
+                    }
+                    ConvertingState.PROGRESSING -> {
+                        loadingViewHolder.tvWait.visibility = View.GONE
+                        loadingViewHolder.pbLoading.visibility = View.VISIBLE
+                        loadingViewHolder.tvLoading.visibility = View.VISIBLE
+                    }
+                }
             }
         }
     }
@@ -191,11 +216,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             val audioFileView = getItem(adapterPosition)
             filePath = playerInfo.currentAudio?.getFilePath().toString()
 
-            if (audioFileView.getFilePath().equals(filePath)) {
-                llPlayMusic.visibility = View.VISIBLE
-                llItem.setBackgroundResource(R.drawable.my_studio_item_bg)
-            }
-
             playerState = playerInfo.playerState
             sbMusic.max = playerInfo.duration
             sbMusic.progress = playerInfo.posision
@@ -218,6 +238,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     //nothing
                 }
             }
+
         }
 
 
@@ -344,6 +365,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                             //nothing
                         }
                     }
+
                 }
                 R.id.iv_pause_play_music -> {
                     when (playerState) {
@@ -379,6 +401,59 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         val ivCancel: ImageView = itemView.findViewById(R.id.iv_cancel)
         val tvWait: TextView = itemView.findViewById(R.id.tv_wait)
 
+
+        @SuppressLint("SetTextI18n")
+        private fun updateItem(convertingItem: ConvertingItem) {
+
+            Log.d(TAG, "updateItem: percent : " + convertingItem.percent + "  status : " + convertingItem.state)
+            when (convertingItem.state) {
+//                ConvertingState.WAITING -> {
+//                    tvWait.visibility = View.VISIBLE
+//                    pbLoading.visibility = View.GONE
+//                    tvLoading.visibility = View.GONE
+//                }
+                ConvertingState.PROGRESSING -> {
+//                    tvWait.visibility = View.GONE
+//                    pbLoading.visibility = View.VISIBLE
+//                    tvLoading.visibility = View.VISIBLE
+                    pbLoading.max = 100
+                    pbLoading.progress = convertingItem.percent
+                    tvLoading.text = convertingItem.percent.toString() + "%"
+                }
+
+                ConvertingState.ERROR -> {
+                    audioCutterScreenCallback.errorConverting(convertingItem.getFileName())
+                }
+
+                else -> {
+                    //nothing
+                }
+            }
+        }
+
+        override fun onViewAttachedToWindow() {
+            super.onViewAttachedToWindow()
+            val audioFileView = getItem(adapterPosition)
+            audioEditorManager.getCurrentProcessingItem()
+                .observe(this, object : Observer<ConvertingItem?> {
+                    override fun onChanged(convertingItem: ConvertingItem?) {
+                        convertingItem?.let {
+                            if (adapterPosition != -1) {
+                                val itemView = getItem(adapterPosition)
+                                if (itemView.id == it.id) {
+                                    updateItem(it)
+                                }
+                            }
+                        }
+
+                    }
+                })
+        }
+
+        override fun onViewDetachedFromWindow() {
+            super.onViewDetachedFromWindow()
+        }
+
         @SuppressLint("SetTextI18n")
         fun onBind() {
             val loadingItem = getItem(adapterPosition)
@@ -403,7 +478,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             }
 
             tvTitle.setText(loadingItem.audioFile.fileName)
-
             ivCancel.setOnClickListener(this)
         }
 

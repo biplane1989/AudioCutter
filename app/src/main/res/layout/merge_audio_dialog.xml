@@ -83,7 +83,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:fontFamily="@font/sanfranciscodisplay_medium"
                     android:gravity="center"
-                    android:text="@string/my_studio_dialog_btn_cancel"
+                    android:text="@string/common_cancel"
                     android:textColor="#BDBDBD"
                     android:textSize="18dp"
                     android:visibility="visible" />

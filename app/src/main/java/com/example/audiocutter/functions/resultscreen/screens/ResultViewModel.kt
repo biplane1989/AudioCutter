@@ -13,6 +13,7 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import com.example.audiocutter.objects.AudioFile
+import com.google.android.material.snackbar.Snackbar
 
 class ResultViewModel(application: Application) : BaseAndroidViewModel(application) {
 
@@ -25,7 +26,10 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
     private val processingLiveData = MutableLiveData<ConvertingItem>()
     private val pendingProcessLiveData = MutableLiveData<String>()
 
-    private val editProcessObserver = Observer<ConvertingItem> { convertingItem ->
+    private val errorLiveData = MutableLiveData<Boolean>()
+
+
+    private val editProcessObserver = Observer<ConvertingItem?> { convertingItem ->
         convertingItem?.let {
             Log.d("giangtd", " ResultViewModel  :  STATE ${it.state}")
 
@@ -46,7 +50,7 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
                     val latestConvertingItem = audioEditorManager.getLatestConvertingItem()
                     latestConvertingItem?.let { item ->
                         if (item.id == it.id) {
-                            processDoneLiveData.postValue(it.outputAudioFile)
+                            processDoneLiveData.postValue(item.outputAudioFile)
                         }
                     }
 
@@ -55,7 +59,7 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
 
                 }
                 ConvertingState.ERROR -> {
-
+                    errorLiveData.postValue(true)
                 }
             }
         }
@@ -123,36 +127,33 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
         return pendingProcessLiveData
     }
 
+    fun getErrorLiveData(): LiveData<Boolean> {
+        return errorLiveData
+    }
+
     // chuyen trang thai play nhac
     suspend fun playAudio() {
-        processDoneLiveData.value.let { audioFile ->
-            audioFile?.let {
-                when (audioPlayer.getPlayerInfoData().playerState) {
-                    PlayerState.IDLE -> {
-                        audioPlayer.play(
-                            AudioFile(
-                                it.file,
-                                it.fileName,
-                                it.size,
-                                it.bitRate,
-                                it.duration,
-                                Uri.parse(it.file.absolutePath)
-                            )
-                        )
-                    }
-                    PlayerState.PAUSE -> {
-                        audioPlayer.resume()
-                    }
-
-                    PlayerState.PLAYING -> {
-                        audioPlayer.pause()
-                    }
-                    PlayerState.PREPARING -> {
-
-                    }
+        when (audioPlayer.getPlayerInfoData().playerState) {
+            PlayerState.IDLE -> {
+                val audioFile = ManagerFactory.getAudioEditorManager()
+                    .getLatestConvertingItem()?.outputAudioFile
+                audioFile?.let {
+                    Log.d("001", "playAudio: file path " + it.getFilePath())
+                    audioPlayer.play(audioFile)
                 }
+//                        audioPlayer.play(AudioFile(it.file, it.fileName, it.size, it.bitRate, it.duration, Uri.parse(it.file.absolutePath)))
+                Log.d("001", "playAudio: audio file: " + audioFile?.fileName)
+            }
+            PlayerState.PAUSE -> {
+                audioPlayer.resume()
             }
 
+            PlayerState.PLAYING -> {
+                audioPlayer.pause()
+            }
+            PlayerState.PREPARING -> {
+
+            }
         }
     }
 

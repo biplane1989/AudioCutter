@@ -9,26 +9,23 @@ import androidx.lifecycle.Observer
 import com.example.audiocutter.R
 import com.example.audiocutter.util.PreferencesHelper
 
-interface StoragePermissionRequest : PermissionRequest, Observer<AppPermission> {
+
+interface FlashCallPermissionRequest : PermissionRequest, Observer<AppPermission> {
     fun isPermissionGranted(): Boolean {
-        return PermissionManager.hasStoragePermission()
+        return PermissionManager.hasFlashCallPermission()
     }
 
     override fun requestPermission() {
-
         if (!isPermissionGranted()) {
             val baseActivity = getPermissionActivity()
             baseActivity?.let {
                 if (PermissionUtil.clickedOnNeverAskAgain(
                         baseActivity,
-                        arrayOf(
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        )
+                        arrayOf(Manifest.permission.CALL_PHONE)
                     )
                 ) {
                     PreferencesHelper.putBoolean(
-                        this@StoragePermissionRequest::class.java.name + "goToPermissionSettingScreen",
+                        this@FlashCallPermissionRequest::class.java.name + "goToPermissionSettingScreen",
                         true
                     )
                     PendingCallFunction.guidePermissionToast?.cancel()
@@ -45,26 +42,25 @@ interface StoragePermissionRequest : PermissionRequest, Observer<AppPermission> 
                     val inflater: LayoutInflater =
                         baseActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
                     PendingCallFunction.guidePermissionToast!!.view = inflater.inflate(
-                        R.layout.storage_guide_turn_on_permission_layout,
+                        R.layout.call_phone_guide_turn_on_permission_layout,
                         null
                     )
                     PendingCallFunction.guidePermissionToast!!.duration = Toast.LENGTH_LONG
                     PendingCallFunction.guidePermissionToast!!.show()
                     PermissionUtil.goToPermissionSettingScreen(
                         baseActivity,
-                        STORAGE_REQUEST_CODE
+                        CALL_PHONE_REQUEST_CODE
                     )
-
                 } else {
                     PermissionUtil.requestPermission(
                         baseActivity, arrayOf(
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        ), STORAGE_REQUEST_CODE
+                            Manifest.permission.READ_PHONE_STATE,
+                            Manifest.permission.PROCESS_OUTGOING_CALLS
+                        ), CALL_PHONE_REQUEST_CODE
                     )
                 }
-            }
 
+            }
         }
     }
 
@@ -72,20 +68,20 @@ interface StoragePermissionRequest : PermissionRequest, Observer<AppPermission> 
         if (isPermissionGranted()) {
             PendingCallFunction.guidePermissionToast?.cancel()
             if (PreferencesHelper.getBoolean(
-                    this@StoragePermissionRequest::class.java.name + "goToPermissionSettingScreen",
+                    this@FlashCallPermissionRequest::class.java.name + "goToPermissionSettingScreen",
                     false
                 )
             ) {
                 PreferencesHelper.putBoolean(
-                    this@StoragePermissionRequest::class.java.name + "goToPermissionSettingScreen",
+                    this@FlashCallPermissionRequest::class.java.name + "goToPermissionSettingScreen",
                     false
                 )
                 getPermissionActivity()?.let {
                     PermissionUtil.goToPermissionSettingScreen(
                         it,
-                        STORAGE_REQUEST_CODE
+                        CALL_PHONE_REQUEST_CODE
                     )
-                    it.finishActivity(STORAGE_REQUEST_CODE)
+                    it.finishActivity(CALL_PHONE_REQUEST_CODE)
                 }
             }
         }
