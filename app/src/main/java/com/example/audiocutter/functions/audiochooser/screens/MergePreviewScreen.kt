@@ -2,7 +2,6 @@ package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -209,7 +208,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     }
 
     override fun mergeAudioFile(filename: String) {
-        Log.d(TAG, "mergeAudioFile: $filename size list ${audioMerModel.getListAudio().size}")
         val mergingConfig = AudioMergingConfig(
             AudioFormat.MP3,
             filename,

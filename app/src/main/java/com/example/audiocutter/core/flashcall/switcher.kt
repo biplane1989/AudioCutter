@@ -127,9 +127,9 @@ class FlashPlayer {
                             }
                             delay(flashSpeed)
                         }
-
-                        timeCounter += 1
-
+                        if (timeCounter != Int.MAX_VALUE) {
+                            timeCounter += 1
+                        }
 
                     }
                 } else {
@@ -156,6 +156,7 @@ class FlashPlayer {
 
     suspend fun stopBlink() {
         isTestMode = false
+        timeCounter = Int.MAX_VALUE
         flashPlayerChannel.send(false)
     }
 

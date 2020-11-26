@@ -25,7 +25,7 @@ class MergeChooserModel : BaseViewModel() {
 
     private var filterText = ""
 
-    private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>>()
+    private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>?>()
     init {
 
         _listAudioFiles.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
@@ -55,8 +55,8 @@ class MergeChooserModel : BaseViewModel() {
     }
     private val _listFilteredAudioFiles = liveData<List<AudioCutterView>?> {
         emitSource(_listAudioFiles.map {
-            var listResult:List<AudioCutterView>?=null
-            if(it != null){
+            it?.let {
+                var listResult:List<AudioCutterView>?=null
                 listResult = ArrayList(it)
                 if (filterText.isNotEmpty()) {
                     it.forEach { item ->
@@ -68,10 +68,9 @@ class MergeChooserModel : BaseViewModel() {
                         }
                     }
                 }
+                listResult
             }
 
-
-            listResult
         })
     }
 

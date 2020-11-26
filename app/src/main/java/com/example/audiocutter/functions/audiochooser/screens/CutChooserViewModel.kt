@@ -35,7 +35,7 @@ class CutChooserViewModel : BaseViewModel() {
 
     private var filterText = ""
 
-    private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>>()
+    private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>?>()
 
     init {
 
@@ -67,23 +67,25 @@ class CutChooserViewModel : BaseViewModel() {
 
     private val _listFilteredAudioFiles = liveData<List<AudioCutterView>?> {
         emitSource(_listAudioFiles.map {
-            var listResult:List<AudioCutterView>?=null
-            if(it != null){
-                listResult = ArrayList(it)
-                if (filterText.isNotEmpty()) {
-                    it.forEach { item ->
-                        val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
-                            filterText.toLowerCase(Locale.getDefault())
-                        )
-                        if (rs) {
-                            listResult.add(item)
-                        }
-                    }
-                }
-            }
+           it?.let {
+               var listResult: List<AudioCutterView>? = null
+               if (it != null) {
+                   listResult = ArrayList(it)
+                   if (filterText.isNotEmpty()) {
+                       it.forEach { item ->
+                           val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
+                               filterText.toLowerCase(Locale.getDefault())
+                           )
+                           if (rs) {
+                               listResult.add(item)
+                           }
+                       }
+                   }
+               }
 
-
-            listResult
+               Log.d(TAG, "checkList:  -list ${listResult!!.size} ")
+               listResult
+           }
         })
     }
 
