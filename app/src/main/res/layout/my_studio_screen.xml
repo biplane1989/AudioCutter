@@ -133,6 +133,7 @@
                     app:tabIndicatorColor="#FDAA74"
                     app:tabIndicatorHeight="2dp"
                     app:tabMode="fixed"
+                    app:tabTextAppearance="@style/MyStudioTabText"
                     app:tabSelectedTextColor="#2E3041" />
 
                 <TextView

@@ -28,6 +28,7 @@ import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioFormat
 import com.example.core.core.AudioMixConfig
 import com.example.core.core.MixSelector
+import java.io.File
 
 class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPlayLineChange,
     FileNameDialogListener {
@@ -194,8 +195,11 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
             }
             binding.ivDoneMixing -> {
                 if (isDeleteClicked) {
-                    val dialog = MixerDialog.newInstance(this)
-                    dialog.show(childFragmentManager, CancelDialog.TAG)
+                    audioFile1?.let {
+                        val dialog = MixerDialog.newInstance(this, Utils.getBaseName(it.file))
+                        dialog.show(childFragmentManager, CancelDialog.TAG)
+                    }
+
                     isDeleteClicked = false
                 }
             }

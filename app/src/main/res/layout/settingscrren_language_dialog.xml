@@ -53,8 +53,9 @@
                 android:paddingHorizontal="@dimen/d_16">
 
                 <RadioButton
+                    android:background="?attr/selectableItemBackground"
                     android:id="@+id/rb_vietnam"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="#FDAA74"
                     android:checked="true"
@@ -65,8 +66,9 @@
                     android:textSize="@dimen/text_size_edt" />
 
                 <RadioButton
+                    android:background="?attr/selectableItemBackground"
                     android:id="@+id/rb_english"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="#FDAA74"
                     android:paddingVertical="@dimen/d_16"

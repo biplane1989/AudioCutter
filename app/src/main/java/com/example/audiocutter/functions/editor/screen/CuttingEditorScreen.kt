@@ -1,4 +1,4 @@
-package com.example.audiocutter.functions.editor.screen
+ package com.example.audiocutter.functions.editor.screen
 
 import android.os.Bundle
 import android.os.Handler
@@ -13,6 +13,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.util.Util
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.PlayerInfo
@@ -26,8 +27,9 @@ import com.example.audiocutter.util.PreferencesHelper
 import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioCutConfig
 import com.example.core.core.Effect
+import java.io.File
 
-class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListener,
+ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListener,
     View.OnClickListener, View.OnLongClickListener, OnDialogAdvanceListener,
     DialogConvert.OnDialogConvertListener {
 
@@ -277,8 +279,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
                     DialogConvert.showDialogConvert(
                         childFragmentManager,
                         this,
-                        it,
-                        cuttingViewModel.getNameSuggestion()
+                        Utils.getBaseName(File(audioPath))
                     )
                 }
             }

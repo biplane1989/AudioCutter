@@ -1,0 +1,714 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        paddingTopSystemWindowInsets="@{true}"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/ln_flash_off_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="invisible">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ic_energy_flcall" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/d_16"
+                android:text="@string/flash_blinks_when_a_call_comes_in_flahscall" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlt_actionbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.1dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/colorgrayAlpha" />
+
+
+            <ImageView
+                android:id="@+id/iv_cutter_screen_back"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_audiocutter_back" />
+
+
+            <TextView
+                android:id="@+id/tv_cutter_screen"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/iv_cutter_screen_back"
+                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:gravity="center"
+                android:text="@string/audio_flash_call_name_actionbar"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/d_18" />
+
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/sw_flash_call_mode"
+                app:switchMinWidth="56dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/d_12"
+                android:checked="true"
+                android:textColor="@color/colorBlack"
+                android:textOff="Off"
+                android:textOn="On"
+                android:textSize="@dimen/d_5"
+                app:thumbTint="@color/color_state_thumb"
+                app:trackTint="@color/color_state_track" />
+
+
+        </RelativeLayout>
+
+
+        <ScrollView
+            android:overScrollMode="never"
+            android:layout_below="@+id/rlt_actionbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/ln_flash_on_mode"
+                android:orientation="vertical"
+                android:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <com.borjabravo.readmoretextview.ReadMoreTextView
+                    android:id="@+id/tv_description_flash_call"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorYelowTextViewFlashCall"
+                    android:fontFamily="@font/sanfranciscodisplay_regular"
+                    android:padding="@dimen/d_16"
+                    android:text="@string/text_flash_call"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/d_16"
+                    app:colorClickableText="@color/colorYelowDark"
+                    app:trimCollapsedText="Show more"
+                    app:trimMode="trimModeLength" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sanfranciscodisplay_bold"
+                    android:paddingHorizontal="@dimen/d_16"
+                    android:text="Status"
+                    android:paddingVertical="@dimen/d_16"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/text_size_header" />
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/d_10">
+
+                    <ImageView
+                        android:layout_width="?actionBarSize"
+                        android:layout_height="?actionBarSize"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_call_flash_flcall" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/sanfranciscodisplay_light"
+                        android:gravity="center_vertical"
+                        android:text="@string/incoming_call_flcall"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="@dimen/d_16"
+                        android:textStyle="bold" />
+
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        app:switchMinWidth="56dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="@dimen/d_12"
+                        android:textColor="@color/colorBlack"
+                        android:textOff="Off"
+                        android:textOn="On"
+                        android:textSize="@dimen/d_5"
+                        app:thumbTint="@color/color_state_thumb"
+                        app:trackTint="@color/color_state_track" />
+
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tb_app_flashcall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/d_10">
+
+                    <ImageView
+                        android:layout_width="?actionBarSize"
+                        android:layout_height="?actionBarSize"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_mess_flash_flcall" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sanfranciscodisplay_light"
+                            android:gravity="center_vertical"
+                            android:paddingVertical="@dimen/d_2"
+                            android:text="@string/notification_flcall"
+                            android:textColor="@color/colorBlack"
+                            android:textSize="@dimen/d_16"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sanfranciscodisplay_regular"
+                            android:gravity="center_vertical"
+                            android:paddingVertical="@dimen/d_2"
+                            android:text="@string/touch_to_select_an_application_flcall"
+                            android:textSize="@dimen/d_16" />
+                    </LinearLayout>
+
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:switchMinWidth="56dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="@dimen/d_12"
+                        android:textColor="@color/colorBlack"
+                        android:textOff="Off"
+                        android:textOn="On"
+                        android:textSize="@dimen/d_5"
+                        app:thumbTint="@color/color_state_thumb"
+                        app:trackTint="@color/color_state_track" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/d_10">
+
+                    <ImageView
+                        android:layout_width="?actionBarSize"
+                        android:layout_height="?actionBarSize"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_flash_off_flcall" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/sanfranciscodisplay_light"
+                        android:gravity="center_vertical"
+                        android:text="@string/description_flash_off_flcall"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="@dimen/d_16"
+                        android:textStyle="bold" />
+
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="@dimen/d_12"
+                        app:switchMinWidth="56dp"
+                        android:textColor="@color/colorBlack"
+                        android:textOff="Off"
+                        android:textOn="On"
+                        android:textSize="@dimen/d_5"
+                        app:thumbTint="@color/color_state_thumb"
+                        app:trackTint="@color/color_state_track" />
+
+                </TableRow>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:background="@color/colorgrayAlpha" />
+
+
+                <RelativeLayout
+                    android:id="@+id/rlt_Choice_flcall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tv_choice_flcall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/sanfranciscodisplay_bold"
+                        android:paddingHorizontal="@dimen/d_16"
+                        android:paddingVertical="@dimen/d_16"
+                        android:text="@string/choice_of_lightning_type_flcall"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="@dimen/text_size_header" />
+
+                    <TableRow
+                        android:id="@+id/tb_flash_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/tb_lightning"
+                        android:layout_alignParentRight="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:layout_width="@dimen/d_20"
+                            android:layout_height="@dimen/d_20"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center_vertical"
+                            android:layout_toLeftOf="@+id/tv_continuty_flcall"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/ic_eclip_flcall" />
+
+                        <TextView
+                            android:id="@+id/tv_typeflash_flcall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_centerVertical="true"
+                            android:layout_toLeftOf="@+id/iv_back_flcall"
+                            android:fontFamily="@font/sanfranciscodisplay_light"
+                            android:gravity="center_vertical"
+                            android:text="@string/continuity_flcall"
+                            android:textSize="@dimen/d_16"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:id="@+id/iv_back_flcall"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginRight="@dimen/d_5"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/ic_back_flcall" />
+                    </TableRow>
+
+
+                    <TableRow
+                        android:id="@+id/tb_lightning"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/d_40"
+                        android:layout_below="@+id/tv_choice_flcall"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="@dimen/d_16">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sanfranciscodisplay_light"
+                            android:text="Lightning speed"
+                            android:textColor="@color/colorBlack"
+                            android:textSize="@dimen/text_size_header" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_default_flcall"
+                            android:fontFamily="@font/sanfranciscodisplay_light"
+                            android:paddingHorizontal="@dimen/d_5"
+                            android:text="@string/default_flcall"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="@dimen/d_16" />
+                    </TableRow>
+
+                    <TextView
+                        android:id="@+id/tv_duration_flcall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tb_lightning"
+                        android:layout_marginLeft="@dimen/d_16"
+                        android:fontFamily="@font/sanfranciscodisplay_light"
+                        android:gravity="center_vertical"
+                        android:paddingVertical="@dimen/d_10"
+                        android:text="@string/default_flcall"
+                        android:textSize="@dimen/d_16" />
+
+                    <SeekBar
+                        android:id="@+id/sb_linghtning_speed_flcall"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/d_56"
+                        android:layout_below="@+id/tv_duration_flcall"
+                        android:max="30"
+                        android:maxHeight="5dp"
+                        android:progressDrawable="@drawable/seekbar_style"
+                        android:thumb="@drawable/custom_thumb" />
+
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/d_56"
+                        android:layout_below="@+id/sb_linghtning_speed_flcall"
+                        android:weightSum="2">
+
+                        <TextView
+                            android:id="@+id/tv_test_speed_flashcall"
+                            android:background="?attr/selectableItemBackground"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:gravity="center"
+                            android:paddingVertical="@dimen/d_10"
+                            android:text="@string/test"
+                            android:textSize="@dimen/d_20" />
+
+                        <TextView
+                            android:id="@+id/tv_stop_test_speed_flashcall"
+                            android:background="?attr/selectableItemBackground"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:gravity="center"
+                            android:paddingVertical="@dimen/d_10"
+                            android:text="STOP"
+                            android:textColor="@color/colorYelowDark"
+                            android:textSize="@dimen/d_20" />
+
+                    </TableRow>
+
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.2dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/colorgrayAlpha" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TableRow
+                        android:id="@+id/tb_number_flash"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="@dimen/d_16">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.7"
+                            android:fontFamily="@font/sanfranciscodisplay_light"
+                            android:text="@string/number_flash_call_description"
+                            android:textColor="@color/colorBlack"
+                            android:textSize="@dimen/text_size_header" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.3"
+                            android:fontFamily="@font/sanfranciscodisplay_light"
+                            android:text="2 times"
+                            android:id="@+id/tv_count_times"
+                            android:gravity="right"
+                            android:textSize="@dimen/d_16" />
+                    </TableRow>
+
+                    <SeekBar
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/d_56"
+                        android:id="@+id/sb_count_flashes"
+                        android:layout_below="@+id/tb_number_flash"
+                        android:max="10"
+                        android:maxHeight="5dp"
+                        android:progress="1"
+                        android:progressDrawable="@drawable/seekbar_style"
+                        android:thumb="@drawable/custom_thumb" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.2dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/colorgrayAlpha" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sanfranciscodisplay_bold"
+                    android:paddingHorizontal="@dimen/d_16"
+                    android:text="Turn on Flash in mode"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/text_size_header" />
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/d_10">
+
+                    <ImageView
+                        android:layout_width="?actionBarSize"
+                        android:layout_height="?actionBarSize"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_music_flcall" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/sanfranciscodisplay_light"
+                        android:gravity="center_vertical"
+                        android:text="Bell"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="@dimen/d_16"
+                        android:textStyle="bold" />
+
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        app:switchMinWidth="56dp"
+                        android:layout_marginEnd="@dimen/d_12"
+                        android:textColor="@color/colorBlack"
+                        android:textOff="Off"
+                        android:textOn="On"
+                        android:textSize="@dimen/d_5"
+                        app:thumbTint="@color/color_state_thumb"
+                        app:trackTint="@color/color_state_track" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/d_10">
+
+                    <ImageView
+                        android:layout_width="?actionBarSize"
+                        android:layout_height="?actionBarSize"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_phone_flcall" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/sanfranciscodisplay_light"
+                        android:gravity="center_vertical"
+                        android:text="Vibrate"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="@dimen/d_16"
+                        android:textStyle="bold" />
+
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="@dimen/d_12"
+                        android:textColor="@color/colorBlack"
+                        android:textOff="Off"
+                        app:switchMinWidth="56dp"
+                        android:textOn="On"
+                        android:textSize="@dimen/d_5"
+                        app:thumbTint="@color/color_state_thumb"
+                        app:trackTint="@color/color_state_track" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/d_10">
+
+                    <ImageView
+                        android:layout_width="?actionBarSize"
+                        android:layout_height="?actionBarSize"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_mute_flcall" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/sanfranciscodisplay_light"
+                        android:gravity="center_vertical"
+                        android:text="Silent"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="@dimen/d_16"
+                        android:textStyle="bold" />
+
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="@dimen/d_12"
+                        android:textColor="@color/colorBlack"
+                        android:textOff="Off"
+                        android:textOn="On"
+                        app:switchMinWidth="56dp"
+
+                        android:textSize="@dimen/d_5"
+                        app:thumbTint="@color/color_state_thumb"
+                        app:trackTint="@color/color_state_track" />
+
+                </TableRow>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.2dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/colorgrayAlpha" />
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/d_10">
+
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:textColor="@color/colorBlack"
+                        android:fontFamily="@font/sanfranciscodisplay_regular"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="@dimen/d_16"
+                        android:text="Flash timer off"
+                        android:textSize="@dimen/text_size_header"
+                        android:textStyle="bold" />
+
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/sw_settime_flash"
+                        android:layout_width="wrap_content"
+                        android:checked="false"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="@dimen/d_12"
+                        android:textColor="@color/colorBlack"
+                        app:switchMinWidth="56dp"
+                        android:textSize="@dimen/d_5"
+                        app:thumbTint="@color/color_state_thumb"
+                        app:trackTint="@color/color_state_track" />
+
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tb_start_time"
+                    android:background="?attr/selectableItemBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/d_10">
+
+                    <ImageView
+                        android:layout_width="?actionBarSize"
+                        android:layout_height="?actionBarSize"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_time1_flcall" />
+
+                    <TextView
+
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/sanfranciscodisplay_light"
+                        android:gravity="center_vertical"
+                        android:text="Start from"
+                        android:textColor="@color/colorgray"
+                        android:textSize="@dimen/d_16"
+                        android:id="@+id/tv_start_time"
+                        android:textStyle="bold" />
+
+
+                    <TextView
+                        android:id="@+id/tv_start_time_choose"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/sanfranciscodisplay_light"
+                        android:gravity="center_vertical"
+                        android:paddingRight="@dimen/d_16"
+                        android:text="23:00"
+                        android:textSize="@dimen/d_16" />
+
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tb_end_time"
+                    android:background="?attr/selectableItemBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/d_10">
+
+                    <ImageView
+                        android:layout_width="?actionBarSize"
+                        android:layout_height="?actionBarSize"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_time2_flcall" />
+
+                    <TextView
+                        android:id="@+id/tv_end_time"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/sanfranciscodisplay_light"
+                        android:gravity="center_vertical"
+                        android:text="End"
+                        android:textColor="@color/colorgray"
+                        android:textSize="@dimen/d_16"
+                        android:textStyle="bold" />
+
+
+                    <TextView
+                        android:id="@+id/tv_end_time_choose"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/sanfranciscodisplay_light"
+                        android:gravity="center_vertical"
+                        android:paddingRight="@dimen/d_16"
+                        android:text="9:00"
+                        android:textSize="@dimen/d_16" />
+
+                </TableRow>
+
+
+            </LinearLayout>
+
+
+        </ScrollView>
+
+    </RelativeLayout>
+</layout>

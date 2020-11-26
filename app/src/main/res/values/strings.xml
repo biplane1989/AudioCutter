@@ -161,6 +161,33 @@
     <string name="search">Search...</string>
     <string name="audio_file_is_not_found">Audio file is not found</string>
     <string name="my_studio_delete_successfull">Delete Successfull</string>
+    <string name="audio_name_is_not_empty">Name is not empty</string>
+    <string name="audio_name_this_name_is_already_existed">This name is already existed</string>
+    <string name="my_studio_rename_audio_file_successfull">rename audio successfully</string>
+    <string name="my_studio_rename_audio_file_fail">rename audio failed</string>
+    <string name="access_helper_service_label">Audio Cutter</string>
+    <string name="audio_flash_call_name_actionbar">Flash Call</string>
+    <string name="text_flash_call">Important introduction: In terms of Android’s phones, you need to allow this application to run in the phone’s background, so that Flash would perform stably. You have to reject this application out of the restricted list, which is in the low power mode in your phone. \n
+General suggestions:
+Go to: phone settings > Battery > Low power mode (Saving battery mode) > Cut Pro music > Choose switch off or unrestricted
+Or: phone settings > Application Management > Cut Pro music > Saving battery mode > Allow to run in the phone’s background.</string>
+    <string name="incoming_call_flcall">Incoming call</string>
+    <string name="touch_to_select_an_application_flcall">Touch to select an application</string>
+    <string name="notification_flcall"><![CDATA[Notification for apps (sms & app)]]></string>
+    <string name="description_flash_off_flcall">Flash is not fired when in use</string>
+    <string name="choice_of_lightning_type_flcall">Choice of lightning type</string>
+    <string name="continuity_flcall">Continuity</string>
+    <string name="default_flcall">Default</string>
+    <string name="number_flash_call_description"><![CDATA[Number of flashes when notified (sms & app)]]></string>
+    <string name="app">App</string>
+    <string name="flashing_type">Flashing type</string>
+    <string name="continuity_name">Continuity</string>
+    <string name="beat_name_flash_call">Beat</string>
+    <string name="test">TEST</string>
+    <string name="flash_blinks_when_a_call_comes_in_flahscall">Flash blinks when a call comes in.</string>
+    <string name="Continuity_flash_call">Continuity</string>
+    <string name="beat_type_flash_call">Beat</string>
+    <string name="call_phone_guide_permission_step_2">Turn On Call Phone</string>
     <string name="my_studio_dialog_btn_no">NO</string>
     <string name="my_studio_dialog_rename_cancel">CANCEL</string>
     <string name="my_studio_dialog_delete_cancel">CANCEL</string>

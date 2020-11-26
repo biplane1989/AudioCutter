@@ -8,6 +8,7 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.util.Utils
 import kotlinx.android.synthetic.main.my_studio_dialog_rename.*
 
 class RenameDialog : BaseDialog() {
@@ -58,15 +59,21 @@ class RenameDialog : BaseDialog() {
         tvRename = view.findViewById(R.id.tv_rename_dialog)
         edtNewName.setText(newName)
         tvCancel.setOnClickListener {
+            Utils.hideKeyboard(requireContext(), edtNewName)
             dismiss()
         }
         tvRename.setOnClickListener {
             if (checkValid(edt_new_name.text.toString())) {
+                Utils.hideKeyboard(requireContext(), edtNewName)
                 dialogListener.onRenameClick(edt_new_name.text.toString(), requireArguments().getInt(BUNDLE_TYPE_KEY), requireArguments().getString(BUNDLE_PATH_KEY, ""))
                 dismiss()
             }
         }
         edtNewName.setSelection(newName.length)
+        edtNewName.post {
+            Utils.showKeyboard(requireContext(), edtNewName)
+        }
+
 
     }
 

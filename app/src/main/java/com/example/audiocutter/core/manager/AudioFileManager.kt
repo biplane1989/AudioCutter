@@ -23,5 +23,5 @@ interface AudioFileManager {
     fun getFolderPath(typeFile: Folder): String
     fun renameToFileAudio(newName: String, audioFile: AudioFile, typeFile: Folder): Boolean
     fun checkFileNameDuplicate(name: String, typeFile: Folder): Boolean
-    fun hasUri(uri: String): Boolean
+    fun hasAudioFileWithUri(uri: String): Boolean
 }

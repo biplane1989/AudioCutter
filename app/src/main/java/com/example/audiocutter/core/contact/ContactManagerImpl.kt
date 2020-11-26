@@ -6,10 +6,8 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Handler
 import android.provider.ContactsContract
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.ContactManager
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.functions.contacts.objects.GetContactResult
@@ -72,7 +70,7 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
             return cacheUriMap.get(uri)!!
         }
 
-        if (ManagerFactory.getAudioFileManager().hasUri(uri)) {
+        if (ManagerFactory.getAudioFileManager().hasAudioFileWithUri(uri)) {
             cacheUriMap.put(uri, true)
             return true
         }

@@ -39,5 +39,16 @@ class AudioFile(
         modifiedStr = "$hours:$minutes , $day/$month/$year"
 
     }
+
+    override fun equals(other: Any?): Boolean {
+        if(other is AudioFile){
+            return getFilePath() == other.getFilePath() && size == other.size && bitRate == other.bitRate && uri == other.uri && modified == other.modified && mimeType == other.mimeType
+        }
+        return super.equals(other)
+    }
+
+    override fun hashCode(): Int {
+        return getFilePath().hashCode()
+    }
 }
 

@@ -514,11 +514,12 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         return null
     }
 
-    fun renameAudio(newName: String, typeFolder: Folder, filePath: String) {
+    fun renameAudio(newName: String, typeFolder: Folder, filePath: String): Boolean {
         val audioFile = ManagerFactory.getAudioFileManager().findAudioFile(filePath)
         audioFile?.let {
-            ManagerFactory.getAudioFileManager().renameToFileAudio(newName, it, typeFolder)
+            return ManagerFactory.getAudioFileManager().renameToFileAudio(newName, it, typeFolder)
         }
+        return false
     }
 
     fun getAction(): LiveData<ActionData> {

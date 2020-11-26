@@ -4,8 +4,10 @@ import android.content.Context
 import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
 import com.example.audiocutter.core.audioplayer.AudioPlayerImpl
 import com.example.audiocutter.core.contact.ContactManagerImpl
+import com.example.audiocutter.core.flashcall.FlashCallSettingImpl
 import com.example.audiocutter.core.result.AudioEditorManagerlmpl
 import com.example.audiocutter.core.rington.RingtonManagerImpl
+import com.example.audiocutter.database.DatabaseHelper
 import com.example.core.core.AudioCutter
 import com.example.core.core.AudioCutterImpl
 
@@ -14,19 +16,34 @@ object ManagerFactory {
     private val mAudioCutter: AudioCutter = AudioCutterImpl()
     private val mRingtons = RingtonManagerImpl
     private val defaultAudioPlayer = AudioPlayerImpl()
+    private lateinit var flashCallSetting: FlashCallSetting
+    private lateinit var appContext: Context
+
 //    private val audioPlayer = AudioPlayerImpl()
 
 
     fun init(appContext: Context) {
+        this.appContext = appContext.applicationContext
+        DatabaseHelper.create(this.appContext)
         defaultAudioPlayer.init(appContext)
 //        audioPlayer.init(appContext)
         AudioFileManagerImpl.init(appContext)
         RingtonManagerImpl.init(appContext)
 //        AudioPlayerImpl().init(appContext)
         AudioEditorManagerlmpl.init(appContext)
-
         //FakeAudioFileManager.init(appContext)
+
         mAudioFileManager.init(appContext)
+        flashCallSetting = FlashCallSettingImpl
+        flashCallSetting.setup(appContext)
+    }
+
+    fun getAppContext(): Context {
+        return this.appContext
+    }
+
+    fun getFlashCallSetting(): FlashCallSetting {
+        return flashCallSetting
     }
 
     fun getRingtonManager(): RingtonManagerImpl {
@@ -63,8 +80,6 @@ object ManagerFactory {
     fun getAudioEditorManager(): AudioEditorManager {
         return AudioEditorManagerlmpl
     }
-
-
 
 
 }

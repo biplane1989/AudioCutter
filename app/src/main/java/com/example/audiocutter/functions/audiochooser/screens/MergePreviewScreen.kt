@@ -25,8 +25,10 @@ import com.example.audiocutter.functions.audiochooser.dialogs.MergeDialog
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.ui.audiochooser.merge.MyItemTouchHelper
 import com.example.audiocutter.ui.audiochooser.merge.WrapContentLinearLayoutManager
+import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioFormat
 import com.example.core.core.AudioMergingConfig
+import java.io.File
 
 
 class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseListener,
@@ -48,6 +50,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     private val playerInfoObserver = Observer<PlayerInfo> {
         audioMerAdapter.submitList(audioMerModel.updateMediaInfo(it))
     }
+
     override fun onPause() {
         super.onPause()
         audioMerModel.pause()
@@ -67,7 +70,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
         for (item in listAudioPath) {
             listPath.add(item)
-            val audioFile =  ManagerFactory.getAudioFileManager().findAudioFile(item)
+            val audioFile = ManagerFactory.getAudioFileManager().findAudioFile(item)
             audioFile?.let {
                 listPath.add(item)
                 newListAudio.add(
@@ -180,7 +183,11 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 //            mergeDialog.sendData(audioMerModel.getListAudio().size)
 //            mergeDialog.show()
 
-            val dialog = MergeDialog.newInstance(this, audioMerModel.getListAudio().size)
+            val dialog = MergeDialog.newInstance(
+                this, audioMerModel.getListAudio().size, Utils.getBaseName(
+                    File(listPath[0])
+                )
+            )
             dialog.show(childFragmentManager, MergeDialog.TAG)
 
             showKeybroad()

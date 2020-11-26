@@ -18,7 +18,9 @@
     <style name="color_line_edt">
         <item name="colorAccent">@color/colorYelowDark</item>
     </style>
-
+    <style name="MyStudioTabText" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">18dp</item>
+    </style>
 
     <declare-styleable name="MaterialSpinner" tools:ignore="ResourceName">
         <attr name="ms_arrow_tint" format="color" />
