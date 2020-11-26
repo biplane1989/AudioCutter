@@ -14,13 +14,7 @@ data class FlashMode(
     var silentEnable: Boolean = true
 )
 
-data class FlashTimer(
-    val enable: Boolean = false,
-    val startHour: Int = -1,
-    val startMinute: Int = -1,
-    val endHour: Int = -1,
-    val endMinute: Int = -1
-) {
+data class FlashTimer(var enable: Boolean = false, var startHour: Int = -1, var startMinute: Int = -1, var endHour: Int = -1, var endMinute: Int = -1) {
     fun isNowInRange(): Boolean {
         val now = Calendar.getInstance()
         now.time = Date(System.currentTimeMillis())
@@ -38,16 +32,7 @@ enum class FlashType {
 
 data class FlashCallConfig(
 
-    var enable: Boolean = false,
-    val incomingCallEnable: Boolean = true,
-    val notificationEnable: Boolean = false,
-    var notFiredWhenInUsed: Boolean = true,
-    var lightningSpeed: Long = LIGHTING_SPEED_DEFAULT,
-    var numberOfLightning: Int = NUMBER_OF_FLASHES_DEFAULT,
-    val flashMode: FlashMode = FlashMode(),
-    val flashTimer: FlashTimer = FlashTimer(),
-    val flashType: FlashType = FlashType.BEAT
-) {
+    var enable: Boolean = false, var incomingCallEnable: Boolean = true, var notificationEnable: Boolean = false, var notFiredWhenInUsed: Boolean = true, var lightningSpeed: Long = LIGHTING_SPEED_DEFAULT, var numberOfLightning: Int = NUMBER_OF_FLASHES_DEFAULT, val flashMode: FlashMode = FlashMode(), val flashTimer: FlashTimer = FlashTimer(), var flashType: FlashType = FlashType.BEAT) {
     fun isLightingSpeedDefault(): Boolean {
         return lightningSpeed == LIGHTING_SPEED_DEFAULT
     }
@@ -57,8 +42,8 @@ data class FlashCallConfig(
     }
 }
 
-class AppFlashItem(val name: String, val pkgName: String, val icon: Bitmap?, val selected: Boolean)
-data class ListAppFlashItemsResult(val isLoading: Boolean, val data: List<AppFlashItem>)
+data class AppFlashItem(val name: String, val pkgName: String, val icon: Bitmap?, var selected: Boolean)
+data class ListAppFlashItemsResult(val isLoading: Boolean, val data: List<AppFlashItem>?)
 interface FlashCallSetting {
     fun setup(appContext: Context)
     fun getListNotificationApps(): LiveData<ListAppFlashItemsResult>

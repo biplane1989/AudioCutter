@@ -13,7 +13,6 @@ import android.os.Build
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.TypedValue
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.core.content.res.ResourcesCompat
@@ -29,10 +28,7 @@ import java.io.File
 import java.io.InputStream
 import java.text.Normalizer
 import java.text.SimpleDateFormat
-import java.util.*
 import java.util.regex.Pattern
-import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 
 class Utils {
     companion object {
@@ -203,14 +199,12 @@ class Utils {
             return null
         }
 
-        fun convertValue(
-            min1: Double,
-            max1: Double,
-            min2: Double,
-            max2: Double,
-            value: Double
-        ): Double {
+        fun convertValue(min1: Double, max1: Double, min2: Double, max2: Double, value: Double): Double {
             return ((value - min1) * ((max2 - min2) / (max1 - min1)) + min2)
+        }
+
+        fun convertValue(min1: Int, max1: Int, min2: Int, max2: Int, value: Int): Int {
+            return ((value - min1) * ((max2 - min2) * 1f / (max1 - min1)) + min2).toInt()
         }
 
 

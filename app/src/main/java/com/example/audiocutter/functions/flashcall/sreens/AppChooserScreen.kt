@@ -10,28 +10,30 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
+import com.example.audiocutter.core.manager.AppFlashItem
+import com.example.audiocutter.core.manager.ListAppFlashItemsResult
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.AppChooserScreenBinding
-import com.example.audiocutter.functions.flashcall.`object`.AppChooserView
 import com.example.audiocutter.functions.flashcall.adapters.AppFlashAdapter
 
-class AppChooserScreen : BaseFragment(), View.OnClickListener {
+class AppChooserScreen : BaseFragment(), View.OnClickListener, AppFlashAdapter.AppFlashListener {
     private lateinit var binding: AppChooserScreenBinding
     private lateinit var appFlashAdapter: AppFlashAdapter
     private lateinit var appFlashModel: AppFlashModel
-    var listAppObserver = Observer<List<AppChooserView>?> {
-        if (it!!.isNotEmpty()) {
-            appFlashAdapter.submitList(it)
+    private var listAppObserver = Observer<ListAppFlashItemsResult> {
+        if (it.isLoading) {
+            showProgress(true)
+        } else {
+            showProgress(false)
+        }
+
+        if (it.data != null) {
+            appFlashAdapter.submitList(it.data)
         }
     }
 
-    private lateinit var mCallBack: SetTimeCallBack
 
-    fun setOnCallBack(event: SetTimeCallBack) {
-        mCallBack = event
-    }
-
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.app_chooser_screen, container, false)
         initList()
         initViews()
@@ -46,8 +48,9 @@ class AppChooserScreen : BaseFragment(), View.OnClickListener {
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         appFlashAdapter = AppFlashAdapter(requireContext())
+        appFlashAdapter.setOnCallBack(this)
         appFlashModel = ViewModelProvider(this).get(AppFlashModel::class.java)
-        appFlashModel.getListData(requireContext()).observe(this, listAppObserver)
+        appFlashModel.getListData().observe(this, listAppObserver)
     }
 
     private fun initList() {
@@ -59,14 +62,29 @@ class AppChooserScreen : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View) {
         when (v) {
             binding.ivAppScreenBack -> {
-                mCallBack.backs()
+                requireActivity().onBackPressed()
             }
         }
     }
 
-    interface SetTimeCallBack {
-        /**test , when handle then delete**/
-        fun backs()
+    private fun showProgress(rs: Boolean) {
+        if (rs) {
+            binding.pgrAppchoose.visibility = View.VISIBLE
+        } else {
+            binding.pgrAppchoose.visibility = View.INVISIBLE
+        }
+    }
+
+    override fun enableFlashForApp(appItem: AppFlashItem) {
+        runOnUI {
+            ManagerFactory.getFlashCallSetting().enableNotificationFlash(appItem)
+        }
+    }
+
+    override fun disableFlashForApp(appItem: AppFlashItem) {
+        runOnUI {
+            ManagerFactory.getFlashCallSetting().disableNotificationFlash(appItem)
+        }
     }
 
 }
