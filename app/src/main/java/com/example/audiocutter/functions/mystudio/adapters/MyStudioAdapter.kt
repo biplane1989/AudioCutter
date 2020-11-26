@@ -368,6 +368,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
                 }
                 R.id.iv_pause_play_music -> {
+
                     when (playerState) {
                         PlayerState.IDLE -> {
                             lifecycleCoroutineScope.launch {
