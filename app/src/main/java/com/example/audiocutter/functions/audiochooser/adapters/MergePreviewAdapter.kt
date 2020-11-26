@@ -154,7 +154,11 @@ class MergePreviewAdapter(val mContext: Context) :
         }
 
         private fun deleteAudio() {
-            mCallback.deleteAudio( getItem(adapterPosition))
+            try {
+                mCallback.deleteAudio( getItem(adapterPosition))
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
         }
 
         private fun controllerAudio() {

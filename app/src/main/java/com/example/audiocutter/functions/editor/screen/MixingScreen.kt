@@ -19,8 +19,8 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.MixingScreenBinding
-import com.example.audiocutter.functions.editor.dialogs.MixerDialog
 import com.example.audiocutter.functions.editor.dialogs.FileNameDialogListener
+import com.example.audiocutter.functions.editor.dialogs.MixerDialog
 import com.example.audiocutter.functions.mystudio.dialog.CancelDialog
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.ui.audiochooser.mix.ChangeRangeView
@@ -28,7 +28,6 @@ import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioFormat
 import com.example.core.core.AudioMixConfig
 import com.example.core.core.MixSelector
-import java.io.File
 
 class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPlayLineChange,
     FileNameDialogListener {
@@ -81,18 +80,15 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         return Observer {
             when (it.playerState) {
                 PlayerState.IDLE -> {
-//                    binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
                     playerState = PlayerState.IDLE
                 }
                 PlayerState.PREPARING -> {
                 }
                 PlayerState.PLAYING -> {
                     binding.crChangeViewMixing.setPosition(it.posision)
-//                    binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
                     playerState = PlayerState.PLAYING
                 }
                 PlayerState.PAUSE -> {
-//                    binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
                     playerState = PlayerState.PAUSE
                 }
             }
@@ -238,6 +234,11 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     }
 
     override fun onLineChange(audioFile1: AudioFile, audioFile2: AudioFile, pos: Int) {
+        Log.d(TAG, "onLineChange: pause start $playerState")
+        if (playerState == PlayerState.PAUSE) {
+            Log.d(TAG, "onLineChange: pause end $playerState")
+            binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
+        }
         runOnUI {
             mPlayer1.play(audioFile1, pos)
             mPlayer2.play(audioFile2, pos)

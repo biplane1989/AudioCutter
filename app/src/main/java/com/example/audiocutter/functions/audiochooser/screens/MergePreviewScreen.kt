@@ -209,7 +209,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     }
 
     override fun mergeAudioFile(filename: String) {
-        Log.d(TAG, "mergeAudioFile: $filename size list ${audioMerModel.getListAudio().size}")
         val mergingConfig = AudioMergingConfig(
             AudioFormat.MP3,
             filename,
