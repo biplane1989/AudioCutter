@@ -2,15 +2,12 @@ package com.example.audiocutter.ui.audiochooser.mix
 
 import android.content.Context
 import android.graphics.*
-import android.media.MediaMetadataRetriever
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import com.example.audiocutter.R
-import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.ext.convertToAudioDuration
-import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
 
@@ -106,6 +103,7 @@ class ChangeRangeView @JvmOverloads constructor(
         mHeight = h
         mWidth = w - 32
         maxDistance = mWidth.toDouble()
+        Log.d(TAG, "nmcode: $mWidth")
     }
 
 
@@ -135,7 +133,6 @@ class ChangeRangeView @JvmOverloads constructor(
             currentLength1.toFloat() + RADIUS,
             mHeight / 2 - rs
         )
-        Log.d(TAG, "initRect:heightext ${mHeightText.toFloat()}")
 
         rowRect2 = RectF(
             RADIUS,
@@ -143,6 +140,7 @@ class ChangeRangeView @JvmOverloads constructor(
             currentLength2.toFloat() + RADIUS,
             (mHeight / 2 - rs) * 2 - Utils.convertDp2Px(10, context)
         )
+
         canvas.drawRoundRect(rowRect1, 15f, 15f, mPaint2)
         canvas.drawRoundRect(rowRect2, 15f, 15f, mPaint2)
 
@@ -593,16 +591,24 @@ class ChangeRangeView @JvmOverloads constructor(
         if (isCompare) {
             currentLength1 = Utils.convertValue(
                 0.0,
-                durAudio1!!.toDouble(),
+                durAudio1.toDouble(),
                 0.0,
                 mWidth.toDouble(),
                 durAudio1.toDouble()
             )
+
+
+            Log.d(TAG, "nmcode:  duration ${durAudio1.toDouble()}  -- dur2 ${durAudio2.toDouble()}  width  ${mWidth.toDouble()}")
+
+
             currentLength2 = (durAudio2.toDouble() / durAudio1.toDouble()) * currentLength1
+
+//            Log.d(TAG, "setLengthAudio: currentLenght $currentLength1  -- dur2 $currentLength2")
+
         } else {
             currentLength2 = Utils.convertValue(
                 0.0,
-                durAudio2!!.toDouble(),
+                durAudio2.toDouble(),
                 0.0,
                 mWidth.toDouble(),
                 durAudio2.toDouble()
@@ -626,6 +632,8 @@ class ChangeRangeView @JvmOverloads constructor(
         if (currentLength2 + RADIUS > mWidth) {
             currentLength2 = mWidth - RADIUS.toDouble()
         }
+
+
         invalidate()
     }
 
