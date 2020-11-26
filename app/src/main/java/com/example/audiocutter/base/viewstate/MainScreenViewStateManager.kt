@@ -50,6 +50,13 @@ interface MainScreenViewStateManager {
         }
     }
 
+    fun mainScreenOnFlashCallItemClicked(baseFragment: BaseFragment) {
+        if (getViewStateMutable().getLastState() == ViewStateScreen.HOME_SCREEN) {
+            getViewStateMutable().pushViewState(ViewStateScreen.FLASH_CALL_SCREEN)
+            baseFragment.findNavController().navigate(R.id.main_go_to_flash_call_screen)
+        }
+    }
+
     fun mainScreenOnItemClickSetting(baseFragment: BaseFragment) {
         if (getViewStateMutable().getLastState() == ViewStateScreen.HOME_SCREEN) {
             getViewStateMutable().pushViewState(ViewStateScreen.SETTING_SCREEN)

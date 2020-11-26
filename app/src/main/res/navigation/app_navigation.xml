@@ -54,6 +54,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/main_go_to_flash_call_screen"
+            app:destination="@id/flash_call_screen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/list_contact_screen"
@@ -265,7 +272,8 @@
         tools:layout="@layout/setting_screen" />
     <fragment
         android:id="@+id/flash_call_screen"
-        android:name="com.example.audiocutter.functions.flashcall.sreens.FlashCallSceen"
+        android:name="com.example.audiocutter.functions.flashcall.sreens.FlashCallScreen"
         tools:layout="@layout/setting_screen" />
+
 
 </navigation>

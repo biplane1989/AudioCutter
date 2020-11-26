@@ -17,7 +17,7 @@ import com.example.audiocutter.functions.flashcall.dialogs.FlashTypeDialog
 import com.example.audiocutter.functions.flashcall.dialogs.SettimeDialog
 import com.example.audiocutter.functions.flashcall.dialogs.TypeFlash
 
-class FlashCallSceen : BaseFragment(), CompoundButton.OnCheckedChangeListener, View.OnClickListener, SettimeDialog.SettimeListener, SeekBar.OnSeekBarChangeListener, FlashTypeDialog.FlashTypeListener {
+class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener, View.OnClickListener, SettimeDialog.SettimeListener, SeekBar.OnSeekBarChangeListener, FlashTypeDialog.FlashTypeListener {
     private lateinit var flashTypeDialog: FlashTypeDialog
     private val TAG: String = "lll"
     private lateinit var dialogSettime: SettimeDialog

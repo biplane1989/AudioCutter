@@ -39,10 +39,6 @@ class Utils {
         val KEY_SEND_PATH = "key_send_path"
         val FIVE_SECOND = 5000
         val TIME_CHANGE = 100
-        private const val APP_FOLDER_NAME = "AudioCutter"
-        private const val CUTTING_FOLDER_NAME = "cutter"
-        private const val MERGING_FOLDER_NAME = "merger"
-        private const val MIXING_FOLDER_NAME = "mixer"
 
         @JvmStatic
         fun dpToPx(context: Context, dp: Float): Float {

@@ -187,4 +187,5 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="flash_blinks_when_a_call_comes_in_flahscall">Flash blinks when a call comes in.</string>
     <string name="Continuity_flash_call">Continuity</string>
     <string name="beat_type_flash_call">Beat</string>
+    <string name="call_phone_guide_permission_step_2">Turn On Call Phone</string>
 </resources>
