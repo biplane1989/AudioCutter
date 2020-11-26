@@ -10,7 +10,7 @@ import com.example.audiocutter.base.viewstate.*
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.screens.MyStudioScreen
 
-interface ViewStateManager : MainScreenViewStateManager, ContactScreenViewStateManager, ChooserScreenViewStateManager, AudioEditorViewStateManager, MyStudioScreenViewStateManager, ResultScreenViewStatusManager {
+interface ViewStateManager : MainScreenViewStateManager, ContactScreenViewStateManager, ChooserScreenViewStateManager, AudioEditorViewStateManager, MyStudioScreenViewStateManager, ResultScreenViewStatusManager, IntrodutionViewStatusManager {
     fun goToMyStudioScreen(navController: NavController, typeAudio: Int) {
         if (getViewStateMutable().getLastState() != ViewStateScreen.MY_STUDIO_SCREEN) {
             getViewStateMutable().pushViewState(ViewStateScreen.MY_STUDIO_SCREEN)

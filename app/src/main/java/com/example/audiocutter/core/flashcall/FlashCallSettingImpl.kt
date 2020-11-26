@@ -226,10 +226,10 @@ object FlashCallSettingImpl : FlashCallSetting {
     }
 
     override fun changeFlashCallConfig(flashCallConfig: FlashCallConfig) {
-        if (this.flashCallConfig.value != flashCallConfig) {
+
             saveFlashCallConfig(flashCallConfig)
             this.flashCallConfig.postValue(restoreFlashCallConfig())
-        }
+
     }
 
     fun getFlashCallConfigData(): FlashCallConfig {
@@ -240,7 +240,7 @@ object FlashCallSettingImpl : FlashCallSetting {
         val listFlashItemResult = listAppFlashItems.value
         listFlashItemResult?.let {
             if (!it.isLoading) {
-                it.data.forEach {
+                it.data?.forEach {
                     if (it.pkgName == pkgName) {
                         return it.selected
                     }

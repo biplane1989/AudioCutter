@@ -12,7 +12,6 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.NUMBER_OF_FLASHES_DEFAULT
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import java.lang.Exception
 
 
 private interface FlashSwitcher {
@@ -93,7 +92,7 @@ class FlashPlayer {
     private var flashSpeed: Long = LIGHTING_SPEED_DEFAULT
     private var flashType = FlashType.BEAT
     private var isTestMode = false
-
+    private var timeCounter = 0
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             flashSwitcher = AndroidMFlashSwitcher()
@@ -109,8 +108,8 @@ class FlashPlayer {
                 val isBlinkingFlash = flashPlayerChannel.receive()
                 blinkingFlashJob?.cancelAndJoin()
                 if (isBlinkingFlash) {
-                    var timeCounter = 0
-                    while (timeCounter < flashTime) {
+                    timeCounter = 0
+                    while ((timeCounter < flashTime) || isTestMode) {
                         if (flashType == FlashType.CONTINUITY) {
                             flashSwitcher.turnOn()
                             delay(flashSpeed / 2)
@@ -118,6 +117,9 @@ class FlashPlayer {
                             delay(flashSpeed / 2)
                         } else {
                             for (i in 0..2) {
+                                if (!isActive) {
+                                    break
+                                }
                                 flashSwitcher.turnOn()
                                 delay(50)
                                 flashSwitcher.turnOff()
@@ -125,9 +127,9 @@ class FlashPlayer {
                             }
                             delay(flashSpeed)
                         }
-                        if (!isTestMode) {
-                            timeCounter += 1
-                        }
+
+                        timeCounter += 1
+
 
                     }
                 } else {
@@ -153,6 +155,7 @@ class FlashPlayer {
     }
 
     suspend fun stopBlink() {
+        isTestMode = false
         flashPlayerChannel.send(false)
     }
 

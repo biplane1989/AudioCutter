@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <RelativeLayout
         paddingTopSystemWindowInsets="@{true}"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -50,6 +50,7 @@
 
 
         <androidx.recyclerview.widget.RecyclerView
+            android:layout_below="@+id/rlt_actionbar"
             android:id="@+id/rv_app_chooser_flashcall"
             android:layout_width="match_parent"
             android:overScrollMode="never"
@@ -58,5 +59,12 @@
             android:visibility="visible"
             tools:listitem="@layout/item_app_chooser_flashcall" />
 
-    </LinearLayout>
+        <ProgressBar
+            android:id="@+id/pgr_appchoose"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerInParent="true"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
 </layout>
