@@ -670,7 +670,7 @@
                         android:fontFamily="@font/sanfranciscodisplay_light"
                         android:gravity="center_vertical"
                         android:paddingRight="@dimen/d_16"
-                        android:text="23:00"
+                        android:text="--:--"
                         android:textSize="@dimen/d_16" />
 
                 </TableRow>
@@ -708,7 +708,7 @@
                         android:fontFamily="@font/sanfranciscodisplay_light"
                         android:gravity="center_vertical"
                         android:paddingRight="@dimen/d_16"
-                        android:text="9:00"
+                        android:text="--:--"
                         android:textSize="@dimen/d_16" />
 
                 </TableRow>
