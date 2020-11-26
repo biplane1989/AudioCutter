@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        paddingTopSystemWindowInsets="@{true}"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/rlt_actionbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.1dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/colorgrayAlpha" />
+
+
+            <ImageView
+                android:id="@+id/iv_app_screen_back"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_audiocutter_back" />
+
+
+            <TextView
+                android:id="@+id/tv_cutter_screen"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/iv_app_screen_back"
+                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:gravity="center"
+                android:paddingLeft="@dimen/d_16"
+                android:text="@string/app"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/d_18" />
+
+
+        </RelativeLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_app_chooser_flashcall"
+            android:layout_width="match_parent"
+            android:overScrollMode="never"
+            android:layout_height="match_parent"
+            android:layout_marginTop="0dp"
+            android:visibility="visible"
+            tools:listitem="@layout/item_app_chooser_flashcall" />
+
+    </LinearLayout>
+</layout>

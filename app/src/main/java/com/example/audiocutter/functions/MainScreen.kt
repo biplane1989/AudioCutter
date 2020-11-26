@@ -28,7 +28,11 @@ class MainScreen : BaseFragment(), View.OnClickListener {
     private var pendingRequestingPermission = 0
     private val TAG = "giangtd"
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.main_screen, container, false)
         PermissionManager.getAppPermission()
             .observe(this.viewLifecycleOwner, Observer<AppPermission> {
@@ -63,6 +67,11 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                         contactPermissionRequest.requestPermission()
                     }
                 }
+                if (callPhonePermissionRequest.isPermissionGranted() && (pendingRequestingPermission and FLASH_CALL_REQUESTING_PERMISSION) != 0) {
+                    resetRequestingPermission()
+                    onFlashCallItemClicked()
+                }
+
                 if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
                     onContactsItemClicked()
@@ -114,7 +123,10 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                 pendingRequestingPermission = MP3_CUTTER_REQUESTING_PERMISSION
                 storagePermissionRequest.requestPermission()
             }
-                .show(requireActivity().supportFragmentManager, StoragePermissionDialog::class.java.name)
+                .show(
+                    requireActivity().supportFragmentManager,
+                    StoragePermissionDialog::class.java.name
+                )
         }
     }
 
@@ -128,7 +140,10 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                 pendingRequestingPermission = AUDIO_MERGER_REQUESTING_PERMISSION
                 storagePermissionRequest.requestPermission()
             }
-                .show(requireActivity().supportFragmentManager, StoragePermissionDialog::class.java.name)
+                .show(
+                    requireActivity().supportFragmentManager,
+                    StoragePermissionDialog::class.java.name
+                )
         }
     }
 
@@ -142,7 +157,10 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                 pendingRequestingPermission = AUDIO_MIXER_REQUESTING_PERMISSION
                 storagePermissionRequest.requestPermission()
             }
-                .show(requireActivity().supportFragmentManager, StoragePermissionDialog::class.java.name)
+                .show(
+                    requireActivity().supportFragmentManager,
+                    StoragePermissionDialog::class.java.name
+                )
         }
     }
 
@@ -155,7 +173,10 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                 pendingRequestingPermission = CONTACTS_ITEM_REQUESTING_PERMISSION
                 contactPermissionRequest.requestPermission()
             }
-                .show(requireActivity().supportFragmentManager, ContactPermissionDialog::class.java.name)
+                .show(
+                    requireActivity().supportFragmentManager,
+                    ContactPermissionDialog::class.java.name
+                )
         }
     }
 
@@ -173,12 +194,21 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                     writeSettingPermissionRequest.requestPermission()
                 }
             }
-                .show(requireActivity().supportFragmentManager, StoragePermissionDialog::class.java.name)
+                .show(
+                    requireActivity().supportFragmentManager,
+                    StoragePermissionDialog::class.java.name
+                )
 
         }
     }
 
     private fun onFlashCallItemClicked() {
+        if (callPhonePermissionRequest.isPermissionGranted()) {
+            viewStateManager.mainScreenOnFlashCallItemClicked(this)
+        } else {
+            pendingRequestingPermission = FLASH_CALL_REQUESTING_PERMISSION
+            callPhonePermissionRequest.requestPermission()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -222,9 +252,20 @@ class MainScreen : BaseFragment(), View.OnClickListener {
         }
     }
 
+    private val callPhonePermissionRequest = object : FlashCallPermissionRequest {
+        override fun getPermissionActivity(): BaseActivity? {
+            return getBaseActivity()
+        }
+
+        override fun getLifeCycle(): Lifecycle {
+            return lifecycle
+        }
+    }
+
     init {
         storagePermissionRequest.init()
         contactPermissionRequest.init()
         writeSettingPermissionRequest.init()
+        callPhonePermissionRequest.init()
     }
 }

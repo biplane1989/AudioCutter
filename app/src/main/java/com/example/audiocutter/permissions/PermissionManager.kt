@@ -1,11 +1,7 @@
 package com.example.audiocutter.permissions
 
 import android.Manifest
-import android.app.role.RoleManager
 import android.content.Context
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.util.PreferencesHelper
@@ -23,7 +19,7 @@ class AppPermission {
 
 
     init {
-        listPermissionNames.addAll(listOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.WRITE_SETTINGS))
+        listPermissionNames.addAll(listOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.WRITE_SETTINGS, Manifest.permission.READ_PHONE_STATE, Manifest.permission.PROCESS_OUTGOING_CALLS))
 
         listPermissionNames.forEach({ permissionName ->
             listPermissionInfos.add(PermissionInfo(permissionName, false))
@@ -85,6 +81,12 @@ class AppPermission {
         return getPermissionInfo(Manifest.permission.WRITE_SETTINGS)?.granted ?: false
     }
 
+    fun hasProcessOutGoingCallsPermission():Boolean{
+        return getPermissionInfo(Manifest.permission.PROCESS_OUTGOING_CALLS)?.granted ?: false
+    }
+    fun hasReadPhoneStatePermission():Boolean{
+        return getPermissionInfo(Manifest.permission.READ_PHONE_STATE)?.granted ?: false
+    }
     fun isPermissionChanged(context: Context): Boolean {
         for (permissionInfo in listPermissionInfos) {
             when (permissionInfo.permissionName) {
@@ -169,6 +171,10 @@ object PermissionManager {
     fun hasStoragePermission(): Boolean {
         return appPermission.hasStoragePermission()
     }
+    fun hasFlashCallPermission(): Boolean {
+        return appPermission.hasProcessOutGoingCallsPermission() && appPermission.hasReadPhoneStatePermission()
+    }
+
 
 
 }

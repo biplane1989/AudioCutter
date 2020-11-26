@@ -3,15 +3,18 @@ package com.example.audiocutter.activities
 import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateScreen
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
-import com.example.audiocutter.base.BaseFragment
+import com.example.audiocutter.core.manager.FlashCallConfig
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.ActivityMainBinding
 import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.functions.mystudio.screens.FragmentMeta
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : BaseActivity() {
     lateinit var binding: ActivityMainBinding

@@ -10,7 +10,7 @@
 <!--    android:background="?attr/selectableItemBackgroundBorderless"-->
 
     <ImageView
-        android:id="@+id/iv_icon_app"
+        android:id="@+id/iv_icon_app_flash"
         android:layout_width="?actionBarSize"
         android:layout_height="@dimen/d_56"
         android:scaleType="centerInside"

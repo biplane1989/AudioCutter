@@ -3,10 +3,8 @@ package com.example.audiocutter.functions.resultscreen.services
 import android.app.PendingIntent
 import android.content.Intent
 import android.os.Binder
-import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
@@ -16,7 +14,8 @@ import com.example.audiocutter.R
 import com.example.audiocutter.activities.MainActivity
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.functions.resultscreen.objects.*
+import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
+import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
