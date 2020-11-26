@@ -63,4 +63,11 @@ interface MainScreenViewStateManager {
             baseFragment.findNavController().navigate(R.id.main_go_to_setting_screen)
         }
     }
+
+    fun flashCallOnNotificationForAppsItemClicked(baseFragment: BaseFragment){
+        if (getViewStateMutable().getLastState() == ViewStateScreen.FLASH_CALL_SCREEN) {
+            getViewStateMutable().pushViewState(ViewStateScreen.APP_CHOOSER_SCREEN)
+            baseFragment.findNavController().navigate(R.id.my_studio_go_to_app_chooser_screen)
+        }
+    }
 }

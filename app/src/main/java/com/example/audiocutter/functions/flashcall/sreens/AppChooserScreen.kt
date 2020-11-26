@@ -62,7 +62,7 @@ class AppChooserScreen : BaseFragment(), View.OnClickListener, AppFlashAdapter.A
     override fun onClick(v: View) {
         when (v) {
             binding.ivAppScreenBack -> {
-                showToast("back Frg")
+                requireActivity().onBackPressed()
             }
         }
     }

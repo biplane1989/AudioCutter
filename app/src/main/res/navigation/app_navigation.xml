@@ -273,7 +273,18 @@
     <fragment
         android:id="@+id/flash_call_screen"
         android:name="com.example.audiocutter.functions.flashcall.sreens.FlashCallScreen"
-        tools:layout="@layout/setting_screen" />
-
+        tools:layout="@layout/setting_screen">
+        <action
+            android:id="@+id/my_studio_go_to_app_chooser_screen"
+            app:destination="@id/app_chooser_screen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/app_chooser_screen"
+        android:name="com.example.audiocutter.functions.flashcall.sreens.AppChooserScreen"
+        tools:layout="@layout/app_chooser_screen" />
 
 </navigation>
