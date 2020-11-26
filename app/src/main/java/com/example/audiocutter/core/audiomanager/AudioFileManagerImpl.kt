@@ -178,7 +178,7 @@ object AudioFileManagerImpl : AudioFileManager {
                 }
             }
             if (isActive) {
-
+                Log.d("taihhhhhhhh", "listAllAudioData size ${listAllAudioData.size} oldListAudios size ${oldListAudios?.size}")
                 if (!listAllAudioData.isSame(oldListAudios)) {
                     isFirstTimeToScanning = false
                     listAllAudios.postValue(AudioFileScans(ArrayList(listAllAudioData), StateLoad.LOADDONE))
@@ -231,25 +231,25 @@ object AudioFileManagerImpl : AudioFileManager {
     }
 
     override fun deleteFile(listAudioFile: List<AudioFile>, typeFile: Folder): Boolean {
-        var rs = false
+
         val resolver = mContext.contentResolver
-        var rowDeleted: Int
         try {
             listAudioFile.forEach { audioFile ->
                 if (audioFile.file.exists() && audioFile.uri != null) {
-                    Log.d(TAG, "deleteFile: ${audioFile.uri}")
-                    rowDeleted = resolver.delete(audioFile.uri!!, null, null)
-                    val result = audioFile.file.delete()
-                    if (rowDeleted != 0 && result) {
-                        rs = true
+                    if (audioFile.file.delete()) {
+                         resolver.delete(audioFile.uri!!, null, null)
+                    } else {
+                        notifyDiskChanged()
+                        return false
                     }
+
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            rs = false
         }
-        return rs
+        notifyDiskChanged()
+        return true
     }
 
     override fun buildAudioFile(filePath: String, listener: BuildAudioCompleted) {
@@ -267,17 +267,7 @@ object AudioFileManagerImpl : AudioFileManager {
                     val audioInfo = FileUtil.getAudioInfo(filePath)
                     if (audioInfo != null) {
                         val audioFile = Utils.convertToAudioFile(audioInfo, System.currentTimeMillis(), uri)
-                        withLock {
-                            val oldAudioFile = findAudioFile(filePath)
-                            oldAudioFile?.let {
-                                withLock {
-                                    listAllAudioData.remove(it)
-                                }
-                            }
-                            listAllAudioData.add(audioFile)
-                            filePathMapAudioFile.put(audioFile.getFilePath(), audioFile)
-                            listAllAudios.postValue(AudioFileScans(listAllAudioData, StateLoad.LOADDONE))
-                        }
+                        notifyDiskChanged()
                         listener(audioFile)
                     } else {
                         listener(null)

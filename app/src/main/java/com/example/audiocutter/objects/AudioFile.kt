@@ -5,25 +5,11 @@ import android.net.Uri
 import java.io.File
 import java.util.*
 
-class AudioFile(
-    val file: File,
-    val fileName: String,
-    val size: Long,
-    val bitRate: Int = 128,
-    var duration: Long = 0,
-    var uri: Uri? = null,
-    val bitmap: Bitmap? = null,
-    val title: String? = "",
-    val alBum: String? = "",
-    val artist: String? = "",
-    val modified: Long = -1,
-    val genre: String? = "",
-    val mimeType: String? = "",
-    var modifiedStr: String=""
-){
-    fun getFilePath():String{
+class AudioFile(val file: File, val fileName: String, val size: Long, val bitRate: Int = 128, var duration: Long = 0, var uri: Uri? = null, val bitmap: Bitmap? = null, val title: String? = "", val alBum: String? = "", val artist: String? = "", val modified: Long = -1, val genre: String? = "", val mimeType: String? = "", var modifiedStr: String = "") {
+    fun getFilePath(): String {
         return file.absolutePath
     }
+
     init {
         if (modified == -1L) {
             modifiedStr = ""
@@ -41,8 +27,10 @@ class AudioFile(
     }
 
     override fun equals(other: Any?): Boolean {
-        if(other is AudioFile){
+        if (other is AudioFile) {
+
             return getFilePath() == other.getFilePath() && size == other.size && bitRate == other.bitRate && uri == other.uri && modified == other.modified && mimeType == other.mimeType
+
         }
         return super.equals(other)
     }

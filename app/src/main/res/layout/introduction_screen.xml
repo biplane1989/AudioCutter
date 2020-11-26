@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/sanfranciscodisplay_bold"
         android:gravity="center"
-        android:text="MP3 Cutter &amp; \nRingtone Maker"
+        android:text="@string/introduction_screen_title"
         android:textColor="#403E65"
         android:textSize="26dp"
         app:layout_constraintBottom_toBottomOf="parent"

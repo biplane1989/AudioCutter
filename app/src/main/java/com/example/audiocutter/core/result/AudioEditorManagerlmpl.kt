@@ -2,22 +2,19 @@ package com.example.audiocutter.core.result
 
 import android.app.ActivityManager
 import android.content.*
-import android.media.MediaScannerConnection
-import android.net.Uri
-import android.os.Build
 import android.os.IBinder
-import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.AudioEditorManager
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.core.rington.RingtonManagerImpl
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.resultscreen.objects.*
 import com.example.audiocutter.functions.resultscreen.services.ResultService
 import com.example.audiocutter.objects.AudioFile
+import com.example.audiocutter.util.Utils
 import com.example.core.core.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -176,6 +173,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                         latestConvertingItem = item
                     }
                 }
+                onConvertingItemDetached(item)
                 item.state = ConvertingState.SUCCESS
                 item.percent = 100
                 notifyConvertingItemChanged(item)
@@ -215,6 +213,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         val item = CuttingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile, cuttingConfig)
         synchronized(listConvertingItemData) {
             listConvertingItemData.add(item)
+            Utils.addGeneratedName(Folder.TYPE_CUTTER, File(cuttingConfig.pathFolder + File.separator + cuttingConfig.fileName))
             latestConvertingItem = item
         }
 
@@ -240,6 +239,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         val item = MixingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile1, audioFile2, mixingConfig)
         synchronized(listConvertingItemData) {
             listConvertingItemData.add(item)
+            Utils.addGeneratedName(Folder.TYPE_MIXER, File(mixingConfig.pathFolder + File.separator + mixingConfig.fileName))
             latestConvertingItem = item
         }
 
@@ -265,6 +265,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         val item = MergingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, listAudioFiles, mergingConfig)
         synchronized(listConvertingItemData) {
             listConvertingItemData.add(item)
+            Utils.addGeneratedName(Folder.TYPE_MERGER, File(mergingConfig.pathFolder + File.separator + mergingConfig.fileName))
             latestConvertingItem = item
         }
         val processingItem = getProcessingItem()
@@ -273,20 +274,33 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         }
         listConvertingItems.postValue(listConvertingItemData)
     }
-
+    private fun onConvertingItemDetached(convertingItem: ConvertingItem){
+        if (convertingItem is MixingConvertingItem){
+            Utils.removeGeneratedName(Folder.TYPE_MIXER, File( convertingItem.mixingConfig.pathFolder + File.separator +  convertingItem.mixingConfig.fileName))
+        }
+        if (convertingItem is CuttingConvertingItem){
+            Utils.removeGeneratedName(Folder.TYPE_CUTTER, File( convertingItem.cuttingConfig.pathFolder + File.separator +  convertingItem.cuttingConfig.fileName))
+        }
+        if (convertingItem is MergingConvertingItem){
+            Utils.removeGeneratedName(Folder.TYPE_MERGER, File( convertingItem.mergingConfig.pathFolder + File.separator +  convertingItem.mergingConfig.fileName))
+        }
+    }
     override fun cancel(int: Int) {              // cancel 1 tien trinh loading
         mainScope.launch {
             val iterator: MutableIterator<ConvertingItem> = listConvertingItemData.iterator()
             while (iterator.hasNext()) {
                 val value = iterator.next()
                 if (value.id == int) {
+                    onConvertingItemDetached(value)
                     when (value.state) {
                         ConvertingState.WAITING -> {
                             iterator.remove()
                         }
                         ConvertingState.PROGRESSING -> {
+
                             iterator.remove()
                             ManagerFactory.getAudioCutter().cancelTask()
+
                             mService?.cancelNotidication(int)
                         }
                         else -> {

@@ -35,27 +35,42 @@ class Utils {
         val KEY_SEND_PATH = "key_send_path"
         val FIVE_SECOND = 5000
         val TIME_CHANGE = 100
+        val generatedNameHashMap = HashMap<Folder, HashSet<String>>()
 
-        @JvmStatic
+
+        fun addGeneratedName(folder: Folder, file: File) {
+            if (!generatedNameHashMap.containsKey(folder)) {
+                generatedNameHashMap.put(folder, HashSet())
+            }
+            generatedNameHashMap.get(folder)!!.add(getBaseName(file))
+        }
+
+        fun removeGeneratedName(folder: Folder, file: File) {
+            if (generatedNameHashMap.containsKey(folder)) {
+                generatedNameHashMap.get(folder)!!.remove(getBaseName(file))
+            }
+        }
+
+        fun contains(folder: Folder, baseName: String): Boolean {
+            if (generatedNameHashMap.containsKey(folder)) {
+                return generatedNameHashMap.get(folder)!!.contains(baseName)
+            }
+            return false;
+        }
+
         fun dpToPx(context: Context, dp: Float): Float {
             return dp * context.resources.displayMetrics.density + 0.5f
         }
 
-        @JvmStatic
+
         fun pxToDp(context: Context, px: Int): Int {
             return (px / context.resources.displayMetrics.density).toInt()
         }
 
-        @JvmStatic
         fun spToPx(context: Context, sp: Float): Float {
-            return TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP,
-                sp,
-                context.resources.displayMetrics
-            )
+            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.resources.displayMetrics)
         }
 
-        @JvmStatic
         fun longDurationMsToStringMs(time: Long): String {
             val seconds = time / 1000
             val minutes = seconds / 60
@@ -64,7 +79,6 @@ class Utils {
             return minutes.toString() + ":" + (if (oddSeconds > 9) oddSeconds else "0$oddSeconds") + "." + oddMSeconds
         }
 
-        @JvmStatic
         fun longMsToString(ms: Long): String {
             val seconds = ms / 1000
             val minutes = seconds / 60
@@ -106,8 +120,7 @@ class Utils {
         fun getPathByUri(context: Context, uri: String): String? {
             var audioTitle = ""
             val proj = arrayOf(MediaStore.Audio.Media.DATA)
-            val audioCursor: Cursor? =
-                context.contentResolver.query(Uri.parse(uri), proj, null, null, null)
+            val audioCursor: Cursor? = context.contentResolver.query(Uri.parse(uri), proj, null, null, null)
             try {
                 if (audioCursor != null) {
                     if (audioCursor.moveToFirst()) {
@@ -123,15 +136,8 @@ class Utils {
         // lay uri cua ringtone mac dinh
         fun getUriRingtoneDefault(context: Context): String? {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                if (RingtoneManager.getActualDefaultRingtoneUri(
-                        context,
-                        RingtoneManager.TYPE_RINGTONE
-                    ) != null
-                ) {
-                    return RingtoneManager.getActualDefaultRingtoneUri(
-                        context.applicationContext,
-                        RingtoneManager.TYPE_RINGTONE
-                    )
+                if (RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE) != null) {
+                    return RingtoneManager.getActualDefaultRingtoneUri(context.applicationContext, RingtoneManager.TYPE_RINGTONE)
                         .toString()
                 }
             } else {
@@ -147,8 +153,7 @@ class Utils {
         fun getImageCover(context: Context, path: String?): Bitmap? {
             try {
                 if (path != null) {
-                    val bitmap =
-                        MediaStore.Images.Media.getBitmap(context.contentResolver, Uri.parse(path))
+                    val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, Uri.parse(path))
                     return bitmap
                 }
             } catch (e: Exception) {
@@ -163,14 +168,10 @@ class Utils {
             return false
         }
 
-        fun checkUriIsExits(
-            context: Context,
-            uri: String
-        ): Boolean {       // kiem tra uri co ton tai khong
+        fun checkUriIsExits(context: Context, uri: String): Boolean {       // kiem tra uri co ton tai khong
 
             val projecttion = arrayOf(MediaStore.MediaColumns.DATA)
-            val cursor: Cursor? =
-                context.contentResolver.query(Uri.parse(uri), projecttion, null, null, null)
+            val cursor: Cursor? = context.contentResolver.query(Uri.parse(uri), projecttion, null, null, null)
             if (cursor != null) {
                 try {
                     if (cursor.moveToFirst()) {
@@ -229,11 +230,7 @@ class Utils {
 
 
         fun convertDp2Px(dip: Int, context: Context): Float {
-            return TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                dip.toFloat(),
-                context.resources.displayMetrics
-            )
+            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip.toFloat(), context.resources.displayMetrics)
         }
 
         //test
@@ -265,7 +262,7 @@ class Utils {
         }
 
         @SuppressLint("SimpleDateFormat")
-        fun genAudioFileName(typeFile: Folder, newName: String = "", prefixName:String="file"): String {
+        fun genAudioFileName(typeFile: Folder, newName: String = "", prefixName: String = "file"): String {
             var baseFileName = ""
             //val dateStr = SimpleDateFormat("dd_MM_yyyy").format(Date())
             val folderPath = ManagerFactory.getAudioFileManager().getFolderPath(typeFile)
@@ -287,7 +284,7 @@ class Utils {
             val listBaseName = getAllFileNameFromFolder(folderPath)
             var fileName = baseFileName
             var index = 0
-            while (listBaseName.contains(fileName)) {
+            while (listBaseName.contains(fileName) || contains(typeFile, fileName)) {
                 index += 1
                 fileName = "%s(%d)".format(baseFileName, index)
             }
@@ -310,11 +307,8 @@ class Utils {
             val listResolver = context.packageManager.queryIntentActivities(intent, 0)
 
             for (info in listResolver) {
-                val item = ItemAppShare(
-                    info.loadLabel(AudioFileManagerImpl.mContext.packageManager).toString(),
-                    info.loadIcon(AudioFileManagerImpl.mContext.packageManager),
-                    info.activityInfo.packageName
-                )
+                val item = ItemAppShare(info.loadLabel(AudioFileManagerImpl.mContext.packageManager)
+                    .toString(), info.loadIcon(AudioFileManagerImpl.mContext.packageManager), info.activityInfo.packageName)
                 listAppShares.add(item)
             }
             return listAppShares
@@ -326,12 +320,7 @@ class Utils {
                 intent.action = Intent.ACTION_SEND
                 intent.putExtra(Intent.EXTRA_STREAM, audioFile.uri)
                 intent.type = "audio/*"
-                context.startActivity(
-                    Intent.createChooser(
-                        intent,
-                        context.resources.getString(R.string.Choose_in_app_inten)
-                    )
-                )
+                context.startActivity(Intent.createChooser(intent, context.resources.getString(R.string.Choose_in_app_inten)))
                 true
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -368,32 +357,16 @@ class Utils {
 
         fun convertToAudioFile(audioInfor: AudioInfor, modified: Long, uri: Uri): AudioFile {
             val file = File(audioInfor.filePath)
-            return AudioFile(
-                file,
-                getName(file),
-                audioInfor.size,
-                audioInfor.bitRate,
-                audioInfor.duration,
-                uri,
-                getBitmapByPath(file.absolutePath),
-                audioInfor.title,
-                audioInfor.alBum,
-                audioInfor.artist,
-                modified,
-                audioInfor.genre,
-                audioInfor.format
-            )
+            return AudioFile(file, getName(file), audioInfor.size, audioInfor.bitRate, audioInfor.duration, uri, getBitmapByPath(file.absolutePath), audioInfor.title, audioInfor.alBum, audioInfor.artist, modified, audioInfor.genre, audioInfor.format)
         }
 
         fun hideKeyboard(context: Context, editText: EditText) {
-            val inputMethodManager =
-                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
         }
 
         fun showKeyboard(context: Context, editText: EditText) {
-            val inputMethodManager =
-                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
         }
     }

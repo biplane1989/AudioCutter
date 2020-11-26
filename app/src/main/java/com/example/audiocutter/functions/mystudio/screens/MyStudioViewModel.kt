@@ -104,6 +104,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         }
         mAudioMediatorLiveData.addSource(listScaners) { // khi data co su thay doi thi se goi vao ham nay
 
+            Log.d(TAG, "init: update data: listScaners ${this@MyStudioViewModel} :" + it.listAudioFiles.size)
+
             if (it.state == StateLoad.LOADING) {
                 isEmptyStatus.postValue(false)
                 loadingStatus.postValue(true)
@@ -117,7 +119,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 notifyMergingListAudio()
             }
 
-            Log.d(TAG, "init: update data: listScaners ${this@MyStudioViewModel}")
+
         }
 
         mAudioMediatorLiveData.addSource(listConvertingItems) {
@@ -185,6 +187,9 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     private suspend fun mergeList() = coroutineScope {
 
+        Log.d(TAG, "mergeList: list  mListConvertingItems.size : " + mListConvertingItems.size + " ${this@MyStudioViewModel}")
+        Log.d(TAG, "mergeList: list  mListScannedAudioFile.size : " + mListScannedAudioFile.size + " ${this@MyStudioViewModel}")
+
         Log.d(TAG, "mergeList audio 1 ${this@MyStudioViewModel} size " + mListAudio.size)
         val filePathMapItemView = mListAudio.toMap()
         val newListAudio = ArrayList<AudioFileView>()
@@ -222,7 +227,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
             mAudioMediatorLiveData.postValue(mListAudio)
 
-            Log.d(TAG, "mergeList: list size: " + mListAudio.size + " ${this@MyStudioViewModel}")
+//            Log.d(TAG, "mergeList: list size: " + mListAudio.size + " ${this@MyStudioViewModel}")
 
             Log.d(TAG, "mergeList: mListConvertingItems.size : " + mListConvertingItems.size + " mListScannedAudioFile.size: " + mListScannedAudioFile.size)
             if (mListConvertingItems.size <= 0 && mListScannedAudioFile.size <= 0) {
