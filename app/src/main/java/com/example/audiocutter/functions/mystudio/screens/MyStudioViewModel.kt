@@ -109,12 +109,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             }
             if (it.state == StateLoad.LOADDONE) {       // khi loading xong thi check co data hay khong de show man hinh empty data
                 loadingStatus.postValue(false)
-
-//                if (!it.listAudioFiles.isEmpty()) {
-//                    isEmptyStatus.postValue(false)
-//                } else {
-//                    isEmptyStatus.postValue(true)
-//                }
                 mListScannedAudioFile.clear()
                 for (item in it.listAudioFiles) {
                     mListScannedAudioFile.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
@@ -139,10 +133,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                     }
                 }
             }
-
-//            if (it.size > 0) {
-//                isEmptyStatus.postValue(false)
-//            }
 
             Log.d(TAG, "mergeList: 33 stauts: old listConvertingItems")
             Log.d(TAG, "mergeList: listConvertingItems  ${this@MyStudioViewModel}")
@@ -230,11 +220,14 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             mAudioMediatorLiveData.postValue(mListAudio)
 
             Log.d(TAG, "mergeList: list size: " + mListAudio.size + " ${this@MyStudioViewModel}")
-            if (mListAudio.size > 0) {
-                isEmptyStatus.postValue(false)
-            } else {
+
+            Log.d(TAG, "mergeList: mListConvertingItems.size : " + mListConvertingItems.size + " mListScannedAudioFile.size: " + mListScannedAudioFile.size)
+            if (mListConvertingItems.size <= 0 && mListScannedAudioFile.size <= 0) {
                 isEmptyStatus.postValue(true)
+            } else {
+                isEmptyStatus.postValue(false)
             }
+
         }
 
 
