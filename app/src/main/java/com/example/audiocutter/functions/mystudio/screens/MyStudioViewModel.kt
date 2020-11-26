@@ -103,6 +103,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             }
         }
         mAudioMediatorLiveData.addSource(listScaners) { // khi data co su thay doi thi se goi vao ham nay
+
             if (it.state == StateLoad.LOADING) {
                 isEmptyStatus.postValue(false)
                 loadingStatus.postValue(true)
@@ -115,6 +116,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 }
                 notifyMergingListAudio()
             }
+
+            Log.d(TAG, "init: update data: listScaners ${this@MyStudioViewModel}")
         }
 
         mAudioMediatorLiveData.addSource(listConvertingItems) {
@@ -134,8 +137,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 }
             }
 
-            Log.d(TAG, "mergeList: 33 stauts: old listConvertingItems")
-            Log.d(TAG, "mergeList: listConvertingItems  ${this@MyStudioViewModel}")
+            Log.d(TAG, "init: update data: listConvertingItems ${this@MyStudioViewModel}")
+//            Log.d(TAG, "mergeList: listConvertingItems  ${this@MyStudioViewModel}")
             notifyMergingListAudio()
         }
     }
