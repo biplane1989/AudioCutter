@@ -1,6 +1,0 @@
-<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/ic_introduction_scence_1_vector_plant" >
-    <target
-        android:name="plane"
-        android:animation="@animator/introduction_scence_1_plant_anim" />
-</animated-vector>

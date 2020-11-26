@@ -119,7 +119,6 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                     durAudio2
                 }
                 binding.crChangeViewMixing.setLengthAudio(durAudio1, durAudio2)
-
                 binding.crChangeViewMixing.mCallback = this
                 binding.playIv.setOnClickListener(this)
                 binding.shortedTv.setOnClickListener(this)
