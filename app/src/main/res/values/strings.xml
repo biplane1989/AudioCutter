@@ -127,6 +127,7 @@
     <string name="about_settingscreen">About</string>
     <string name="privacy_policy_settingscreen">Privacy policy</string>
     <string name="version_settingscreen">Version</string>
+    <string name="common_cancel">CANCEL</string>
     <string name="tv_ok_settings">OK</string>
     <string name="tv_cancel_settings">CANCEL</string>
     <string name="result_sercice_loading_complete">Loading complete</string>
