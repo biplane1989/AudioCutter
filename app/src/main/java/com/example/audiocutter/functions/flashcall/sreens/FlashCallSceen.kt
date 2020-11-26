@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.FlashCallConfig
+import com.example.audiocutter.core.manager.FlashType
 import com.example.audiocutter.core.manager.LIGHTING_SPEED_DEFAULT
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.FlashCallScreenBinding
@@ -28,13 +29,16 @@ class FlashCallSceen : BaseFragment(), CompoundButton.OnCheckedChangeListener, V
     private val TAG: String = "lll"
     private lateinit var dialogSettime: SettimeDialog
     private lateinit var binding: FlashCallScreenBinding
-    private lateinit var mCallBack: FlashCallBack
     private var numCheckClick = 0
     val manager = ManagerFactory.getFlashCallSetting()
 
     private lateinit var flashModel: FlashCallModel
     private lateinit var flashCallConfig: FlashCallConfig
 
+    private val MAX_PROGRESS = 27
+    private val MIN_PROGRESS = 0
+    private val MAX_VALUE = 1500
+    private val MIN_VALUE = 150
 
     @SuppressLint("SetTextI18n")
     var flashObserver = Observer<FlashCallConfig> {
@@ -45,6 +49,12 @@ class FlashCallSceen : BaseFragment(), CompoundButton.OnCheckedChangeListener, V
         binding.swFlashCallMode.isChecked = it.enable
         binding.swIncommingCall.isChecked = it.incomingCallEnable
         binding.swNotifycation.isChecked = it.notificationEnable
+        binding.tbAppFlashcall.isEnabled = it.notificationEnable
+        if (it.notificationEnable) {
+            binding.tvNotification.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorBlack))
+        } else {
+            binding.tvNotification.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorgray))
+        }
         binding.swInUse.isChecked = it.notFiredWhenInUsed
         binding.swBellFlashcall.isChecked = it.flashMode.bellEnable
         binding.swVibrateFlashcall.isChecked = it.flashMode.vibrateEnable
@@ -54,21 +64,24 @@ class FlashCallSceen : BaseFragment(), CompoundButton.OnCheckedChangeListener, V
         binding.sbNumberOfLightning.progress = it.numberOfLightning
 
         /**bug*/
-        Log.d(TAG, "onProgressChanged111:  ${Utils.convertValue(150, 1500, 0, 50, it.lightningSpeed.toInt())}")
-        binding.sbLinghtningSpeedFlcall.progress = Utils.convertValue(150, 1500, 0, 50, it.lightningSpeed.toInt())
+        Log.d(TAG, "onProgressChanged111:  ${Utils.convertValue(MIN_VALUE, MAX_VALUE, MIN_PROGRESS, MAX_PROGRESS, it.lightningSpeed.toInt())}")
+        binding.sbLinghtningSpeedFlcall.progress = Utils.convertValue(MIN_VALUE, MAX_VALUE, MIN_PROGRESS, MAX_PROGRESS, it.lightningSpeed.toInt())
 
         binding.tvNumberOfLightning.text = " ${it.numberOfLightning} times"
         binding.tvLightningSpeedFlcall.text = " ${it.lightningSpeed} ms"
 
-        val startHour = it.flashTimer.startHour
-        val startMinute = it.flashTimer.startMinute
-        val endHour = it.flashTimer.endHour
-        val endMinute = it.flashTimer.endMinute
+        val startHour = checkValidTimes(it.flashTimer.startHour)
+        val startMinute = checkValidTimes(it.flashTimer.startMinute)
+        val endHour = checkValidTimes(it.flashTimer.endHour)
+        val endMinute = checkValidTimes(it.flashTimer.endMinute)
+
+
+
 
         onOffSetTimeFlash(it.flashTimer.enable)
-        if ((startHour and startMinute and endHour and endMinute) != -1) {
-            binding.tvStartTimeChoose.text = "${it.flashTimer.startHour}:${it.flashTimer.startMinute}"
-            binding.tvEndTimeChoose.text = "${it.flashTimer.endHour}:${it.flashTimer.endMinute}"
+        if ((startHour.toInt() and startMinute.toInt() and endHour.toInt() and endMinute.toInt()) != -1) {
+            binding.tvStartTimeChoose.text = "${startHour}:${startMinute}"
+            binding.tvEndTimeChoose.text = "${endHour}:${endMinute}"
         }
 
         if (it.lightningSpeed != LIGHTING_SPEED_DEFAULT) {
@@ -79,11 +92,24 @@ class FlashCallSceen : BaseFragment(), CompoundButton.OnCheckedChangeListener, V
             binding.tvDefaultSpeed.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorWhite))
         }
 
+        when (it.flashType) {
+            FlashType.BEAT -> {
+                binding.tvTypeflashFlcall.text = getString(R.string.beat_type_flash_call)
+            }
+            FlashType.CONTINUITY -> {
+                binding.tvTypeflashFlcall.text = getString(R.string.Continuity_flash_call)
+            }
+        }
+
 
     }
 
-    fun setOnCallBack(event: FlashCallBack) {
-        mCallBack = event
+    private fun checkValidTimes(time: Int): String {
+        return if (time < 10) {
+            "0$time"
+        } else {
+            "$time"
+        }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -139,6 +165,7 @@ class FlashCallSceen : BaseFragment(), CompoundButton.OnCheckedChangeListener, V
                 flashCallConfig.incomingCallEnable = isChecked
             }
             binding.swNotifycation -> {
+
                 flashCallConfig.notificationEnable = isChecked
             }
             binding.swInUse -> {
@@ -188,7 +215,7 @@ class FlashCallSceen : BaseFragment(), CompoundButton.OnCheckedChangeListener, V
         dialogSettime.setOnCallBack(this)
         when (v) {
             binding.tbAppFlashcall -> {
-                mCallBack.showFrgs()
+                showToast("show frg App")
             }
             binding.tbFlashType -> {
                 flashTypeDialog = FlashTypeDialog()
@@ -224,29 +251,18 @@ class FlashCallSceen : BaseFragment(), CompoundButton.OnCheckedChangeListener, V
 
     @SuppressLint("SetTextI18n")
     override fun changeTimeFlash(hours: Int, minute: Int) {
-        val textMinute = if (minute < 10) {
-            "0$minute"
-        } else {
-            "$minute"
-        }
-        val textHours = if (hours < 10) {
-            "0$hours"
-        } else {
-            "$hours"
-        }
+
         when (numCheckClick) {
             1 -> {
                 flashCallConfig.flashTimer.startHour = hours
                 flashCallConfig.flashTimer.startMinute = minute
 
                 dialogSettime.dismiss()
-                binding.tvStartTimeChoose.text = "$textHours:$textMinute"
             }
             2 -> {
                 flashCallConfig.flashTimer.endHour = hours
                 flashCallConfig.flashTimer.endMinute = minute
                 dialogSettime.dismiss()
-                binding.tvEndTimeChoose.text = "$textHours:$textMinute"
             }
         }
         changeFlashConfig(flashCallConfig)
@@ -265,15 +281,12 @@ class FlashCallSceen : BaseFragment(), CompoundButton.OnCheckedChangeListener, V
                 } else {
                     progress
                 }
-                binding.sbNumberOfLightning.progress = value
-                binding.tvNumberOfLightning.text = "$value times"
                 flashCallConfig.numberOfLightning = value
             }
-
             binding.sbLinghtningSpeedFlcall -> {
 
-                val speedValue = Utils.convertValue(0, 50, 150, 1500, progress)
-                binding.tvLightningSpeedFlcall.text = "${speedValue} ms"
+                val speedValue = Utils.convertValue(MIN_PROGRESS, MAX_PROGRESS, MIN_VALUE, MAX_VALUE, progress)
+
                 flashCallConfig.lightningSpeed = speedValue.toLong()
                 Log.d(TAG, "onProgressChanged:  ${flashCallConfig.lightningSpeed}")
             }
@@ -290,12 +303,15 @@ class FlashCallSceen : BaseFragment(), CompoundButton.OnCheckedChangeListener, V
         flashTypeDialog.dismiss()
         when (type) {
             TypeFlash.CONTINUITY -> {
+                flashCallConfig.flashType = FlashType.CONTINUITY
                 binding.tvTypeflashFlcall.text = getString(R.string.Continuity_flash_call)
             }
             TypeFlash.BEAT -> {
+                flashCallConfig.flashType = FlashType.BEAT
                 binding.tvTypeflashFlcall.text = getString(R.string.beat_type_flash_call)
             }
         }
+        changeFlashConfig(flashCallConfig)
     }
 
 }

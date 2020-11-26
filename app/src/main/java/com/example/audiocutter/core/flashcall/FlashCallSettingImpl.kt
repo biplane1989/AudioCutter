@@ -240,7 +240,7 @@ object FlashCallSettingImpl : FlashCallSetting {
         val listFlashItemResult = listAppFlashItems.value
         listFlashItemResult?.let {
             if (!it.isLoading) {
-                it.data.forEach {
+                it.data?.forEach {
                     if (it.pkgName == pkgName) {
                         return it.selected
                     }

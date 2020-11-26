@@ -32,7 +32,7 @@ enum class FlashType {
 
 data class FlashCallConfig(
 
-    var enable: Boolean = false, var incomingCallEnable: Boolean = true, var notificationEnable: Boolean = false, var notFiredWhenInUsed: Boolean = true, var lightningSpeed: Long = LIGHTING_SPEED_DEFAULT, var numberOfLightning: Int = NUMBER_OF_FLASHES_DEFAULT, val flashMode: FlashMode = FlashMode(), val flashTimer: FlashTimer = FlashTimer(), val flashType: FlashType = FlashType.BEAT) {
+    var enable: Boolean = false, var incomingCallEnable: Boolean = true, var notificationEnable: Boolean = false, var notFiredWhenInUsed: Boolean = true, var lightningSpeed: Long = LIGHTING_SPEED_DEFAULT, var numberOfLightning: Int = NUMBER_OF_FLASHES_DEFAULT, val flashMode: FlashMode = FlashMode(), val flashTimer: FlashTimer = FlashTimer(), var flashType: FlashType = FlashType.BEAT) {
     fun isLightingSpeedDefault(): Boolean {
         return lightningSpeed == LIGHTING_SPEED_DEFAULT
     }
@@ -42,8 +42,8 @@ data class FlashCallConfig(
     }
 }
 
-class AppFlashItem(val name: String, val pkgName: String, val icon: Bitmap?, val selected: Boolean)
-data class ListAppFlashItemsResult(val isLoading: Boolean, val data: List<AppFlashItem>)
+data class AppFlashItem(val name: String, val pkgName: String, val icon: Bitmap?, var selected: Boolean)
+data class ListAppFlashItemsResult(val isLoading: Boolean, val data: List<AppFlashItem>?)
 interface FlashCallSetting {
     fun setup(appContext: Context)
     fun getListNotificationApps(): LiveData<ListAppFlashItemsResult>

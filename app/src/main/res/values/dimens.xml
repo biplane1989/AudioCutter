@@ -43,4 +43,5 @@
     <dimen name="d_80">80dp</dimen>
     <dimen name="d_2">2dp</dimen>
     <dimen name="d_25">25dp</dimen>
+    <dimen name="d_50">50dp</dimen>
 </resources>

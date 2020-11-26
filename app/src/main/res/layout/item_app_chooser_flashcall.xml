@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/d_16">
 
     <TableRow
         android:layout_width="match_parent"
@@ -16,9 +17,10 @@
             android:layout_width="?actionBarSize"
             android:layout_height="?actionBarSize"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_call_flash_flcall" />
+            android:src="@mipmap/ic_launcher" />
 
         <TextView
+            android:paddingHorizontal="@dimen/d_16"
             android:id="@+id/tv_name_app_flash"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -34,7 +36,7 @@
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/sw_chooser_app"
             android:layout_width="wrap_content"
-            app:switchMinWidth="@dimen/d_56"
+            app:switchMinWidth="@dimen/d_50"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/d_12"

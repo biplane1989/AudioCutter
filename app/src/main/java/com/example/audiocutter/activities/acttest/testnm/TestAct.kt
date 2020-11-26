@@ -9,30 +9,17 @@ import com.example.audiocutter.functions.flashcall.sreens.AppChooserScreen
 import com.example.audiocutter.functions.flashcall.sreens.FlashCallSceen
 
 
-class TestAct : BaseActivity(), FlashCallSceen.FlashCallBack, AppChooserScreen.SetTimeCallBack {
-    lateinit var frg: AppChooserScreen
-    lateinit var frgCall: FlashCallSceen
+class TestAct : BaseActivity() {
+    lateinit var frgCall: AppChooserScreen
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun createView(savedInstanceState: Bundle?) {
 
         setContentView(R.layout.act_test)
-        frg = AppChooserScreen()
-        frgCall = FlashCallSceen()
-        frgCall.setOnCallBack(this)
-        frg.setOnCallBack(this)
+        frgCall = AppChooserScreen()
+
         supportFragmentManager.beginTransaction().replace(R.id.ln_main, frgCall).commit()
 
     }
-
-    override fun showFrgs() {
-        supportFragmentManager.beginTransaction().replace(R.id.ln_main, frg).commit()
-    }
-
-    override fun backs() {
-        supportFragmentManager.beginTransaction().replace(R.id.ln_main, frgCall).commit()
-    }
-
-
 }
 

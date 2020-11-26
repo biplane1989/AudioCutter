@@ -1,28 +1,26 @@
 package com.example.audiocutter.functions.flashcall.sreens
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.pm.ApplicationInfo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.base.BaseViewModel
-import com.example.audiocutter.functions.flashcall.`object`.AppChooser
-import com.example.audiocutter.functions.flashcall.`object`.AppChooserView
+import com.example.audiocutter.core.manager.AppFlashItem
+import com.example.audiocutter.core.manager.ListAppFlashItemsResult
+import com.example.audiocutter.core.manager.ManagerFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 
 
 class AppFlashModel : BaseViewModel() {
 
 
-    private val TAG: String = "hhehhe"
-    private var _listApp = MutableLiveData<List<AppChooserView>>()
-    val listApp: LiveData<List<AppChooserView>>
-        get() = _listApp
-
+    private val TAG: String = "TAG"
 
     @SuppressLint("QueryPermissionsNeeded")
-    fun getListData(mContext: Context): LiveData<List<AppChooserView>> {
+    fun getListData(): LiveData<ListAppFlashItemsResult> {
 
-        return listApp
+        return ManagerFactory.getFlashCallSetting().getListNotificationApps()
     }
+
 
 }

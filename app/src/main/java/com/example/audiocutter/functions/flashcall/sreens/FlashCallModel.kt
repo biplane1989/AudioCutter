@@ -7,7 +7,6 @@ import com.example.audiocutter.core.manager.ManagerFactory
 
 class FlashCallModel : BaseViewModel() {
 
-
     fun getFlashCallConfig(): LiveData<FlashCallConfig> {
         return ManagerFactory.getFlashCallSetting().getFlashCallConfig()
     }
