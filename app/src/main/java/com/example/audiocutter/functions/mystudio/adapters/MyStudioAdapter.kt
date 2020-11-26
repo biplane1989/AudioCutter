@@ -221,6 +221,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             sbMusic.progress = playerInfo.posision
             tvTimeLife.text = simpleDateFormat.format(playerInfo.posision)
 
+            Log.d(TAG, "onClick updatePlayInfor: " + playerInfo.playerState)
             when (playerInfo.playerState) {
                 PlayerState.PLAYING -> {
                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
@@ -369,10 +370,12 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
                 R.id.iv_pause_play_music -> {
 
+                    Log.d(TAG, "onClick: status : " + playerState)
                     when (playerState) {
                         PlayerState.IDLE -> {
                             lifecycleCoroutineScope.launch {
                                 audioPlayer.play(audioFileView.audioFile)
+                                Log.d(TAG, "onClick: audioFileView.audioFile uri : " + audioFileView.audioFile.uri)
                             }
                         }
                         PlayerState.PAUSE -> {
