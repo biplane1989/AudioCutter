@@ -37,10 +37,13 @@ interface SelectAudioScreenCallback {
 class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<SelectItemView, ListSelectAdapter.ViewHolder>(SelectAudioDiffCallBack()) {
     private val TAG = "giangtd"
 
+    private lateinit var recyclerView: RecyclerView
+
     @SuppressLint("SimpleDateFormat")
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        recyclerView = parent as RecyclerView
         val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.list_contact_select_item, parent, false)
         return ViewHolder(itemView)
@@ -61,6 +64,13 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             if (newItem.isExpanded) {
                 holder.llPlayMusic.visibility = View.VISIBLE
                 holder.llItem.setBackgroundResource(R.drawable.list_contact_select_item_bg)
+
+                Log.d(TAG, "onBindViewHolder: 1")
+                holder.itemView.post {
+                    if (holder.itemView.bottom > recyclerView.height) {
+                        recyclerView.smoothScrollBy(0, (holder.itemView.bottom - recyclerView.height))
+                    }
+                }
             } else {
                 holder.llPlayMusic.visibility = View.GONE
                 holder.llItem.setBackgroundColor(Color.WHITE)
