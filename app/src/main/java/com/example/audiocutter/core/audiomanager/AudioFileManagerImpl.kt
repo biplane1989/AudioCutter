@@ -179,15 +179,11 @@ object AudioFileManagerImpl : AudioFileManager {
             }
             if (isActive) {
                 Log.d("taihhhhhhhh", "listAllAudioData size ${listAllAudioData.size} oldListAudios size ${oldListAudios?.size}")
+                Log.d(TAG, "scan: giangtd : list cut size: " + listCuttingAudio.size)
                 if (!listAllAudioData.isSame(oldListAudios)) {
                     isFirstTimeToScanning = false
-                    listAllAudios.postValue(AudioFileScans(ArrayList(listAllAudioData), StateLoad.LOADDONE))
-                    listCuttingAudios.postValue(AudioFileScans(listCuttingAudio, StateLoad.LOADDONE))
-                    listMeringAudios.postValue(AudioFileScans(listMergingAudio, StateLoad.LOADDONE))
-                    listMixingAudios.postValue(AudioFileScans(listMixingAudio, StateLoad.LOADDONE))
+                    changeStateLoadDone(listAllAudioData, listCuttingAudio, listMergingAudio, listMixingAudio)
                 }
-
-
             }
         }
 
@@ -237,7 +233,7 @@ object AudioFileManagerImpl : AudioFileManager {
             listAudioFile.forEach { audioFile ->
                 if (audioFile.file.exists() && audioFile.uri != null) {
                     if (audioFile.file.delete()) {
-                         resolver.delete(audioFile.uri!!, null, null)
+                        resolver.delete(audioFile.uri!!, null, null)
                     } else {
                         notifyDiskChanged()
                         return false
@@ -267,7 +263,15 @@ object AudioFileManagerImpl : AudioFileManager {
                     val audioInfo = FileUtil.getAudioInfo(filePath)
                     if (audioInfo != null) {
                         val audioFile = Utils.convertToAudioFile(audioInfo, System.currentTimeMillis(), uri)
-                        notifyDiskChanged()
+                        withLock {
+                            val oldAudioFile = findAudioFile(audioInfo.filePath)
+                            if (oldAudioFile != null) {
+                                oldAudioFile.copy(audioFile)
+                            } else {
+                                listAllAudioData.add(audioFile)
+                                changeStateLoadDone(listAllAudioData)
+                            }
+                        }
                         listener(audioFile)
                     } else {
                         listener(null)
@@ -392,6 +396,38 @@ object AudioFileManagerImpl : AudioFileManager {
         return result
     }
 
+    private fun changeStateLoadDone(listAllAudioData: ArrayList<AudioFile>, listCuttingAudio: ArrayList<AudioFile>, listMergingAudio: ArrayList<AudioFile>, listMixingAudio: ArrayList<AudioFile>) {
+        listAllAudios.postValue(AudioFileScans(ArrayList(listAllAudioData), StateLoad.LOADDONE))
+        listCuttingAudios.postValue(AudioFileScans(listCuttingAudio, StateLoad.LOADDONE))
+        listMeringAudios.postValue(AudioFileScans(listMergingAudio, StateLoad.LOADDONE))
+        listMixingAudios.postValue(AudioFileScans(listMixingAudio, StateLoad.LOADDONE))
+    }
+
+    private fun changeStateLoadDone(listAllAudioData: ArrayList<AudioFile>) {
+        withLock {
+            val listMergingAudio = ArrayList<AudioFile>()
+            val listCuttingAudio = ArrayList<AudioFile>()
+            val listMixingAudio = ArrayList<AudioFile>()
+            listAllAudioData.forEach {
+                val folder = checkFolder(it.getFilePath())
+                when (folder) {
+                    Folder.TYPE_CUTTER -> {
+                        listCuttingAudio.add(it)
+                    }
+                    Folder.TYPE_MERGER -> {
+                        listMergingAudio.add(it)
+                    }
+                    Folder.TYPE_MIXER -> {
+                        listMixingAudio.add(it)
+                    }
+                    else -> {
+                    }
+                }
+            }
+            changeStateLoadDone(listAllAudioData, listCuttingAudio, listMergingAudio, listMixingAudio)
+        }
+
+    }
 
     private fun changeStateLoading() {
         if (isFirstTimeToScanning) {

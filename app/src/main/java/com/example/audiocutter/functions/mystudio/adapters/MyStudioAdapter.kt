@@ -170,6 +170,9 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                         loadingViewHolder.pbLoading.visibility = View.VISIBLE
                         loadingViewHolder.tvLoading.visibility = View.VISIBLE
                     }
+                    else -> {
+                        //TODO
+                    }
                 }
             }
         }
@@ -441,10 +444,12 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             audioEditorManager.getCurrentProcessingItem()
                 .observe(this, object : Observer<ConvertingItem?> {
                     override fun onChanged(convertingItem: ConvertingItem?) {
+
                         convertingItem?.let {
                             if (adapterPosition != -1) {
                                 val itemView = getItem(adapterPosition)
                                 if (itemView.id == it.id) {
+                                    Log.d(TAG, "onChanged: update : " + it.state + " percent : " + it.percent + " itemView.id : " + itemView.id + " id: " + it.id)
                                     updateItem(it)
                                 }
                             }

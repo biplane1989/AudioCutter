@@ -6,5 +6,5 @@ data class AudioFileScans(
 )
 
 enum class StateLoad {
-    LOADING, LOADDONE, LOADFAIL
+    LOADING, LOADDONE, LOADFAIL, REFRESH
 }

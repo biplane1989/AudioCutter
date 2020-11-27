@@ -16,10 +16,7 @@ import com.example.audiocutter.functions.resultscreen.services.ResultService
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
 import com.example.core.core.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.File
 
 
@@ -71,7 +68,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 it.percent = audioMering.percent
                 it.state = convertingState
                 notifyConvertingItemChanged(it)
-                Log.d(TAG, "currentProcessingItem init: percent: " + it.percent + " status: " + it.state + " ID : " + it.id + " file name: " + it.getFileName())
+                Log.d(TAG, "currentProcessingItem init: percent: processItem " + it.percent + " status: " + it.state + " ID : " + it.id + " file name: " + it.getFileName())
             }
         }
     }
@@ -145,7 +142,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             }
 
             if (item is MixingConvertingItem) {
-                currentProcessingItem.postValue(item)
 
                 val audioCore1 = AudioCore(item.audioFile1.file, item.audioFile1.fileName, item.audioFile1.size, item.audioFile1.bitRate, item.audioFile1.duration, item.audioFile1.mimeType)
                 val audioCore2 = AudioCore(item.audioFile2.file, item.audioFile2.fileName, item.audioFile2.size, item.audioFile2.bitRate, item.audioFile2.duration, item.audioFile2.mimeType)
@@ -165,37 +161,37 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 listConvertingItemData.remove(item)
             }
 
-            if (audioResult != null) {                  // converting progress co thanh cong hay khong
+            if (audioResult != null) {
+                // converting progress co thanh cong hay khong
                 ManagerFactory.getAudioFileManager().buildAudioFile(audioResult.file.absolutePath) {
                     it?.let {
+
                         item.outputAudioFile = it
+
                         item.state = ConvertingState.SUCCESS
-                        latestConvertingItem = item
+                        onConvertingItemDetached(item)
+                        Log.d(TAG, "processItem: item ID : " + item.id)
+                        notifyConvertingItemChanged(item)
+                        listConvertingItems.postValue(listConvertingItemData)
+                        processNextItem()
                     }
                 }
-                onConvertingItemDetached(item)
-                item.state = ConvertingState.SUCCESS
-                item.percent = 100
-                notifyConvertingItemChanged(item)
 
 //               item.outputAudioFile?.file?.delete()
 //                item.state = ConvertingState.ERROR
 //                notifyConvertingItemChanged(item)
 //                latestConvertingItem = null
-
-
             } else {
                 item.state = ConvertingState.ERROR
                 notifyConvertingItemChanged(item)
                 latestConvertingItem = null
                 Log.d(TAG, "processItem: null")
+
+//                 demo dong bo data voi luu tru thu muc trong mystudio
+                listConvertingItems.postValue(listConvertingItemData)
+                processNextItem()
+
             }
-
-            // demo dong bo data voi luu tru thu muc trong mystudio
-            listConvertingItems.postValue(listConvertingItemData)
-
-
-            processNextItem()
         }
     }
 
@@ -274,23 +270,25 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         }
         listConvertingItems.postValue(listConvertingItemData)
     }
-    private fun onConvertingItemDetached(convertingItem: ConvertingItem){
-        if (convertingItem is MixingConvertingItem){
-            Utils.removeGeneratedName(Folder.TYPE_MIXER, File( convertingItem.mixingConfig.pathFolder + File.separator +  convertingItem.mixingConfig.fileName))
+
+    private fun onConvertingItemDetached(convertingItem: ConvertingItem) {
+        if (convertingItem is MixingConvertingItem) {
+            Utils.removeGeneratedName(Folder.TYPE_MIXER, File(convertingItem.mixingConfig.pathFolder + File.separator + convertingItem.mixingConfig.fileName))
         }
-        if (convertingItem is CuttingConvertingItem){
-            Utils.removeGeneratedName(Folder.TYPE_CUTTER, File( convertingItem.cuttingConfig.pathFolder + File.separator +  convertingItem.cuttingConfig.fileName))
+        if (convertingItem is CuttingConvertingItem) {
+            Utils.removeGeneratedName(Folder.TYPE_CUTTER, File(convertingItem.cuttingConfig.pathFolder + File.separator + convertingItem.cuttingConfig.fileName))
         }
-        if (convertingItem is MergingConvertingItem){
-            Utils.removeGeneratedName(Folder.TYPE_MERGER, File( convertingItem.mergingConfig.pathFolder + File.separator +  convertingItem.mergingConfig.fileName))
+        if (convertingItem is MergingConvertingItem) {
+            Utils.removeGeneratedName(Folder.TYPE_MERGER, File(convertingItem.mergingConfig.pathFolder + File.separator + convertingItem.mergingConfig.fileName))
         }
     }
-    override fun cancel(int: Int) {              // cancel 1 tien trinh loading
+
+    override fun cancel(id: Int) {              // cancel 1 tien trinh loading
         mainScope.launch {
             val iterator: MutableIterator<ConvertingItem> = listConvertingItemData.iterator()
             while (iterator.hasNext()) {
                 val value = iterator.next()
-                if (value.id == int) {
+                if (value.id == id) {
                     onConvertingItemDetached(value)
                     when (value.state) {
                         ConvertingState.WAITING -> {
@@ -301,12 +299,13 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                             iterator.remove()
                             ManagerFactory.getAudioCutter().cancelTask()
 
-                            mService?.cancelNotidication(int)
+                            mService?.cancelNotidication(id)
                         }
                         else -> {
                             // nothing
                         }
                     }
+                    break
                 }
             }
             if (listConvertingItemData.size > 0) {                      // khi cancel item cuoi cung thi phai set lai latestConvertingItem = list.size() -1
