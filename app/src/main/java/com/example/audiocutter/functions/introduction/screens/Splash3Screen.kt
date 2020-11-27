@@ -1,22 +1,20 @@
 package com.example.audiocutter.functions.introduction.screens
 
-import android.animation.ValueAnimator
 import android.graphics.drawable.Animatable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AlphaAnimation
 import androidx.databinding.DataBindingUtil
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.databinding.IntroductionSplash1ScreenBinding
+import com.example.audiocutter.databinding.IntroductionSplash3ScreenBinding
 
-class Splash1Screen : BaseFragment() {
-    private lateinit var binding: IntroductionSplash1ScreenBinding
+class Splash3Screen : BaseFragment() {
+    private lateinit var binding: IntroductionSplash3ScreenBinding
     private lateinit var personAnimation: Animatable
     private var isAnimationDisplayed = false
-    private var valueAnimator: AlphaAnimation? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,7 +23,7 @@ class Splash1Screen : BaseFragment() {
     ): View? {
         binding = DataBindingUtil.inflate(
             inflater,
-            R.layout.introduction_splash_1_screen,
+            R.layout.introduction_splash_3_screen,
             container,
             false
         )
@@ -39,11 +37,8 @@ class Splash1Screen : BaseFragment() {
 
     override fun onStart() {
         super.onStart()
+
         if (!isAnimationDisplayed) {
-            valueAnimator = AlphaAnimation(0.2f, 1.0f)
-            valueAnimator?.setDuration(1000)
-            valueAnimator?.setFillAfter(true)
-            binding.ivSence.startAnimation(valueAnimator)
             personAnimation.start()
         }
     }
@@ -53,7 +48,5 @@ class Splash1Screen : BaseFragment() {
         if (personAnimation.isRunning) {
             personAnimation.stop()
         }
-        valueAnimator?.cancel()
     }
-
 }

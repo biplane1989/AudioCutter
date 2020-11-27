@@ -3,4 +3,16 @@
     <target
         android:name="person"
         android:animation="@animator/introduction_scence_1_person_anim" />
+    <target
+        android:name="background"
+        android:animation="@animator/introduction_scence_1_background_anim" />
+    <target
+        android:name="phone1"
+        android:animation="@animator/introduction_scence_1_phone1_anim" />
+    <target
+        android:name="phone2"
+        android:animation="@animator/introduction_scence_1_phone2_anim" />
+    <target
+        android:name="plant"
+        android:animation="@animator/introduction_scence_1_plant_anim" />
 </animated-vector>

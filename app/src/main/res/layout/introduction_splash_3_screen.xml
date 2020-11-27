@@ -6,12 +6,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#FFFFFF">
-
         <ImageView
             android:id="@+id/iv_sence"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:srcCompat="@drawable/introduction_animator_scence_1" />
+            app:srcCompat="@drawable/introduction_animator_scence_3" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

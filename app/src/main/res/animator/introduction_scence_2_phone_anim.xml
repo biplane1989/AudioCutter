@@ -3,7 +3,7 @@
     <objectAnimator
         android:duration="1000"
         android:propertyName="translateY"
-        android:valueFrom="-20"
+        android:valueFrom="-30"
         android:valueTo="0"
         android:valueType="floatType" />
 </set>
