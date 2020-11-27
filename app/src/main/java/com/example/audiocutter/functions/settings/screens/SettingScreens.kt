@@ -34,6 +34,9 @@ class SettingScreens : BaseFragment(), SetLanguageDialog.DialogSettingsListener 
             dialog.setOnCallBack(this)
             dialog.show(requireActivity().supportFragmentManager, "TAG")
         }
+        binding.ivSettingScreenBack.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
     }
 
     override fun setLanguage(item: Int) {

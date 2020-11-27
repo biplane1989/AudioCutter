@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.flashcall.sreens
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -23,6 +24,7 @@ import com.example.audiocutter.functions.flashcall.dialogs.FlashTypeDialog
 import com.example.audiocutter.functions.flashcall.dialogs.SettimeDialog
 import com.example.audiocutter.functions.flashcall.dialogs.TypeFlash
 import com.example.audiocutter.util.Utils
+
 
 class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
     View.OnClickListener, SettimeDialog.SettimeListener, SeekBar.OnSeekBarChangeListener,
@@ -75,17 +77,6 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
 
         binding.sbNumberOfLightning.progress = it.numberOfLightning
 
-        /**bug*/
-        Log.d(
-            TAG,
-            "onProgressChanged111:  ${Utils.convertValue(
-                MIN_VALUE,
-                MAX_VALUE,
-                MIN_PROGRESS,
-                MAX_PROGRESS,
-                it.lightningSpeed.toInt()
-            )}"
-        )
         binding.sbLinghtningSpeedFlcall.progress = Utils.convertValue(
             MIN_VALUE,
             MAX_VALUE,
@@ -102,8 +93,6 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
         val startMinute = checkValidTimes(it.flashTimer.startMinute)
         val endHour = checkValidTimes(it.flashTimer.endHour)
         val endMinute = checkValidTimes(it.flashTimer.endMinute)
-
-
 
 
         onOffSetTimeFlash(it.flashTimer.enable)
@@ -205,7 +194,8 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
                 flashCallConfig.incomingCallEnable = isChecked
             }
             binding.swNotifycation -> {
-
+                /* val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+                 startActivity(intent)*/
                 flashCallConfig.notificationEnable = isChecked
             }
             binding.swInUse -> {
@@ -222,6 +212,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
             }
         }
         changeFlashConfig(flashCallConfig)
+        Build.VERSION_CODES.M
 
     }
 
@@ -334,7 +325,6 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
 
     @SuppressLint("SetTextI18n")
     override fun changeTimeFlash(hours: Int, minute: Int) {
-
         when (numCheckClick) {
             1 -> {
                 flashCallConfig.flashTimer.startHour = hours
