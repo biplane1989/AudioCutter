@@ -58,12 +58,18 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
     var currentPos = -1
 
-    private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
-        if (listMusic.isEmpty() || listMusic == null) {
-            showEmptyList()
-        } else {
-            audioCutterAdapter.submitList(ArrayList(listMusic))
-            showList()
+    private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
+        if(listMusic == null){
+            binding.rvAudioCutter.visibility= View.INVISIBLE
+        }else{
+            if (listMusic.isEmpty()) {
+                showEmptyList()
+            } else {
+                audioCutterAdapter.submitList(ArrayList(listMusic))
+                showList()
+                showProgressBar(false)
+
+            }
         }
 
     }

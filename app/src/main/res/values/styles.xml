@@ -15,6 +15,8 @@
         <attr name="textRandom" format="string" />
     </declare-styleable>
 
+
+
     <style name="color_line_edt">
         <item name="colorAccent">@color/colorYelowDark</item>
     </style>
