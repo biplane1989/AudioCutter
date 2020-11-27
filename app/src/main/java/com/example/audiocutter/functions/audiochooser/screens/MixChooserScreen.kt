@@ -44,19 +44,14 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         }
     }
 
-    private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
+    private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
 
-        if (listMusic == null) {
-            binding.rvMixer.visibility = View.INVISIBLE
+        if (listMusic.isEmpty() || listMusic == null) {
+            showEmptyList()
         } else {
-            if (listMusic.isEmpty()) {
-                showEmptyList()
-            } else {
-
-                audioMixAdapter.submitList(ArrayList(listMusic))
-                showList()
-                showProgressBar(false)
-            }
+            audioMixAdapter.submitList(ArrayList(listMusic))
+            showList()
+        }
             var count = 0
             listMusic.forEach {
                 if (it.isCheckChooseItem) {
@@ -74,7 +69,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
                             false
                         )
                     }
-                }
+
             }
             binding.tvCountFile.text = "${count} file"
         }

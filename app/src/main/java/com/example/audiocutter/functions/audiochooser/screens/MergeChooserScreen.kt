@@ -43,41 +43,34 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     var currentPos = -1
 
     @SuppressLint("SetTextI18n")
-    private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
-        if (listMusic == null) {
-            binding.rvMerge.visibility = View.INVISIBLE
+    private val listAudioObserver = Observer<List<AudioCutterView>> { listMusic ->
+        if (listMusic.isEmpty() || listMusic == null) {
+            showEmptyList()
         } else {
-            if (listMusic.isEmpty()) {
-                showEmptyList()
+            audioMerAdapter.submitList(ArrayList(listMusic))
+            showList()
+        }
 
-            } else {
-
-                audioMerAdapter.submitList(ArrayList(listMusic))
-                showList()
-                showProgressBar(false)
-
-            }
-            var count = 0
-            listMusic.forEach {
-                if (it.isCheckChooseItem) {
-                    count++
-                    if (count >= 2) {
-                        setColorButtonNext(
-                            R.color.colorWhite,
-                            R.drawable.bg_next_audio_enabled,
-                            true
-                        )
-                    } else {
-                        setColorButtonNext(
-                            R.color.colorgray,
-                            R.drawable.bg_next_audio_disabled,
-                            false
-                        )
-                    }
+        var count = 0
+        listMusic.forEach {
+            if (it.isCheckChooseItem) {
+                count++
+                if (count >= 2) {
+                    setColorButtonNext(
+                        R.color.colorWhite,
+                        R.drawable.bg_next_audio_enabled,
+                        true
+                    )
+                } else {
+                    setColorButtonNext(
+                        R.color.colorgray,
+                        R.drawable.bg_next_audio_disabled,
+                        false
+                    )
                 }
             }
-            binding.tvCountFileMer.text = "$count ${resources.getString(R.string.filecount)}"
         }
+        binding.tvCountFileMer.text = "$count ${resources.getString(R.string.filecount)}"
 
 
     }

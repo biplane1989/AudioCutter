@@ -54,28 +54,30 @@ class MixChooserModel : BaseViewModel() {
 
         }
     }
-    private val _listFilteredAudioFiles = liveData<List<AudioCutterView>?> {
+    private val _listFilteredAudioFiles = liveData<List<AudioCutterView>> {
         emitSource(_listAudioFiles.map {
+            val listResult = ArrayList(it)
             it?.let {
-                var listResult:List<AudioCutterView>?=null
-                listResult = ArrayList(it)
                 if (filterText.isNotEmpty()) {
+                    listResult.clear()
                     it.forEach { item ->
                         val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
-                            filterText.toLowerCase(Locale.getDefault())
+                            filterText.toLowerCase(
+                                Locale.getDefault()
+                            )
                         )
                         if (rs) {
                             listResult.add(item)
                         }
                     }
                 }
-                listResult
             }
-
+            listResult
         })
     }
 
-    fun getAllAudioFile(): LiveData<List<AudioCutterView>?> {
+
+    fun getAllAudioFile(): LiveData<List<AudioCutterView>> {
         return _listFilteredAudioFiles
     }
 
