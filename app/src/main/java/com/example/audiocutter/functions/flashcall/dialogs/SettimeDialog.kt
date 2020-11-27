@@ -28,6 +28,8 @@ class SettimeDialog : BaseDialog(), View.OnClickListener {
         tpTime = view.findViewById(R.id.tp_time_flash)
         tvCancel.setOnClickListener(this)
         tvOk.setOnClickListener(this)
+        hoursChooser = tpTime.currentHour
+        minuteChooser = tpTime.currentMinute
 
 
         tpTime.setOnTimeChangedListener { _, hour, minute ->

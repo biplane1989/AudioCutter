@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.flashcall.sreens
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +29,7 @@ class AppChooserScreen : BaseFragment(), View.OnClickListener, AppFlashAdapter.A
         }
 
         if (it.data != null) {
+            Log.d("TAG", "listApps: ${it.data.size}")
             appFlashAdapter.submitList(it.data)
         }
     }

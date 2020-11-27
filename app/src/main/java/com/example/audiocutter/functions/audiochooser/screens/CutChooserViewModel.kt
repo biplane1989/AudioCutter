@@ -67,32 +67,26 @@ class CutChooserViewModel : BaseViewModel() {
 
     private val _listFilteredAudioFiles = liveData<List<AudioCutterView>?> {
         emitSource(_listAudioFiles.map {
-           it?.let {
-               var listResult: List<AudioCutterView>? = null
-               if (it != null) {
-                   listResult = ArrayList(it)
-                   if (filterText.isNotEmpty()) {
-                       it.forEach { item ->
-                           val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
-                               filterText.toLowerCase(Locale.getDefault())
-                           )
-                           if (rs) {
-                               listResult.add(item)
-                           }
-                       }
-                   }
-               }
-
-               Log.d(TAG, "checkList:  -list ${listResult!!.size} ")
-               listResult
-           }
+            it?.let {
+                var listResult:List<AudioCutterView>?=null
+                listResult = ArrayList(it)
+                if (filterText.isNotEmpty()) {
+                    it.forEach { item ->
+                        val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
+                            filterText.toLowerCase(Locale.getDefault())
+                        )
+                        if (rs) {
+                            listResult.add(item)
+                        }
+                    }
+                }
+                listResult
+            }
         })
     }
-
     fun getAllAudioFile(): LiveData<List<AudioCutterView>?> {
         return _listFilteredAudioFiles
     }
-
 
     fun getListAllAudioFile(): ArrayList<AudioCutterView> {
         return ArrayList(_listAudioFiles.value ?: ArrayList())
