@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.flashcall.sreens
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -209,8 +210,8 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
                 flashCallConfig.incomingCallEnable = isChecked
             }
             binding.swNotifycation -> {
-                val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-                startActivity(intent)
+                /* val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+                 startActivity(intent)*/
                 flashCallConfig.notificationEnable = isChecked
             }
             binding.swInUse -> {
@@ -227,6 +228,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
             }
         }
         changeFlashConfig(flashCallConfig)
+        Build.VERSION_CODES.M
 
     }
 

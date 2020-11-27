@@ -8,16 +8,18 @@ import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.telephony.TelephonyManager
-import android.util.Log
 import androidx.annotation.RequiresApi
 import java.util.*
 
 
 abstract class PhoneCallReceiver : BroadcastReceiver() {
-    private var lastState = TelephonyManager.CALL_STATE_IDLE
-    private lateinit var callStartTime: Date
-    private var isIncoming = false
-    private var savedNumber: String? = null
+    companion object {
+        private var lastState = TelephonyManager.CALL_STATE_IDLE
+        private lateinit var callStartTime: Date
+        private var isIncoming = false
+        private var savedNumber: String? = null
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
             savedNumber = intent.getExtras()?.getString("android.intent.extra.PHONE_NUMBER")
@@ -78,6 +80,7 @@ abstract class PhoneCallReceiver : BroadcastReceiver() {
         state: Int,
         number: String?
     ) {
+
         if (lastState == state) {
             //No change, debounce extras
             return
@@ -89,13 +92,17 @@ abstract class PhoneCallReceiver : BroadcastReceiver() {
                 savedNumber = number
                 onIncomingCallStarted(context, number, callStartTime)
             }
-            TelephonyManager.CALL_STATE_OFFHOOK ->                 //Transition of ringing->offhook are pickups of incoming calls.  Nothing done on them
+            TelephonyManager.CALL_STATE_OFFHOOK ->   //Transition of ringing->offhook are pickups of incoming calls.  Nothing done on them
+            {
                 if (lastState != TelephonyManager.CALL_STATE_RINGING) {
                     isIncoming = false
                     callStartTime = Date()
                     onOutgoingCallStarted(context, savedNumber, callStartTime)
                 }
+            }
+
             TelephonyManager.CALL_STATE_IDLE ->                 //Went to idle-  this is the end of a call.  What type depends on previous state(s)
+            {
                 if (lastState == TelephonyManager.CALL_STATE_RINGING) {
                     //Ring but no pickup-  a miss
                     onMissedCall(context, savedNumber, callStartTime)
@@ -104,6 +111,7 @@ abstract class PhoneCallReceiver : BroadcastReceiver() {
                 } else {
                     onOutgoingCallEnded(context, savedNumber, callStartTime, Date())
                 }
+            }
         }
         lastState = state
     }
