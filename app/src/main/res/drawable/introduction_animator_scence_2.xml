@@ -1,0 +1,15 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_introduction_scence_2_vector" >
+    <target
+        android:name="person"
+        android:animation="@animator/introduction_scence_2_person_anim" />
+    <target
+        android:name="background"
+        android:animation="@animator/introduction_scence_2_background_anim" />
+    <target
+        android:name="plant"
+        android:animation="@animator/introduction_scence_2_plant_anim" />
+    <target
+        android:name="phone"
+        android:animation="@animator/introduction_scence_2_phone_anim" />
+</animated-vector>

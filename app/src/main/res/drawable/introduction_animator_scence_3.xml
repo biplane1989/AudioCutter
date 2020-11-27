@@ -1,0 +1,13 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_introduction_scence_3_vector" >
+
+    <target
+        android:name="background"
+        android:animation="@animator/introduction_scence_3_background_anim" />
+    <target
+        android:name="music"
+        android:animation="@animator/introduction_scence_3_music_anim" />
+    <target
+        android:name="person"
+        android:animation="@animator/introduction_scence_3_person_anim" />
+</animated-vector>
