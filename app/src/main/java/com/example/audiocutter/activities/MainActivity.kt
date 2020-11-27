@@ -3,25 +3,38 @@ package com.example.audiocutter.activities
 import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateScreen
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
-import com.example.audiocutter.core.manager.FlashCallConfig
-import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.ActivityMainBinding
 import com.example.audiocutter.functions.mystudio.Constance
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+
 
 class MainActivity : BaseActivity() {
+    val MY_APP = "AUDIO_CUTTER"
+    val KEY_NAME = "KEY_NAME"
     lateinit var binding: ActivityMainBinding
     override fun onPostCreate() {
         super.onPostCreate()
-        viewStateManager.initState(ViewStateScreen.HOME_SCREEN)
-        handleNotificationIntent(intent)
+
+        val sharePreferences = getSharedPreferences(MY_APP, MODE_PRIVATE)
+        val key = sharePreferences.getInt(KEY_NAME, 0) //0 is the default value.
+
+        if (key == 1) {
+            viewStateManager.initState(ViewStateScreen.HOME_SCREEN)
+            handleNotificationIntent(intent)
+            val navGraph = findNavController(R.id.app_nav_host_fragment).graph
+            navGraph.startDestination = R.id.main_screen
+            findNavController(R.id.app_nav_host_fragment).graph = navGraph
+        } else {
+            viewStateManager.initState(ViewStateScreen.SPLASH)
+            handleNotificationIntent(intent)
+
+            val newSharePreferences = getSharedPreferences(MY_APP, MODE_PRIVATE).edit()
+            newSharePreferences.putInt(KEY_NAME, 1)
+            newSharePreferences.apply()
+        }
     }
 
 

@@ -16,6 +16,7 @@ enum class ViewStateScreen {
     SETTING_SCREEN,
     APP_CHOOSER_SCREEN,
     FLASH_CALL_SCREEN,
-    INTRODUCTION
+    INTRODUCTION,
+    SPLASH
 
 }

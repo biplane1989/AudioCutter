@@ -196,5 +196,5 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="audio_cutter_screen_dialog_convert_cancel">CANCEL</string>
     <string name="introduction_info_screen_start">START</string>
     <string name="introduction_screen_txt_info"><![CDATA[Editing music and creating ring ton is incredibly easy when using MP3 Cutter & Ringtone Maker. Get ready for the era of music with your unique style.]]></string>
-    <string name="introduction_screen_title">MP3 Cutter &amp; <br/>  Ringtone Maker</string>
+    <string name="introduction_screen_title">MP3 Cutter &amp; <br />  Ringtone Maker</string>
 </resources>

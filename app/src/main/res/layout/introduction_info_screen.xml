@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:background="#FFFFFF"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp">
@@ -11,11 +12,15 @@
             android:id="@+id/cl_top"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="#607D8B"
             app:layout_constraintBottom_toTopOf="@+id/cl_bot"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+
+            <FrameLayout
+                android:id="@+id/fm_splash"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

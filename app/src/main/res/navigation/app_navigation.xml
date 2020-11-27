@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/app_navigation"
-    app:startDestination="@+id/main_screen">
+    app:startDestination="@+id/splash_screen">
     <fragment
         android:id="@+id/main_screen"
         android:name="com.example.audiocutter.functions.MainScreen"
@@ -288,6 +288,21 @@
         tools:layout="@layout/app_chooser_screen" />
 
     <fragment
+        android:id="@+id/splash_screen"
+        android:name="com.example.audiocutter.functions.introduction.screens.SplashScreen"
+        tools:layout="@layout/introduction_screen">
+        <action
+            android:id="@+id/splash_screen_go_to_introduction_info"
+            app:destination="@id/introduction_info_screen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+    </fragment>
+
+
+    <fragment
         android:id="@+id/introduction_info_screen"
         android:name="com.example.audiocutter.functions.introduction.screens.IntroductionInfoScreen"
         tools:layout="@layout/introduction_info_screen">
@@ -297,7 +312,8 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpToInclusive="true" />
     </fragment>
 
 
