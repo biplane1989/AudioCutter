@@ -161,7 +161,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         binding.ivCutterScreenClose.setOnClickListener(this)
         dialog = SetAsDialog(requireContext())
         dialogDone = SetAsDoneDialog(requireContext())
-
         audioCutterAdapter.setAudioCutterListtener(this)
 
     }

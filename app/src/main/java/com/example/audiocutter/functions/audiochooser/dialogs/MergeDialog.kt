@@ -9,6 +9,7 @@ import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.util.Utils
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.merge_audio_dialog.*
 
 class MergeDialog() : BaseDialog(), View.OnClickListener {
@@ -71,6 +72,8 @@ class MergeDialog() : BaseDialog(), View.OnClickListener {
         mEdtName.post {
             Utils.showKeyboard(requireContext(), mEdtName)
         }
+
+
     }
 
     override fun onDismiss(dialog: DialogInterface) {

@@ -1,6 +1,5 @@
 package com.example.audiocutter.core.audiomanager
 
-import android.content.ContentValues
 import android.content.Context
 import android.database.ContentObserver
 import android.media.MediaScannerConnection
@@ -353,6 +352,8 @@ object AudioFileManagerImpl : AudioFileManager {
                 val fileNew = File(pathNew)
                 if (file.renameTo(fileNew)) {
                     MediaScannerConnection.scanFile(mContext, arrayOf(fileNew.absolutePath), null) { s, uri ->
+
+
                         notifyDiskChanged()
                     }
                 }

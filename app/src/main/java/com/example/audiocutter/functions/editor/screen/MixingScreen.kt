@@ -80,15 +80,18 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         return Observer {
             when (it.playerState) {
                 PlayerState.IDLE -> {
+                    binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
                     playerState = PlayerState.IDLE
                 }
                 PlayerState.PREPARING -> {
                 }
                 PlayerState.PLAYING -> {
+                    binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
                     binding.crChangeViewMixing.setPosition(it.posision)
                     playerState = PlayerState.PLAYING
                 }
                 PlayerState.PAUSE -> {
+                    binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
                     playerState = PlayerState.PAUSE
                 }
             }
@@ -150,12 +153,12 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
             binding.playIv -> {
                 runOnUI {
                     if (playerState == PlayerState.PLAYING) {
-                        binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
+//                        binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
                         mPlayer1.pause()
                         mPlayer2.pause()
                     } else {
                         if (playerState == PlayerState.IDLE) {
-                            binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
+//                            binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
                             audioFile1?.let {
                                 mPlayer1.play(it)
                             }
@@ -163,7 +166,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                                 mPlayer2.play(it)
                             }
                         } else {
-                            binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
+//                            binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
                             mPlayer2.resume()
                             mPlayer1.resume()
                         }
@@ -172,7 +175,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
             }
             binding.shortedTv -> {
                 if (isCheckClick == 2) {
-                    binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
+//                    binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
                     changeBackgroundTextView(binding.shortedTv, binding.longestTv)
                     checkCompareDurationMin(durAudio1, durAudio2)
                     isCheckClick = 1
@@ -180,7 +183,8 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
             }
             binding.longestTv -> {
                 if (isCheckClick == 1) {
-                    binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
+//                    binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
+
                     changeBackgroundTextView(binding.longestTv, binding.shortedTv)
                     checkCompareDuration(durAudio1, durAudio2)
                     isCheckClick = 2
@@ -237,7 +241,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         Log.d(TAG, "onLineChange: pause start $playerState")
         if (playerState == PlayerState.PAUSE) {
             Log.d(TAG, "onLineChange: pause end $playerState")
-            binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
+//            binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
         }
         runOnUI {
             mPlayer1.play(audioFile1, pos)

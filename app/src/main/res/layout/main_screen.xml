@@ -10,50 +10,44 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            paddingTopSystemWindowInsets="@{true}">
-            <RelativeLayout
-                android:layout_width="match_parent"
+            paddingTopSystemWindowInsets="@{true}"
+            tools:ignore="MissingConstraints">
+
+            <LinearLayout
                 android:layout_height="?android:actionBarSize"
-                app:layout_constraintTop_toTopOf="parent"
-                >
+                android:layout_width="match_parent"
+                android:gravity="center_vertical">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
+                    android:paddingLeft="@dimen/d_16"
                     android:fontFamily="@font/sanfrancisco_bold"
                     android:gravity="center_vertical"
                     android:text="@string/main_screen_title"
                     android:textColor="@color/main_screen_title_text_color"
-                    android:textSize="18dp"
-
+                    android:textSize="@dimen/text_size_header"
                     android:textStyle="bold" />
 
                 <ImageView
-                    android:id="@+id/setting_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="7dp"
-                    android:background="?android:selectableItemBackground"
-                    android:padding="8dp"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/home_ic_setting" />
-
-                <ImageView
                     android:id="@+id/advertisement_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@+id/setting_button"
+                    android:layout_width="@dimen/d_48"
+                    android:layout_height="@dimen/d_48"
                     android:background="?android:selectableItemBackground"
-                    android:padding="8dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/home_ic_advertisement" />
 
+                <ImageView
+                    android:id="@+id/setting_button"
+                    android:layout_width="@dimen/d_48"
+                    android:layout_height="@dimen/d_48"
+                    android:background="?android:selectableItemBackground"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/home_ic_setting" />
 
-            </RelativeLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 

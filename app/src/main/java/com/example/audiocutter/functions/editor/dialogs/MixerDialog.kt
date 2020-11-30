@@ -1,12 +1,12 @@
 package com.example.audiocutter.functions.editor.dialogs
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.functions.audiochooser.dialogs.MergeDialog
 import com.example.audiocutter.util.Utils
 import kotlinx.android.synthetic.main.mix_dialog_file_name.*
 
@@ -69,6 +69,14 @@ class MixerDialog : BaseDialog() {
             }
         }
         edt_file_name.setSelection(name.length)
+        edt_file_name.post {
+            Utils.showKeyboard(requireContext(), edt_file_name)
+        }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        Utils.hideKeyboard(requireContext(), edt_file_name)
     }
 
     private fun checkValid(name: String): Boolean {

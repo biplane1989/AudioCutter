@@ -3,6 +3,7 @@ package com.example.audiocutter.util
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.*
 import android.media.MediaMetadataRetriever
@@ -266,20 +267,20 @@ class Utils {
             var baseFileName = ""
             //val dateStr = SimpleDateFormat("dd_MM_yyyy").format(Date())
             val folderPath = ManagerFactory.getAudioFileManager().getFolderPath(typeFile)
-            if (newName.isEmpty()) {
+            baseFileName = if (newName.isEmpty()) {
                 when (typeFile) {
                     Folder.TYPE_CUTTER -> {
-                        baseFileName = "cutting_${prefixName}"
+                        "cutting_${prefixName}"
                     }
                     Folder.TYPE_MERGER -> {
-                        baseFileName = "merging_${prefixName}"
+                        "merging_${prefixName}"
                     }
                     Folder.TYPE_MIXER -> {
-                        baseFileName = "mixing_${prefixName}"
+                        "mixing_${prefixName}"
                     }
                 }
             } else {
-                baseFileName = newName
+                newName
             }
             val listBaseName = getAllFileNameFromFolder(folderPath)
             var fileName = baseFileName
@@ -361,13 +362,19 @@ class Utils {
         }
 
         fun hideKeyboard(context: Context, editText: EditText) {
-            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val inputMethodManager =
+                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
         }
 
         fun showKeyboard(context: Context, editText: EditText) {
-            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val inputMethodManager =
+                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+        }
+
+        fun checkFlashOnDeviceAvailable(context: Context): Boolean? {
+            return context.packageManager?.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)
         }
     }
 

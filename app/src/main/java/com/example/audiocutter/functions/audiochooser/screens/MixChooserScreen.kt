@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -258,8 +259,8 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     private fun setColorButtonNext(color: Int, bg: Int, rs: Boolean) {
         binding.rltNextMixer.isEnabled = rs
         binding.rltNextMixer.setBackgroundResource(bg)
-        binding.ivNextMixer.setColorFilter(requireActivity().resources.getColor(color));
-        binding.tvNextMixer.setTextColor(requireActivity().resources.getColor(color))
+        binding.ivNextMixer.setColorFilter((ContextCompat.getColor(requireContext(), color)))
+        binding.tvNextMixer.setTextColor((ContextCompat.getColor(requireContext(), color)))
     }
 
 

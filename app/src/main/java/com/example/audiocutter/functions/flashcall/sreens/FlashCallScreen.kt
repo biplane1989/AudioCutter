@@ -137,6 +137,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
+
         flashModel = ViewModelProvider(this).get(FlashCallModel::class.java)
         flashModel.getFlashCallConfig().observe(this, flashObserver)
     }
@@ -147,11 +148,22 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
         savedInstanceState: Bundle?
     ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.flash_call_screen, container, false)
+
+        val result = Utils.checkFlashOnDeviceAvailable(requireContext())
+        result?.let {
+            if (result) {
+                showItemDeviceFlashAvailable()
+            } else {
+                showItemDeviceFlashUnAvailable()
+            }
+        }
         initViews()
         return binding.root
     }
 
     private fun initViews() {
+        Log.d(TAG, "checkFunc is the program running:  start ")
+
         binding.tbStartTime.isEnabled = false
         binding.tbEndTime.isEnabled = false
         /**tablerow**/
@@ -179,6 +191,18 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
         binding.sbLinghtningSpeedFlcall.setOnSeekBarChangeListener(this)
     }
 
+    private fun showItemDeviceFlashUnAvailable() {
+        binding.lnFlashFlashlightUnavailable.visibility = View.VISIBLE
+        binding.scrModeOnflash.visibility = View.INVISIBLE
+        binding.swFlashCallMode.visibility = View.INVISIBLE
+    }
+
+    private fun showItemDeviceFlashAvailable() {
+        binding.lnFlashFlashlightUnavailable.visibility = View.INVISIBLE
+        binding.scrModeOnflash.visibility = View.VISIBLE
+        binding.swFlashCallMode.visibility = View.VISIBLE
+    }
+
     @SuppressLint("ResourceAsColor")
     override fun onCheckedChanged(view: CompoundButton?, isChecked: Boolean) {
         when (view) {
@@ -194,8 +218,6 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
                 flashCallConfig.incomingCallEnable = isChecked
             }
             binding.swNotifycation -> {
-                /* val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-                 startActivity(intent)*/
                 flashCallConfig.notificationEnable = isChecked
             }
             binding.swInUse -> {

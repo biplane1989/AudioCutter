@@ -3,7 +3,9 @@
     <item>
         <clip>
             <shape android:shape="rectangle">
-                <corners android:radius="2dp" />
+                <corners
+                    android:bottomLeftRadius="@dimen/d_2"
+                    android:topLeftRadius="@dimen/d_2" />
                 <solid android:color="@color/colorYelowDark" />
             </shape>
         </clip>

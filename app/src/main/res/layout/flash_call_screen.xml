@@ -28,6 +28,27 @@
                 android:text="@string/flash_blinks_when_a_call_comes_in_flahscall" />
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/ln_flash_flashlight_unavailable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="invisible">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ic_energy_flcall" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/d_16"
+                android:text="@string/flash_ondevice_unavailable" />
+        </LinearLayout>
+
         <RelativeLayout
             android:id="@+id/rlt_actionbar"
             android:layout_width="match_parent"
@@ -85,6 +106,7 @@
 
 
         <ScrollView
+            android:id="@+id/scr_mode_onflash"
             android:overScrollMode="never"
             android:layout_below="@+id/rlt_actionbar"
             android:layout_width="match_parent"
@@ -93,7 +115,6 @@
             <LinearLayout
                 android:id="@+id/ln_flash_on_mode"
                 android:orientation="vertical"
-                android:visibility="visible"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -164,6 +185,7 @@
                 <TableRow
                     android:id="@+id/tb_app_flashcall"
                     android:layout_width="match_parent"
+                    android:gravity="center"
                     android:layout_height="wrap_content"
                     android:paddingVertical="@dimen/d_10">
 
@@ -175,7 +197,7 @@
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center_vertical"
                         android:orientation="vertical">
@@ -366,14 +388,15 @@
                         android:textSize="@dimen/d_16" />
 
                     <SeekBar
+                        android:paddingVertical="@dimen/d_16"
                         android:id="@+id/sb_linghtning_speed_flcall"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/d_56"
+                        android:layout_height="wrap_content"
                         android:layout_below="@+id/tv_lightning_speed_flcall"
                         android:max="27"
-                        android:maxHeight="5dp"
                         android:progressDrawable="@drawable/seekbar_style"
-                        android:thumb="@drawable/custom_thumb" />
+                        android:thumb="@drawable/custom_thumb"
+                        android:maxHeight="5dp" />
 
 
                     <TableRow
@@ -444,22 +467,23 @@
                             android:layout_height="match_parent"
                             android:layout_weight="0.3"
                             android:fontFamily="@font/sanfranciscodisplay_light"
-                            android:text="2 times"
+                            android:text="@string/flashscreen_default_times_count"
                             android:id="@+id/tv_numberOfLightning"
                             android:gravity="right"
                             android:textSize="@dimen/d_16" />
                     </TableRow>
 
                     <SeekBar
+                        android:paddingVertical="@dimen/d_16"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/d_56"
+                        android:layout_height="wrap_content"
                         android:id="@+id/sb_number_of_lightning"
                         android:layout_below="@+id/tb_number_flash"
                         android:max="10"
-                        android:maxHeight="5dp"
-                        android:progress="1"
                         android:progressDrawable="@drawable/seekbar_style"
-                        android:thumb="@drawable/custom_thumb" />
+                        android:thumb="@drawable/custom_thumb"
+                        android:maxHeight="5dp"
+                        android:progress="1" />
                 </RelativeLayout>
 
                 <View
