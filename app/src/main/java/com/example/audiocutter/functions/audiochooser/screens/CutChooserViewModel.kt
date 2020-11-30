@@ -29,6 +29,11 @@ class CutChooserViewModel : BaseViewModel() {
         get() = _stateLoadProgress
 
 
+    private var _isEmptyState = MutableLiveData<Boolean>()
+    val isEmptyState: LiveData<Boolean>
+        get() = _isEmptyState
+
+
     fun getStateLoading(): LiveData<Int> {
         return stateLoadProgress
     }
@@ -68,24 +73,38 @@ class CutChooserViewModel : BaseViewModel() {
     private val _listFilteredAudioFiles = liveData<List<AudioCutterView>?> {
         emitSource(_listAudioFiles.map {
             it?.let {
-                var listResult:List<AudioCutterView>?=null
+                var listResult: List<AudioCutterView>? = null
                 listResult = ArrayList(it)
+                val listEmpty = ArrayList<Boolean>()
                 if (filterText.isNotEmpty()) {
+                    listResult.clear()
                     it.forEach { item ->
                         val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
                             filterText.toLowerCase(Locale.getDefault())
                         )
+                        listEmpty.add(rs)
                         if (rs) {
                             listResult.add(item)
                         }
                     }
+                    if (!listEmpty.contains(true)) {
+                        _isEmptyState.postValue(false)
+                    } else {
+                        _isEmptyState.postValue(true)
+                    }
                 }
+
                 listResult
             }
         })
     }
+
     fun getAllAudioFile(): LiveData<List<AudioCutterView>?> {
         return _listFilteredAudioFiles
+    }
+
+    fun getStateEmpty(): LiveData<Boolean> {
+        return isEmptyState
     }
 
     fun getListAllAudioFile(): ArrayList<AudioCutterView> {

@@ -81,6 +81,13 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
 
 
     }
+    private val emptyState = Observer<Boolean> {
+        if (it) {
+            showList()
+        } else {
+            showEmptyList()
+        }
+    }
 
 
     override fun onPause() {
@@ -119,6 +126,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         runOnUI {
             audioMerModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
             audioMerModel.getAllAudioFile().observe(viewLifecycleOwner, listAudioObserver)
+            audioMerModel.getStateEmpty().observe(viewLifecycleOwner, emptyState)
 
         }
     }

@@ -19,7 +19,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.core.manager.FlashCallConfig
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.CutChooserScreenBinding
@@ -71,12 +70,19 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
             }
         }
-
     }
 
 
     private val playerInfoObserver = Observer<PlayerInfo> {
         audioCutterModel.updateMediaInfo(it)
+    }
+
+    private val emptyState = Observer<Boolean> {
+        if (it) {
+            showList()
+        } else {
+            showEmptyList()
+        }
     }
 
 
@@ -102,6 +108,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         runOnUI {
             audioCutterModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
             audioCutterModel.getAllAudioFile().observe(viewLifecycleOwner, listAudioObserver)
+            audioCutterModel.getStateEmpty().observe(viewLifecycleOwner, emptyState)
 
         }
     }

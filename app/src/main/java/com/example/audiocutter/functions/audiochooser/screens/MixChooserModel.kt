@@ -26,6 +26,12 @@ class MixChooserModel : BaseViewModel() {
 
     var isChooseItem = false
 
+
+    private var _isEmptyState = MutableLiveData<Boolean>()
+    val isEmptyState: LiveData<Boolean>
+        get() = _isEmptyState
+
+
     private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>?>()
     init {
 
@@ -57,21 +63,29 @@ class MixChooserModel : BaseViewModel() {
     private val _listFilteredAudioFiles = liveData<List<AudioCutterView>?> {
         emitSource(_listAudioFiles.map {
             it?.let {
-                var listResult:List<AudioCutterView>?=null
+                var listResult: List<AudioCutterView>? = null
                 listResult = ArrayList(it)
+                val listEmpty = ArrayList<Boolean>()
                 if (filterText.isNotEmpty()) {
+                    listResult.clear()
                     it.forEach { item ->
                         val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
                             filterText.toLowerCase(Locale.getDefault())
                         )
+                        listEmpty.add(rs)
                         if (rs) {
                             listResult.add(item)
                         }
                     }
+                    if (!listEmpty.contains(true)) {
+                        _isEmptyState.postValue(false)
+                    } else {
+                        _isEmptyState.postValue(true)
+                    }
                 }
+
                 listResult
             }
-
         })
     }
 
@@ -87,6 +101,11 @@ class MixChooserModel : BaseViewModel() {
     private fun getListAllAudio(): ArrayList<AudioCutterView> {
         return ArrayList(_listAudioFiles.value ?: ArrayList())
     }
+
+    fun getStateEmpty(): LiveData<Boolean> {
+        return isEmptyState
+    }
+
 
 
     fun getStateLoading(): LiveData<Int> {

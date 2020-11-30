@@ -81,6 +81,13 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
 
     }
+    private val emptyState = Observer<Boolean> {
+        if (it) {
+            showList()
+        } else {
+            showEmptyList()
+        }
+    }
 
     private fun showList() {
         binding.rvMixer.visibility = View.VISIBLE
@@ -126,6 +133,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
             val listAudioViewLiveData = audioMixModel.getAllAudioFile()
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
             audioMixModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
+            audioMixModel.getStateEmpty().observe(viewLifecycleOwner, emptyState)
         }
     }
 

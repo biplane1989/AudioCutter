@@ -25,11 +25,16 @@ class MergeChooserModel : BaseViewModel() {
 
     private var filterText = ""
 
+    private var _isEmptyState = MutableLiveData<Boolean>()
+    val isEmptyState: LiveData<Boolean>
+        get() = _isEmptyState
+
     private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>?>()
+
     init {
 
         _listAudioFiles.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
-            var listAudioFiles:List<AudioCutterView>?=null
+            var listAudioFiles: List<AudioCutterView>? = null
 
             when (it.state) {
                 StateLoad.LOADING -> {
@@ -56,26 +61,37 @@ class MergeChooserModel : BaseViewModel() {
     private val _listFilteredAudioFiles = liveData<List<AudioCutterView>?> {
         emitSource(_listAudioFiles.map {
             it?.let {
-                var listResult:List<AudioCutterView>?=null
+                var listResult: List<AudioCutterView>? = null
                 listResult = ArrayList(it)
+                val listEmpty = ArrayList<Boolean>()
                 if (filterText.isNotEmpty()) {
+                    listResult.clear()
                     it.forEach { item ->
                         val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
                             filterText.toLowerCase(Locale.getDefault())
                         )
+                        listEmpty.add(rs)
                         if (rs) {
                             listResult.add(item)
                         }
                     }
+                    if (!listEmpty.contains(true)) {
+                        _isEmptyState.postValue(false)
+                    } else {
+                        _isEmptyState.postValue(true)
+                    }
                 }
+
                 listResult
             }
-
         })
     }
-
     fun getStateLoading(): LiveData<Int> {
         return stateLoadProgress
+    }
+
+    fun getStateEmpty(): LiveData<Boolean> {
+        return isEmptyState
     }
 
 
