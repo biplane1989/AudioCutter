@@ -8,6 +8,8 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.objects.AudioFile
+import com.example.audiocutter.util.Utils
+import com.example.core.utils.FileUtil
 import kotlinx.android.synthetic.main.my_studio_dialog_info.*
 import java.io.File
 import java.text.SimpleDateFormat
@@ -51,67 +53,67 @@ class InfoDialog : BaseDialog() {
         })
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "SimpleDateFormat")
     fun getData() {
         val simpleDateFormat = SimpleDateFormat("mm:ss")
 
-        /*if (requireArguments().getString(BUNDLE_FILE_PATH) != null) {
+        if (requireArguments().getString(BUNDLE_FILE_PATH) != null) {
             val size = File(requireArguments().getString(BUNDLE_FILE_PATH).toString()).length()
             val index = requireArguments().getString(BUNDLE_FILE_PATH)?.lastIndexOf(".")
             val format = requireArguments().getString(BUNDLE_FILE_PATH)
                 ?.substring(index!! + 1, requireArguments().getString(BUNDLE_FILE_PATH)?.length!!)
 
-            tv_format.text = format + "(" + format + ")"
-            tv_file.text = requireArguments().getString(BUNDLE_FILE_NAME)
+            tv_format.text = "$format($format)"
+            tv_file.text =
+                requireArguments().getString(BUNDLE_FILE_NAME) + "I just want to resize (keeping aspect ratio) to 1080x1920 (or the nearest) and then save the new bitmap to a file.\n" +
+                        "\n" +
+                        "I'm sure I've permission to write I'm sure the path image exists I'm sure MasterFacade.getAppDir() + \"temp/\" + resource.hashCode() + \".jpg\" is a valid dir and I've writing permisions on it\n" +
+                        "\n" +
+                        "But this code is never reached!\n" +
+                        "\n" +
+                        "I tried to debug and onResourceReady never is called..."
             tv_size.text = (size.toInt() / 1024).toString() + " kb" + " (" + size + " bytes)"
             tv_location.text = requireArguments().getString(BUNDLE_FILE_PATH).toString()
+
+
+            ManagerFactory.getAudioFileManager()
+                .findAudioFile(requireArguments().getString(BUNDLE_FILE_PATH).toString())
+                ?.let { audioFile ->
+                    if (audioFile.artist != "") {
+                        tv_artist.text = audioFile.artist
+                    } else {
+                        tv_artist.text = UNKNOWN
+                    }
+
+                    if (audioFile.alBum != "") {
+                        tv_album.text = audioFile.alBum
+                    } else {
+                        tv_album.text = UNKNOWN
+                    }
+
+                    tv_birate.text = (audioFile.bitRate / 1000).toString() + " kb/s"
+
+                    if (audioFile.title != "") {
+                        tv_title.text = audioFile.title
+                    } else {
+                        tv_title.text = UNKNOWN
+                    }
+
+                    tv_length.text = simpleDateFormat.format(audioFile.duration.toInt())
+
+                    if (audioFile.genre != "") {
+                        tv_genre.text = audioFile.genre
+                    } else {
+                        tv_genre.text = UNKNOWN
+                    }
+
+                    tv_date.text = audioFile.modifiedStr
+                }
         } else {
             tv_file.text = UNKNOWN
             tv_size.text = UNKNOWN
             tv_location.text = UNKNOWN
             tv_format.text = UNKNOWN
         }
-
-        if (!artist.isNullOrEmpty()) {
-            tv_artist.text = artist
-        } else {
-            tv_artist.text = UNKNOWN
-        }
-
-        if (!album.isNullOrEmpty()) {
-            tv_album.text = album
-        } else {
-            tv_album.text = UNKNOWN
-        }
-        if (!bitRate.isNullOrEmpty()) {
-            tv_birate.text = (bitRate.toInt() / 10000).toString() + " kb/s"
-        } else {
-            tv_birate.text = UNKNOWN
-        }
-
-        if (!title.isNullOrEmpty()) {
-            tv_title.text = title
-        } else {
-            tv_title.text = UNKNOWN
-        }
-
-        if (!duration.isNullOrEmpty()) {
-            tv_length.text = simpleDateFormat.format(duration.toInt())
-        } else {
-            tv_length.text = UNKNOWN
-        }
-
-        if (!genre.isNullOrEmpty()) {
-            tv_genre.text = genre
-        } else {
-            tv_genre.text = UNKNOWN
-        }
-
-        if (!date.isNullOrEmpty()) {
-            tv_date.text = date
-        } else {
-            tv_date.text = UNKNOWN
-        }*/
-
     }
 }

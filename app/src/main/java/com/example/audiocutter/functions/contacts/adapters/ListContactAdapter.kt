@@ -25,16 +25,21 @@ interface ContactCallback {
     fun itemOnClick(phoneNumber: String, ringtonePath: String)
 }
 
-class ListContactAdapter(context: Context?, var contactCallback: ContactCallback) : ListAdapter<ContactItemView, RecyclerView.ViewHolder>(ContactDiffCallBack()) {
+class ListContactAdapter(context: Context?, var contactCallback: ContactCallback) :
+    ListAdapter<ContactItemView, RecyclerView.ViewHolder>(ContactDiffCallBack()) {
 
     var mContext: Context? = context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == SECTION_VIEW) {
-            HeaderViewHolder(LayoutInflater.from(parent.context)
-                .inflate(R.layout.list_contact_item_header, parent, false))
-        } else ItemViewHolder(LayoutInflater.from(parent.context)
-            .inflate(R.layout.list_contact_item_content, parent, false), mContext)
+            HeaderViewHolder(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.list_contact_item_header, parent, false)
+            )
+        } else ItemViewHolder(
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.list_contact_item_content, parent, false), mContext
+        )
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -68,7 +73,11 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
     }
 
     // khi chi thay doi 1 truong trong data
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
         super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
@@ -93,19 +102,22 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                     itemViewHolder.tvRingtoneDefault.visibility = View.GONE
                     itemViewHolder.cvDefault.visibility = View.GONE
                     itemViewHolder.tvRingtone.visibility = View.VISIBLE
-                    itemViewHolder.tvRingtone.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)  // get name song by uri    | sua contactItem = newItem
+                    itemViewHolder.tvRingtone.text =
+                        newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)  // get name song by uri    | sua contactItem = newItem
                 } else {
                     itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
                     itemViewHolder.cvDefault.visibility = View.VISIBLE
                     itemViewHolder.tvRingtone.visibility = View.GONE
-                    itemViewHolder.tvRingtoneDefault.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
+                    itemViewHolder.tvRingtoneDefault.text =
+                        newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
 
                 }
             }
         }
     }
 
-    inner class ItemViewHolder(itemView: View, context: Context?) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class ItemViewHolder(itemView: View, context: Context?) :
+        RecyclerView.ViewHolder(itemView), View.OnClickListener {
         val tvName: TextView = itemView.findViewById(R.id.tv_name)
         val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar)
         val tvRingtone: TextView = itemView.findViewById(R.id.tv_ringtone)
@@ -120,6 +132,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
 
             contentItem.contactItem.thumb?.let {
                 Glide.with(itemView).load(it)
+                    .centerCrop()
                     .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
                     .into(ivAvatar)
             }
@@ -134,7 +147,8 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 tvRingtoneDefault.visibility = View.VISIBLE
                 cvDefault.visibility = View.VISIBLE
                 tvRingtone.visibility = View.GONE
-                tvRingtoneDefault.text = contentItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
+                tvRingtoneDefault.text =
+                    contentItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
             }
 
             clItemContact.setOnClickListener(this)
@@ -169,11 +183,17 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
 
 class ContactDiffCallBack : DiffUtil.ItemCallback<ContactItemView>() {
 
-    override fun areItemsTheSame(oldItemView: ContactItemView, newItemView: ContactItemView): Boolean {
+    override fun areItemsTheSame(
+        oldItemView: ContactItemView,
+        newItemView: ContactItemView
+    ): Boolean {
         return oldItemView.contactItem.phoneNumber == newItemView.contactItem.phoneNumber
     }
 
-    override fun areContentsTheSame(oldItemView: ContactItemView, newItemView: ContactItemView): Boolean {
+    override fun areContentsTheSame(
+        oldItemView: ContactItemView,
+        newItemView: ContactItemView
+    ): Boolean {
         return oldItemView == newItemView
     }
 

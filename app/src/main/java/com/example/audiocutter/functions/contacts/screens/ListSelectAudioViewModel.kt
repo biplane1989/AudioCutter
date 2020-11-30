@@ -1,31 +1,24 @@
 package com.example.audiocutter.functions.contacts.screens
 
 import android.app.Application
-import android.media.MediaMetadataRetriever
 import android.text.TextUtils
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.contacts.objects.SelectItemStatus
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
-import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.objects.StateLoad
 import com.example.audiocutter.util.Utils
-import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
 class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(application) {
 
     private val mContext = getApplication<Application>().applicationContext
-    private val TAG = "giangtd"
     private val audioPlayer = ManagerFactory.newAudioPlayer()
     private var mListAudioFileView = ArrayList<SelectItemView>()
     private var mListSearch = ArrayList<SelectItemView>()
@@ -51,30 +44,45 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     }
 
     fun init(fileUri: String) {
-
         mAudioMediatorLiveData.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
             runOnBackground {
                 if (it.state == StateLoad.LOADING) {
-                    isEmptyStatus.postValue(false)
+                    //isEmptyStatus.postValue(false)
                     loadingStatus.postValue(true)
                 }
-                if (it.state == StateLoad.LOADDONE) {       // khi loading xong thi check co data hay khong de show man hinh empty data
+                if (it.state == StateLoad.LOADDONE) {
+                    loadingStatus.postValue(true)
+                    // khi loading xong thi check co data hay khong de show man hinh empty data
                     if (!it.listAudioFiles.isEmpty()) {
                         it.listAudioFiles.forEach { audioFile ->
-                            mListAudioFileView.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false))
+                            mListAudioFileView.add(
+                                SelectItemView(
+                                    audioFile,
+                                    false,
+                                    false,
+                                    SelectItemStatus(),
+                                    false
+                                )
+                            )
                         }
-                        mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
-                        loadingStatus.postValue(false)
+                        mListAudioFileView =
+                            getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
+
                     } else {
                         isEmptyStatus.postValue(true)
                     }
                 }
-                mAudioMediatorLiveData.postValue(setSelectRingtone(fileUri))
+                selectRingtone(fileUri)
+                loadingStatus.postValue(false)
+                mAudioMediatorLiveData.postValue(mListAudioFileView)
+
             }
+
+
         }
     }
 
-    private fun setSelectRingtone(ringtonePath: String): ArrayList<SelectItemView> {
+    private fun selectRingtone(ringtonePath: String){
         var index = 0
         for (item in mListAudioFileView) {
             if (TextUtils.equals(item.audioFile.uri.toString(), ringtonePath)) {
@@ -85,8 +93,6 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
             }
             index++
         }
-
-        return mListAudioFileView
     }
 
     fun getIndexSelectRingtone(ringtonePath: String): Int {         // lay vi tri cua file audio la nhac chuong cua contact
@@ -138,8 +144,9 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     }
 
     private fun getRingtoneDefault(list: List<SelectItemView>): List<SelectItemView> {
+        val ringtoneDefault = Utils.getUriRingtoneDefault(mContext)
         for (item in list) {
-            item.isRingtoneDefault = Utils.checkRingtoneDefault(mContext, item.audioFile.uri.toString())
+            item.isRingtoneDefault = (item.audioFile.uri.toString() == ringtoneDefault)
         }
         return list
     }
@@ -173,7 +180,11 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         if (mListSearch.size > 0) {
             for (item in mListAudioFileView) {
                 for (searchItem in mListSearch) {
-                    if (TextUtils.equals(item.audioFile.uri.toString(), searchItem.audioFile.uri.toString())) {
+                    if (TextUtils.equals(
+                            item.audioFile.uri.toString(),
+                            searchItem.audioFile.uri.toString()
+                        )
+                    ) {
                         mListAudioFileView.set(index, searchItem)
                         break
                     }
@@ -188,7 +199,8 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         } else {
             for (item in mListAudioFileView) {
                 if (item.audioFile.fileName.toUpperCase(Locale.ROOT)
-                        .contains(data.toUpperCase(Locale.ROOT))) {
+                        .contains(data.toUpperCase(Locale.ROOT))
+                ) {
                     mListSearch.add(item)
                 }
             }
@@ -211,7 +223,10 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
             for (audio in mListAudioFileView) {
                 if (audio.isSelect) {
                     return ManagerFactory.getRingtoneManager()
-                        .setRingToneWithContactNumberandFilePath(audio.audioFile.file.absolutePath, phoneNumber)
+                        .setRingToneWithContactNumberandFilePath(
+                            audio.audioFile.file.absolutePath,
+                            phoneNumber
+                        )
                 }
             }
         }
