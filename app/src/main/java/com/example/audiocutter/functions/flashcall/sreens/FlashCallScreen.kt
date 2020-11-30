@@ -11,9 +11,11 @@ import android.widget.CompoundButton
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.audiocutter.R
+import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.FlashCallConfig
 import com.example.audiocutter.core.manager.FlashType
@@ -23,6 +25,9 @@ import com.example.audiocutter.databinding.FlashCallScreenBinding
 import com.example.audiocutter.functions.flashcall.dialogs.FlashTypeDialog
 import com.example.audiocutter.functions.flashcall.dialogs.SettimeDialog
 import com.example.audiocutter.functions.flashcall.dialogs.TypeFlash
+import com.example.audiocutter.permissions.AppPermission
+import com.example.audiocutter.permissions.NotificationListenerPermissionRequest
+import com.example.audiocutter.permissions.PermissionManager
 import com.example.audiocutter.util.Utils
 
 
@@ -43,6 +48,8 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
     private val MIN_PROGRESS = 0
     private val MAX_VALUE = 1500
     private val MIN_VALUE = 150
+    private val NOTIFICATION_LISTENER_REQUESTING_PERMISSION = 1 shl 1
+    private var pendingRequestingPermission = 0
 
     @SuppressLint("SetTextI18n")
     var flashObserver = Observer<FlashCallConfig> {
@@ -218,7 +225,19 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
                 flashCallConfig.incomingCallEnable = isChecked
             }
             binding.swNotifycation -> {
-                flashCallConfig.notificationEnable = isChecked
+                /* val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+                 startActivity(intent)*/
+                if (isChecked) {
+                    if (notificationListenerPermissionRequest.isPermissionGranted()) {
+                        flashCallConfig.notificationEnable = isChecked
+                    } else {
+                        pendingRequestingPermission = NOTIFICATION_LISTENER_REQUESTING_PERMISSION
+                        notificationListenerPermissionRequest.requestPermission()
+                    }
+                } else {
+                    flashCallConfig.notificationEnable = isChecked
+                }
+
             }
             binding.swInUse -> {
                 flashCallConfig.notFiredWhenInUsed = isChecked
@@ -408,6 +427,21 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
             }
         }
         changeFlashConfig(flashCallConfig)
+    }
+
+    private val notificationListenerPermissionRequest =
+        object : NotificationListenerPermissionRequest {
+            override fun getPermissionActivity(): BaseActivity? {
+                return getBaseActivity()
+            }
+
+            override fun getLifeCycle(): Lifecycle {
+                return lifecycle
+            }
+        }
+
+    init {
+        notificationListenerPermissionRequest.init()
     }
 
 }

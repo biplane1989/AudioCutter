@@ -2,6 +2,7 @@ package com.example.audiocutter.permissions
 
 import android.Manifest
 import android.content.Context
+import android.os.Build
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.util.PreferencesHelper
@@ -16,10 +17,11 @@ data class PermissionInfo(val permissionName: String, var granted: Boolean)
 class AppPermission {
     private val listPermissionInfos = ArrayList<PermissionInfo>()
     private val listPermissionNames = ArrayList<String>()
-
+    private val NOTIFICATION_LISTENER_PERMISSION = "NOTIFICATION_LISTENER_PERMISSION"
 
     init {
-        listPermissionNames.addAll(listOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.WRITE_SETTINGS, Manifest.permission.READ_PHONE_STATE, Manifest.permission.PROCESS_OUTGOING_CALLS))
+        listPermissionNames.addAll(listOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.WRITE_SETTINGS, Manifest.permission.READ_PHONE_STATE, Manifest.permission.PROCESS_OUTGOING_CALLS,
+            NOTIFICATION_LISTENER_PERMISSION))
 
         listPermissionNames.forEach({ permissionName ->
             listPermissionInfos.add(PermissionInfo(permissionName, false))
@@ -67,7 +69,9 @@ class AppPermission {
     fun hasStoragePermission(): Boolean {
         return getPermissionInfo(Manifest.permission.WRITE_EXTERNAL_STORAGE)?.granted ?: false
     }
-
+    fun hasNotificationListenerPermission(): Boolean {
+        return getPermissionInfo(NOTIFICATION_LISTENER_PERMISSION)?.granted ?: false
+    }
 
     fun hasReadContactPermission(): Boolean {
         return getPermissionInfo(Manifest.permission.READ_CONTACTS)?.granted ?: false
@@ -95,6 +99,14 @@ class AppPermission {
                         return true
                     }
                 }
+                NOTIFICATION_LISTENER_PERMISSION  -> {
+                    if (permissionInfo.granted != PermissionUtil.hasNotificationListenerPermission(
+                            context
+                        )
+                    ) {
+                        return true
+                    }
+                }
                 else -> {
                     if (permissionInfo.granted != PermissionUtil.hasPermission(context, permissionInfo.permissionName)) {
                         return true
@@ -110,6 +122,12 @@ class AppPermission {
             when (permissionInfo.permissionName) {
                 Manifest.permission.WRITE_SETTINGS -> {
                     permissionInfo.granted = PermissionUtil.hasWriteSetting(context)
+                }
+                NOTIFICATION_LISTENER_PERMISSION -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        permissionInfo.granted =
+                            PermissionUtil.hasNotificationListenerPermission(context)
+                    }
                 }
                 else -> {
                     permissionInfo.granted = PermissionUtil.hasPermission(context, permissionInfo.permissionName)

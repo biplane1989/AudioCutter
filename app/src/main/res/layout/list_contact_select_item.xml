@@ -26,7 +26,7 @@
                 android:layout_width="@dimen/d_40"
                 android:layout_height="@dimen/d_40"
                 android:layout_marginLeft="16dp"
-                android:scaleType="centerInside"
+                android:scaleType="fitXY"
                 android:src="@drawable/my_studio_item_ic_avatar"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -64,7 +64,6 @@
                     android:gravity="top"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:text="@string/my_studio_screen_item_title"
                     android:textColor="#2E3041"
                     android:textSize="@dimen/d_18"
                     android:textStyle="bold"

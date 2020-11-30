@@ -8,6 +8,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
@@ -34,7 +36,6 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
             listContactAdapter.submitList(ArrayList(listContact))
         }
     }
-
     // observer loading status
     private val loadingStatusObserver = Observer<Boolean> {
         if (it) {

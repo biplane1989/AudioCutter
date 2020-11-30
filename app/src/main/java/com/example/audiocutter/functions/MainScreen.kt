@@ -38,7 +38,13 @@ class MainScreen : BaseFragment(), View.OnClickListener {
             .observe(this.viewLifecycleOwner, Observer<AppPermission> {
                 if (storagePermissionRequest.isPermissionGranted() && (pendingRequestingPermission and MP3_CUTTER_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
-                    onMp3CutterItemClicked()
+                    if (writeSettingPermissionRequest.isPermissionGranted()) {
+                        onMp3CutterItemClicked()
+                    } else {
+                        pendingRequestingPermission = MP3_CUTTER_REQUESTING_PERMISSION
+                        writeSettingPermissionRequest.requestPermission()
+                    }
+
                 }
                 if (storagePermissionRequest.isPermissionGranted() && (pendingRequestingPermission and AUDIO_MERGER_REQUESTING_PERMISSION) != 0) {
                     onAudioMergerItemClicked()
@@ -58,14 +64,20 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                     }
 
                 }
-                if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and MY_STUDIO_REQUESTING_PERMISSION) != 0) {
-                    resetRequestingPermission()
-                    if (contactPermissionRequest.isPermissionGranted()) {
-                        onMyStudioItemClicked()
-                    } else {
-                        pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION
-                        contactPermissionRequest.requestPermission()
+                if (writeSettingPermissionRequest.isPermissionGranted()) {
+                    if((pendingRequestingPermission and MY_STUDIO_REQUESTING_PERMISSION) != 0){
+                        resetRequestingPermission()
+                        if (contactPermissionRequest.isPermissionGranted()) {
+                            onMyStudioItemClicked()
+                        } else {
+                            pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION
+                            contactPermissionRequest.requestPermission()
+                        }
                     }
+                    if((pendingRequestingPermission and MP3_CUTTER_REQUESTING_PERMISSION) != 0){
+                        onMp3CutterItemClicked()
+                    }
+
                 }
                 if (callPhonePermissionRequest.isPermissionGranted() && (pendingRequestingPermission and FLASH_CALL_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
@@ -114,14 +126,14 @@ class MainScreen : BaseFragment(), View.OnClickListener {
     }
 
     private fun onMp3CutterItemClicked() {
-        if (storagePermissionRequest.isPermissionGranted()) {
+        if (storagePermissionRequest.isPermissionGranted() && writeSettingPermissionRequest.isPermissionGranted()) {
             ManagerFactory.getAudioFileManager().init(requireContext())
             viewStateManager.mainScreenOnMp3CutItemClicked(this)
         } else {
             StoragePermissionDialog.newInstance {
                 resetRequestingPermission()
                 pendingRequestingPermission = MP3_CUTTER_REQUESTING_PERMISSION
-                storagePermissionRequest.requestPermission()
+                checkAndRequestStorageAndSettingPermission()
             }
                 .show(
                     requireActivity().supportFragmentManager,
@@ -188,17 +200,21 @@ class MainScreen : BaseFragment(), View.OnClickListener {
             StoragePermissionDialog.newInstance {
                 resetRequestingPermission()
                 pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION
-                if (!contactPermissionRequest.isPermissionGranted()) {
-                    contactPermissionRequest.requestPermission()
-                } else {
-                    writeSettingPermissionRequest.requestPermission()
-                }
+                checkAndRequestStorageAndSettingPermission()
             }
                 .show(
                     requireActivity().supportFragmentManager,
                     StoragePermissionDialog::class.java.name
                 )
 
+        }
+    }
+
+    private fun checkAndRequestStorageAndSettingPermission() {
+        if (!contactPermissionRequest.isPermissionGranted()) {
+            contactPermissionRequest.requestPermission()
+        } else {
+            writeSettingPermissionRequest.requestPermission()
         }
     }
 

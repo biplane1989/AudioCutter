@@ -118,11 +118,11 @@
                         android:scaleType="centerInside" />
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="@dimen/d_40"
+                        android:layout_height="@dimen/d_40"
                         android:layout_gravity="center"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/result_ic_music" />
+                        android:scaleType="fitXY"
+                        android:src="@drawable/my_studio_item_ic_avatar" />
                 </androidx.cardview.widget.CardView>
 
 
@@ -135,7 +135,6 @@
                     android:fontFamily="@font/sanfranciscodisplay_bold"
                     android:gravity="top"
                     android:maxLines="1"
-                    android:text="@string/my_studio_screen_item_title"
                     android:textColor="#2E3041"
                     android:textSize="16sp"
                     android:textStyle="bold"

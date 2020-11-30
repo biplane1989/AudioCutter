@@ -14,6 +14,7 @@ interface PermissionRequest : Observer<AppPermission> {
     val CONTACT_REQUEST_CODE: Int get() = 2
     val WRITE_SETTINGS_REQUEST_CODE: Int get() = 3
     val CALL_PHONE_REQUEST_CODE: Int get() =4
+    val NOTIFICATION_LISTENER_REQUEST_CODE: Int get() = 5
 
     fun getPermissionActivity(): BaseActivity?
     fun getLifeCycle(): Lifecycle

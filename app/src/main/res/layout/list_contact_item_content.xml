@@ -13,7 +13,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:scaleType="centerInside"
+        android:scaleType="fitXY"
         android:src="@drawable/list_contact_item_avatar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
