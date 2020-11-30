@@ -10,6 +10,7 @@ object PreferencesHelper {
     val FADE_OUT_TIME = "fade_out_time"
     val CONVERT_FORMAT = "convert_format"
     val CONVERT_VOLUME = "convert_volume"
+    val IS_FIRST_TIME_TO_USED_APP = "IS_FIRST_TIME_TO_USED_APP"
 
     private lateinit var sharedPreferences: SharedPreferences
     fun start(appContext: Context) {
@@ -64,5 +65,13 @@ object PreferencesHelper {
 
     fun putStringSet(key: String, value: Set<String>) {
         sharedPreferences.edit().putStringSet(key, value).apply()
+    }
+
+    fun setFirstTimeToUsedApp(value:Boolean){
+        putBoolean(IS_FIRST_TIME_TO_USED_APP, value)
+    }
+
+    fun isFirstTimeToUsedApp():Boolean{
+        return getBoolean(IS_FIRST_TIME_TO_USED_APP, false)
     }
 }

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.whenResumed
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.databinding.IntroductionSplash1ScreenBinding
@@ -39,12 +40,16 @@ class Splash1Screen : BaseFragment() {
 
     override fun onStart() {
         super.onStart()
-        if (!isAnimationDisplayed) {
-            valueAnimator = AlphaAnimation(0.2f, 1.0f)
-            valueAnimator?.setDuration(1000)
-            valueAnimator?.setFillAfter(true)
-            binding.ivSence.startAnimation(valueAnimator)
-            personAnimation.start()
+        runOnUI {
+            viewLifecycleOwner.whenResumed {
+                if (!isAnimationDisplayed) {
+                    valueAnimator = AlphaAnimation(0.2f, 1.0f)
+                    valueAnimator?.setDuration(1000)
+                    valueAnimator?.setFillAfter(true)
+                    binding.ivSence.startAnimation(valueAnimator)
+                    personAnimation.start()
+                }
+            }
         }
     }
 

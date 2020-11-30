@@ -9,19 +9,16 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.databinding.ActivityMainBinding
 import com.example.audiocutter.functions.mystudio.Constance
+import com.example.audiocutter.util.PreferencesHelper
 
 
 class MainActivity : BaseActivity() {
-    val MY_APP = "AUDIO_CUTTER"
-    val IS_SETTING = "IS_SETTING"
     lateinit var binding: ActivityMainBinding
     override fun onPostCreate() {
         super.onPostCreate()
 
-        val sharePreferences = getSharedPreferences(MY_APP, MODE_PRIVATE)
-        val key = sharePreferences.getInt(IS_SETTING, 0) //0 is the default value.
 
-        if (key == 1) {
+        if (PreferencesHelper.isFirstTimeToUsedApp()) {
             viewStateManager.initState(ViewStateScreen.HOME_SCREEN)
             handleNotificationIntent(intent)
             val navGraph = findNavController(R.id.app_nav_host_fragment).graph
@@ -30,10 +27,6 @@ class MainActivity : BaseActivity() {
         } else {
             viewStateManager.initState(ViewStateScreen.SPLASH)
             handleNotificationIntent(intent)
-
-            val newSharePreferences = getSharedPreferences(MY_APP, MODE_PRIVATE).edit()
-            newSharePreferences.putInt(IS_SETTING, 1)
-            newSharePreferences.apply()
         }
     }
 

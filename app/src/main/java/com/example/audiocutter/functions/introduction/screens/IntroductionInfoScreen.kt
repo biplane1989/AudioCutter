@@ -12,6 +12,7 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.databinding.IntroductionInfoScreenBinding
 import com.example.audiocutter.databinding.MyStudioScreenBinding
+import com.example.audiocutter.util.PreferencesHelper
 import kotlinx.android.synthetic.main.introduction_info_screen.*
 
 class IntroductionInfoScreen : BaseFragment(), View.OnClickListener {
@@ -57,6 +58,7 @@ class IntroductionInfoScreen : BaseFragment(), View.OnClickListener {
                     }
                     else -> {
                         viewStateManager.introductionScreenToHomeScreen(this)
+                        PreferencesHelper.setFirstTimeToUsedApp(true)
                     }
                 }
             }
@@ -67,7 +69,6 @@ class IntroductionInfoScreen : BaseFragment(), View.OnClickListener {
         super.onPostCreate(savedInstanceState)
         transaction = childFragmentManager.beginTransaction()
         transaction.replace(R.id.fm_splash, splash1Screen)
-        transaction.addToBackStack(null)
         transaction.commit()
     }
 }
