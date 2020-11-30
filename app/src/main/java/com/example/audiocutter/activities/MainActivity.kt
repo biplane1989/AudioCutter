@@ -13,13 +13,13 @@ import com.example.audiocutter.functions.mystudio.Constance
 
 class MainActivity : BaseActivity() {
     val MY_APP = "AUDIO_CUTTER"
-    val KEY_NAME = "KEY_NAME"
+    val IS_SETTING = "IS_SETTING"
     lateinit var binding: ActivityMainBinding
     override fun onPostCreate() {
         super.onPostCreate()
 
         val sharePreferences = getSharedPreferences(MY_APP, MODE_PRIVATE)
-        val key = sharePreferences.getInt(KEY_NAME, 0) //0 is the default value.
+        val key = sharePreferences.getInt(IS_SETTING, 0) //0 is the default value.
 
         if (key == 1) {
             viewStateManager.initState(ViewStateScreen.HOME_SCREEN)
@@ -32,7 +32,7 @@ class MainActivity : BaseActivity() {
             handleNotificationIntent(intent)
 
             val newSharePreferences = getSharedPreferences(MY_APP, MODE_PRIVATE).edit()
-            newSharePreferences.putInt(KEY_NAME, 1)
+            newSharePreferences.putInt(IS_SETTING, 1)
             newSharePreferences.apply()
         }
     }
