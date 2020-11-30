@@ -57,11 +57,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             binding.pbSelect.visibility = View.VISIBLE
         } else {
             binding.pbSelect.visibility = View.GONE
-            binding.rvListSelectAudio.scrollToPosition(
-                mListSelectAudioViewModel.getIndexSelectRingtone(
-                    safeArg.uri
-                )
-            )       // set vi tri khi chuyen sang man hinh den bai nhac da duoc chon
+            binding.rvListSelectAudio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(safeArg.uri))       // set vi tri khi chuyen sang man hinh den bai nhac da duoc chon
         }
     }
 
@@ -85,8 +81,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     }
 
     private fun registerObservers() {
-        mListSelectAudioViewModel.getListAudioFile()
-            .observe(viewLifecycleOwner, listAudioObserver)
+        mListSelectAudioViewModel.getListAudioFile().observe(viewLifecycleOwner, listAudioObserver)
 
         mListSelectAudioViewModel.getIsEmptyStatus()
             .observe(viewLifecycleOwner, isEmptyStatusObserver)
@@ -96,8 +91,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
         if (nextAnim != 0x0) {
-            val animator =
-                AnimationUtils.loadAnimation(activity, nextAnim)
+            val animator = AnimationUtils.loadAnimation(activity, nextAnim)
 
             animator.setAnimationListener(object : Animation.AnimationListener {
                 override fun onAnimationStart(animation: Animation?) {
@@ -123,13 +117,8 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     }
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.list_contact_select_screen, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.list_contact_select_screen, container, false)
         return binding.root
     }
 
@@ -140,8 +129,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         mListSelectAudioViewModel = ViewModelProviders.of(this)
             .get(ListSelectAudioViewModel::class.java)
 
-        mListSelectAdapter =
-            ListSelectAdapter(this, mListSelectAudioViewModel.getAudioPlayer(), lifecycleScope)
+        mListSelectAdapter = ListSelectAdapter(this, mListSelectAudioViewModel.getAudioPlayer(), lifecycleScope)
         val fileUri = safeArg.uri
         mListSelectAudioViewModel.init(fileUri)
     }
@@ -165,12 +153,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
 
-            override fun onTextChanged(
-                textChange: CharSequence,
-                start: Int,
-                before: Int,
-                count: Int
-            ) {
+            override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
                 mListSelectAudioViewModel.searchAudioFile(textChange.toString())
             }
         })
@@ -200,18 +183,10 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             }
             binding.btnSave -> {
                 if (mListSelectAudioViewModel.setRingtone(safeArg.phoneNumber)) {
-                    Toast.makeText(
-                        context,
-                        getString(R.string.result_screen_set_ringtone_successful),
-                        Toast.LENGTH_SHORT
-                    )
+                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
                         .show()
                 } else {
-                    Toast.makeText(
-                        context,
-                        getString(R.string.result_screen_set_ringtone_fail),
-                        Toast.LENGTH_SHORT
-                    )
+                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
                         .show()
                 }
                 requireActivity().onBackPressed()
@@ -230,12 +205,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
                 intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                 intent.type = "audio/*"
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                startActivityForResult(
-                    Intent.createChooser(
-                        intent,
-                        getString(R.string.list_select_audio_screen_open_file_title)
-                    ), REQ_CODE_PICK_SOUNDFILE
-                )
+                startActivityForResult(Intent.createChooser(intent, getString(R.string.list_select_audio_screen_open_file_title)), REQ_CODE_PICK_SOUNDFILE)
             }
             binding.backButton -> {
                 requireActivity().onBackPressed()
@@ -250,18 +220,10 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
             path?.let {
                 if (mListSelectAudioViewModel.setRingtoneWithUri(safeArg.phoneNumber, path)) {
-                    Toast.makeText(
-                        context,
-                        getString(R.string.result_screen_set_ringtone_successful),
-                        Toast.LENGTH_SHORT
-                    )
+                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
                         .show()
                 } else {
-                    Toast.makeText(
-                        context,
-                        getString(R.string.result_screen_set_ringtone_fail),
-                        Toast.LENGTH_SHORT
-                    )
+                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
                         .show()
                 }
             }

@@ -55,18 +55,9 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
                     // khi loading xong thi check co data hay khong de show man hinh empty data
                     if (!it.listAudioFiles.isEmpty()) {
                         it.listAudioFiles.forEach { audioFile ->
-                            mListAudioFileView.add(
-                                SelectItemView(
-                                    audioFile,
-                                    false,
-                                    false,
-                                    SelectItemStatus(),
-                                    false
-                                )
-                            )
+                            mListAudioFileView.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false))
                         }
-                        mListAudioFileView =
-                            getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
+                        mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
 
                     } else {
                         isEmptyStatus.postValue(true)
@@ -82,7 +73,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         }
     }
 
-    private fun selectRingtone(ringtonePath: String){
+    private fun selectRingtone(ringtonePath: String) {
         var index = 0
         for (item in mListAudioFileView) {
             if (TextUtils.equals(item.audioFile.uri.toString(), ringtonePath)) {
@@ -97,13 +88,13 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
     fun getIndexSelectRingtone(ringtonePath: String): Int {         // lay vi tri cua file audio la nhac chuong cua contact
         var index = 0
-        /* for (item in mListAudioFileView) {
-             if (TextUtils.equals(item.audioFile.fileName + item.audioFile.mimeType, fileName)) {
-
-                 return index
-             }
-             index++
-         }*/
+//         for (item in mListAudioFileView) {
+//             if (TextUtils.equals(item.audioFile.fileName + item.audioFile.mimeType, fileName)) {
+//
+//                 return index
+//             }
+//             index++
+//         }
         for (item in mListAudioFileView) {
             if (TextUtils.equals(item.audioFile.uri.toString(), ringtonePath)) {
 
@@ -180,11 +171,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         if (mListSearch.size > 0) {
             for (item in mListAudioFileView) {
                 for (searchItem in mListSearch) {
-                    if (TextUtils.equals(
-                            item.audioFile.uri.toString(),
-                            searchItem.audioFile.uri.toString()
-                        )
-                    ) {
+                    if (TextUtils.equals(item.audioFile.uri.toString(), searchItem.audioFile.uri.toString())) {
                         mListAudioFileView.set(index, searchItem)
                         break
                     }
@@ -199,8 +186,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         } else {
             for (item in mListAudioFileView) {
                 if (item.audioFile.fileName.toUpperCase(Locale.ROOT)
-                        .contains(data.toUpperCase(Locale.ROOT))
-                ) {
+                        .contains(data.toUpperCase(Locale.ROOT))) {
                     mListSearch.add(item)
                 }
             }
@@ -223,10 +209,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
             for (audio in mListAudioFileView) {
                 if (audio.isSelect) {
                     return ManagerFactory.getRingtoneManager()
-                        .setRingToneWithContactNumberandFilePath(
-                            audio.audioFile.file.absolutePath,
-                            phoneNumber
-                        )
+                        .setRingToneWithContactNumberandFilePath(audio.audioFile.file.absolutePath, phoneNumber)
                 }
             }
         }

@@ -159,7 +159,9 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
                 R.id.cl_item_contact -> {
                     val contactItemView = getItem(adapterPosition)
                     contactItemView.contactItem.ringtone?.let {
-                        contactCallback.itemOnClick(contactItemView.contactItem.phoneNumber, it)
+                        if (it != ""){
+                            contactCallback.itemOnClick(contactItemView.contactItem.phoneNumber, it)
+                        }
                     }
                 }
             }

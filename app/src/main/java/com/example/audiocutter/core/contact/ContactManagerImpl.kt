@@ -22,44 +22,31 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
     private val contactObserver = ContactObserver(Handler())
     private val backgroundScope = CoroutineScope(Dispatchers.Default)
 
-    private suspend fun queryContacts(filterFunc: (String, String, String, String?, String?) -> Unit) =
-        coroutineScope {
-            val projection = arrayOf(
-                ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
-                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-                ContactsContract.CommonDataKinds.Phone.NUMBER,
-                ContactsContract.CommonDataKinds.Phone.PHOTO_URI,
-                ContactsContract.CommonDataKinds.Phone.CUSTOM_RINGTONE
-            )
-            val cursor: Cursor? = appContext.contentResolver.query(
-                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                projection,
-                null,
-                null,
-                null
-            )
-            try {
-                cursor?.let {
-                    val idIndex = it.getColumnIndex(projection[0])
-                    val nameIndex = it.getColumnIndex(projection[1])
-                    val numberIndex = it.getColumnIndex(projection[2])
-                    val photoIndex = it.getColumnIndex(projection[3])
-                    val ringtoneIndex = it.getColumnIndex(projection[4])
-                    var hasRow = it.moveToFirst()
-                    while (isActive && hasRow) {
-                        val id = it.getString(idIndex)
-                        val name = it.getString(nameIndex)
-                        val number = it.getString(numberIndex)
-                        val photoUri = it.getString(photoIndex)
-                        val ringtone = it.getString(ringtoneIndex)
-                        filterFunc(id, name, number, photoUri, ringtone)
-                        hasRow = it.moveToNext()
-                    }
+    private suspend fun queryContacts(filterFunc: (String, String, String, String?, String?) -> Unit) = coroutineScope {
+        val projection = arrayOf(ContactsContract.CommonDataKinds.Phone.CONTACT_ID, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Phone.PHOTO_URI, ContactsContract.CommonDataKinds.Phone.CUSTOM_RINGTONE)
+        val cursor: Cursor? = appContext.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, null, null, null)
+        try {
+            cursor?.let {
+                val idIndex = it.getColumnIndex(projection[0])
+                val nameIndex = it.getColumnIndex(projection[1])
+                val numberIndex = it.getColumnIndex(projection[2])
+                val photoIndex = it.getColumnIndex(projection[3])
+                val ringtoneIndex = it.getColumnIndex(projection[4])
+                var hasRow = it.moveToFirst()
+                while (isActive && hasRow) {
+                    val id = it.getString(idIndex)
+                    val name = it.getString(nameIndex)
+                    val number = it.getString(numberIndex)
+                    val photoUri = it.getString(photoIndex)
+                    val ringtone = it.getString(ringtoneIndex)
+                    filterFunc(id, name, number, photoUri, ringtone)
+                    hasRow = it.moveToNext()
                 }
-            } finally {
-                cursor?.close()
             }
+        } finally {
+            cursor?.close()
         }
+    }
 
 
     private fun checkAudioUri(uri: String?, cacheUriMap: HashMap<String, Boolean>): Boolean {
@@ -146,15 +133,7 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
                 isRingtoneDefault = true
             }
 
-            val contactItem = ContactItem(
-                id,
-                name,
-                number,
-                photoUri,
-                ringtoneFilePath,
-                isRingtoneDefault,
-                filename
-            )
+            val contactItem = ContactItem(id, name, number, photoUri, ringtoneFilePath, isRingtoneDefault, filename)
             newListContact.add(contactItem)
 
             oldRingtoneDefault = defaultRingtone
@@ -171,24 +150,15 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
         notifyDiskChanged()
     }
 
-    inner class ContactObserver(handler: Handler?) :
-        ContentObserver(handler) {       // nhan event khi thay doi data tu bo nho
+    inner class ContactObserver(handler: Handler?) : ContentObserver(handler) {       // nhan event khi thay doi data tu bo nho
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             notifyDiskChanged()
         }
     }
 
     fun registerContentObserVerDeleted() {
-        appContext.contentResolver.registerContentObserver(
-            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-            true,
-            contactObserver
-        )
-        appContext.contentResolver.registerContentObserver(
-            android.provider.Settings.System.CONTENT_URI,
-            true,
-            contactObserver
-        )
+        appContext.contentResolver.registerContentObserver(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, true, contactObserver)
+        appContext.contentResolver.registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, contactObserver)
     }
 
     fun unRegisterContentObserve() {
