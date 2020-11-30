@@ -154,8 +154,7 @@ android:paddingLeft="@dimen/d_16"
             android:id="@+id/pgr_audio_cutter"
             android:layout_width="@dimen/common_progressbar_size"
             android:layout_height="@dimen/common_progressbar_size"
-            android:layout_centerInParent="true"
-            android:visibility="invisible" />
+            android:layout_centerInParent="true" />
 
     </RelativeLayout>
 </layout>
