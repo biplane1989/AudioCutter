@@ -3,6 +3,7 @@ package com.example.audiocutter.permissions
 import android.Manifest
 import android.app.AppOpsManager
 import android.app.role.RoleManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Process
 import android.provider.Settings
+import android.text.TextUtils
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -19,6 +21,7 @@ import com.example.audiocutter.util.PreferencesHelper
 
 
 object PermissionUtil {
+    private const val ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners"
 
     fun hasCameraPermission(context: Context): Boolean {
         return hasPermission(context, Manifest.permission.CAMERA);
@@ -37,6 +40,27 @@ object PermissionUtil {
         } else {
             return true
         }
+    }
+    fun hasNotificationListenerPermission(context: Context): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            val pkgName: String = context.packageName
+            val flat = Settings.Secure.getString(
+                context.contentResolver,
+                ENABLED_NOTIFICATION_LISTENERS
+            )
+            if (!TextUtils.isEmpty(flat)) {
+                val names = flat.split(":".toRegex()).toTypedArray()
+                for (i in names.indices) {
+                    val cn = ComponentName.unflattenFromString(names[i])
+                    if (cn != null) {
+                        if (TextUtils.equals(pkgName, cn.packageName)) {
+                            return true
+                        }
+                    }
+                }
+            }
+        }
+        return false
     }
 
     fun hasQueryAppInfoPermission(context: Context): Boolean {
