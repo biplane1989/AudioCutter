@@ -8,11 +8,12 @@
 
     <ImageView
         android:id="@+id/iv_avatar"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="@dimen/d_40"
+        android:layout_height="@dimen/d_40"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
+        android:scaleType="fitXY"
         android:src="@drawable/list_contact_item_avatar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

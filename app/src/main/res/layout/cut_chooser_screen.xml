@@ -152,8 +152,8 @@ android:paddingLeft="@dimen/d_16"
 
         <ProgressBar
             android:id="@+id/pgr_audio_cutter"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="@dimen/common_progressbar_size"
+            android:layout_height="@dimen/common_progressbar_size"
             android:layout_centerInParent="true"
             android:visibility="invisible" />
 

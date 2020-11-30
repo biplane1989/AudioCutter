@@ -69,7 +69,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
     private fun init() {
         binding.rvListSelectAudio.layoutManager = LinearLayoutManager(context)
-        binding.rvListSelectAudio.setHasFixedSize(true)
+//        binding.rvListSelectAudio.setHasFixedSize(true)
         binding.rvListSelectAudio.adapter = mListSelectAdapter
     }
 
@@ -93,7 +93,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             .get(ListSelectAudioViewModel::class.java)
 
         mListSelectAdapter = ListSelectAdapter(this, mListSelectAudioViewModel.getAudioPlayer(), lifecycleScope)
-
         val fileUri = safeArg.uri
         mListSelectAudioViewModel.init(fileUri)
     }
