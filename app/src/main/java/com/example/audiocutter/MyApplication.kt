@@ -1,16 +1,16 @@
 package com.example.audiocutter
 
-import android.app.Application
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.graphics.Color
 import android.os.Build
+import androidx.multidex.MultiDexApplication
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.permissions.PermissionManager
 import com.example.audiocutter.util.PreferencesHelper
 
-class MyApplication : Application() {
+class MyApplication : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()

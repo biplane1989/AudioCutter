@@ -13,6 +13,7 @@
     <style name="DialogConvert" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:windowSoftInputMode">stateHidden|adjustResize</item>
     </style>
+
     <style name="DialogAnimation">
         <item name="android:windowEnterAnimation">@anim/medium_fade_in</item>
         <item name="android:windowExitAnimation">@anim/medium_fade_out</item>
@@ -31,4 +32,7 @@
 
     </style>
 
+    <style name="MyStudioTabText" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">18dp</item>
+    </style>
 </resources>

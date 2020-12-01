@@ -69,7 +69,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                     .toInt() + 15
             }
             binding.tvTitleMusic.text = it.fileName
-            binding.tvInfoMusic.text = String.format("%s kb/s", it.bitRate.toString())
+            binding.tvInfoMusic.text = String.format("%s kb/s", (it.bitRate / 1000).toString())
 
             binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(it.duration.toInt()))
             binding.tvInfoMusic.setText(convertAudioSizeToString(it))
@@ -105,7 +105,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         binding.tvLoading.visibility = View.VISIBLE
         binding.tvLoading.text = it.percent.toString() + "%"
         binding.tvTitleMusic.text = it.getFileName()
-        binding.tvInfoMusic.text = it.bitRate.toString() + resources.getString(R.string.kbps)
+        binding.tvInfoMusic.text = it.bitRate.toString() + resources.getString(R.string.kbps_result)
         binding.ivNotificationError.visibility = View.GONE
 
         isLoadingDone = false
@@ -114,7 +114,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     private val errorObserver = Observer<Boolean> {
         if (it) {
             view?.let {
-                val mySnackbar = Snackbar.make(it, "Converting Error", Snackbar.LENGTH_LONG)
+                val mySnackbar = Snackbar.make(it, getString(R.string.result_screen_converting_error), Snackbar.LENGTH_LONG)
                 mySnackbar.show()
             }
         }
@@ -149,7 +149,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         str.append(" ")
         str.append(formatSize)
         str.append(" | ")
-        str.append(audioFile.bitRate.toString())
+        str.append((audioFile.bitRate /1000).toString())
         str.append("kb/s")
         return str.toString()
     }
@@ -340,7 +340,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     }
 
     override fun onCancelDialog() {
-
+        // no thing
     }
 
     override fun onResume() {       // xu ly back button

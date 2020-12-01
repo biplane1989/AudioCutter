@@ -96,6 +96,7 @@
 
                 <com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
                     android:id="@+id/spinner_bitrate"
+
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/d_48"
                     android:layout_marginLeft="@dimen/margin_item"

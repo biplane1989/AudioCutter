@@ -64,14 +64,7 @@ class InfoDialog : BaseDialog() {
                 ?.substring(index!! + 1, requireArguments().getString(BUNDLE_FILE_PATH)?.length!!)
 
             tv_format.text = "$format($format)"
-            tv_file.text =
-                requireArguments().getString(BUNDLE_FILE_NAME) + "I just want to resize (keeping aspect ratio) to 1080x1920 (or the nearest) and then save the new bitmap to a file.\n" +
-                        "\n" +
-                        "I'm sure I've permission to write I'm sure the path image exists I'm sure MasterFacade.getAppDir() + \"temp/\" + resource.hashCode() + \".jpg\" is a valid dir and I've writing permisions on it\n" +
-                        "\n" +
-                        "But this code is never reached!\n" +
-                        "\n" +
-                        "I tried to debug and onResourceReady never is called..."
+            tv_file.text = requireArguments().getString(BUNDLE_FILE_NAME)
             tv_size.text = (size.toInt() / 1024).toString() + " kb" + " (" + size + " bytes)"
             tv_location.text = requireArguments().getString(BUNDLE_FILE_PATH).toString()
 

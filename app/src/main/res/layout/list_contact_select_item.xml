@@ -8,102 +8,102 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:gravity="center"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ll_audio_item_header"
         android:layout_width="match_parent"
         android:layout_height="@dimen/d_70"
-        android:background="?attr/selectableItemBackground"
-        android:orientation="horizontal">
+        android:background="?attr/selectableItemBackground">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_item"
-            android:layout_width="match_parent"
-            android:layout_height="56dp">
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_avatar"
+            android:layout_width="@dimen/d_40"
+            android:layout_height="@dimen/d_40"
+            android:layout_marginLeft="16dp"
+            app:cardCornerRadius="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/iv_avatar"
-                android:layout_width="@dimen/d_40"
-                android:layout_height="@dimen/d_40"
-                android:layout_marginLeft="16dp"
+                android:id="@+id/iv_avatar_select"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:scaleType="fitXY"
-                android:src="@drawable/my_studio_item_ic_avatar"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:src="@drawable/my_studio_item_ic_avatar" />
+
+        </androidx.cardview.widget.CardView>
 
 
-            <TextView
-                android:id="@+id/tv_title_music"
-                android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tv_title_music"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/sanfranciscodisplay_bold"
+            android:gravity="top"
+            android:maxLines="1"
+            android:textColor="#2E3041"
+            android:textSize="16dp"
+            app:layout_constraintBottom_toTopOf="@id/ll_info"
+            app:layout_constraintEnd_toStartOf="@id/iv_select"
+            app:layout_constraintStart_toEndOf="@id/cv_avatar"
+            app:layout_constraintTop_toTopOf="@id/cv_avatar" />
+
+        <LinearLayout
+            android:id="@+id/ll_info"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="bottom"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@id/cv_avatar"
+            app:layout_constraintEnd_toStartOf="@id/iv_select"
+            app:layout_constraintStart_toStartOf="@id/tv_title_music"
+            app:layout_constraintTop_toBottomOf="@id/tv_title_music">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cv_default"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:ellipsize="end"
-                android:fontFamily="@font/sanfranciscodisplay_bold"
-                android:gravity="top"
-                android:maxLines="1"
-                android:textColor="#2E3041"
-                android:textSize="16dp"
-                app:layout_constraintBottom_toTopOf="@id/ll_info"
-                app:layout_constraintEnd_toStartOf="@id/iv_select"
-                app:layout_constraintStart_toEndOf="@id/iv_avatar"
-                app:layout_constraintTop_toTopOf="@id/iv_avatar" />
-
-            <LinearLayout
-                android:id="@+id/ll_info"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:gravity="bottom"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
-                app:layout_constraintEnd_toStartOf="@id/iv_select"
-                app:layout_constraintStart_toStartOf="@id/tv_title_music"
-                app:layout_constraintTop_toBottomOf="@id/tv_title_music">
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cv_default"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:cardBackgroundColor="#FDAA74"
-                    app:cardCornerRadius="4dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="2dp"
-                        android:layout_marginRight="2dp"
-                        android:fontFamily="@font/sanfranciscodisplay_light"
-                        android:text="@string/list_contact_item_default"
-                        android:textColor="#FFFFFF"
-                        android:textSize="12dp" />
-                </androidx.cardview.widget.CardView>
+                android:visibility="gone"
+                app:cardBackgroundColor="#FDAA74"
+                app:cardCornerRadius="4dp">
 
                 <TextView
-                    android:layout_marginLeft="2dp"
-                    android:id="@+id/tv_info_music"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
                     android:fontFamily="@font/sanfranciscodisplay_light"
-                    android:textColor="#9C9C9C"
-                    android:textSize="14dp" />
+                    android:text="@string/list_contact_item_default"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12dp" />
+            </androidx.cardview.widget.CardView>
 
-            </LinearLayout>
+            <TextView
+                android:id="@+id/tv_info_music"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:fontFamily="@font/sanfranciscodisplay_light"
+                android:textColor="#9C9C9C"
+                android:textSize="14dp" />
+
+        </LinearLayout>
 
 
-            <ImageView
-                android:id="@+id/iv_select"
-                android:layout_width="@dimen/d_40"
-                android:layout_height="@dimen/d_40"
-                android:layout_marginRight="10dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/list_contact_unselect"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/iv_select"
+            android:layout_width="@dimen/d_40"
+            android:layout_height="@dimen/d_40"
+            android:layout_marginRight="10dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/list_contact_unselect"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <LinearLayout
@@ -119,8 +119,8 @@
             android:layout_width="30dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
-            android:scaleType="centerInside"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside"
             android:src="@drawable/my_studio_item_icon_play" />
 
         <androidx.appcompat.widget.AppCompatSeekBar

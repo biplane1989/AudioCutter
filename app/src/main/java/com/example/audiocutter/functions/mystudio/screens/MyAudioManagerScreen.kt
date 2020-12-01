@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
@@ -53,7 +55,10 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_screen, container, false)
 
-        myAudioManagerViewModel.getAction().observe(viewLifecycleOwner, actionObserver)
+//        myAudioManagerViewModel.getAction().observe(viewLifecycleOwner, actionObserver)
+
+//        val myStudioAdapter = MyStudioViewPagerAdapter(childFragmentManager)
+//        binding.viewPager.adapter = myStudioAdapter
 
         return binding.root
     }
@@ -64,12 +69,53 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
             .get(MyAudioManagerViewModel::class.java)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {       // khi ket thuc animation chuyen man hinh thi moi cho dang ky observe
+        if (nextAnim != 0x0) {
+            val animator = AnimationUtils.loadAnimation(activity, nextAnim)
+
+            animator.setAnimationListener(object : Animation.AnimationListener {
+                override fun onAnimationStart(animation: Animation?) {
+
+                }
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    if (enter) {
+                        setUp()
+                    }
+                }
+
+                override fun onAnimationRepeat(animation: Animation?) {
+
+                }
+            })
+
+            return animator
+        } else {
+            setUp()
+        }
+        return null
+    }
+
+
+    fun setUp() {
+        myAudioManagerViewModel.getAction().observe(viewLifecycleOwner, actionObserver)
+
         val myStudioAdapter = MyStudioViewPagerAdapter(childFragmentManager)
         binding.viewPager.adapter = myStudioAdapter
 
         binding.tabLayout.setupWithViewPager(binding.viewPager)
+
+        binding.tabLayout.getTabAt(requireArguments().getInt(Constance.TYPE_AUDIO_TO_NOTIFICATION))
+            ?.select()
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+//        val myStudioAdapter = MyStudioViewPagerAdapter(childFragmentManager)
+//        binding.viewPager.adapter = myStudioAdapter
+
+//        binding.tabLayout.setupWithViewPager(binding.viewPager)
 
         tabPosition = binding.tabLayout.selectedTabPosition
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -85,8 +131,8 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
             }
         })
 
-        binding.tabLayout.getTabAt(requireArguments().getInt(Constance.TYPE_AUDIO_TO_NOTIFICATION))
-            ?.select()
+//        binding.tabLayout.getTabAt(requireArguments().getInt(Constance.TYPE_AUDIO_TO_NOTIFICATION))
+//            ?.select()
 
         binding.backButton.setOnClickListener(this)
         binding.ivExtends.setOnClickListener(this)

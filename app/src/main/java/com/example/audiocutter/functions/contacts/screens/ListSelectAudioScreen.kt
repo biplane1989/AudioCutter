@@ -64,11 +64,11 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     // observer is empty status
     private val isEmptyStatusObserver = Observer<Boolean> {
         if (it) {
-            binding.clSelect.visibility = View.GONE
+            binding.rvListSelectAudio.visibility = View.GONE
             binding.clBottom.visibility = View.GONE
             binding.clNoAudio.visibility = View.VISIBLE
         } else {
-            binding.clSelect.visibility = View.VISIBLE
+            binding.rvListSelectAudio.visibility = View.VISIBLE
             binding.clBottom.visibility = View.VISIBLE
             binding.clNoAudio.visibility = View.INVISIBLE
         }
@@ -89,7 +89,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             .observe(viewLifecycleOwner, loadingStatusObserver)
     }
 
-    override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
+    override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {       // khi ket thuc animation chuyen man hinh thi moi cho dang ky observe
         if (nextAnim != 0x0) {
             val animator = AnimationUtils.loadAnimation(activity, nextAnim)
 

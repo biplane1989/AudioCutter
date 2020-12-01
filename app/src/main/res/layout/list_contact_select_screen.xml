@@ -83,14 +83,14 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
-                android:theme="@style/editTextTheme"
                 android:id="@+id/edt_search"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="12dp"
                 android:backgroundTint="#F6F6F6"
-                android:singleLine="true"
                 android:hint="@string/search"
+                android:singleLine="true"
+                android:theme="@style/editTextTheme"
                 app:layout_constraintBottom_toBottomOf="@id/iv_search_close"
                 app:layout_constraintEnd_toStartOf="@id/iv_clear"
                 app:layout_constraintStart_toEndOf="@id/iv_search_close"
@@ -111,39 +111,32 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
+            android:id="@+id/line"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#F6F6F6"
             app:layout_constraintTop_toBottomOf="@id/cl_default" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_select"
+        <ProgressBar
+            android:id="@+id/pb_select"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="@dimen/common_progressbar_size"
+            android:layout_height="@dimen/common_progressbar_size"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateBehavior="repeat"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_list_select_audio"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="56dp"
             app:layout_constraintBottom_toTopOf="@+id/cl_bottom"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ProgressBar
-                android:id="@+id/pb_select"
-                style="@style/Widget.AppCompat.ProgressBar"
-                android:layout_width="@dimen/common_progressbar_size"
-                android:layout_height="@dimen/common_progressbar_size"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:indeterminate="true"
-                android:indeterminateBehavior="repeat"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_list_select_audio"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+            app:layout_constraintTop_toBottomOf="@+id/line" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_bottom"

@@ -131,12 +131,13 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginLeft="15dp"
+                    android:layout_marginRight="16dp"
                     android:ellipsize="end"
                     android:fontFamily="@font/sanfranciscodisplay_bold"
                     android:gravity="top"
                     android:maxLines="1"
                     android:textColor="#2E3041"
-                    android:textSize="16sp"
+                    android:textSize="16dp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@id/ll_info"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -170,7 +171,7 @@
                             android:fontFamily="@font/sanfranciscodisplay_light"
                             android:text="@string/list_contact_item_default"
                             android:textColor="#FFFFFF"
-                            android:textSize="12sp" />
+                            android:textSize="12dp" />
                     </androidx.cardview.widget.CardView>
 
                     <TextView
@@ -179,9 +180,9 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/sanfranciscodisplay_light"
                         android:gravity="bottom"
-                        android:text="@string/result_screen_size_default"
+
                         android:textColor="#9C9C9C"
-                        android:textSize="14sp" />
+                        android:textSize="14dp" />
 
                 </LinearLayout>
 
@@ -198,7 +199,7 @@
             android:gravity="center_vertical"
             android:text="@string/result_scren_wait_task"
             android:textColor="#2E3041"
-            android:textSize="16sp"
+            android:textSize="16dp"
             app:layout_constraintTop_toBottomOf="@+id/ll_audio_item" />
 
         <LinearLayout

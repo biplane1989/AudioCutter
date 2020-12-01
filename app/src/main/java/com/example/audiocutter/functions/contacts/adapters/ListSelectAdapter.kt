@@ -11,12 +11,17 @@ import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.Options
+import com.bumptech.glide.load.resource.bitmap.CenterInside
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.util.Util
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.PlayerInfo
@@ -38,6 +43,8 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
     private val TAG = "giangtd"
 
     private lateinit var recyclerView: RecyclerView
+    private var option = Options()
+
 
     @SuppressLint("SimpleDateFormat")
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
@@ -66,7 +73,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 holder.llItem.setBackgroundResource(R.drawable.list_contact_select_item_bg)
 
                 Log.d(TAG, "onBindViewHolder: 1")
-                holder.itemView.post {
+                holder.itemView.post {                      // khi nhan item cuoi cung ma bi che khuat --> tu dong day item do len
                     if (holder.itemView.bottom > recyclerView.height) {
                         recyclerView.smoothScrollBy(0, (holder.itemView.bottom - recyclerView.height))
                     }
@@ -107,7 +114,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, LifecycleOwner {
 
-        val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar)
+        val ivAvatarSelect: ImageView = itemView.findViewById(R.id.iv_avatar_select)
         val tvTitle: TextView = itemView.findViewById(R.id.tv_title_music)
         val tvInfo: TextView = itemView.findViewById(R.id.tv_info_music)
         val llPlayMusic: LinearLayout = itemView.findViewById(R.id.ll_play_music)
@@ -115,7 +122,9 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         val sbMusic: SeekBar = itemView.findViewById(R.id.sb_music)
         val tvTimeLife: TextView = itemView.findViewById(R.id.tv_time_life)
         val tvTotal: TextView = itemView.findViewById(R.id.tv_time_total)
-        val llAudioHeader: LinearLayout = itemView.findViewById(R.id.ll_audio_item_header)
+
+        //        val llAudioHeader: LinearLayout = itemView.findViewById(R.id.ll_audio_item_header)
+        val llAudioHeader: ConstraintLayout = itemView.findViewById(R.id.ll_audio_item_header)
         val llItem: LinearLayout = itemView.findViewById(R.id.ll_item)
         val ivSelect: ImageView = itemView.findViewById(R.id.iv_select)
         val cvCarview: CardView = itemView.findViewById(R.id.cv_default)
@@ -187,11 +196,14 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 tvInfo.setText(((selectItemView.audioFile.size) / (1024)).toString() + " KB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s")
             }
 
-            selectItemView.audioFile.bitmap?.let {
-                Glide.with(itemView).load(selectItemView.audioFile.bitmap)
-                    .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
-                    .into(ivAvatar)
+
+            if (selectItemView.audioFile.bitmap != null) {
+                ivAvatarSelect.setImageBitmap(selectItemView.audioFile.bitmap)
+            } else {
+                ivAvatarSelect.setImageResource(R.drawable.my_studio_item_ic_avatar)
             }
+
+
 
             tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(selectItemView.audioFile.duration), itemView.context)
                 .toInt() + 15
