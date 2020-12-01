@@ -31,11 +31,9 @@ import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.objects.TypeAudioSetAs
 import com.example.audiocutter.functions.common.ContactPermissionDialog
-import com.example.audiocutter.functions.common.StoragePermissionDialog
 import com.example.audiocutter.permissions.AppPermission
 import com.example.audiocutter.permissions.ContactItemPermissionRequest
 import com.example.audiocutter.permissions.PermissionManager
-import com.example.audiocutter.permissions.WriteSettingPermissionRequest
 import com.example.audiocutter.util.FileUtils
 import com.google.android.material.snackbar.Snackbar
 
@@ -52,7 +50,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     lateinit var audioCutterItem: AudioCutterView
     private var pendingRequestingPermission = 0
     private val CONTACTS_ITEM_REQUESTING_PERMISSION = 1 shl 4
-    private val WRITE_REQUESTING_PERMISSION = 1 shl 5
 
     var stateObserver = Observer<Int> {
         when (it) {
@@ -108,16 +105,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         }
     }
 
-    private val writeSettingPermissionRequest = object : WriteSettingPermissionRequest {
-        override fun getPermissionActivity(): BaseActivity? {
-            return getBaseActivity()
-        }
-
-        override fun getLifeCycle(): Lifecycle {
-            return lifecycle
-        }
-    }
-
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
@@ -128,8 +115,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
     override fun onCreateView(
 
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.cut_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
@@ -138,10 +124,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
                 if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
                     viewStateManager.onCutScreenSetRingtoneContact(this, filePathAudio!!)
-                }
-                if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITE_REQUESTING_PERMISSION) != 0) {
-                    resetRequestingPermission()
-                    showDialogSet(audioCutterItem)
                 }
             })
         return binding.root
@@ -273,22 +255,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     }
 
     override fun showDialogSetAs(itemAudio: AudioCutterView) {
-        if (writeSettingPermissionRequest.isPermissionGranted()) {
-            showDialogSet(itemAudio)
-        } else {
-            StoragePermissionDialog.newInstance {
-                resetRequestingPermission()
-                pendingRequestingPermission = WRITE_REQUESTING_PERMISSION
-                writeSettingPermissionRequest.requestPermission()
-            }
-                .show(
-                    requireActivity().supportFragmentManager,
-                    StoragePermissionDialog::class.java.name
-                )
-        }
-    }
-
-    private fun showDialogSet(itemAudio: AudioCutterView) {
         audioCutterItem = itemAudio
         dialog.setOnCallBack(this)
         dialog.show(requireActivity().supportFragmentManager, "TAG")
