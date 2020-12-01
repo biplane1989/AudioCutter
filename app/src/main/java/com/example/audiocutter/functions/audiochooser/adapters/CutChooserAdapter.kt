@@ -118,9 +118,7 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
             val itemAudioFile = getItem(position)
             Log.d("TAG", "bind: ${itemAudioFile.isCheckDistance}    state ${itemAudioFile.state}")
             var bitRate = itemAudioFile.audioFile.bitRate / 1000
-            if (bitRate > 320) {
-                bitRate = 320
-            }
+
 
             tvBitrateAudio.text = "${bitRate}${mContext.resources.getString(R.string.kbps)}"
 

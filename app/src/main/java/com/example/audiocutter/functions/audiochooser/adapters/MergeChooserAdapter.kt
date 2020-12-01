@@ -128,9 +128,7 @@ class MergeChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, 
         fun bind() {
             val itemAudioFile = getItem(adapterPosition)
             var bitRate = itemAudioFile.audioFile.bitRate / 1000
-            if (bitRate > 320) {
-                bitRate = 320
-            }
+
             tvBitrateAudio.text = "${bitRate}${mContext.resources.getString(R.string.kbps)}"
 
             tvNameAudio.text = itemAudioFile.audioFile.fileName
