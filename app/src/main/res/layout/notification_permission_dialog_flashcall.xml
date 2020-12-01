@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#992E3041">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -13,10 +14,10 @@
         android:paddingBottom="20dp">
 
         <ImageView
-            android:id="@+id/close_button"
+            android:id="@+id/iv_close_button_notification"
             android:layout_width="@dimen/d_40"
             android:layout_height="@dimen/d_40"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="?android:selectableItemBackground"
             android:scaleType="centerInside"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -29,7 +30,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/close_button"
-            app:srcCompat="@drawable/common_permission_ic_music" />
+            app:srcCompat="@drawable/ic_notifi_permission" />
 
         <TextView
             android:id="@+id/explain_text"
@@ -40,18 +41,18 @@
             android:layout_marginRight="25dp"
             android:fontFamily="@font/opensans_regular"
             android:gravity="center"
-            android:text="@string/storage_permission_to_convert_files_please_allow_mp3_cutter_to_access_files_on_your_device"
+            android:text="@string/notification_permission_text_dialog"
             android:textSize="16dp"
             app:layout_constraintTop_toBottomOf="@+id/music_iv" />
 
         <Button
-            android:id="@+id/allow_button"
+            android:id="@+id/allow_button_notification"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="25dp"
             android:layout_marginTop="20dp"
             android:layout_marginRight="25dp"
-
+            android:layout_marginBottom="20dp"
             android:text="@string/storage_permission_allow"
             android:textColor="#FFFFFF"
             android:textSize="14dp"

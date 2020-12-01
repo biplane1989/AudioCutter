@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:ellipsize="end"
-            android:fontFamily="@font/sanfranciscodisplay_bold"
+            android:fontFamily="@font/opensans_bold"
             android:gravity="top"
             android:maxLines="1"
             android:textColor="#2E3041"
@@ -74,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="2dp"
                     android:layout_marginRight="2dp"
-                    android:fontFamily="@font/sanfranciscodisplay_light"
+                    android:fontFamily="@font/opensans_light"
                     android:text="@string/list_contact_item_default"
                     android:textColor="#FFFFFF"
                     android:textSize="12dp" />
@@ -85,7 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="2dp"
-                android:fontFamily="@font/sanfranciscodisplay_light"
+                android:fontFamily="@font/opensans_light"
                 android:textColor="#9C9C9C"
                 android:textSize="14dp" />
 
@@ -135,7 +135,7 @@
             android:id="@+id/tv_time_life"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/sanfranciscodisplay_medium"
+            android:fontFamily="@font/opensans_regular"
             android:gravity="end"
             android:text="00:00"
             android:textColor="#9C9C9C"
@@ -146,7 +146,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
-            android:fontFamily="@font/sanfranciscodisplay_medium"
+            android:fontFamily="@font/opensans_regular"
             android:text="/08:05"
             android:textColor="#9C9C9C"
             android:textSize="12dp" />

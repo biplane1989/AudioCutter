@@ -8,45 +8,103 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/rlt_actionbar"
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:background="?attr/selectableItemBackground"
-            android:gravity="center_vertical">
+            android:layout_height="wrap_content">
 
-            <View
+            <RelativeLayout
+
                 android:layout_width="match_parent"
-                android:layout_height="0.1dp"
-                android:layout_alignParentBottom="true"
-                android:background="@color/colorgrayAlpha" />
-
-
-            <ImageView
-                android:id="@+id/iv_app_screen_back"
-                android:layout_width="?actionBarSize"
                 android:layout_height="?actionBarSize"
-                android:layout_centerVertical="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_audiocutter_back" />
+                android:background="?attr/selectableItemBackground">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/colorgrayAlpha" />
+
+                <EditText
+
+                    android:id="@+id/edt_apps_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorWhite"
+                    android:focusableInTouchMode="true"
+                    android:hint="Search..."
+                    android:paddingHorizontal="?actionBarSize"
+                    android:paddingStart="@dimen/d_72"
+                    android:singleLine="true"
+                    android:visibility="invisible">
+
+                    <requestFocus />
+                </EditText>
+
+                <ImageView
+                    android:id="@+id/iv_app_screen_back"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_audiocutter_back" />
 
 
-            <TextView
-                android:id="@+id/tv_cutter_screen"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/iv_app_screen_back"
-                android:fontFamily="@font/sanfranciscodisplay_bold"
-                android:gravity="center"
-                android:paddingLeft="@dimen/d_16"
-                android:text="@string/app"
-                android:textColor="@color/colorBlack"
-                android:textSize="@dimen/d_18" />
+                <ImageView
+                    android:id="@+id/iv_apps_screen_back_edt"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_audiocutter_back"
+                    android:visibility="invisible" />
+
+                <TableRow
+                    android:id="@+id/tb_name_apps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/iv_app_screen_back"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tv_apps_screen"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/opensans_bold"
+                        android:paddingLeft="@dimen/d_24"
+                        android:text="@string/app"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="@dimen/d_18" />
+                </TableRow>
 
 
-        </RelativeLayout>
+                <ImageView
+                    android:id="@+id/iv_apps_screen_search"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_audiocutter_search" />
+
+                <ImageView
+                    android:id="@+id/iv_apps_screen_close"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_audiocutter_close"
+                    android:visibility="invisible" />
+
+
+            </RelativeLayout>
+        </LinearLayout>
 
 
         <androidx.recyclerview.widget.RecyclerView
@@ -65,6 +123,31 @@
             android:layout_height="@dimen/common_progressbar_size"
             android:layout_centerInParent="true"
             android:visibility="invisible" />
+
+        <LinearLayout
+            android:id="@+id/ln_empty_apps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="invisible">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_noapp_appchoose_screen" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/opensans_bold"
+                android:text="@string/no_app_choose"
+                android:textColor="@color/colorgray"
+                android:textSize="@dimen/d_18" />
+        </LinearLayout>
+
 
     </RelativeLayout>
 </layout>

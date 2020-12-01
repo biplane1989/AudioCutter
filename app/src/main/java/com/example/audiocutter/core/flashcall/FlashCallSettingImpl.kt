@@ -79,11 +79,12 @@ object FlashCallSettingImpl : FlashCallSetting {
         val vibrateEnable = PreferencesHelper.getBoolean(FLASH_MODE_VIBRATE_KEY, false)
         val silentEnable = PreferencesHelper.getBoolean(FLASH_MODE_SILENT_KEY, true)
         val flashTimerEnable = PreferencesHelper.getBoolean(FLASH_TIMER_ENABLE_KEY, false)
-        val startHour = PreferencesHelper.getInt(FLASH_TIMER_START_HOUR_KEY, -1)
-        val startMinute = PreferencesHelper.getInt(FLASH_TIMER_START_MINUTE_KEY, -1)
-        val endHour = PreferencesHelper.getInt(FLASH_TIMER_END_HOUR_KEY, -1)
-        val endMinute = PreferencesHelper.getInt(FLASH_TIMER_END_MINUTE_KEY, -1)
-        val flashType = FlashType.valueOf(PreferencesHelper.getString(FLASH_CALL_TYPE_KEY, FlashType.BEAT.name))
+        val startHour = PreferencesHelper.getInt(FLASH_TIMER_START_HOUR_KEY, 23)
+        val startMinute = PreferencesHelper.getInt(FLASH_TIMER_START_MINUTE_KEY, 0)
+        val endHour = PreferencesHelper.getInt(FLASH_TIMER_END_HOUR_KEY, 7)
+        val endMinute = PreferencesHelper.getInt(FLASH_TIMER_END_MINUTE_KEY, 0)
+        val flashType =
+            FlashType.valueOf(PreferencesHelper.getString(FLASH_CALL_TYPE_KEY, FlashType.BEAT.name))
         return FlashCallConfig(
             flashCallSettingEnable,
             incomingCallEnable,

@@ -11,20 +11,26 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import com.example.audiocutter.R
+import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.ResultScreenBinding
 import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
+import com.example.audiocutter.functions.common.ContactPermissionDialog
 import com.example.audiocutter.functions.mystudio.dialog.CancelDialog
 import com.example.audiocutter.functions.mystudio.dialog.CancelDialogListener
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.objects.AudioFile
+import com.example.audiocutter.permissions.AppPermission
+import com.example.audiocutter.permissions.ContactItemPermissionRequest
+import com.example.audiocutter.permissions.PermissionManager
 import com.example.audiocutter.util.Utils
 import com.google.android.material.snackbar.Snackbar
 import java.text.SimpleDateFormat
@@ -48,6 +54,17 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
     @SuppressLint("SimpleDateFormat")
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
+    private var pendingRequestingPermission = 0
+    private val CONTACTS_ITEM_REQUESTING_PERMISSION = 1 shl 4
+    private val contactPermissionRequest = object : ContactItemPermissionRequest {
+        override fun getPermissionActivity(): BaseActivity? {
+            return getBaseActivity()
+        }
+
+        override fun getLifeCycle(): Lifecycle {
+            return lifecycle
+        }
+    }
 
     private val processDoneObserver = Observer<AudioFile> {         // observer trang thai done
 
@@ -189,6 +206,17 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         mResultViewModel.getProcessDoneLiveData().observe(viewLifecycleOwner, processDoneObserver)
         mResultViewModel.getPlayerInfo().observe(viewLifecycleOwner, playInfoObserver)
         mResultViewModel.getErrorLiveData().observe(viewLifecycleOwner, errorObserver)
+        PermissionManager.getAppPermission()
+            .observe(this.viewLifecycleOwner, Observer<AppPermission> {
+                if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
+                    resetRequestingPermission()
+                    viewStateManager.resultScreenSetContactItemClicked(
+                        this,
+                        audioFile!!.file.absolutePath
+                    )
+                }
+
+            })
         return binding.root
     }
 
@@ -300,7 +328,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
             }
             binding.llContact -> {
                 audioFile?.let {
-                    viewStateManager.resultScreenSetContactItemClicked(this, audioFile!!.file!!.absolutePath)
+                   checkPermissionContact()
                 }
 
             }
@@ -309,6 +337,25 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                     Utils.openWithApp(requireContext(), audioFile!!.uri!!)
                 }
             }
+        }
+    }
+
+    private fun checkPermissionContact() {
+        if (contactPermissionRequest.isPermissionGranted()) {
+            viewStateManager.resultScreenSetContactItemClicked(
+                this,
+                audioFile!!.file.absolutePath
+            )
+        } else {
+            ContactPermissionDialog.newInstance {
+                resetRequestingPermission()
+                pendingRequestingPermission = CONTACTS_ITEM_REQUESTING_PERMISSION
+                contactPermissionRequest.requestPermission()
+            }
+                .show(
+                    requireActivity().supportFragmentManager,
+                    ContactPermissionDialog::class.java.name
+                )
         }
     }
 
@@ -342,6 +389,12 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     override fun onCancelDialog() {
         // no thing
     }
+
+
+    private fun resetRequestingPermission() {
+        pendingRequestingPermission = 0
+    }
+
 
     override fun onResume() {       // xu ly back button
         super.onResume()

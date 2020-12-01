@@ -13,7 +13,7 @@
         android:layout_marginLeft="15dp"
         android:layout_marginTop="15dp"
         android:layout_marginRight="15dp"
-        android:fontFamily="@font/sanfrancisco_medium"
+        android:fontFamily="@font/opensans_regular"
         android:gravity="center"
         android:text="@string/lock_notification_enable_notification_organizer_by_granting_access_to_max_cleanr"
         android:textColor="#FFFFFF"

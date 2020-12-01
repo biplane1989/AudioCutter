@@ -50,7 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/d_48"
                 android:paddingHorizontal="@dimen/d_16"
-                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:fontFamily="@font/opensans_bold"
                 android:gravity="center"
                 android:text="Deleted Successfully"
                 android:textColor="#2E3041"

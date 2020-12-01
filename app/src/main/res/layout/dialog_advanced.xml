@@ -16,7 +16,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/size_item_dialog"
-                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:fontFamily="@font/opensans_bold"
                 android:gravity="center"
                 android:text="@string/dialog_advanced_title"
                 android:textColor="@color/dialog_advanced_title_color"
@@ -32,7 +32,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_item_dialog"
 
-                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:fontFamily="@font/opensans_regular"
                     android:text="@string/dialog_advanced_fade_in"
                     android:textColor="@color/dialog_advanced_title_fade_color"
                     android:textSize="@dimen/text_size_edt" />
@@ -53,7 +53,7 @@
                     android:layout_width="@dimen/d_70"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_item_dialog"
-                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:fontFamily="@font/opensans_regular"
                     android:text="@string/dialog_advanced_fade_out"
                     android:textColor="@color/dialog_advanced_title_fade_color"
                     android:textSize="@dimen/text_size_edt" />
@@ -79,7 +79,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackground"
-                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:fontFamily="@font/opensans_regular"
                     android:gravity="center"
                     android:text="@string/my_studio_dialog_btn_yes"
                     android:textColor="@color/dialog_advanced_cancel_color"
@@ -92,7 +92,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackground"
-                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:fontFamily="@font/opensans_regular"
                     android:gravity="center"
                     android:text="@string/dialog_advance_ok"
                     android:textColor="@color/dialog_advanced_ok_color"

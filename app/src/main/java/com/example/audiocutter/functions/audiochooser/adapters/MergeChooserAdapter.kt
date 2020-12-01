@@ -12,6 +12,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.audiocutter.R
 import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerState
@@ -19,6 +21,7 @@ import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
+import com.example.audiocutter.util.Utils
 
 class MergeChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, MergeChooserAdapter.MergeHolder>(
     MergerChooserAudioDiff()
@@ -76,7 +79,13 @@ class MergeChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, 
 //                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
                     val bitmap =   itemAudioFile.audioFile.bitmap
                     if(bitmap!=null){
-                        holder.ivController.setImageBitmap(bitmap)
+                        Glide.with(holder.itemView).load(bitmap)
+                            .transform(
+                                RoundedCorners(
+                                    Utils.convertDp2Px(4, holder.itemView.context).toInt()
+                                )
+                            )
+                            .into(holder.ivController)
                     }else{
                         val bm = BitmapFactory.decodeResource(
                             AudioFileManagerImpl.mContext.resources,
@@ -163,7 +172,13 @@ class MergeChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, 
 //                    ivController.setImageResource(R.drawable.ic_audiocutter_play)
                     val bitmap =   itemAudioFile.audioFile.bitmap
                     if(bitmap!=null){
-                        ivController.setImageBitmap(bitmap)
+                        Glide.with(itemView).load(bitmap)
+                            .transform(
+                                RoundedCorners(
+                                    Utils.convertDp2Px(4, itemView.context).toInt()
+                                )
+                            )
+                            .into(ivController)
                     }else{
                         val bm = BitmapFactory.decodeResource(
                             AudioFileManagerImpl.mContext.resources,

@@ -45,12 +45,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="marquee"
-                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:fontFamily="@font/opensans_regular"
                     android:singleLine="true"
                     android:text="Audio Name"
                     android:textColor="@color/colorBlack"
-                    android:textSize="@dimen/d_18"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/d_18" />
 
                 <TableRow
                     android:layout_width="match_parent"
@@ -62,7 +61,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginRight="@dimen/d_5"
-                        android:fontFamily="@font/sanfranciscodisplay_regular"
+                        android:fontFamily="@font/opensans_regular"
                         android:gravity="bottom"
                         android:text="2.1 MB"
                         android:textSize="@dimen/d_14" />
@@ -78,7 +77,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="@dimen/d_5"
-                        android:fontFamily="@font/sanfranciscodisplay_regular"
+                        android:fontFamily="@font/opensans_regular"
                         android:gravity="bottom"
                         android:text="128kb/s"
                         android:textSize="@dimen/d_14" />

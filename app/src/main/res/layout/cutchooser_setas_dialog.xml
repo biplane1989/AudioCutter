@@ -36,7 +36,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/size_item_dialog"
                     android:paddingHorizontal="@dimen/margin_item_dialog"
-                    android:fontFamily="@font/sanfranciscodisplay_bold"
+                    android:fontFamily="@font/opensans_bold"
                     android:gravity="center"
                     android:text="@string/my_studio_dialog_set_as_title"
                     android:textColor="#2E3041"
@@ -59,7 +59,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="#FDAA74"
-                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:fontFamily="@font/opensans_regular"
                     android:shadowColor="#FDAA74"
                     android:text="@string/my_studio_dialog_set_as_ringtone"
                     android:textSize="@dimen/text_size_edt" />
@@ -71,7 +71,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="#FDAA74"
-                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:fontFamily="@font/opensans_regular"
                     android:text="@string/my_studio_dialog_set_as_alarm"
                     android:textSize="@dimen/text_size_edt" />
 
@@ -81,7 +81,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="#FDAA74"
-                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:fontFamily="@font/opensans_regular"
                     android:text="@string/my_studio_dialog_set_as_notification"
                     android:textSize="@dimen/text_size_edt" />
             </RadioGroup>
@@ -97,7 +97,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackground"
-                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:fontFamily="@font/opensans_regular"
                     android:gravity="center"
                     android:text="CANCEL"
                     android:textColor="#BDBDBD"
@@ -110,7 +110,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackground"
-                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:fontFamily="@font/opensans_regular"
                     android:gravity="center"
                     android:text="@string/set"
                     android:textColor="#FDAA74"

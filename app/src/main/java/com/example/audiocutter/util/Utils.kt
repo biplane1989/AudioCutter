@@ -220,7 +220,7 @@ class Utils {
         fun getWidthTextPlayController(str: String, context: Context, textSize: Int): Float {
             val paint = Paint()
             paint.textSize = convertDp2Px(textSize, context)
-            val typeface: Typeface? = ResourcesCompat.getFont(context, R.font.sanfrancisco_medium)
+            val typeface: Typeface? = ResourcesCompat.getFont(context, R.font.opensans_regular)
             typeface?.let {
                 paint.typeface = typeface
             }

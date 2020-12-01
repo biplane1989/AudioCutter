@@ -21,10 +21,9 @@ class ChangeRangeView @JvmOverloads constructor(
     private lateinit var rectImageDst2: Rect
     private lateinit var rectImageDst1: Rect
     private lateinit var rectImage: Rect
-    private val FONT_MEDIUM = "fonts/sanfranciscodisplay_medium.otf"
-    private val FONT_BOLD = "fonts/sanfranciscodisplay_bold.otf"
-    private val FONT_LIGHT = "fonts/sanfranciscodisplay_light.otf"
-    private val FONT_REGULAR = "fonts/sanfranciscodisplay_regular.otf"
+    private val FONT_BOLD = "fonts/opensans_bold.otf"
+    private val FONT_LIGHT = "fonts/opensans_light.otf"
+    private val FONT_REGULAR = "fonts/opensans_regular.otf"
     private lateinit var typeFace: Typeface
     private lateinit var rectText2: Rect
     private lateinit var rectText1: Rect
@@ -79,7 +78,7 @@ class ChangeRangeView @JvmOverloads constructor(
 
     init {
 
-        typeFace = Typeface.createFromAsset(context.assets, FONT_MEDIUM)
+        typeFace = Typeface.createFromAsset(context.assets, FONT_REGULAR)
         setPaint(mPaint5, R.color.colorGraySeekbar)
         setPaint(mPaint6, R.color.colorgray)
         setPaint(mPaint4, R.color.colorBlack)

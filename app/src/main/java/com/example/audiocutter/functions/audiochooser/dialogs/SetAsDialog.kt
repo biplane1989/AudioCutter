@@ -64,12 +64,12 @@ class SetAsDialog(val mContext: Context) : DialogFragment(), View.OnClickListene
         if (typeSet == null) {
             Toast.makeText(context, "please enter choose", Toast.LENGTH_SHORT).show()
         } else {
-            mCallback.setAudioAs(typeSet!!)
+            mCallback.setAsTypeAudio(typeSet!!)
         }
     }
 
     interface setAsListener {
-        fun setAudioAs(typeAudioSetAs: TypeAudioSetAs)
+        fun setAsTypeAudio(typeAudioSetAs: TypeAudioSetAs)
     }
 
 }

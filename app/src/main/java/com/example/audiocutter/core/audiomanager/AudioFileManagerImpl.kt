@@ -97,7 +97,10 @@ object AudioFileManagerImpl : AudioFileManager {
         return true
     }
 
-    private suspend fun filterAudioByFolder(listAudioFiles: List<AudioFile>, folderFilter: Folder): List<AudioFile> {
+    private suspend fun filterAudioByFolder(
+        listAudioFiles: List<AudioFile>,
+        folderFilter: Folder
+    ): List<AudioFile> {
         return coroutineScope {
             val tmpList = ArrayList<AudioFile>()
             run list@{
@@ -118,28 +121,39 @@ object AudioFileManagerImpl : AudioFileManager {
 
     }
 
-    private suspend fun queryMediaStore(filterFunc: (String, String, Long) -> Unit) = coroutineScope {
-        val resolver = mContext.contentResolver
-        val projection = arrayOf(MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DATE_ADDED, MediaStore.Audio.Media._ID)
-        val cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null)
-        try {
-            cursor?.let {
+    private suspend fun queryMediaStore(filterFunc: (String, String, Long) -> Unit) =
+        coroutineScope {
+            val resolver = mContext.contentResolver
+            val projection = arrayOf(
+                MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media.DATE_ADDED,
+                MediaStore.Audio.Media._ID
+            )
+            val cursor = resolver.query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                null,
+                null,
+                null
+            )
+            try {
+                cursor?.let {
 
-                val clData = it.getColumnIndex(projection[0])
-                val clDateAdded = it.getColumnIndex(projection[1])
-                val clID = it.getColumnIndex(projection[2])
-                var hasRow = it.moveToFirst()
-                while (isActive && hasRow) {
-                    val filePath = it.getString(clData)
-                    val id = it.getString(clID)
-                    filterFunc(id, filePath, it.getLong(clDateAdded))
-                    hasRow = it.moveToNext()
+                    val clData = it.getColumnIndex(projection[0])
+                    val clDateAdded = it.getColumnIndex(projection[1])
+                    val clID = it.getColumnIndex(projection[2])
+                    var hasRow = it.moveToFirst()
+                    while (isActive && hasRow) {
+                        val filePath = it.getString(clData)
+                        val id = it.getString(clID)
+                        filterFunc(id, filePath, it.getLong(clDateAdded))
+                        hasRow = it.moveToNext()
+                    }
                 }
+            } finally {
+                cursor?.close()
             }
-        } finally {
-            cursor?.close()
         }
-    }
 
     private suspend fun scan() = coroutineScope {
         Log.d(TAG, "start scanning")
@@ -153,7 +167,6 @@ object AudioFileManagerImpl : AudioFileManager {
             uriPathSet.clear()
             queryMediaStore { mediaId, filePath, dateStr ->
                 val file = File(filePath)
-                Log.d(TAG, "scanning file ${filePath}")
                 if (file.exists()) {
                     val audioFile = readOrGetCacheAudioFile(filePath, mediaId, dateStr)
                     audioFile?.let {
@@ -177,11 +190,14 @@ object AudioFileManagerImpl : AudioFileManager {
                 }
             }
             if (isActive) {
-                Log.d("taihhhhhhhh", "listAllAudioData size ${listAllAudioData.size} oldListAudios size ${oldListAudios?.size}")
-                Log.d(TAG, "scan: giangtd : list cut size: " + listCuttingAudio.size)
                 if (!listAllAudioData.isSame(oldListAudios)) {
                     isFirstTimeToScanning = false
-                    changeStateLoadDone(listAllAudioData, listCuttingAudio, listMergingAudio, listMixingAudio)
+                    changeStateLoadDone(
+                        listAllAudioData,
+                        listCuttingAudio,
+                        listMergingAudio,
+                        listMixingAudio
+                    )
                 }
             }
         }
@@ -189,13 +205,28 @@ object AudioFileManagerImpl : AudioFileManager {
 
     }
 
-    private fun readOrGetCacheAudioFile(filePath: String, mediaId: String, modified: Long): AudioFile? {
+    private fun readOrGetCacheAudioFile(
+        filePath: String,
+        mediaId: String,
+        modified: Long
+    ): AudioFile? {
         val cachedAudioFile = filePathMapAudioFile.get(filePath)
         if (cachedAudioFile?.modified != modified) {
             synchronized(this) {
                 val audioInfo = FileUtil.getAudioInfo(filePath)
+
                 audioInfo?.let {
-                    filePathMapAudioFile.put(filePath, Utils.convertToAudioFile(it, modified, Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString() + File.separator + mediaId)))
+                    if ("music_500k" in it.fileName) {
+                        Log.d("taiiihhh", " bitrate " + it.bitRate)
+                    }
+                    filePathMapAudioFile.put(
+                        filePath,
+                        Utils.convertToAudioFile(
+                            it,
+                            modified,
+                            Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString() + File.separator + mediaId)
+                        )
+                    )
                 }
             }
 
@@ -261,7 +292,8 @@ object AudioFileManagerImpl : AudioFileManager {
                 synchronized(this) {
                     val audioInfo = FileUtil.getAudioInfo(filePath)
                     if (audioInfo != null) {
-                        val audioFile = Utils.convertToAudioFile(audioInfo, System.currentTimeMillis(), uri)
+                        val audioFile =
+                            Utils.convertToAudioFile(audioInfo, System.currentTimeMillis(), uri)
                         withLock {
                             val oldAudioFile = findAudioFile(audioInfo.filePath)
                             if (oldAudioFile != null) {
@@ -296,11 +328,14 @@ object AudioFileManagerImpl : AudioFileManager {
 
 
     private fun registerContentObserVerDeleted() {
-        mContext.contentResolver.registerContentObserver(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, object : ContentObserver(Handler(Looper.getMainLooper())) {
-            override fun onChange(selfChange: Boolean, uri: Uri?) {
-                notifyDiskChanged()
-            }
-        })
+        mContext.contentResolver.registerContentObserver(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            true,
+            object : ContentObserver(Handler(Looper.getMainLooper())) {
+                override fun onChange(selfChange: Boolean, uri: Uri?) {
+                    notifyDiskChanged()
+                }
+            })
     }
 
     override fun getFolderPath(typeFile: Folder): String {
@@ -333,7 +368,11 @@ object AudioFileManagerImpl : AudioFileManager {
         }
     }
 
-    override fun renameToFileAudio(newName: String, audioFile: AudioFile, typeFile: Folder): Boolean {
+    override fun renameToFileAudio(
+        newName: String,
+        audioFile: AudioFile,
+        typeFile: Folder
+    ): Boolean {
         try {
             val subPath = when (typeFile) {
                 Folder.TYPE_MIXER -> {
@@ -351,7 +390,11 @@ object AudioFileManagerImpl : AudioFileManager {
                 val pathNew = "$subPath/$newName.${audioFile.mimeType}"
                 val fileNew = File(pathNew)
                 if (file.renameTo(fileNew)) {
-                    MediaScannerConnection.scanFile(mContext, arrayOf(fileNew.absolutePath), null) { s, uri ->
+                    MediaScannerConnection.scanFile(
+                        mContext,
+                        arrayOf(fileNew.absolutePath),
+                        null
+                    ) { s, uri ->
 
 
                         notifyDiskChanged()
@@ -397,7 +440,12 @@ object AudioFileManagerImpl : AudioFileManager {
         return result
     }
 
-    private fun changeStateLoadDone(listAllAudioData: ArrayList<AudioFile>, listCuttingAudio: ArrayList<AudioFile>, listMergingAudio: ArrayList<AudioFile>, listMixingAudio: ArrayList<AudioFile>) {
+    private fun changeStateLoadDone(
+        listAllAudioData: ArrayList<AudioFile>,
+        listCuttingAudio: ArrayList<AudioFile>,
+        listMergingAudio: ArrayList<AudioFile>,
+        listMixingAudio: ArrayList<AudioFile>
+    ) {
         listAllAudios.postValue(AudioFileScans(ArrayList(listAllAudioData), StateLoad.LOADDONE))
         listCuttingAudios.postValue(AudioFileScans(listCuttingAudio, StateLoad.LOADDONE))
         listMeringAudios.postValue(AudioFileScans(listMergingAudio, StateLoad.LOADDONE))
@@ -425,7 +473,12 @@ object AudioFileManagerImpl : AudioFileManager {
                     }
                 }
             }
-            changeStateLoadDone(listAllAudioData, listCuttingAudio, listMergingAudio, listMixingAudio)
+            changeStateLoadDone(
+                listAllAudioData,
+                listCuttingAudio,
+                listMergingAudio,
+                listMixingAudio
+            )
         }
 
     }

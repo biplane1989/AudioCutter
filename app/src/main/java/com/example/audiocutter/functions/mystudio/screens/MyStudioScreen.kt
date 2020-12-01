@@ -2,12 +2,12 @@ package com.example.audiocutter.functions.mystudio.screens
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.*
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
@@ -29,6 +29,7 @@ import kotlinx.android.synthetic.main.my_studio_fragment.*
 
 class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, CancelDialogListener, DialogAppShare.DialogAppListener {
 
+    private val MIN_DURATION = 500
     private lateinit var binding: MyStudioFragmentBinding
     private val TAG = "giangtd"
     private lateinit var myStudioViewModel: MyStudioViewModel
@@ -214,19 +215,35 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     override fun showMenu(view: View, audioFile: AudioFile) { // click item setting
         val popup = android.widget.PopupMenu(context, view)
         popup.inflate(R.menu.output_audio_manager_screen_popup_menu)
-        popup.setOnMenuItemClickListener(android.widget.PopupMenu.OnMenuItemClickListener { item: MenuItem? ->
-
+        popup.setOnMenuItemClickListener { item: MenuItem? ->
+            val dialogSnack =
+                Snackbar.make(
+                    requireView(),
+                    getString(R.string.notification_file_was_short_mystudio_screen),
+                    Snackbar.LENGTH_SHORT
+                )
             when (item!!.itemId) {
                 R.id.set_as -> {
                     val dialog = SetAsDialog.newInstance(this, audioFile.uri.toString())
                     dialog.show(childFragmentManager, SetAsDialog.TAG)
                 }
                 R.id.cut -> {
-                    viewStateManager.myStudioCuttingItemClicked(this, audioFile.file.absolutePath)
+                    Log.d(TAG, "showMenu: duration ${audioFile.duration}")
+                    if (audioFile.duration < MIN_DURATION) {
+                        dialogSnack.show()
+                    } else {
+                        viewStateManager.myStudioCuttingItemClicked(
+                            this,
+                            audioFile.file.absolutePath
+                        )
+                    }
                 }
                 R.id.contacs -> {
                     // contacs screen
-                    viewStateManager.myStudioSetContactItemClicked(this, audioFile.file.absolutePath)
+                    viewStateManager.myStudioSetContactItemClicked(
+                        this,
+                        audioFile.file.absolutePath
+                    )
                 }
                 R.id.open_with -> {
                     audioFile.uri?.let {
@@ -241,11 +258,17 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     ShowDialogShareFile()
                 }
                 R.id.rename -> {
-                    val dialog = RenameDialog.newInstance(this, typeAudio, audioFile.file.absolutePath, audioFile.fileName)
+                    val dialog = RenameDialog.newInstance(
+                        this,
+                        typeAudio,
+                        audioFile.file.absolutePath,
+                        audioFile.fileName
+                    )
                     dialog.show(childFragmentManager, RenameDialog.TAG)
                 }
                 R.id.info -> {
-                    val dialog = InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
+                    val dialog =
+                        InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
                     dialog.show(childFragmentManager, InfoDialog.TAG)
                 }
                 R.id.delete -> {
@@ -257,7 +280,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             }
 
             true
-        })
+        }
         popup.show()
     }
 

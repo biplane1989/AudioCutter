@@ -35,7 +35,7 @@
             <!--                <TextView-->
             <!--                    android:layout_width="match_parent"-->
             <!--                    android:layout_height="@dimen/d_48"-->
-            <!--                    android:fontFamily="@font/sanfranciscodisplay_bold"-->
+            <!--                    android:fontFamily="@font/opensans_bold"-->
             <!--                    android:gravity="center"-->
             <!--                    android:paddingHorizontal="@dimen/d_16"-->
             <!--                    android:text="TIME"-->
@@ -63,7 +63,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackground"
-                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:fontFamily="@font/opensans_regular"
                     android:gravity="center"
                     android:text="@string/tv_cancel_settings"
                     android:textColor="#BDBDBD"
@@ -76,7 +76,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackground"
-                    android:fontFamily="@font/sanfranciscodisplay_medium"
+                    android:fontFamily="@font/opensans_regular"
                     android:gravity="center"
                     android:text="@string/tv_ok_settings"
                     android:textColor="#FDAA74"

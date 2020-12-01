@@ -72,18 +72,18 @@
                         android:id="@+id/tv_cutter_screen"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/sanfranciscodisplay_bold"
+                        android:fontFamily="@font/"
                         android:text="@string/audio_cutter_name_actionbar"
                         android:textColor="@color/colorBlack"
-android:paddingLeft="@dimen/d_16"
+                        android:paddingLeft="@dimen/d_16"
                         android:textSize="@dimen/d_18" />
                 </TableRow>
 
 
                 <ImageView
                     android:id="@+id/iv_cutter_screen_search"
-                    android:layout_width="@dimen/d_40"
-                    android:layout_height="@dimen/d_40"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -92,8 +92,8 @@ android:paddingLeft="@dimen/d_16"
 
                 <ImageView
                     android:id="@+id/iv_audio_cutter_screen_file"
-                    android:layout_width="@dimen/d_40"
-                    android:layout_height="@dimen/d_40"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
                     android:layout_centerVertical="true"
                     android:layout_toLeftOf="@id/iv_cutter_screen_search"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -106,11 +106,10 @@ android:paddingLeft="@dimen/d_16"
                     android:layout_height="?actionBarSize"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginRight="10dp"
                     android:padding="@dimen/d_5"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_audiocutter_close"
-                    android:visibility="gone" />
+                    android:visibility="invisible" />
 
 
             </RelativeLayout>
@@ -144,7 +143,7 @@ android:paddingLeft="@dimen/d_16"
             android:layout_centerInParent="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
-            android:fontFamily="@font/sanfranciscodisplay_regular"
+            android:fontFamily="@font/opensans_regular"
             android:text="@string/no_result_empty"
             android:textColor="@color/colorgray"
             android:textSize="@dimen/d_18"
