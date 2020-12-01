@@ -115,6 +115,7 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
                 //3
                 filename = getNameByUri(ringtone!!, uriNameMap)
                 isRingtoneDefault = false
+                ringtoneFilePath = ringtone
             }
             if (!hasDefault && hasRingtone && isUriRingtoneExisted) {
                 //3
@@ -123,10 +124,10 @@ class ContactManagerImpl(val appContext: Context) : ContactManager {
                 isRingtoneDefault = false
             }
 
-            if (!hasDefault && hasRingtone && isUriRingtoneExisted) {
+            if (!hasDefault && hasRingtone && !isUriRingtoneExisted) {
                 //2
                 isRingtoneDefault = true
-                ringtoneFilePath = ringtone!!
+//                ringtoneFilePath = ""
             }
             if (!hasDefault && !hasRingtone) {
                 //2
