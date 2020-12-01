@@ -38,17 +38,11 @@ class MainScreen : BaseFragment(), View.OnClickListener {
             .observe(this.viewLifecycleOwner, Observer<AppPermission> {
                 if (storagePermissionRequest.isPermissionGranted() && (pendingRequestingPermission and MP3_CUTTER_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
-                    if (writeSettingPermissionRequest.isPermissionGranted()) {
-                        onMp3CutterItemClicked()
-                    } else {
-                        pendingRequestingPermission = MP3_CUTTER_REQUESTING_PERMISSION
-                        writeSettingPermissionRequest.requestPermission()
-                    }
-
+                    onMp3CutterItemClicked()
                 }
                 if (storagePermissionRequest.isPermissionGranted() && (pendingRequestingPermission and AUDIO_MERGER_REQUESTING_PERMISSION) != 0) {
+                    resetRequestingPermission()
                     onAudioMergerItemClicked()
-                    onMp3CutterItemClicked()
                 }
                 if (storagePermissionRequest.isPermissionGranted() && (pendingRequestingPermission and AUDIO_MIXER_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
@@ -126,7 +120,7 @@ class MainScreen : BaseFragment(), View.OnClickListener {
     }
 
     private fun onMp3CutterItemClicked() {
-        if (storagePermissionRequest.isPermissionGranted() && writeSettingPermissionRequest.isPermissionGranted()) {
+        if (storagePermissionRequest.isPermissionGranted()) {
             ManagerFactory.getAudioFileManager().init(requireContext())
             viewStateManager.mainScreenOnMp3CutItemClicked(this)
         } else {
