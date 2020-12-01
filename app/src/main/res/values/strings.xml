@@ -199,5 +199,5 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="introduction_screen_title">MP3 Cutter &amp; <br />  Ringtone Maker</string>
     <string name="lock_notification_enable_notification_organizer_by_granting_access_to_max_cleanr">Enable notification organizer by granting access to Audio Cutter.</string>
     <string name="flashscreen_default_times_count">2 times</string>
-    <string name="flash_ondevice_unavailable">Flash on device unavailable.</string>
+    <string name="flash_ondevice_unavailable">Your device does not have a flash</string>
 </resources>

@@ -25,9 +25,7 @@ import com.example.audiocutter.databinding.FlashCallScreenBinding
 import com.example.audiocutter.functions.flashcall.dialogs.FlashTypeDialog
 import com.example.audiocutter.functions.flashcall.dialogs.SettimeDialog
 import com.example.audiocutter.functions.flashcall.dialogs.TypeFlash
-import com.example.audiocutter.permissions.AppPermission
 import com.example.audiocutter.permissions.NotificationListenerPermissionRequest
-import com.example.audiocutter.permissions.PermissionManager
 import com.example.audiocutter.util.Utils
 
 
@@ -60,6 +58,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
         binding.swFlashCallMode.isChecked = it.enable
         binding.swIncommingCall.isChecked = it.incomingCallEnable
         binding.swNotifycation.isChecked = it.notificationEnable
+        Log.d(TAG, "checkNotifObserve: ${it.notificationEnable}")
         binding.tbAppFlashcall.isEnabled = it.notificationEnable
         if (it.notificationEnable) {
             binding.tvNotification.setTextColor(
@@ -225,17 +224,26 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
                 flashCallConfig.incomingCallEnable = isChecked
             }
             binding.swNotifycation -> {
-                /* val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-                 startActivity(intent)*/
+//                if (isChecked) {
+//                    if (notificationListenerPermissionRequest.isPermissionGranted()) {
+//                        flashCallConfig.notificationEnable = isChecked
+//                    } else {
+//                        pendingRequestingPermission = NOTIFICATION_LISTENER_REQUESTING_PERMISSION
+//                        notificationListenerPermissionRequest.requestPermission()
+//                    }
+//                } else {
+//                    flashCallConfig.notificationEnable = isChecked
+//                    Log.d(TAG, "onCheckedChanged: notification enable  $isChecked")
+//                }
+
+
+                flashCallConfig.notificationEnable = isChecked
                 if (isChecked) {
-                    if (notificationListenerPermissionRequest.isPermissionGranted()) {
-                        flashCallConfig.notificationEnable = isChecked
-                    } else {
-                        pendingRequestingPermission = NOTIFICATION_LISTENER_REQUESTING_PERMISSION
+                    if (!notificationListenerPermissionRequest.isPermissionGranted()) {
                         notificationListenerPermissionRequest.requestPermission()
+                    } else {
+                        return
                     }
-                } else {
-                    flashCallConfig.notificationEnable = isChecked
                 }
 
             }
