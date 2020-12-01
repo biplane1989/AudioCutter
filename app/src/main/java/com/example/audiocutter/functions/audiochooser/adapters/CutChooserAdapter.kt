@@ -12,12 +12,15 @@ import android.widget.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.audiocutter.R
 import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
+import com.example.audiocutter.util.Utils
 import kotlin.math.floor
 
 class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, CutChooserAdapter.AudiocutterHolder>(CutChooserAudioDiff()) {
@@ -70,10 +73,17 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
                 PlayerState.IDLE -> {
                     holder.pgAudio.resetView()
 //                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
-                    val bitmap =   itemAudioFile.audioFile.bitmap
-                    if(bitmap!=null){
-                        holder.ivController.setImageBitmap(bitmap)
-                    }else{
+                    val bitmap = itemAudioFile.audioFile.bitmap
+                    if (bitmap != null) {
+                        Glide.with(holder.itemView).load(bitmap)
+                            .transform(
+                                RoundedCorners(
+                                    Utils.convertDp2Px(4, context = holder.itemView.context).toInt()
+                                )
+                            )
+                            .into( holder.ivController)
+//                        holder.ivController.setImageBitmap(bitmap)
+                    } else {
                         val bm = BitmapFactory.decodeResource(
                             AudioFileManagerImpl.mContext.resources,
                             R.drawable.ic_audiocutter_play
@@ -153,7 +163,13 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
 //                    ivController.setImageResource(R.drawable.ic_audiocutter_play)
                     val bitmap =   itemAudioFile.audioFile.bitmap
                     if(bitmap!=null){
-                        ivController.setImageBitmap(bitmap)
+                        Glide.with(itemView).load(bitmap)
+                            .transform(
+                                RoundedCorners(
+                                    Utils.convertDp2Px(4, itemView.context).toInt()
+                                )
+                            )
+                            .into(ivController)
                     }else{
                         val bm = BitmapFactory.decodeResource(
                             AudioFileManagerImpl.mContext.resources,
@@ -171,7 +187,7 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
             val itemAudio = getItem(adapterPosition)
             when (p0.id) {
                 R.id.iv_controller_audio -> controllerAudio()
-                R.id.ln_item_audio_cutter_screen -> controllerAudio()
+                R.id.ln_item_audio_cutter_screen -> mCallBack.onCutItemClicked(itemAudio)
                 R.id.ln_menu -> showPopupMenu(itemAudio)
             }
         }

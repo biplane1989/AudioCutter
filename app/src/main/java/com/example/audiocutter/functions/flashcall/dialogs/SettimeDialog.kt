@@ -12,9 +12,9 @@ class SettimeDialog : BaseDialog(), View.OnClickListener {
     private lateinit var tvCancel: TextView
     private lateinit var tvOk: TextView
     private lateinit var tpTime: TimePicker
-    private lateinit var mCallback: SettimeListener
     private var hoursChooser = 0
     private var minuteChooser = 0
+    private lateinit var mCallback: SettimeListener
 
 
     fun setOnCallBack(event: SettimeListener) {

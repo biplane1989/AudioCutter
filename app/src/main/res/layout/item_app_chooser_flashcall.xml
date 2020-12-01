@@ -4,18 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
-    android:orientation="horizontal"
-    android:paddingLeft="@dimen/d_16">
+    android:orientation="vertical">
 
     <TableRow
+        android:paddingStart="@dimen/d_16"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingVertical="@dimen/d_10">
 
         <ImageView
             android:id="@+id/iv_icon_app_flash"
-            android:layout_width="?actionBarSize"
-            android:layout_height="?actionBarSize"
+            android:layout_width="@dimen/d_48"
+            android:layout_height="@dimen/d_48"
             android:scaleType="centerInside"
             android:src="@mipmap/ic_launcher" />
 
@@ -36,17 +36,18 @@
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/sw_chooser_app"
             android:layout_width="wrap_content"
-            app:switchMinWidth="@dimen/d_50"
+            app:switchMinWidth="@dimen/d_40"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/d_12"
-            android:textColor="@color/colorBlack"
-            android:textOff="Off"
-            android:textOn="On"
-            android:textSize="@dimen/d_5"
             app:thumbTint="@color/color_state_thumb"
             app:trackTint="@color/color_state_track" />
 
     </TableRow>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@color/colorgrayAlpha" />
 
 </LinearLayout>

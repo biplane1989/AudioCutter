@@ -2,7 +2,6 @@ package com.example.audiocutter.ui.editor.cutting;
 
 import android.content.Context
 import android.graphics.*
-import android.media.MediaMetadataRetriever
 import android.util.AttributeSet
 import android.util.Log
 import android.view.GestureDetector
@@ -12,7 +11,9 @@ import android.view.View
 import androidx.dynamicanimation.animation.FlingAnimation
 import androidx.dynamicanimation.animation.FloatValueHolder
 import com.example.audiocutter.R
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.util.Utils
+import com.example.core.utils.FileUtil
 import kotlin.math.abs
 import kotlin.math.sqrt
 
@@ -224,12 +225,8 @@ class WaveformEditView : View {
 
     private fun getDuration(path: String): Long {
         return try {
-            val mediaMetadataRetriever = MediaMetadataRetriever()
-            mediaMetadataRetriever.setDataSource(path)
-            val durationStr =
-                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-            mediaMetadataRetriever.release()
-            durationStr!!.toLong()
+           val audioFile = ManagerFactory.getAudioFileManager().findAudioFile(path)
+            return audioFile?.duration ?: 0
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
             0
