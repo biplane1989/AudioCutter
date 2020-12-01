@@ -164,9 +164,21 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
             }
         }
         initViews()
+        PermissionManager.getAppPermission()
+            .observe(this.viewLifecycleOwner, Observer<AppPermission> {
+
+                if (notificationListenerPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and NOTIFICATION_LISTENER_REQUESTING_PERMISSION) != 0) {
+                    resetRequestingPermission()
+                    binding.swNotifycation.isChecked = true
+                }
+            })
+
+
         return binding.root
     }
-
+    private fun resetRequestingPermission() {
+        pendingRequestingPermission = 0
+    }
     private fun initViews() {
         Log.d(TAG, "checkFunc is the program running:  start ")
 
