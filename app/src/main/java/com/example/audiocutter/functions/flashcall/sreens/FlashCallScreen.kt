@@ -401,7 +401,6 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
         }
         changeFlashConfig(flashCallConfig)
     }
-
     private fun changeFlashConfig(flashCallConfig: FlashCallConfig) {
         ManagerFactory.getFlashCallSetting().changeFlashCallConfig(flashCallConfig)
     }

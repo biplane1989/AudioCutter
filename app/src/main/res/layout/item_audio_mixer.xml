@@ -51,7 +51,7 @@
                 android:text="Audio Name"
                 android:textColor="@color/colorBlack"
                 android:textSize="@dimen/d_18"
-                android:textStyle="bold" />
+                />
 
             <TableRow
                 android:layout_width="match_parent"

@@ -136,14 +136,14 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_item_empty_list" />
+                android:src="@drawable/ic_noapp_appchoose_screen" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/sanfranciscodisplay_regular"
-                android:text="@string/no_result_empty"
+                android:text="@string/no_app_choose"
                 android:textColor="@color/colorgray"
                 android:textSize="@dimen/d_18" />
         </LinearLayout>

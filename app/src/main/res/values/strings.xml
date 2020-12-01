@@ -202,4 +202,5 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="flash_ondevice_unavailable">Your device does not have a flash</string>
     <string name="notification_permission_text_dialog">To be use this feature, you need to level the rights to access for MP3 Cutter.</string>
     <string name="notification_file_was_short_mystudio_screen">Can\'t cut audio file that is too short</string>
+    <string name="no_app_choose">No Application</string>
 </resources>
