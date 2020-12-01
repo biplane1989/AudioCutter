@@ -127,7 +127,7 @@ class MainScreen : BaseFragment(), View.OnClickListener {
             StoragePermissionDialog.newInstance {
                 resetRequestingPermission()
                 pendingRequestingPermission = MP3_CUTTER_REQUESTING_PERMISSION
-                checkAndRequestStorageAndSettingPermission()
+                storagePermissionRequest.requestPermission()
             }
                 .show(
                     requireActivity().supportFragmentManager,

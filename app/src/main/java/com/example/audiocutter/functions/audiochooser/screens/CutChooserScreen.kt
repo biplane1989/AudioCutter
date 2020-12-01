@@ -34,6 +34,7 @@ import com.example.audiocutter.functions.common.ContactPermissionDialog
 import com.example.audiocutter.permissions.AppPermission
 import com.example.audiocutter.permissions.ContactItemPermissionRequest
 import com.example.audiocutter.permissions.PermissionManager
+import com.example.audiocutter.permissions.WriteSettingPermissionRequest
 import com.example.audiocutter.util.FileUtils
 import com.google.android.material.snackbar.Snackbar
 
@@ -50,8 +51,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     lateinit var audioCutterItem: AudioCutterView
     private var pendingRequestingPermission = 0
     private val CONTACTS_ITEM_REQUESTING_PERMISSION = 1 shl 4
+    private val WRITESETTING_ITEM_REQUESTING_PERMISSION = 1 shl 5
 
-    var stateObserver = Observer<Int> {
+    private var stateObserver = Observer<Int> {
         when (it) {
             1 -> {
                 showProgressBar(true)
@@ -70,7 +72,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
     private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
         if(listMusic == null){
-            binding.rvAudioCutter.visibility= View.INVISIBLE
+            binding.rvAudioCutter.visibility = View.INVISIBLE
         }else{
             if (listMusic.isEmpty()) {
                 showEmptyList()
@@ -82,6 +84,16 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             }
         }
     }
+    private val writeSettingPermissionRequest = object : WriteSettingPermissionRequest {
+        override fun getPermissionActivity(): BaseActivity? {
+            return getBaseActivity()
+        }
+
+        override fun getLifeCycle(): Lifecycle {
+            return lifecycle
+        }
+    }
+
     private val contactPermissionRequest = object : ContactItemPermissionRequest {
         override fun getPermissionActivity(): BaseActivity? {
             return getBaseActivity()
@@ -124,6 +136,10 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
                 if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
                     viewStateManager.onCutScreenSetRingtoneContact(this, filePathAudio!!)
+                }
+                if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
+                    resetRequestingPermission()
+                    showDialogSetAsTypeAudio()
                 }
             })
         return binding.root
@@ -256,23 +272,13 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
     override fun showDialogSetAs(itemAudio: AudioCutterView) {
         audioCutterItem = itemAudio
-        dialog.setOnCallBack(this)
-        dialog.show(requireActivity().supportFragmentManager, "TAG")
-    }
-
-    override fun onCutItemClicked(itemAudio: AudioCutterView) {
-        if (itemAudio.audioFile.duration < MIN_DURATION) {
-            val dialogSnack =
-                Snackbar.make(
-                    requireView(),
-                    getString(R.string.notification_file_was_short_mystudio_screen),
-                    Snackbar.LENGTH_SHORT
-                )
-            dialogSnack.show()
+        if (writeSettingPermissionRequest.isPermissionGranted()) {
+            showDialogSetAsTypeAudio()
         } else {
-            viewStateManager.onCuttingItemClicked(this, itemAudio)
+            resetRequestingPermission()
+            pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
+            writeSettingPermissionRequest.requestPermission()
         }
-
     }
 
     override fun setRingtoneContact(filePath: String) {
@@ -294,11 +300,32 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     }
 
 
+    private fun showDialogSetAsTypeAudio() {
+        dialog.setOnCallBack(this)
+        dialog.show(requireActivity().supportFragmentManager, "TAG")
+    }
+
+    override fun onCutItemClicked(itemAudio: AudioCutterView) {
+        if (itemAudio.audioFile.duration < MIN_DURATION) {
+            val dialogSnack =
+                Snackbar.make(
+                    requireView(),
+                    getString(R.string.notification_file_was_short_mystudio_screen),
+                    Snackbar.LENGTH_SHORT
+                )
+            dialogSnack.show()
+        } else {
+            viewStateManager.onCuttingItemClicked(this, itemAudio)
+        }
+
+    }
+
+
     private fun resetRequestingPermission() {
         pendingRequestingPermission = 0
     }
 
-    override fun setAudioAs(typeAudioSetAs: TypeAudioSetAs) {
+    override fun setAsTypeAudio(typeAudioSetAs: TypeAudioSetAs) {
         var rs = false
         Log.d(TAG, "setAudioAs: ${audioCutterItem.audioFile.fileName}")
         rs = when (typeAudioSetAs) {
