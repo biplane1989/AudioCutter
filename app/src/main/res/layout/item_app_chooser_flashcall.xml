@@ -25,7 +25,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:fontFamily="@font/sanfranciscodisplay_light"
+            android:fontFamily="@font/opensans_light"
             android:gravity="center_vertical"
             android:text="Facebook"
             android:textColor="@color/colorBlack"

@@ -14,7 +14,13 @@ data class FlashMode(
     var silentEnable: Boolean = true
 )
 
-data class FlashTimer(var enable: Boolean = false, var startHour: Int = -1, var startMinute: Int = -1, var endHour: Int = -1, var endMinute: Int = -1) {
+data class FlashTimer(
+    var enable: Boolean = false,
+    var startHour: Int = 23,
+    var startMinute: Int = 0,
+    var endHour: Int = 7,
+    var endMinute: Int = 0
+) {
     fun isNowInRange(): Boolean {
         val now = Calendar.getInstance()
         now.time = Date(System.currentTimeMillis())

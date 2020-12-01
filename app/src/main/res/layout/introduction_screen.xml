@@ -32,7 +32,7 @@
         android:id="@+id/tv_inducation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/sanfranciscodisplay_bold"
+        android:fontFamily="@font/opensans_bold"
         android:gravity="center"
         android:maxLines="2"
         android:text="MP3 Cutter &amp; \n  Ringtone Maker"

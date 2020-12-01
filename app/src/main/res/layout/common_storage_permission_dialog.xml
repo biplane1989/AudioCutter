@@ -38,7 +38,7 @@
             android:layout_marginLeft="25dp"
             android:layout_marginTop="15dp"
             android:layout_marginRight="25dp"
-            android:fontFamily="@font/sanfrancisco_regular"
+            android:fontFamily="@font/opensans_regular"
             android:gravity="center"
             android:text="@string/storage_permission_to_convert_files_please_allow_mp3_cutter_to_access_files_on_your_device"
             android:textSize="16dp"

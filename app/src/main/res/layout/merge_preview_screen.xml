@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@id/iv_mer_screen_back"
-                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:fontFamily="@font/opensans_bold"
                 android:text="File to be Merged"
                 android:textColor="@color/colorBlack"
 
@@ -84,7 +84,7 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
             android:layout_toRightOf="@id/iv_addfile_merge"
-            android:fontFamily="@font/sanfranciscodisplay_bold"
+            android:fontFamily="@font/opensans_bold"
             android:paddingLeft="@dimen/d_10"
             android:text="Add File"
             android:textColor="@color/colorBlack"
@@ -99,7 +99,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="@dimen/d_16"
             android:background="@drawable/bg_next_audio_enabled"
-            android:fontFamily="@font/sanfranciscodisplay_bold"
+            android:fontFamily="@font/opensans_bold"
             android:text="Merger"
             android:textColor="@color/colorWhite" />
 

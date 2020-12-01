@@ -74,7 +74,7 @@
                         android:id="@+id/tv_apps_screen"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/sanfranciscodisplay_bold"
+                        android:fontFamily="@font/opensans_bold"
                         android:paddingLeft="@dimen/d_24"
                         android:text="@string/app"
                         android:textColor="@color/colorBlack"
@@ -142,7 +142,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:fontFamily="@font/sanfranciscodisplay_regular"
+                android:fontFamily="@font/opensans_bold"
                 android:text="@string/no_app_choose"
                 android:textColor="@color/colorgray"
                 android:textSize="@dimen/d_18" />

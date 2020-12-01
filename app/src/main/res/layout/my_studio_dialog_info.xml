@@ -31,7 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:fontFamily="@font/sanfranciscodisplay_bold"
+                android:fontFamily="@font/opensans_bold"
                 android:text="@string/my_studio_dialog_info"
                 android:textColor="#2E3041"
                 android:textSize="@dimen/text_size_header"
@@ -63,7 +63,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.3"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:text="@string/my_studio_dialog_file"
                             android:textSize="@dimen/text_size_info"
                             android:textStyle="bold" />
@@ -73,7 +73,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.7"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:textSize="@dimen/text_size_info" />
                     </LinearLayout>
 
@@ -87,7 +87,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.3"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:text="@string/my_studio_dialog_location"
                             android:textSize="@dimen/text_size_info"
                             android:textStyle="bold" />
@@ -97,7 +97,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.7"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:textSize="@dimen/text_size_info" />
                     </LinearLayout>
 
@@ -111,7 +111,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.3"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:text="@string/my_studio_dialog_size"
                             android:textSize="@dimen/text_size_info"
                             android:textStyle="bold" />
@@ -121,7 +121,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.7"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:textSize="@dimen/text_size_info" />
                     </LinearLayout>
 
@@ -135,7 +135,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.3"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:text="@string/my_studio_dialog_date"
                             android:textSize="@dimen/text_size_info"
                             android:textStyle="bold" />
@@ -145,7 +145,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.7"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:textSize="@dimen/text_size_info" />
                     </LinearLayout>
 
@@ -159,7 +159,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.3"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:text="@string/my_studio_dialog_format"
                             android:textSize="@dimen/text_size_info"
                             android:textStyle="bold" />
@@ -169,7 +169,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.7"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:textSize="@dimen/text_size_info" />
                     </LinearLayout>
 
@@ -183,7 +183,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.3"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:text="@string/my_studio_dialog_length"
                             android:textSize="@dimen/text_size_info"
                             android:textStyle="bold" />
@@ -193,7 +193,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.7"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:textSize="@dimen/text_size_info" />
                     </LinearLayout>
 
@@ -207,7 +207,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.3"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:text="@string/my_studio_dialog_bitrate"
                             android:textSize="@dimen/text_size_info"
                             android:textStyle="bold" />
@@ -217,7 +217,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.7"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:textSize="@dimen/text_size_info" />
                     </LinearLayout>
 
@@ -231,7 +231,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.3"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:text="@string/my_studio_dialog_title"
                             android:textSize="@dimen/text_size_info"
                             android:textStyle="bold" />
@@ -241,7 +241,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.7"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:textSize="@dimen/text_size_info" />
                     </LinearLayout>
 
@@ -255,7 +255,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.3"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:text="@string/my_studio_dialog_artist"
                             android:textSize="@dimen/text_size_info"
                             android:textStyle="bold" />
@@ -265,7 +265,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.7"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:textSize="@dimen/text_size_info" />
                     </LinearLayout>
 
@@ -279,7 +279,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.3"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:text="@string/my_studio_dialog_album"
                             android:textSize="@dimen/text_size_info"
                             android:textStyle="bold" />
@@ -289,7 +289,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.7"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:textSize="@dimen/text_size_info" />
                     </LinearLayout>
 
@@ -303,7 +303,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.3"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:text="@string/my_studio_dialog_genre"
                             android:textSize="@dimen/text_size_info"
                             android:textStyle="bold" />
@@ -313,7 +313,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.7"
-                            android:fontFamily="@font/sanfranciscodisplay_medium"
+                            android:fontFamily="@font/opensans_regular"
                             android:textSize="@dimen/text_size_info" />
                     </LinearLayout>
 
@@ -326,7 +326,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:fontFamily="@font/sanfranciscodisplay_medium"
+                android:fontFamily="@font/opensans_regular"
                 android:gravity="center"
                 android:text="@string/my_studio_dialog_ok"
                 android:textColor="#FDAA74"
