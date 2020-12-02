@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -247,9 +248,9 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
 
     private fun setColorButtonNext(color: Int, bg: Int, rs: Boolean) {
         binding.rltNextMer.isEnabled = rs
-        binding.rltNextMer.setBackgroundResource(bg)
-        binding.ivNextMer.setColorFilter(requireActivity().resources.getColor(color));
-        binding.tvNextMer.setTextColor(requireActivity().resources.getColor(color))
+        binding.rltNextMer.background = (ContextCompat.getDrawable(requireContext(), bg))
+        binding.ivNextMer.setColorFilter(ContextCompat.getColor(requireContext(), color))
+        binding.tvNextMer.setTextColor(ContextCompat.getColor(requireContext(), color))
     }
 
 

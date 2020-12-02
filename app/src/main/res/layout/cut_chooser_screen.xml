@@ -72,11 +72,12 @@
                         android:id="@+id/tv_cutter_screen"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/"
+                        android:fontFamily="@font/opensans_bold"
                         android:text="@string/audio_cutter_name_actionbar"
                         android:textColor="@color/colorBlack"
-                        android:paddingLeft="@dimen/d_16"
-                        android:textSize="@dimen/d_18" />
+                        android:paddingStart="@dimen/d_16"
+                        android:textSize="@dimen/d_18"
+                        tools:ignore="RtlSymmetry,SpUsage" />
                 </TableRow>
 
 
@@ -95,7 +96,7 @@
                     android:layout_width="?actionBarSize"
                     android:layout_height="?actionBarSize"
                     android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@id/iv_cutter_screen_search"
+                    android:layout_toStartOf="@id/iv_cutter_screen_search"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_audiocutter_file" />
@@ -104,7 +105,7 @@
                     android:id="@+id/iv_cutter_screen_close"
                     android:layout_width="?actionBarSize"
                     android:layout_height="?actionBarSize"
-                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:padding="@dimen/d_5"
                     android:scaleType="centerInside"

@@ -19,7 +19,6 @@ import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.FlashCallConfig
 import com.example.audiocutter.core.manager.FlashType
-import com.example.audiocutter.core.manager.LIGHTING_SPEED_DEFAULT
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.FlashCallScreenBinding
 import com.example.audiocutter.functions.flashcall.dialogs.FlashTypeDialog
@@ -85,7 +84,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
         binding.swSilentFlashCall.isChecked = it.flashMode.silentEnable
         binding.swSettimeFlash.isChecked = it.flashTimer.enable
 
-        binding.sbNumberOfLightning.progress = it.numberOfLightning
+            binding.sbNumberOfLightning.progress = it.numberOfLightning
 
         binding.sbLinghtningSpeedFlcall.progress = Utils.convertValue(
             MIN_VALUE,
@@ -104,6 +103,11 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
         val endHour = checkValidTimes(it.flashTimer.endHour)
         val endMinute = checkValidTimes(it.flashTimer.endMinute)
 
+        Log.d(
+            TAG,
+            "checkTimedefault: ${it.flashTimer.startHour} : ${it.flashTimer.startMinute}   -- ${it.flashTimer.endHour}:${it.flashTimer.endMinute}"
+        )
+
 
         onOffSetTimeFlash(it.flashTimer.enable)
         if ((it.flashTimer.startHour and it.flashTimer.startMinute and it.flashTimer.endHour and it.flashTimer.endMinute) != -1) {
@@ -111,7 +115,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
             binding.tvEndTimeChoose.text = "${endHour}:${endMinute}"
         }
 
-        if (it.lightningSpeed != LIGHTING_SPEED_DEFAULT) {
+        if (!flashCallConfig.isLightingSpeedDefault()) {
             binding.tvDefaultSpeed.setBackgroundResource(R.drawable.bg_undefault_flcall)
             binding.tvDefaultSpeed.setTextColor(
                 ContextCompat.getColor(
@@ -143,6 +147,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
     private fun checkValidTimes(time: Int): String {
         return "%02d".format(time)
     }
+
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
@@ -352,36 +357,29 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
             }
             binding.tvTestSpeedFlashcall -> {
                 ManagerFactory.getFlashCallSetting().startTestingLightningSpeed()
-                binding.tvTestSpeedFlashcall.setTextColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.colorYelowDark
-                    )
-                )
-                binding.tvStopTestSpeedFlashcall.setTextColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.colorgray
-                    )
-                )
+                changeColorButton(R.color.colorYelowDark, R.color.colorgray)
             }
             binding.tvStopTestSpeedFlashcall -> {
                 ManagerFactory.getFlashCallSetting().stopTestingLightningSpeed()
-                binding.tvTestSpeedFlashcall.setTextColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.colorgray
-                    )
-                )
-                binding.tvStopTestSpeedFlashcall.setTextColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.colorYelowDark
-                    )
-                )
+                changeColorButton(R.color.colorgray, R.color.colorYelowDark)
             }
 
         }
+    }
+
+    private fun changeColorButton(color1: Int, color2: Int) {
+        binding.tvTestSpeedFlashcall.setTextColor(
+            ContextCompat.getColor(
+                requireContext(),
+                color1
+            )
+        )
+        binding.tvStopTestSpeedFlashcall.setTextColor(
+            ContextCompat.getColor(
+                requireContext(),
+                color2
+            )
+        )
     }
 
     interface FlashCallBack {
@@ -472,6 +470,11 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
         dialogNotification.dismiss()
         pendingRequestingPermission = NOTIFICATION_LISTENER_REQUESTING_PERMISSION
         notificationListenerPermissionRequest.requestPermission()
+    }
+
+    override fun onPostDestroy() {
+        super.onPostDestroy()
+        ManagerFactory.getFlashCallSetting().stopTestingLightningSpeed()
     }
 
 }

@@ -463,7 +463,7 @@
                         android:progressDrawable="@drawable/seekbar_style"
                         android:thumb="@drawable/custom_thumb"
                         android:maxHeight="5dp"
-                        android:progress="1" />
+                       />
                 </RelativeLayout>
 
                 <View

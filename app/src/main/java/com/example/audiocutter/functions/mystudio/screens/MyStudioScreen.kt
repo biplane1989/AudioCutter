@@ -39,7 +39,7 @@ import kotlinx.android.synthetic.main.my_studio_fragment.*
 
 class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, CancelDialogListener, DialogAppShare.DialogAppListener {
 
-    private val MIN_DURATION = 500
+    private val MIN_DURATION = 1000
     private lateinit var binding: MyStudioFragmentBinding
     private val TAG = "giangtd"
     private lateinit var myStudioViewModel: MyStudioViewModel
