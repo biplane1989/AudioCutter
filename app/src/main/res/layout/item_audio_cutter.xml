@@ -70,8 +70,8 @@
 
                     <View
                         android:layout_width="0.5dp"
+                        android:layout_marginVertical="@dimen/d_1"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="8dp"
                         android:background="@color/colorgray" />
 
                     <TextView

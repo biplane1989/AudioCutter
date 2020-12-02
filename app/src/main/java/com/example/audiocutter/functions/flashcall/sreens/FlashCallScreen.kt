@@ -138,7 +138,6 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
             }
         }
 
-
     }
 
     private fun checkValidTimes(time: Int): String {
@@ -158,7 +157,6 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
         savedInstanceState: Bundle?
     ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.flash_call_screen, container, false)
-
         val result = Utils.checkFlashOnDeviceAvailable(requireContext())
         result?.let {
             if (result) {
@@ -168,6 +166,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
             }
         }
         initViews()
+
         PermissionManager.getAppPermission()
             .observe(this.viewLifecycleOwner, Observer<AppPermission> {
                 if (notificationListenerPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and NOTIFICATION_LISTENER_REQUESTING_PERMISSION) != 0) {
@@ -185,7 +184,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
     }
     private fun initViews() {
         Log.d(TAG, "checkFunc is the program running:  start ")
-
+        binding.ivFlashCallScreenBack.setOnClickListener(this)
         binding.tbStartTime.isEnabled = false
         binding.tbEndTime.isEnabled = false
         /**tablerow**/
@@ -196,7 +195,6 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
 
         binding.tvTestSpeedFlashcall.setOnClickListener(this)
         binding.tvStopTestSpeedFlashcall.setOnClickListener(this)
-        binding.ivCutterScreenBack.setOnClickListener(this)
         /**switchcompat**/
         binding.swFlashCallMode.setOnCheckedChangeListener(this)
         binding.swSettimeFlash.setOnCheckedChangeListener(this)
@@ -214,13 +212,20 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
     }
 
     private fun showItemDeviceFlashUnAvailable() {
-        binding.lnFlashFlashlightUnavailable.visibility = View.VISIBLE
+        binding.ivFlashUnavailable.setImageDrawable(
+            ContextCompat.getDrawable(
+                requireContext(),
+                R.drawable.ic_flash_unavalable
+            )
+        )
+        binding.tvFlashUnavailable.text = getString(R.string.flash_ondevice_unavailable)
+        binding.lnFlashOffMode.visibility = View.VISIBLE
         binding.scrModeOnflash.visibility = View.INVISIBLE
         binding.swFlashCallMode.visibility = View.INVISIBLE
     }
 
     private fun showItemDeviceFlashAvailable() {
-        binding.lnFlashFlashlightUnavailable.visibility = View.INVISIBLE
+        binding.lnFlashOffMode.visibility = View.INVISIBLE
         binding.scrModeOnflash.visibility = View.VISIBLE
         binding.swFlashCallMode.visibility = View.VISIBLE
     }
@@ -329,7 +334,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
             binding.tbAppFlashcall -> {
                 viewStateManager.flashCallOnNotificationForAppsItemClicked(this)
             }
-            binding.ivCutterScreenBack -> {
+            binding.ivFlashCallScreenBack -> {
                 requireActivity().onBackPressed()
             }
             binding.tbFlashType -> {

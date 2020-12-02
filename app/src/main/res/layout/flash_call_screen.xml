@@ -17,38 +17,18 @@
             android:visibility="invisible">
 
             <ImageView
+                android:id="@+id/iv_flash_unavailable"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:src="@drawable/ic_energy_flcall" />
 
             <TextView
+                android:id="@+id/tv_flash_unavailable"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/d_16"
                 android:text="@string/flash_blinks_when_a_call_comes_in_flahscall" />
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ln_flash_flashlight_unavailable"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="invisible">
-
-            <ImageView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/ic_flash_unavalable" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/d_16"
-                android:text="@string/flash_ondevice_unavailable" />
-        </LinearLayout>
-
         <RelativeLayout
             android:id="@+id/rlt_actionbar"
             android:layout_width="match_parent"
@@ -64,7 +44,7 @@
 
 
             <ImageView
-                android:id="@+id/iv_cutter_screen_back"
+                android:id="@+id/iv_flash_call_screen_back"
                 android:layout_width="?actionBarSize"
                 android:layout_height="?actionBarSize"
                 android:layout_centerVertical="true"
@@ -78,7 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
-                android:layout_toEndOf="@id/iv_cutter_screen_back"
+                android:layout_toEndOf="@id/iv_flash_call_screen_back"
                 android:fontFamily="@font/opensans_bold"
                 android:gravity="center"
                 android:text="@string/audio_flash_call_name_actionbar"
