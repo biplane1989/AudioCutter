@@ -39,7 +39,7 @@ import com.example.audiocutter.util.FileUtils
 import com.google.android.material.snackbar.Snackbar
 
 class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, SetAsDialog.setAsListener, View.OnClickListener, OnActionCallback {
-    private val MIN_DURATION = 500
+    private val MIN_DURATION = 1000
     private var filePathAudio: String? = ""
     val TAG = CutChooserScreen::class.java.name
     private lateinit var binding: CutChooserScreenBinding

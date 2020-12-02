@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/d_70"
+    android:layout_height="wrap_content"
     android:background="@color/colorWhite">
 
     <com.example.audiocutter.ui.audiochooser.cut.ProgressView
@@ -11,25 +11,27 @@
         android:visibility="gone" />
 
     <LinearLayout
-
+        android:layout_height="wrap_content"
         android:id="@+id/ln_item_audio_mixer_screen"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/d_70"
+        android:paddingVertical="@dimen/d_8"
         android:background="?attr/selectableItemBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="@dimen/d_40"
             android:id="@+id/iv_controller_audio_recent"
-            android:layout_height="@dimen/d_40"
+            android:layout_width="@dimen/d_56"
+            android:layout_height="@dimen/d_56"
+            android:padding="@dimen/d_10"
+            android:scaleType="centerInside"
             android:layout_marginLeft="@dimen/d_16"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_audiocutter_play" />
     <LinearLayout
         android:gravity="right"
         android:layout_width="0dp"
-        android:layout_height="@dimen/d_40"
+        android:layout_height="@dimen/d_56"
         android:layout_weight="1"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/d_16">
@@ -38,6 +40,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:paddingVertical="@dimen/d_5"
             android:orientation="vertical">
 
 
@@ -46,7 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
-                android:fontFamily="@font/opensans_regular"
+                android:fontFamily="@font/opensans_semibold"
                 android:singleLine="true"
                 android:text="Audio Name"
                 android:textColor="@color/colorBlack"
@@ -55,8 +58,7 @@
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/tv_size_audio_recent"
@@ -71,7 +73,7 @@
                 <View
                     android:layout_width="0.5dp"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginVertical="@dimen/d_1"
                     android:background="@color/colorgray" />
 
                 <TextView
@@ -99,14 +101,14 @@
 
         <LinearLayout
             android:id="@+id/ln_menu_recent"
-            android:layout_width="50dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center">
 
             <ImageView
                 android:id="@+id/iv_recent_check"
-                android:layout_width="@dimen/d_40"
-                android:layout_height="@dimen/d_40"
+                android:layout_width="@dimen/d_56"
+                android:layout_height="@dimen/d_56"
                 android:scaleType="centerInside"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_noncheck" />

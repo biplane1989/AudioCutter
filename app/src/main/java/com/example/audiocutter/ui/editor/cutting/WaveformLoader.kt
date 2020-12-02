@@ -51,6 +51,8 @@ class WaveformLoader {
                         decoder = MediaCodec.createDecoderByType(mime)
                         format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, 274576)
                         durationUs = format.getLong(MediaFormat.KEY_DURATION)
+                        chanel = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT)
+                        sampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE)
                         decoder!!.configure(format, null, null, 0)
                         break
                     }
@@ -60,17 +62,21 @@ class WaveformLoader {
                     return
                 }
                 decoder!!.start()
+
             } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
 
         private fun readWaveform() {
+
+
             val inputBuffers = decoder!!.inputBuffers
             var outputBuffers = decoder!!.outputBuffers
+
             val info = MediaCodec.BufferInfo()
-            chanel = decoder!!.outputFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT)
-            sampleRate = decoder!!.outputFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE)
+            /*   chanel = decoder!!.outputFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT)
+               sampleRate = decoder!!.outputFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE)*/
             previousSize = 0
             previousByte = ByteArray((sampleRate * (PERIOD_IN_FRAMES / 1000f)).toInt() * chanel * 2)
             publishProgress(null)
@@ -107,8 +113,8 @@ class WaveformLoader {
                     MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED -> outputBuffers =
                         decoder!!.outputBuffers
                     MediaCodec.INFO_OUTPUT_FORMAT_CHANGED -> {
-                        chanel = decoder!!.outputFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT)
-                        sampleRate = decoder!!.outputFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE)
+                        /* chanel = decoder!!.outputFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT)
+                         sampleRate = decoder!!.outputFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE)*/
                         previousByte =
                             ByteArray((sampleRate * (PERIOD_IN_FRAMES / 1000f)).toInt() * chanel * 2)
                     }

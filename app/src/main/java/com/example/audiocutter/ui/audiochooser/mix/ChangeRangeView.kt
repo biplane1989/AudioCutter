@@ -21,9 +21,9 @@ class ChangeRangeView @JvmOverloads constructor(
     private lateinit var rectImageDst2: Rect
     private lateinit var rectImageDst1: Rect
     private lateinit var rectImage: Rect
-    private val FONT_BOLD = "fonts/opensans_bold.otf"
-    private val FONT_LIGHT = "fonts/opensans_light.otf"
-    private val FONT_REGULAR = "fonts/opensans_regular.otf"
+    private val FONT_BOLD = "fonts/opensans_bold.ttf"
+    private val FONT_LIGHT = "fonts/opensans_light.ttf"
+    private val FONT_REGULAR = "fonts/opensans_regular.ttf"
     private lateinit var typeFace: Typeface
     private lateinit var rectText2: Rect
     private lateinit var rectText1: Rect

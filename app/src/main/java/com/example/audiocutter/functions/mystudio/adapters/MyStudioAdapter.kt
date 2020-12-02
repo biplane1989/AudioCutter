@@ -270,9 +270,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         fun onBind() {
             val audioFileView = getItem(adapterPosition)
             var bitrate = audioFileView.audioFile.bitRate / 1000
-            if (bitrate > 320) {
-                bitrate = 320
-            }
+
             tvTitle.setText(audioFileView.audioFile.fileName)
             if (audioFileView.audioFile.size / (1024 * 1024) > 0) {
                 tvInfo.setText(String.format("%.1f", (audioFileView.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + bitrate + "kb/s")

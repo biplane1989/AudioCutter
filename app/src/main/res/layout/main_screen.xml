@@ -104,7 +104,6 @@
                         android:text="@string/main_screen_mp3_cutter_text"
                         android:textColor="@color/main_screen_item_text_color"
                         android:textSize="@dimen/main_screen_item_text_size"
-                        android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
 
@@ -143,7 +142,6 @@
                         android:text="@string/main_screen_audio_merger_text"
                         android:textColor="@color/main_screen_item_text_color"
                         android:textSize="@dimen/main_screen_item_text_size"
-                        android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
 
@@ -183,7 +181,6 @@
                         android:text="@string/main_screen_audio_mixer_text"
                         android:textColor="@color/main_screen_item_text_color"
                         android:textSize="@dimen/main_screen_item_text_size"
-                        android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
 
@@ -224,7 +221,6 @@
                         android:text="@string/main_screen_contacts_text"
                         android:textColor="@color/main_screen_item_text_color"
                         android:textSize="@dimen/main_screen_item_text_size"
-                        android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
 
@@ -264,7 +260,6 @@
                         android:text="@string/main_screen_my_studio_text"
                         android:textColor="@color/main_screen_item_text_color"
                         android:textSize="@dimen/main_screen_item_text_size"
-                        android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
 
@@ -304,7 +299,6 @@
                         android:text="@string/main_screen_flash_call_text"
                         android:textColor="@color/main_screen_item_text_color"
                         android:textSize="@dimen/main_screen_item_text_size"
-                        android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
 

@@ -50,16 +50,11 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                 }
                 if (storagePermissionRequest.isPermissionGranted() && (pendingRequestingPermission and MY_STUDIO_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
-                    if (writeSettingPermissionRequest.isPermissionGranted()) {
-                        onMyStudioItemClicked()
-                    } else {
-                        pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION
-                        writeSettingPermissionRequest.requestPermission()
-                    }
-
+                    viewStateManager.mainScreenOnMyAudioItemClicked(this)
+                    onMyStudioItemClicked()
                 }
                 if (writeSettingPermissionRequest.isPermissionGranted()) {
-                    if((pendingRequestingPermission and MY_STUDIO_REQUESTING_PERMISSION) != 0){
+                    if ((pendingRequestingPermission and MY_STUDIO_REQUESTING_PERMISSION) != 0) {
                         resetRequestingPermission()
                         if (contactPermissionRequest.isPermissionGranted()) {
                             onMyStudioItemClicked()
@@ -68,7 +63,7 @@ class MainScreen : BaseFragment(), View.OnClickListener {
                             contactPermissionRequest.requestPermission()
                         }
                     }
-                    if((pendingRequestingPermission and MP3_CUTTER_REQUESTING_PERMISSION) != 0){
+                    if ((pendingRequestingPermission and MP3_CUTTER_REQUESTING_PERMISSION) != 0) {
                         onMp3CutterItemClicked()
                     }
 
@@ -187,14 +182,18 @@ class MainScreen : BaseFragment(), View.OnClickListener {
     }
 
     private fun onMyStudioItemClicked() {
-        if (contactPermissionRequest.isPermissionGranted() && writeSettingPermissionRequest.isPermissionGranted()) {
+
+/*        if (contactPermissionRequest.isPermissionGranted() && writeSettingPermissionRequest.isPermissionGranted()) {
+            viewStateManager.mainScreenOnMyAudioItemClicked(this)
+        } else {*/
+        if(storagePermissionRequest.isPermissionGranted()){
             ManagerFactory.getAudioFileManager().init(requireContext())
             viewStateManager.mainScreenOnMyAudioItemClicked(this)
-        } else {
+        }else{
             StoragePermissionDialog.newInstance {
                 resetRequestingPermission()
                 pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION
-                checkAndRequestStorageAndSettingPermission()
+                storagePermissionRequest.requestPermission()
             }
                 .show(
                     requireActivity().supportFragmentManager,

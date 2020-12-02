@@ -132,9 +132,7 @@ class MixChooserAdapter(val mContext: Context) :
         fun bind() {
             val itemAudioFile = getItem(position)
             var bitRate = itemAudioFile.audioFile.bitRate / 1000
-            if (bitRate > 320) {
-                bitRate = 320
-            }
+
             tvBitrateAudio.text = "${bitRate}${mContext.resources.getString(R.string.kbps)}"
 
             tvNameAudio.text = itemAudioFile.audioFile.fileName

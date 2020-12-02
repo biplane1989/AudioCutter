@@ -258,7 +258,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
     private fun setColorButtonNext(color: Int, bg: Int, rs: Boolean) {
         binding.rltNextMixer.isEnabled = rs
-        binding.rltNextMixer.setBackgroundResource(bg)
+        binding.rltNextMixer.background = ContextCompat.getDrawable(requireContext(), bg)
         binding.ivNextMixer.setColorFilter((ContextCompat.getColor(requireContext(), color)))
         binding.tvNextMixer.setTextColor((ContextCompat.getColor(requireContext(), color)))
     }
