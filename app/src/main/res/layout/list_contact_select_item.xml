@@ -14,31 +14,23 @@
         android:layout_height="@dimen/d_70"
         android:background="?attr/selectableItemBackground">
 
-        <androidx.cardview.widget.CardView
+
+        <ImageView
             android:id="@+id/cv_avatar"
             android:layout_width="@dimen/d_40"
             android:layout_height="@dimen/d_40"
-            android:layout_marginLeft="16dp"
-            app:cardCornerRadius="4dp"
+            android:layout_marginStart="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/iv_avatar_select"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:src="@drawable/my_studio_item_ic_avatar" />
-
-        </androidx.cardview.widget.CardView>
-
+            app:layout_constraintTop_toTopOf="parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/my_studio_item_ic_avatar" />
 
         <TextView
             android:id="@+id/tv_title_music"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
             android:ellipsize="end"
             android:fontFamily="@font/opensans_bold"
             android:gravity="top"
@@ -147,7 +139,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:fontFamily="@font/opensans_regular"
-            android:text="/08:05"
+            android:text="/00:00"
             android:textColor="#9C9C9C"
             android:textSize="12dp" />
 

@@ -310,7 +310,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             }
 
             tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(audioFileView.audioFile.duration), itemView.context)
-                .toInt() + 15
+                .toInt() + 50
 
             llAudioHeader.setOnClickListener(this)
 

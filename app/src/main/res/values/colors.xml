@@ -44,4 +44,9 @@
     <color name="colorControlHighlight">#66000000</color>
     <color name="colorYelowSwitchCompat">#FED4B9</color>
     <color name="colorYelowTextViewFlashCall">#FFF8F1</color>
+
+    <color name="my_studio_header_select">#2E3041</color>
+    <color name="my_studio_header_unselect">#9C9C9C</color>
+
+
 </resources>

@@ -83,7 +83,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         it?.let {
             context?.let { context ->
                 binding.tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(it.duration), context)
-                    .toInt() + 15
+                    .toInt() + 50
             }
             binding.tvTitleMusic.text = it.fileName
             binding.tvInfoMusic.text = String.format("%s kb/s", (it.bitRate / 1000).toString())
@@ -166,7 +166,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         str.append(" ")
         str.append(formatSize)
         str.append(" | ")
-        str.append((audioFile.bitRate /1000).toString())
+        str.append((audioFile.bitRate / 1000).toString())
         str.append("kb/s")
         return str.toString()
     }
@@ -183,6 +183,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
             when (playInfo.playerState) {
                 PlayerState.IDLE -> {
                     binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
+                    binding.sbMusic.progress = 0
                 }
                 PlayerState.PAUSE -> {
                     binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
@@ -210,10 +211,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
             .observe(this.viewLifecycleOwner, Observer<AppPermission> {
                 if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
-                    viewStateManager.resultScreenSetContactItemClicked(
-                        this,
-                        audioFile!!.file.absolutePath
-                    )
+                    viewStateManager.resultScreenSetContactItemClicked(this, audioFile!!.file.absolutePath)
                 }
 
             })
@@ -328,7 +326,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
             }
             binding.llContact -> {
                 audioFile?.let {
-                   checkPermissionContact()
+                    checkPermissionContact()
                 }
 
             }
@@ -342,20 +340,14 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
     private fun checkPermissionContact() {
         if (contactPermissionRequest.isPermissionGranted()) {
-            viewStateManager.resultScreenSetContactItemClicked(
-                this,
-                audioFile!!.file.absolutePath
-            )
+            viewStateManager.resultScreenSetContactItemClicked(this, audioFile!!.file.absolutePath)
         } else {
             ContactPermissionDialog.newInstance {
                 resetRequestingPermission()
                 pendingRequestingPermission = CONTACTS_ITEM_REQUESTING_PERMISSION
                 contactPermissionRequest.requestPermission()
             }
-                .show(
-                    requireActivity().supportFragmentManager,
-                    ContactPermissionDialog::class.java.name
-                )
+                .show(requireActivity().supportFragmentManager, ContactPermissionDialog::class.java.name)
         }
     }
 

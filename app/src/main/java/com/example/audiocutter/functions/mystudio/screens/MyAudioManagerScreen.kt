@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.mystudio.screens
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -23,6 +25,7 @@ import com.example.audiocutter.functions.mystudio.dialog.DeleteDialog
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialogListener
 import com.example.audiocutter.functions.mystudio.objects.ActionData
 import com.google.android.material.tabs.TabLayout
+import kotlinx.android.synthetic.main.my_studio_custom_header_tablayout_1.view.*
 
 
 class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickListener {
@@ -104,6 +107,13 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
         binding.viewPager.adapter = myStudioAdapter
 
         binding.tabLayout.setupWithViewPager(binding.viewPager)
+//        binding.tabLayout.tabGravity = TabLayout.GRAVITY_CENTER
+//        binding.tabLayout.tabMode = TabLayout.MODE_FIXED
+
+        binding.tabLayout.getTabAt(0)?.setCustomView(R.layout.my_studio_custom_header_tablayout_1)
+        binding.tabLayout.getTabAt(1)?.setCustomView(R.layout.my_studio_custom_header_tablayout_2)
+        binding.tabLayout.getTabAt(2)?.setCustomView(R.layout.my_studio_custom_header_tablayout_3)
+
 
         binding.tabLayout.getTabAt(requireArguments().getInt(Constance.TYPE_AUDIO_TO_NOTIFICATION))
             ?.select()
@@ -118,13 +128,24 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
 //        binding.tabLayout.setupWithViewPager(binding.viewPager)
 
         tabPosition = binding.tabLayout.selectedTabPosition
+
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            @SuppressLint("ResourceAsColor")
             override fun onTabSelected(tab: TabLayout.Tab) {
                 sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_STOP_MUSIC)
                 tabPosition = tab.position
+
+                tab.view.tv_header?.let {
+                    it.setTextColor(ContextCompat.getColor(requireContext(),R.color.my_studio_header_select))
+                }
+
             }
 
+            @SuppressLint("ResourceAsColor")
             override fun onTabUnselected(tab: TabLayout.Tab) {
+                tab.view.tv_header?.let {
+                    it.setTextColor(ContextCompat.getColor(requireContext(),R.color.my_studio_header_unselect))
+                }
             }
 
             override fun onTabReselected(tab: TabLayout.Tab) {

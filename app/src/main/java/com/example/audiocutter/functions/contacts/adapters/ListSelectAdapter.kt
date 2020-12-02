@@ -28,6 +28,7 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.functions.mystudio.Constance
+import com.example.audiocutter.ui.common.glide.RoundedCornersTransformation
 import com.example.audiocutter.util.Utils
 import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
 import kotlinx.coroutines.CoroutineScope
@@ -114,7 +115,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, LifecycleOwner {
 
-        val ivAvatarSelect: ImageView = itemView.findViewById(R.id.iv_avatar_select)
+        val ivAvatarSelect: ImageView = itemView.findViewById(R.id.cv_avatar)
         val tvTitle: TextView = itemView.findViewById(R.id.tv_title_music)
         val tvInfo: TextView = itemView.findViewById(R.id.tv_info_music)
         val llPlayMusic: LinearLayout = itemView.findViewById(R.id.ll_play_music)
@@ -196,9 +197,10 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 tvInfo.setText(((selectItemView.audioFile.size) / (1024)).toString() + " KB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s")
             }
 
-
             if (selectItemView.audioFile.bitmap != null) {
-                ivAvatarSelect.setImageBitmap(selectItemView.audioFile.bitmap)
+                Glide.with(itemView).load(selectItemView.audioFile.bitmap)
+                    .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(recyclerView.context, Utils.convertDp2Px(8, recyclerView.context).toInt(), Utils.convertDp2Px(0, recyclerView.context).toInt())))
+                    .into(ivAvatarSelect)
             } else {
                 ivAvatarSelect.setImageResource(R.drawable.my_studio_item_ic_avatar)
             }
@@ -206,7 +208,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
 
             tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(selectItemView.audioFile.duration), itemView.context)
-                .toInt() + 15
+                .toInt() + 50
 
             tvTotal.text = "/" + simpleDateFormat.format(selectItemView.audioFile.duration.toInt())
 

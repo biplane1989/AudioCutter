@@ -13,7 +13,7 @@ enum class BitRate(val value: Int) {
 }
 
 enum class AudioFormat(val type: String) {
-    MP3(".mp3"), ACC(".m4a")
+    MP3(".mp3"), AAC(".m4a")
 }
 
 enum class MixSelector(val type: String) {

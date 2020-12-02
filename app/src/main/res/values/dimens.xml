@@ -45,4 +45,5 @@
     <dimen name="d_25">25dp</dimen>
     <dimen name="d_50">50dp</dimen>
     <dimen name="common_progressbar_size">60dp</dimen>
+    <dimen name="my_studio_header_title_size">14dp</dimen>
 </resources>

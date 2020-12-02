@@ -205,4 +205,7 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="notification_permission_text_dialog">To be use this feature, you need to level the rights to access for MP3 Cutter.</string>
     <string name="notification_file_was_short_mystudio_screen">Can\'t cut audio file that is too short</string>
     <string name="no_app_choose">No Application</string>
+    <string name="my_studio_header_title_audio_cutter">Audio Cutter</string>
+    <string name="my_studio_header_title_audio_merger">Audio Merger</string>
+    <string name="my_studio_header_title_audio_mixer">Audio Mixer</string>
 </resources>

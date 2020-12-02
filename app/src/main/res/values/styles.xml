@@ -16,11 +16,11 @@
     </declare-styleable>
 
 
-
     <style name="color_line_edt">
         <item name="colorAccent">@color/colorYelowDark</item>
     </style>
-    <style name="MyStudioTabText" parent="TextAppearance.Design.Tab">
+
+    <style name="MyStudioTabText" parent="TextAppearance.AppCompat.Medium">
         <item name="android:textSize">18dp</item>
     </style>
 

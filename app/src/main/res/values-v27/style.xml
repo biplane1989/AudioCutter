@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="MyStudioTabText" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textSize">40dp</item>
+    </style>
+</resources>

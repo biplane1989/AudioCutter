@@ -56,18 +56,16 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
         listAudio?.let {
             if (myStudioViewModel.isAllChecked()) {
-                cl_delete_all.visibility = View.GONE
+//                cl_delete_all.visibility = View.GONE
             } else {
-                cl_delete_all.visibility = View.VISIBLE
+                binding.clDeleteAll.visibility = View.VISIBLE
                 checkAllItemSelected()
             }
 
-//            if (myStudioViewModel.isExitItemSelectDelete()) {
-//                cl_delete_all.visibility = View.VISIBLE
-//                checkAllItemSelected()
-//            } else {
-//                cl_delete_all.visibility = View.GONE
-//            }
+            if (!myStudioViewModel.isExitItemSelectDelete()) {
+                binding.clDeleteAll.visibility = View.GONE
+            }
+
             audioCutterAdapter.submitList(ArrayList(listAudio))
 
         }

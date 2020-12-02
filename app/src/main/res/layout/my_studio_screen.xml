@@ -133,7 +133,6 @@
                     app:tabIndicatorColor="#FDAA74"
                     app:tabIndicatorHeight="2dp"
                     app:tabMode="fixed"
-                    app:tabTextAppearance="?android:attr/textAppearanceMedium"
                     app:tabSelectedTextColor="#2E3041" />
 
                 <TextView
