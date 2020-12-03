@@ -44,6 +44,7 @@ class SetAsDialog(val mContext: Context) : DialogFragment(), View.OnClickListene
         rootView.findViewById<TextView>(R.id.rb_alarm).setOnClickListener(this)
         rootView.findViewById<TextView>(R.id.rb_ringtone).setOnClickListener(this)
         rootView.findViewById<TextView>(R.id.rb_notification).setOnClickListener(this)
+        rootView.findViewById<TextView>(R.id.rb_contact).setOnClickListener(this)
     }
 
     override fun onClick(p0: View) {
@@ -53,6 +54,9 @@ class SetAsDialog(val mContext: Context) : DialogFragment(), View.OnClickListene
             R.id.rb_notification -> typeSet = TypeAudioSetAs.NOTIFICATION
 
             R.id.rb_ringtone -> typeSet = TypeAudioSetAs.RINGTONE
+
+            //handle
+            R.id.rb_contact -> typeSet = TypeAudioSetAs.CONTACT
 
             R.id.tv_cancel_dialog_set_as -> dismiss()
 

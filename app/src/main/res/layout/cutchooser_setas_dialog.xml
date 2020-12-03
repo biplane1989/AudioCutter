@@ -74,15 +74,25 @@
                     android:fontFamily="@font/opensans_regular"
                     android:text="@string/my_studio_dialog_set_as_alarm"
                     android:textSize="@dimen/text_size_edt" />
-
                 <RadioButton
                     android:background="?attr/selectableItemBackground"
+                    android:layout_marginBottom="@dimen/margin_item_dialog"
                     android:id="@+id/rb_notification"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="#FDAA74"
                     android:fontFamily="@font/opensans_regular"
                     android:text="@string/my_studio_dialog_set_as_notification"
+                    android:textSize="@dimen/text_size_edt" />
+
+                <RadioButton
+                    android:background="?attr/selectableItemBackground"
+                    android:id="@+id/rb_contact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#FDAA74"
+                    android:fontFamily="@font/opensans_regular"
+                    android:text="@string/my_studio_dialog_set_as_contact"
                     android:textSize="@dimen/text_size_edt" />
             </RadioGroup>
 

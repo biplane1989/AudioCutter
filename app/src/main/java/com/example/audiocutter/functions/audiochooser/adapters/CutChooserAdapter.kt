@@ -8,7 +8,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.PopupMenu
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -221,11 +224,11 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
                     R.id.menu_play -> {
                         controllerAudio()
                     }
-                    R.id.menu_contacts -> {
+                    /*  R.id.menu_contacts -> {
 
-                        mCallBack.setRingtoneContact(itemAudio.audioFile.file.absolutePath)
-//                        Toast.makeText(mContext, "contacts", Toast.LENGTH_SHORT).show()
-                    }
+                          mCallBack.setRingtoneContact(itemAudio.audioFile.file.absolutePath)
+  //                        Toast.makeText(mContext, "contacts", Toast.LENGTH_SHORT).show()
+                      }*/
                     R.id.menu_setas -> {
                         mCallBack.showDialogSetAs(itemAudio)
                     }
@@ -243,7 +246,7 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
         fun resume(pos: Int)
         fun showDialogSetAs(itemAudio: AudioCutterView)
         fun onCutItemClicked(itemAudio: AudioCutterView)
-        fun setRingtoneContact(filePath: String)
+//        fun setRingtoneContact(filePath: String)
     }
 }
 

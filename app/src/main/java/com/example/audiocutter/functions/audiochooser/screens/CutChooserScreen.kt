@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
@@ -30,7 +29,7 @@ import com.example.audiocutter.functions.audiochooser.dialogs.SetAsDoneDialog
 import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.objects.TypeAudioSetAs
-import com.example.audiocutter.functions.common.ContactPermissionDialog
+import com.example.audiocutter.functions.common.StoragePermissionDialog
 import com.example.audiocutter.permissions.AppPermission
 import com.example.audiocutter.permissions.ContactItemPermissionRequest
 import com.example.audiocutter.permissions.PermissionManager
@@ -50,8 +49,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     lateinit var dialogDone: SetAsDoneDialog
     lateinit var audioCutterItem: AudioCutterView
     private var pendingRequestingPermission = 0
-    private val CONTACTS_ITEM_REQUESTING_PERMISSION = 1 shl 4
-    private val WRITESETTING_ITEM_REQUESTING_PERMISSION = 1 shl 5
+    private val MY_STUDIO_REQUESTING_PERMISSION = 1 shl 5
 
     private var stateObserver = Observer<Int> {
         when (it) {
@@ -133,13 +131,22 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         checkEdtSearchAudio()
         PermissionManager.getAppPermission()
             .observe(this.viewLifecycleOwner, Observer<AppPermission> {
-                if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
+                /* if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
+                     resetRequestingPermission()
+                     viewStateManager.onCutScreenSetRingtoneContact(this, filePathAudio!!)
+                 }
+                 if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
+                     resetRequestingPermission()
+                     showDialogSetAsTypeAudio()
+                 }*/
+                if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and MY_STUDIO_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
-                    viewStateManager.onCutScreenSetRingtoneContact(this, filePathAudio!!)
-                }
-                if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
-                    resetRequestingPermission()
-                    showDialogSetAsTypeAudio()
+                    if (contactPermissionRequest.isPermissionGranted()) {
+                        showDialogSetAsTypeAudio()
+                    } else {
+                        pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION
+                        contactPermissionRequest.requestPermission()
+                    }
                 }
             })
         return binding.root
@@ -272,33 +279,26 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
     override fun showDialogSetAs(itemAudio: AudioCutterView) {
         audioCutterItem = itemAudio
-        if (writeSettingPermissionRequest.isPermissionGranted()) {
-            showDialogSetAsTypeAudio()
+        if (contactPermissionRequest.isPermissionGranted() && writeSettingPermissionRequest.isPermissionGranted()) {
+            ManagerFactory.getAudioFileManager().init(requireContext())
+            viewStateManager.mainScreenOnMyAudioItemClicked(this)
         } else {
-            resetRequestingPermission()
-            pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
-            writeSettingPermissionRequest.requestPermission()
-        }
-    }
-
-    override fun setRingtoneContact(filePath: String) {
-        filePathAudio = filePath
-        /*  viewStateManager.onCutScreenSetRingtoneContact(this, filePath)*/
-        if (contactPermissionRequest.isPermissionGranted()) {
-            viewStateManager.onCutScreenSetRingtoneContact(this, filePathAudio!!)
-        } else {
-            ContactPermissionDialog.newInstance {
+            StoragePermissionDialog.newInstance {
                 resetRequestingPermission()
-                pendingRequestingPermission = CONTACTS_ITEM_REQUESTING_PERMISSION
-                contactPermissionRequest.requestPermission()
+                pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION
+                if (!contactPermissionRequest.isPermissionGranted()) {
+                    contactPermissionRequest.requestPermission()
+                } else {
+                    writeSettingPermissionRequest.requestPermission()
+                }
             }
                 .show(
                     requireActivity().supportFragmentManager,
-                    ContactPermissionDialog::class.java.name
+                    StoragePermissionDialog::class.java.name
                 )
+
         }
     }
-
 
     private fun showDialogSetAsTypeAudio() {
         dialog.setOnCallBack(this)
@@ -328,23 +328,23 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     override fun setAsTypeAudio(typeAudioSetAs: TypeAudioSetAs) {
         var rs = false
         Log.d(TAG, "setAudioAs: ${audioCutterItem.audioFile.fileName}")
-        rs = when (typeAudioSetAs) {
+        when (typeAudioSetAs) {
 
             TypeAudioSetAs.RINGTONE -> {
-                ManagerFactory.getRingtonManager().setRingTone(audioCutterItem.audioFile)
+                rs = ManagerFactory.getRingtonManager().setRingTone(audioCutterItem.audioFile)
             }
             TypeAudioSetAs.ALARM -> {
-                ManagerFactory.getRingtonManager().setAlarmManager(audioCutterItem.audioFile)
+                rs = ManagerFactory.getRingtonManager().setAlarmManager(audioCutterItem.audioFile)
             }
             TypeAudioSetAs.NOTIFICATION -> {
-                ManagerFactory.getRingtonManager().setNotificationSound(audioCutterItem.audioFile)
+                rs = ManagerFactory.getRingtonManager()
+                    .setNotificationSound(audioCutterItem.audioFile)
             }
+            else -> showDialogSetAsTypeAudio()
         }
         if (rs) {
             dialog.dismiss()
             dialogDone.show(childFragmentManager, SetAsDoneDialog::class.java.name)
-        } else {
-            Toast.makeText(requireContext(), "set as fail", Toast.LENGTH_SHORT).show()
         }
 
     }

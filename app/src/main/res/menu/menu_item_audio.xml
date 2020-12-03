@@ -9,7 +9,5 @@
     <item
         android:id="@+id/menu_setas"
         android:title="Set As" />
-    <item
-        android:id="@+id/menu_contacts"
-        android:title="Contacts" />
+
 </menu>
