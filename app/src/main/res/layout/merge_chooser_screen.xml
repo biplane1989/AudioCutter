@@ -29,7 +29,7 @@
                     android:background="@color/colorWhite"
                     android:focusableInTouchMode="true"
                     android:hint="@string/search_hint_text"
-                    android:paddingStart="@dimen/d_72"
+                    android:paddingStart="@dimen/d_88"
                     android:singleLine="true"
                     android:visibility="invisible">
 

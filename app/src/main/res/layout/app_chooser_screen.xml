@@ -34,7 +34,7 @@
                     android:focusableInTouchMode="true"
                     android:hint="Search..."
                     android:paddingHorizontal="?actionBarSize"
-                    android:paddingStart="@dimen/d_72"
+                    android:paddingStart="@dimen/d_80"
                     android:singleLine="true"
                     android:visibility="invisible">
 

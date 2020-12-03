@@ -32,7 +32,7 @@
                     android:focusableInTouchMode="true"
                     android:background="@color/colorWhite"
                     android:hint="Search..."
-                    android:paddingStart="@dimen/d_72"
+                    android:paddingStart="@dimen/d_88"
                     android:singleLine="true"
                     android:visibility="invisible">
 
