@@ -75,7 +75,7 @@
                         android:fontFamily="@font/opensans_bold"
                         android:text="@string/audio_cutter_name_actionbar"
                         android:textColor="@color/colorBlack"
-                        android:paddingStart="@dimen/d_16"
+                        android:paddingStart="@dimen/d_32"
                         android:textSize="@dimen/d_18"
                         tools:ignore="RtlSymmetry,SpUsage" />
                 </TableRow>
