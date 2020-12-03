@@ -18,6 +18,7 @@ import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.IViewModel
 import com.example.audiocutter.core.audiomanager.Folder
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MyStudioFragmentBinding
 import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
 import com.example.audiocutter.functions.common.ContactPermissionDialog
@@ -34,11 +35,11 @@ import com.example.audiocutter.permissions.PermissionManager
 import com.example.audiocutter.permissions.WriteSettingPermissionRequest
 import com.example.audiocutter.util.Utils
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.my_studio_fragment.*
 
 
 class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, CancelDialogListener, DialogAppShare.DialogAppListener {
 
+    private lateinit var dialogSetAs: SetAsDialog
     private val MIN_DURATION = 1000
     private lateinit var binding: MyStudioFragmentBinding
     private val TAG = "giangtd"
@@ -51,7 +52,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     private lateinit var dialogShare: DialogAppShare
 
     private var pendingRequestingPermission = 0
-    private val CONTACTS_ITEM_REQUESTING_PERMISSION = 1 shl 4
     private val WRITESETTING_ITEM_REQUESTING_PERMISSION = 1 shl 5
 
     private val writeSettingPermissionRequest = object : WriteSettingPermissionRequest {
@@ -227,16 +227,11 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         runOnUI {
             PermissionManager.getAppPermission()
                 .observe(this.viewLifecycleOwner, Observer<AppPermission> {
-                    if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
+                    if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
                         resetRequestingPermission()
-                        viewStateManager.myStudioSetContactItemClicked(
-                            this,
-                            audioFile.file.absolutePath
-                        )
-
+                        requestPermissinWriteSetting()
                     }
                     if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
-                        resetRequestingPermission()
                         showDialogSetAs()
                     }
                 })
@@ -289,9 +284,6 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                         )
                     }
                 }
-                R.id.contacs -> {
-                    checkContactPermission()
-                }
                 R.id.open_with -> {
                     audioFile.uri?.let {
                         Utils.openWithApp(requireContext(), it)
@@ -329,26 +321,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         popup.show()
     }
 
-    private fun checkContactPermission() {
-        if (contactPermissionRequest.isPermissionGranted()) {
-            viewStateManager.myStudioSetContactItemClicked(
-                this,
-                audioFile.file.absolutePath
-            )
-        } else {
-            ContactPermissionDialog.newInstance {
-                resetRequestingPermission()
-                pendingRequestingPermission = CONTACTS_ITEM_REQUESTING_PERMISSION
-                contactPermissionRequest.requestPermission()
-            }
-                .show(
-                    requireActivity().supportFragmentManager,
-                    ContactPermissionDialog::class.java.name
-                )
-        }
-    }
-
-    private fun checkSetAsWriteSettingPermission() {
+    private fun requestPermissinWriteSetting() {
         if (writeSettingPermissionRequest.isPermissionGranted()) {
             showDialogSetAs()
         } else {
@@ -358,9 +331,47 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         }
     }
 
+   /* private fun checkContactPermission() {
+        if (contactPermissionRequest.isPermissionGranted()) {
+            viewStateManager.myStudioSetContactItemClicked(
+                this,
+                audioFile.file.absolutePath
+            )
+        } else {
+            ContactPermissionDialog.newInstance {
+                resetRequestingPermission()
+                pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
+                contactPermissionRequest.requestPermission()
+            }
+                .show(
+                    requireActivity().supportFragmentManager,
+                    ContactPermissionDialog::class.java.name
+                )
+        }
+    }*/
+
+    private fun checkSetAsWriteSettingPermission() {
+
+        if (contactPermissionRequest.isPermissionGranted() && writeSettingPermissionRequest.isPermissionGranted()) {
+            ManagerFactory.getAudioFileManager().init(requireContext())
+            showDialogSetAs()
+        } else {
+            ContactPermissionDialog.newInstance {
+                resetRequestingPermission()
+                pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
+                if (!contactPermissionRequest.isPermissionGranted()) {
+                    contactPermissionRequest.requestPermission()
+                }
+            }.show(
+                requireActivity().supportFragmentManager,
+                ContactPermissionDialog::class.java.name
+            )
+        }
+    }
+
     private fun showDialogSetAs() {
-        val dialog = SetAsDialog.newInstance(this, audioFile.uri.toString())
-        dialog.show(childFragmentManager, SetAsDialog.TAG)
+         dialogSetAs = SetAsDialog.newInstance(this, audioFile.uri.toString())
+        dialogSetAs.show(childFragmentManager, SetAsDialog.TAG)
     }
 
     private fun ShowDialogShareFile() {
@@ -468,6 +479,14 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                 }
             }
         }
+    }
+
+    override fun setRingtoneForContact() {
+        dialogSetAs.dismiss()
+        viewStateManager.myStudioSetContactItemClicked(
+            this,
+            audioFile.file.absolutePath
+        )
     }
 
     // click delete button on dialog delete

@@ -15,6 +15,7 @@ object Constance {
     val RINGTONE_TYPE = 0
     val ALARM_TYPE = 1
     val NOTIFICATION_TYPE = 2
+    val CONTACT_TYPE = 3
 
     val AUDIO_CUTTER = 0
     val AUDIO_MERGER = 1

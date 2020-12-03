@@ -29,7 +29,7 @@ import com.example.audiocutter.functions.audiochooser.dialogs.SetAsDoneDialog
 import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.objects.TypeAudioSetAs
-import com.example.audiocutter.functions.common.StoragePermissionDialog
+import com.example.audiocutter.functions.common.ContactPermissionDialog
 import com.example.audiocutter.permissions.AppPermission
 import com.example.audiocutter.permissions.ContactItemPermissionRequest
 import com.example.audiocutter.permissions.PermissionManager
@@ -49,7 +49,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     lateinit var dialogDone: SetAsDoneDialog
     lateinit var audioCutterItem: AudioCutterView
     private var pendingRequestingPermission = 0
-    private val MY_STUDIO_REQUESTING_PERMISSION = 1 shl 5
+    private val CUT_CHOOSE_REQUESTING_PERMISSION = 1 shl 5
 
     private var stateObserver = Observer<Int> {
         when (it) {
@@ -131,23 +131,14 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         checkEdtSearchAudio()
         PermissionManager.getAppPermission()
             .observe(this.viewLifecycleOwner, Observer<AppPermission> {
-                /* if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
-                     resetRequestingPermission()
-                     viewStateManager.onCutScreenSetRingtoneContact(this, filePathAudio!!)
-                 }
-                 if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
-                     resetRequestingPermission()
-                     showDialogSetAsTypeAudio()
-                 }*/
-                if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and MY_STUDIO_REQUESTING_PERMISSION) != 0) {
+                if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CUT_CHOOSE_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
-                    if (contactPermissionRequest.isPermissionGranted()) {
-                        showDialogSetAsTypeAudio()
-                    } else {
-                        pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION
-                        contactPermissionRequest.requestPermission()
-                    }
+                    requestPermissinWriteSetting()
                 }
+                if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CUT_CHOOSE_REQUESTING_PERMISSION) != 0) {
+                    showDialogSetAsTypeAudio()
+                }
+
             })
         return binding.root
     }
@@ -279,24 +270,31 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
     override fun showDialogSetAs(itemAudio: AudioCutterView) {
         audioCutterItem = itemAudio
+        filePathAudio = itemAudio.audioFile.getFilePath()
         if (contactPermissionRequest.isPermissionGranted() && writeSettingPermissionRequest.isPermissionGranted()) {
             ManagerFactory.getAudioFileManager().init(requireContext())
-            viewStateManager.mainScreenOnMyAudioItemClicked(this)
+            showDialogSetAsTypeAudio()
         } else {
-            StoragePermissionDialog.newInstance {
+            ContactPermissionDialog.newInstance {
                 resetRequestingPermission()
-                pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION
+                pendingRequestingPermission = CUT_CHOOSE_REQUESTING_PERMISSION
                 if (!contactPermissionRequest.isPermissionGranted()) {
                     contactPermissionRequest.requestPermission()
-                } else {
-                    writeSettingPermissionRequest.requestPermission()
                 }
-            }
-                .show(
-                    requireActivity().supportFragmentManager,
-                    StoragePermissionDialog::class.java.name
-                )
+            }.show(
+                requireActivity().supportFragmentManager,
+                ContactPermissionDialog::class.java.name
+            )
+        }
+    }
 
+    private fun requestPermissinWriteSetting() {
+        if (writeSettingPermissionRequest.isPermissionGranted()) {
+            showDialogSetAsTypeAudio()
+        } else {
+            resetRequestingPermission()
+            pendingRequestingPermission = CUT_CHOOSE_REQUESTING_PERMISSION
+            writeSettingPermissionRequest.requestPermission()
         }
     }
 
@@ -337,10 +335,16 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
                 rs = ManagerFactory.getRingtonManager().setAlarmManager(audioCutterItem.audioFile)
             }
             TypeAudioSetAs.NOTIFICATION -> {
+
                 rs = ManagerFactory.getRingtonManager()
                     .setNotificationSound(audioCutterItem.audioFile)
             }
-            else -> showDialogSetAsTypeAudio()
+            else -> {
+                filePathAudio?.let {
+                    dialog.dismiss()
+                    viewStateManager.onCutScreenSetRingtoneContact(this, filePathAudio!!)
+                }
+            }
         }
         if (rs) {
             dialog.dismiss()

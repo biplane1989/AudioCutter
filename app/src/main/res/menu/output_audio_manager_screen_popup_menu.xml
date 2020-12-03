@@ -10,9 +10,6 @@
         android:id="@+id/cut"
         android:title="@string/cut" />
     <item
-        android:id="@+id/contacs"
-        android:title="@string/contacs" />
-    <item
         android:id="@+id/open_with"
         android:title="@string/open_with" />
     <item

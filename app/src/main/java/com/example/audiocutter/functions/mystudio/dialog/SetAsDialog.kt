@@ -52,17 +52,32 @@ class SetAsDialog : BaseDialog() {
         rb_ringtone.setOnClickListener(View.OnClickListener {
             typeSet = Constance.RINGTONE_TYPE
         })
+        rb_contact.setOnClickListener {
+            typeSet = Constance.CONTACT_TYPE
+        }
 
         tv_set_dialog_set_as.setOnClickListener(View.OnClickListener {
             when (typeSet) {
                 Constance.RINGTONE_TYPE -> {
-                    listener.onsetAsListenner(Constance.RINGTONE_TYPE, requireArguments().getString(BUNDLE_NAME_KEY, null))
+                    listener.onsetAsListenner(
+                        Constance.RINGTONE_TYPE,
+                        requireArguments().getString(BUNDLE_NAME_KEY, null)
+                    )
                 }
                 Constance.ALARM_TYPE -> {
-                    listener.onsetAsListenner(Constance.ALARM_TYPE, requireArguments().getString(BUNDLE_NAME_KEY, null))
+                    listener.onsetAsListenner(
+                        Constance.ALARM_TYPE,
+                        requireArguments().getString(BUNDLE_NAME_KEY, null)
+                    )
                 }
                 Constance.NOTIFICATION_TYPE -> {
-                    listener.onsetAsListenner(Constance.NOTIFICATION_TYPE, requireArguments().getString(BUNDLE_NAME_KEY, null))
+                    listener.onsetAsListenner(
+                        Constance.NOTIFICATION_TYPE,
+                        requireArguments().getString(BUNDLE_NAME_KEY, null)
+                    )
+                }
+                Constance.CONTACT_TYPE -> {
+                    listener.setRingtoneForContact()
                 }
             }
             dismiss()
@@ -72,4 +87,5 @@ class SetAsDialog : BaseDialog() {
 
 interface SetAsDialogListener {
     fun onsetAsListenner(type: Int, uri: String)
+    fun setRingtoneForContact()
 }
