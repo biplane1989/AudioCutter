@@ -167,9 +167,9 @@ class AppChooserScreen : BaseFragment(), View.OnClickListener, AppFlashAdapter.A
     }
 
     private fun searchAudiofile() {
-        showKeyboard()
         hideOrShowEditText(View.VISIBLE)
         hideOrShowView(View.INVISIBLE)
+        showKeyboard()
     }
 
     private fun hideOrShowView(status: Int) {

@@ -4,11 +4,10 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.CompoundButton
 import android.widget.SeekBar
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
@@ -21,10 +20,7 @@ import com.example.audiocutter.core.manager.FlashCallConfig
 import com.example.audiocutter.core.manager.FlashType
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.FlashCallScreenBinding
-import com.example.audiocutter.functions.flashcall.dialogs.FlashTypeDialog
-import com.example.audiocutter.functions.flashcall.dialogs.NotificationDialog
-import com.example.audiocutter.functions.flashcall.dialogs.SettimeDialog
-import com.example.audiocutter.functions.flashcall.dialogs.TypeFlash
+import com.example.audiocutter.functions.flashcall.dialogs.*
 import com.example.audiocutter.permissions.AppPermission
 import com.example.audiocutter.permissions.NotificationListenerPermissionRequest
 import com.example.audiocutter.permissions.PermissionManager
@@ -156,6 +152,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
         flashModel.getFlashCallConfig().observe(this, flashObserver)
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -192,6 +189,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
         binding.ivFlashCallScreenBack.setOnClickListener(this)
         binding.tbStartTime.isEnabled = false
         binding.tbEndTime.isEnabled = false
+        binding.ivSuggestion.setOnClickListener(this)
         /**tablerow**/
         binding.tbAppFlashcall.setOnClickListener(this)
         binding.tbFlashType.setOnClickListener(this)
@@ -362,6 +360,10 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
             binding.tvStopTestSpeedFlashcall -> {
                 ManagerFactory.getFlashCallSetting().stopTestingLightningSpeed()
                 changeColorButton(R.color.colorgray, R.color.colorYelowDark)
+            }
+            binding.ivSuggestion -> {
+                val dialog = SuggestionDialog()
+                dialog.show(childFragmentManager, SuggestionDialog::class.java.name)
             }
 
         }

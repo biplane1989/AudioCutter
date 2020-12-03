@@ -390,9 +390,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     }
 
     private fun searchAudiofile() {
-        showKeyboard()
         hideOrShowEditText(View.VISIBLE)
         hideOrShowView(View.INVISIBLE)
+        showKeyboard()
     }
 
 

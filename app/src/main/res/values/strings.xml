@@ -210,4 +210,7 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="my_studio_header_title_audio_mixer">Audio Mixer</string>
     <string name="permission_phonecall_text_ask">To use this function, the call permission flash needs to be enabled</string>
     <string name="my_studio_dialog_set_as_contact">Contact</string>
+    <string name="improtant_introduction">In terms of Android’s phones, you need to allow this application to run in the phone’s background, so that Flash would perform stably. You have to reject this application out of the restricted list, which is in the low power mode in your phone.</string>
+    <string name="suggestion_ask_text"><![CDATA[Go to: Phone Settings > Battery > Low power mode (Saving battery mode) > Cut Pro music > Choose switch off or unrestricted\n
+    \nOr: Phone Settings > Application Management > Cut Pro music > Saving battery mode > Allow to run in the phone’s background.]]></string>
 </resources>

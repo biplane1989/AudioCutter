@@ -201,7 +201,7 @@ class Utils {
             return null
         }
 
-        fun convertValue(min1: Double, max1: Double, min2: Double, max2: Double, value: Double): Double {
+        fun                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   convertValue(min1: Double, max1: Double, min2: Double, max2: Double, value: Double): Double {
             return ((value - min1) * ((max2 - min2) / (max1 - min1)) + min2)
         }
 

@@ -103,7 +103,7 @@
                 android:layout_toLeftOf="@id/rlt_play_mixing"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_mixing_prev_5s" />
+                android:src="@drawable/ic_previous_audio_mixing" />
 
             <ImageView
                 android:id="@+id/iv_next_mixing"
@@ -114,7 +114,7 @@
                 android:layout_toRightOf="@id/rlt_play_mixing"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_mixing_next_5s" />
+                android:src="@drawable/ic_next_audio_mixing" />
 
         </RelativeLayout>
 

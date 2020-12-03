@@ -318,9 +318,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     }
 
     private fun searchAudiofile() {
-        showKeyboard()
         hideOrShowEditText(View.VISIBLE)
         hideOrShowView(View.INVISIBLE)
+        showKeyboard()
     }
 
     override fun onDestroyView() {

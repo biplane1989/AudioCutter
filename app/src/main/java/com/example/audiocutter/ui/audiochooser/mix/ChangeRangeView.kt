@@ -18,6 +18,7 @@ class ChangeRangeView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
+    private val DEFAULT_TIME_POSITION: String = "00:00:0"
     private var ratio: Int = 0
     private lateinit var rectImageDst2: Rect
     private lateinit var rectImageDst1: Rect
@@ -51,6 +52,7 @@ class ChangeRangeView @JvmOverloads constructor(
     lateinit var mCallback: OnPlayLineChange
     private var isTouch = TOUCHITEM.NONTOUCH
     private var rs = false
+    private var isChangeNumpos = false
     private var numPos = ""
     private var RADIUS = Utils.convertDp2Px(9, context)
     private var RANGE = Utils.convertDp2Px(20, context)
@@ -68,8 +70,8 @@ class ChangeRangeView @JvmOverloads constructor(
     private var textName1 = ""
     private var textName2 = ""
 
-    private var ratioSound1 = "0%"
-    private var ratioSound2 = "0%"
+    private var ratioSound1 = "100%"
+    private var ratioSound2 = "100%"
     private var maxDistance = 0.0
     private var position = 0
 
@@ -102,6 +104,8 @@ class ChangeRangeView @JvmOverloads constructor(
         mWidth = w - 32
         maxDistance = mWidth.toDouble()
         Log.d(TAG, "nmcode: $mWidth")
+        currentXCircle1 =mWidth / 1.3f + RANGE
+        currentXCircle2 =mWidth / 1.3f + RANGE
     }
 
 
@@ -167,7 +171,6 @@ class ChangeRangeView @JvmOverloads constructor(
 //            currentXCircle1 =mWidth / 1.3f + RANGE
 //            currentXCircle2 = mWidth / 1.3f + RANGE
         }
-
         rectCurrentSeekbar1 = RectF(
             rectImageDst1.width() + RANGE * 2,
             rectImageDst1.top + RADIUS,
@@ -524,23 +527,31 @@ class ChangeRangeView @JvmOverloads constructor(
 
     private fun drawLineTouch(x: Float) {
         try {
+            endCurrentX = x.toInt()
+            startCurrentX = x.toInt()
+//            Log.d(TAG, "222: prev maxdisTance  max $max -- maxdistance $maxDistance")
+            if (startCurrentX > maxDistance && endCurrentX > maxDistance) {
+                startCurrentX = maxDistance.toInt()
+                endCurrentX = maxDistance.toInt()
+                /* numPos = Utils.longDurationMsToStringMs(
+                     Utils.convertValue(
+                         0.0,
+                         mWidth.toDouble(),
+                         0.0,
+                         duration.toDouble(),
+                         startCurrentX.toDouble()
+                     ).toLong()
+                 )*/
+            }
             numPos = Utils.longDurationMsToStringMs(
                 Utils.convertValue(
                     0.0,
                     mWidth.toDouble(),
                     0.0,
                     duration.toDouble(),
-                    x.toDouble()
+                    startCurrentX.toDouble()
                 ).toLong()
             )
-
-            endCurrentX = x.toInt()
-            startCurrentX = x.toInt()
-            Log.d(TAG, "222: prev maxdisTance $maxDistance")
-            if (startCurrentX > maxDistance && endCurrentX > maxDistance) {
-                startCurrentX = maxDistance.toInt()
-                endCurrentX = maxDistance.toInt()
-            }
             invalidate()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -579,7 +590,7 @@ class ChangeRangeView @JvmOverloads constructor(
         )
         this.position = position
 
-        numPos = Utils.longDurationMsToStringMs(this.position.toLong())
+
         Log.d(TAG, "setPosition: numpos $numPos")
         startCurrentX = pos.toInt()
         endCurrentX = pos.toInt()
@@ -588,14 +599,19 @@ class ChangeRangeView @JvmOverloads constructor(
             startCurrentX = maxDistance.toInt()
             endCurrentX = maxDistance.toInt()
             mCallback.endAudioBecauseMaxdistance()
+            isChangeNumpos = true
         }
 
         if (endCurrentX >= mWidth - RADIUS) {
             endCurrentX = mWidth - RADIUS.toInt()
             startCurrentX = mWidth - RADIUS.toInt()
+            isChangeNumpos = true
         }
-
-        invalidate()
+        numPos = Utils.longDurationMsToStringMs(this.position.toLong())
+        if (!isChangeNumpos) {
+            invalidate()
+        }
+        isChangeNumpos = false
     }
 
     fun setLengthAudio(durAudio1: String?, durAudio2: String?) {
@@ -655,6 +671,7 @@ class ChangeRangeView @JvmOverloads constructor(
         setjust the parameters
          */
 //        this.duration = duration.toInt()
+        numPos = DEFAULT_TIME_POSITION
         maxDistance =
             Utils.convertValue(
                 0.0,
@@ -680,15 +697,13 @@ class ChangeRangeView @JvmOverloads constructor(
             startCurrentX = maxDistance.toInt()
             endCurrentX = maxDistance.toInt()
             position = duration
-            numPos = Utils.longDurationMsToStringMs(position.toLong())
         } else {
             position += moreDuration
-            numPos = Utils.longDurationMsToStringMs(position.toLong())
         }
         if (position > duration) {
             position = duration
-            numPos = Utils.longDurationMsToStringMs(position.toLong())
         }
+        numPos = Utils.longDurationMsToStringMs(position.toLong())
 
         mCallback.onLineChange(audioFile1, audioFile2, position)
         Log.d(TAG, "seekNext5S: $distanceSeek  - mWidth $mWidth  pos $position")

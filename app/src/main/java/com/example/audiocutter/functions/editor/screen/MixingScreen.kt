@@ -178,15 +178,16 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 //                    binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
                     changeBackgroundTextView(binding.shortedTv, binding.longestTv)
                     checkCompareDurationMin(durAudio1, durAudio2)
+                    stopAudio()
                     isCheckClick = 1
                 }
             }
             binding.longestTv -> {
                 if (isCheckClick == 1) {
 //                    binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
-
                     changeBackgroundTextView(binding.longestTv, binding.shortedTv)
                     checkCompareDuration(durAudio1, durAudio2)
+                    stopAudio()
                     isCheckClick = 2
                 }
             }
@@ -210,6 +211,11 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 }
             }
         }
+    }
+
+    private fun stopAudio() {
+        mPlayer1.stop()
+        mPlayer2.stop()
     }
 
     private fun changeBackgroundTextView(tv1: TextView, tv2: TextView) {
