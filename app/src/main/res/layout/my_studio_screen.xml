@@ -18,7 +18,7 @@
             <ImageView
                 android:id="@+id/back_button"
                 android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
@@ -42,9 +42,9 @@
 
             <ImageView
                 android:id="@+id/iv_extends"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginRight="8dp"
+                android:layout_width="46dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/my_studio_screen_icon_extends"
@@ -65,7 +65,7 @@
             <ImageView
                 android:id="@+id/iv_close"
                 android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
@@ -89,9 +89,9 @@
 
             <ImageView
                 android:id="@+id/iv_share"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginRight="16dp"
+                android:layout_width="46dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="6dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/my_studio_screen_icon_share"
@@ -101,8 +101,8 @@
 
             <ImageView
                 android:id="@+id/iv_delete"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="46dp"
+                android:layout_height="match_parent"
                 android:layout_marginRight="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"

@@ -127,7 +127,6 @@
 
 
                 <TextView
-
                     android:id="@+id/tv_title_music"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
