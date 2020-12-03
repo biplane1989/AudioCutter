@@ -19,7 +19,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_item"
                 android:layout_width="match_parent"
-                android:layout_height="56dp">
+                android:layout_height="match_parent">
 
                 <!-- <androidx.cardview.widget.CardView
                      android:id="@+id/iv_avatar"
@@ -57,7 +57,7 @@
                 <TextView
                     android:id="@+id/tv_title_music"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
                     android:ellipsize="end"
                     android:fontFamily="@font/opensans_bold"
@@ -65,9 +65,8 @@
                     android:maxLines="1"
                     android:singleLine="true"
                     android:textColor="#2E3041"
-                    android:textSize="@dimen/d_18"
+                    android:textSize="@dimen/d_16"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/ll_progressbar"
                     app:layout_constraintEnd_toStartOf="@+id/iv_cancel"
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toEndOf="@+id/iv_avatar"

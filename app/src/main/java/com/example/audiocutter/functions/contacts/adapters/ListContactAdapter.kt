@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.contacts.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -73,6 +74,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
         } else {
+
             if (mContext == null) {
                 return
             }

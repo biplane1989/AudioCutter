@@ -229,10 +229,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                 .observe(this.viewLifecycleOwner, Observer<AppPermission> {
                     if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
                         resetRequestingPermission()
-                        viewStateManager.myStudioSetContactItemClicked(
-                            this,
-                            audioFile.file.absolutePath
-                        )
+                        viewStateManager.myStudioSetContactItemClicked(this, audioFile.file.absolutePath)
 
                     }
                     if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
@@ -268,12 +265,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         val popup = android.widget.PopupMenu(context, view)
         popup.inflate(R.menu.output_audio_manager_screen_popup_menu)
         popup.setOnMenuItemClickListener { item: MenuItem? ->
-            val dialogSnack =
-                Snackbar.make(
-                    requireView(),
-                    getString(R.string.notification_file_was_short_mystudio_screen),
-                    Snackbar.LENGTH_SHORT
-                )
+            val dialogSnack = Snackbar.make(requireView(), getString(R.string.notification_file_was_short_mystudio_screen), Snackbar.LENGTH_SHORT)
             when (item!!.itemId) {
                 R.id.set_as -> {
                     checkSetAsWriteSettingPermission()
@@ -283,10 +275,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     if (audioFile.duration < MIN_DURATION) {
                         dialogSnack.show()
                     } else {
-                        viewStateManager.myStudioCuttingItemClicked(
-                            this,
-                            audioFile.file.absolutePath
-                        )
+                        viewStateManager.myStudioCuttingItemClicked(this, audioFile.file.absolutePath)
                     }
                 }
                 R.id.contacs -> {
@@ -303,17 +292,11 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     ShowDialogShareFile()
                 }
                 R.id.rename -> {
-                    val dialog = RenameDialog.newInstance(
-                        this,
-                        typeAudio,
-                        audioFile.file.absolutePath,
-                        audioFile.fileName
-                    )
+                    val dialog = RenameDialog.newInstance(this, typeAudio, audioFile.file.absolutePath, audioFile.fileName)
                     dialog.show(childFragmentManager, RenameDialog.TAG)
                 }
                 R.id.info -> {
-                    val dialog =
-                        InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
+                    val dialog = InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
                     dialog.show(childFragmentManager, InfoDialog.TAG)
                 }
                 R.id.delete -> {
@@ -331,20 +314,14 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
     private fun checkContactPermission() {
         if (contactPermissionRequest.isPermissionGranted()) {
-            viewStateManager.myStudioSetContactItemClicked(
-                this,
-                audioFile.file.absolutePath
-            )
+            viewStateManager.myStudioSetContactItemClicked(this, audioFile.file.absolutePath)
         } else {
             ContactPermissionDialog.newInstance {
                 resetRequestingPermission()
                 pendingRequestingPermission = CONTACTS_ITEM_REQUESTING_PERMISSION
                 contactPermissionRequest.requestPermission()
             }
-                .show(
-                    requireActivity().supportFragmentManager,
-                    ContactPermissionDialog::class.java.name
-                )
+                .show(requireActivity().supportFragmentManager, ContactPermissionDialog::class.java.name)
         }
     }
 
@@ -412,7 +389,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
             else -> Folder.TYPE_MIXER
         }
-        if(myStudioViewModel.renameAudio(newName, typeFolder, filePath)){
+        if (myStudioViewModel.renameAudio(newName, typeFolder, filePath)) {
             val mySnackbar = Snackbar.make(requireView(), getString(R.string.my_studio_rename_audio_file_successfull), Snackbar.LENGTH_LONG)
             mySnackbar.show()
         } else {

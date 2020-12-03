@@ -123,16 +123,18 @@
                 android:textColor="@color/dialog_advanced_title_fade_color"
                 android:textSize="12dp" />
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/seekbar"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="@dimen/d_48"
                     android:layout_marginLeft="15dp"
                     android:layout_toLeftOf="@id/percent_tv"
+                    android:layout_weight="1"
                     android:theme="@style/themeSeekbar"
                     android:valueFrom="0"
                     android:valueTo="300"
@@ -143,10 +145,11 @@
 
                 <TextView
                     android:id="@+id/percent_tv"
-                    android:layout_width="30dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginRight="@dimen/margin_item"
                     android:fontFamily="@font/opensans_regular"
                     android:gravity="right"
@@ -154,7 +157,7 @@
                     android:textColor="@color/dialog_advanced_title_fade_color"
                     android:textSize="12dp" />
 
-            </RelativeLayout>
+            </LinearLayout>
         </LinearLayout>
 
 
