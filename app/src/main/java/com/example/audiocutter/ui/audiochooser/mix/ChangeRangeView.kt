@@ -22,7 +22,7 @@ class ChangeRangeView @JvmOverloads constructor(
     private lateinit var rectImageDst2: Rect
     private lateinit var rectImageDst1: Rect
     private lateinit var rectImage: Rect
-    private lateinit var typeFace: Typeface
+    private var typeFace: Typeface
     private lateinit var rectText2: Rect
     private lateinit var rectText1: Rect
     private val TAG = ChangeRangeView::class.java.name
@@ -37,10 +37,11 @@ class ChangeRangeView @JvmOverloads constructor(
     private val mPaint6 = Paint(Paint.ANTI_ALIAS_FLAG)
     private var mHeight = 0
     var mWidth = 0
-    private lateinit var rowRect1: RectF
-    private lateinit var rowRect2: RectF
-    private lateinit var rowRectSeekbarSound1: RectF
-    private lateinit var rowRectSeekbarSound2: RectF
+    private lateinit var rectDuration1: RectF
+    private lateinit var rectDuration2: RectF
+    private lateinit var rowRect3: RectF
+    private lateinit var rectSeekbarSound1: RectF
+    private lateinit var rectSeekbarSound2: RectF
     private lateinit var rectCurrentSeekbar1: RectF
     private lateinit var rectCurrentSeekbar2: RectF
     private var startCurrentX = 0
@@ -123,38 +124,37 @@ class ChangeRangeView @JvmOverloads constructor(
         textName2 = audioFile2.fileName
 
         val rs = Utils.convertDp2Px(20, context)
-
-        rowRect1 = RectF(
+        rectDuration1 = RectF(
             RADIUS,
             mHeightText.toFloat(),
             currentLength1.toFloat() + RADIUS,
             mHeight / 2 - rs
         )
 
-        rowRect2 = RectF(
+        rectDuration2 = RectF(
             RADIUS,
-            mHeightText + rowRect1.height() + Utils.convertDp2Px(10, context),
+            mHeightText + rectDuration1.height() + Utils.convertDp2Px(10, context),
             currentLength2.toFloat() + RADIUS,
             (mHeight / 2 - rs) * 2 - Utils.convertDp2Px(10, context)
         )
 
-        canvas.drawRoundRect(rowRect1, 15f, 15f, mPaint2)
-        canvas.drawRoundRect(rowRect2, 15f, 15f, mPaint2)
+        canvas.drawRoundRect(rectDuration1, 15f, 15f, mPaint2)
+        canvas.drawRoundRect(rectDuration2, 15f, 15f, mPaint2)
 
         drawTextName(canvas, textName1)
         drawTextName2(canvas, textName2)
 
-        drawBitmap(canvas, rowRect1.top + rectText1.height() + RANGE * 3 / 2)
-        drawBitmap2(canvas, rowRect2.top + rectText2.height() + RANGE * 3 / 2)
+        drawBitmap(canvas, rectDuration1.top + rectText1.height() + RANGE * 3 / 2)
+        drawBitmap2(canvas, rectDuration2.top + rectText2.height() + RANGE * 3 / 2)
 
-        rowRectSeekbarSound1 = RectF(
+        rectSeekbarSound1 = RectF(
             rectImageDst1.width() + RANGE * 2,
             rectImageDst1.top + RADIUS,
             mWidth / 1.3f + RANGE,
             rectImageDst1.top + RADIUS + 10
         )
 
-        rowRectSeekbarSound2 = RectF(
+        rectSeekbarSound2 = RectF(
             rectImageDst2.width() + RANGE * 2,
             rectImageDst2.top + RADIUS,
             mWidth / 1.3f + RANGE,
@@ -180,8 +180,8 @@ class ChangeRangeView @JvmOverloads constructor(
             currentXCircle2,
             rectImageDst2.top + RADIUS + 10
         )
-        canvas.drawRoundRect(rowRectSeekbarSound1, 5f, 5f, mPaint5)
-        canvas.drawRoundRect(rowRectSeekbarSound2, 5f, 5f, mPaint5)
+        canvas.drawRoundRect(rectSeekbarSound1, 5f, 5f, mPaint5)
+        canvas.drawRoundRect(rectSeekbarSound2, 5f, 5f, mPaint5)
         canvas.drawRoundRect(rectCurrentSeekbar1, 5f, 5f, mPaint)
         canvas.drawRoundRect(rectCurrentSeekbar2, 5f, 5f, mPaint)
 
@@ -204,8 +204,8 @@ class ChangeRangeView @JvmOverloads constructor(
         circleProgressGetY1 = rectImageDst1.top + RADIUS + 3
         circleProgressGetY2 = rectImageDst2.top + RADIUS + 3
 
-        drawTextSound(ratioSound1, canvas, rowRectSeekbarSound1.right + RANGE, rowRectSeekbarSound1)
-        drawTextSound(ratioSound2, canvas, rowRectSeekbarSound2.right + RANGE, rowRectSeekbarSound2)
+        drawTextSound(ratioSound1, canvas, rectSeekbarSound1.right + RANGE, rectSeekbarSound1)
+        drawTextSound(ratioSound2, canvas, rectSeekbarSound2.right + RANGE, rectSeekbarSound2)
     }
 
     private fun drawTextSound(ratioSound1: String, canvas: Canvas, x: Float, y: RectF) {
@@ -231,7 +231,7 @@ class ChangeRangeView @JvmOverloads constructor(
         canvas.drawText(
             name,
             RADIUS * 2,
-            rowRect2.top + rectText2.height() + RADIUS,
+            rectDuration2.top + rectText2.height() + RADIUS,
             mPaint4
         )
     }
@@ -248,7 +248,7 @@ class ChangeRangeView @JvmOverloads constructor(
         mPaint4.color = context.resources.getColor(R.color.colorBlack)
         mPaint4.typeface = typeFace
 
-        canvas.drawText(name, RADIUS * 2, rowRect1.top + rectText1.height() + RADIUS, mPaint4)
+        canvas.drawText(name, RADIUS * 2, rectDuration1.top + rectText1.height() + RADIUS, mPaint4)
     }
 
     private fun initLine(canvas: Canvas) {
@@ -259,17 +259,18 @@ class ChangeRangeView @JvmOverloads constructor(
          **/
         canvas.drawLine(
             startCurrentX.toFloat() + RADIUS,
-            0f + Utils.convertDp2Px(15, context),
+            0f,
             endCurrentX.toFloat() + RADIUS,
-            mHeight * 1f,
+            mHeight * 1f - (RANGE + RADIUS),
             mPaint
         )
         canvas.drawCircle(
             startCurrentX.toFloat() + RADIUS,
-            (mHeight * 1f) - RADIUS,
+            (mHeight * 1f) - (RANGE + RADIUS),
             RADIUS,
             mPaint
         )
+
         drawText(canvas, "00:00", 0f + RADIUS, mPaint6)
         try {
             rs = durationAudio1 > durationAudio2
@@ -298,7 +299,9 @@ class ChangeRangeView @JvmOverloads constructor(
         } catch (e: NumberFormatException) {
             e.printStackTrace()
         }
-        drawText(canvas, numPos, startCurrentX.toFloat() - rect.width() / 2, mPaint)
+
+        /**text number position*/
+        drawTextPosition(canvas, numPos, startCurrentX.toFloat() - rect.width() / 2.5f, mPaint)
 
 
     }
@@ -347,24 +350,36 @@ class ChangeRangeView @JvmOverloads constructor(
         )
     }
 
-    private fun drawText(canvas: Canvas, text: String, fl: Float, mPaint: Paint) {
+    private fun drawText(canvas: Canvas, text: String, getX: Float, mPaint: Paint) {
+        mPaint.getTextBounds(text, 0, text.length, rect)
+        canvas.drawText(
+            text,
+            getX,
+            rect.height().toFloat(),
+            mPaint
+        )
+
+    }
+
+    private fun drawTextPosition(canvas: Canvas, text: String, fl: Float, mPaint: Paint) {
         mPaint.getTextBounds(text, 0, text.length, rect)
         canvas.drawText(
             text,
             fl,
-            rect.height().toFloat(),
+            mHeight * 1f - 3,
             mPaint
         )
+
     }
 
     private fun drawTextDurationMin(canvas: Canvas, text: String) {
         Log.d(TAG, "drawTextDurationMin: $text")
         mPaint.getTextBounds(text, 0, text.length, rect)
-        val rs = rowRect1.width() > rowRect2.width()
+        val rs = rectDuration1.width() > rectDuration2.width()
         textGetX = if (rs) {
-            rowRect2.width()
+            rectDuration2.width()
         } else {
-            rowRect1.width()
+            rectDuration1.width()
         }
         rect = Rect()
         mPaint6.getTextBounds(text, 0, text.length, rect)
@@ -399,7 +414,6 @@ class ChangeRangeView @JvmOverloads constructor(
                         }
                     }
                     TOUCHITEM.SEEKBARSOUND1 -> {
-                        Log.d(TAG, "onTouchEvent: progress 1 ")
                         currentXCircle1 = x
                         if (x < (rectImageDst1.width() + RANGE * 2)) {
                             currentXCircle1 = (rectImageDst1.width() + RANGE * 2)
@@ -468,6 +482,7 @@ class ChangeRangeView @JvmOverloads constructor(
                             x.toDouble()
                         )
                         mCallback.onLineChange(audioFile1, audioFile2, pos.toInt())
+
                     }
                     TOUCHITEM.SEEKBARSOUND1 -> {
                         isTouch = TOUCHITEM.NONTOUCH
@@ -481,7 +496,7 @@ class ChangeRangeView @JvmOverloads constructor(
 
             }
             MotionEvent.ACTION_DOWN -> {
-                return if (event.y >= mHeight - Utils.convertDp2Px(9 * 2, context) * 2) {
+                return if (event.y >= mHeight - Utils.convertDp2Px(20, context) * 2) {
                     isTouch = TOUCHITEM.SEEKBAR
                     true
                 } else if (event.y < circleProgressGetY1 + RANGE && event.y > circleProgressGetY1 - RANGE) {
@@ -565,6 +580,7 @@ class ChangeRangeView @JvmOverloads constructor(
         this.position = position
 
         numPos = Utils.longDurationMsToStringMs(this.position.toLong())
+        Log.d(TAG, "setPosition: numpos $numPos")
         startCurrentX = pos.toInt()
         endCurrentX = pos.toInt()
 
@@ -630,7 +646,6 @@ class ChangeRangeView @JvmOverloads constructor(
             currentLength2 = mWidth - RADIUS.toDouble()
         }
 
-
         invalidate()
     }
 
@@ -648,7 +663,6 @@ class ChangeRangeView @JvmOverloads constructor(
                 mWidth.toDouble(),
                 duration.toDouble()
             )
-
         startCurrentX = 0
         endCurrentX = 0
         mCallback.changeDuration()
@@ -683,8 +697,8 @@ class ChangeRangeView @JvmOverloads constructor(
 
     fun seekPrev5S(preDuration: Int) {
         val distanceSeek = (preDuration.toDouble() / duration.toDouble()) * mWidth.toDouble()
-        startCurrentX += distanceSeek.toInt()
-        endCurrentX += distanceSeek.toInt()
+        startCurrentX -= distanceSeek.toInt()
+        endCurrentX -= distanceSeek.toInt()
         if (startCurrentX <= RADIUS || endCurrentX <= RADIUS) {
             startCurrentX = RADIUS.toInt()
             endCurrentX = RADIUS.toInt()
@@ -693,7 +707,6 @@ class ChangeRangeView @JvmOverloads constructor(
             position -= preDuration
             numPos = Utils.longDurationMsToStringMs(position.toLong())
         }
-
 
         mCallback.onLineChange(audioFile1, audioFile2, position)
         Log.d(TAG, "seekNext5S: $distanceSeek  - mWidth $mWidth")
