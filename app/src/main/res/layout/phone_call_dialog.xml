@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#992E3041">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="#FFFFFF"
+        android:paddingBottom="20dp">
+
+        <ImageView
+            android:id="@+id/close_button"
+            android:layout_width="@dimen/d_40"
+            android:layout_height="@dimen/d_40"
+            android:background="?android:selectableItemBackground"
+            android:scaleType="centerInside"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/common_permission_ic_close" />
+
+        <ImageView
+            android:id="@+id/music_iv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/close_button"
+            app:srcCompat="@drawable/common_permission_ic_music" />
+
+        <TextView
+            android:id="@+id/explain_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="25dp"
+            android:fontFamily="@font/opensans_regular"
+            android:gravity="center"
+            android:text="@string/permission_phonecall_text_ask"
+            android:textSize="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/music_iv" />
+
+        <Button
+            android:id="@+id/allow_button"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/permission_bg_allow_button"
+            android:text="@string/storage_permission_allow"
+            android:textColor="#FFFFFF"
+            android:textSize="14dp"
+            app:layout_constraintTop_toBottomOf="@+id/explain_text" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

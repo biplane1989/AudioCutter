@@ -31,6 +31,7 @@ import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.permissions.AppPermission
 import com.example.audiocutter.permissions.ContactItemPermissionRequest
 import com.example.audiocutter.permissions.PermissionManager
+import com.example.audiocutter.permissions.WriteSettingPermissionRequest
 import com.example.audiocutter.util.Utils
 import com.google.android.material.snackbar.Snackbar
 import java.text.SimpleDateFormat
@@ -51,12 +52,25 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     private lateinit var binding: ResultScreenBinding
     private lateinit var mResultViewModel: ResultViewModel
     private var isSeekBarStatus = false
+    private var numberClick = 0
+
 
     @SuppressLint("SimpleDateFormat")
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
     private var pendingRequestingPermission = 0
     private val CONTACTS_ITEM_REQUESTING_PERMISSION = 1 shl 4
+    private val WRITESETTING_ITEM_REQUESTING_PERMISSION = 1 shl 5
     private val contactPermissionRequest = object : ContactItemPermissionRequest {
+        override fun getPermissionActivity(): BaseActivity? {
+            return getBaseActivity()
+        }
+
+        override fun getLifeCycle(): Lifecycle {
+            return lifecycle
+        }
+    }
+
+    private val writeSettingPermissionRequest = object : WriteSettingPermissionRequest {
         override fun getPermissionActivity(): BaseActivity? {
             return getBaseActivity()
         }
@@ -211,9 +225,25 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
             .observe(this.viewLifecycleOwner, Observer<AppPermission> {
                 if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
-                    viewStateManager.resultScreenSetContactItemClicked(this, audioFile!!.file.absolutePath)
+                    viewStateManager.resultScreenSetContactItemClicked(
+                        this,
+                        audioFile!!.file.absolutePath
+                    )
                 }
-
+                if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
+                    resetRequestingPermission()
+                    when (numberClick) {
+                        1 -> {
+                            setRingtone()
+                        }
+                        2 -> {
+                            setAlarm()
+                        }
+                        3 -> {
+                            setNotifiCation()
+                        }
+                    }
+                }
             })
         return binding.root
     }
@@ -291,33 +321,35 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                 viewStateManager.resultScreenGoToHome(this)
             }
             binding.llRingtone -> {
-                if (mResultViewModel.setRingTone()) {
-                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
-                        .show()
+                numberClick = 1
+                if (writeSettingPermissionRequest.isPermissionGranted()) {
+                    setRingtone()
                 } else {
-                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
-                        .show()
+                    resetRequestingPermission()
+                    pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
+                    writeSettingPermissionRequest.requestPermission()
                 }
+
             }
             binding.llAlarm -> {
-
-                if (mResultViewModel.setAlarm()) {
-                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_alarm_successful), Toast.LENGTH_SHORT)
-                        .show()
+                numberClick = 2
+                if (writeSettingPermissionRequest.isPermissionGranted()) {
+                    setAlarm()
                 } else {
-                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_alarm_fail), Toast.LENGTH_SHORT)
-                        .show()
+                    resetRequestingPermission()
+                    pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
+                    writeSettingPermissionRequest.requestPermission()
                 }
-
             }
 
             binding.llNotification -> {
-                if (mResultViewModel.setNotification()) {
-                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_notification_successful), Toast.LENGTH_SHORT)
-                        .show()
+                numberClick = 3
+                if (writeSettingPermissionRequest.isPermissionGranted()) {
+                    setNotifiCation()
                 } else {
-                    Toast.makeText(requireContext(), getString(R.string.result_screen_set_notification_fail), Toast.LENGTH_SHORT)
-                        .show()
+                    resetRequestingPermission()
+                    pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
+                    writeSettingPermissionRequest.requestPermission()
                 }
             }
             binding.llShare -> {
@@ -335,6 +367,60 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                     Utils.openWithApp(requireContext(), audioFile!!.uri!!)
                 }
             }
+        }
+    }
+
+    private fun setNotifiCation() {
+        if (mResultViewModel.setNotification()) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.result_screen_set_notification_successful),
+                Toast.LENGTH_SHORT
+            )
+                .show()
+        } else {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.result_screen_set_notification_fail),
+                Toast.LENGTH_SHORT
+            )
+                .show()
+        }
+    }
+
+    private fun setAlarm() {
+        if (mResultViewModel.setAlarm()) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.result_screen_set_alarm_successful),
+                Toast.LENGTH_SHORT
+            )
+                .show()
+        } else {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.result_screen_set_alarm_fail),
+                Toast.LENGTH_SHORT
+            )
+                .show()
+        }
+    }
+
+    private fun setRingtone() {
+        if (mResultViewModel.setRingTone()) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.result_screen_set_ringtone_successful),
+                Toast.LENGTH_SHORT
+            )
+                .show()
+        } else {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.result_screen_set_ringtone_fail),
+                Toast.LENGTH_SHORT
+            )
+                .show()
         }
     }
 

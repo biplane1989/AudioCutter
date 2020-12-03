@@ -14,6 +14,7 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MainScreenBinding
 import com.example.audiocutter.functions.common.ContactPermissionDialog
 import com.example.audiocutter.functions.common.StoragePermissionDialog
+import com.example.audiocutter.functions.flashcall.dialogs.PhoneCallPerMissionDialog
 import com.example.audiocutter.permissions.*
 
 class MainScreen : BaseFragment(), View.OnClickListener {
@@ -215,8 +216,15 @@ class MainScreen : BaseFragment(), View.OnClickListener {
         if (callPhonePermissionRequest.isPermissionGranted()) {
             viewStateManager.mainScreenOnFlashCallItemClicked(this)
         } else {
-            pendingRequestingPermission = FLASH_CALL_REQUESTING_PERMISSION
-            callPhonePermissionRequest.requestPermission()
+            PhoneCallPerMissionDialog.newInstance {
+                resetRequestingPermission()
+                pendingRequestingPermission = FLASH_CALL_REQUESTING_PERMISSION
+                callPhonePermissionRequest.requestPermission()
+            }
+                .show(
+                    requireActivity().supportFragmentManager,
+                    PhoneCallPerMissionDialog::class.java.name
+                )
         }
     }
 

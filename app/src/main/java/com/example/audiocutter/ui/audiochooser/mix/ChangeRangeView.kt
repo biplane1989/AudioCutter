@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
 import com.example.audiocutter.R
 import com.example.audiocutter.ext.convertToAudioDuration
 import com.example.audiocutter.objects.AudioFile
@@ -21,9 +22,6 @@ class ChangeRangeView @JvmOverloads constructor(
     private lateinit var rectImageDst2: Rect
     private lateinit var rectImageDst1: Rect
     private lateinit var rectImage: Rect
-    private val FONT_BOLD = "fonts/opensans_bold.ttf"
-    private val FONT_LIGHT = "fonts/opensans_light.ttf"
-    private val FONT_REGULAR = "fonts/opensans_regular.ttf"
     private lateinit var typeFace: Typeface
     private lateinit var rectText2: Rect
     private lateinit var rectText1: Rect
@@ -78,7 +76,7 @@ class ChangeRangeView @JvmOverloads constructor(
 
     init {
 
-        typeFace = Typeface.createFromAsset(context.assets, FONT_REGULAR)
+        typeFace = ResourcesCompat.getFont(context, R.font.opensans_regular)!!
         setPaint(mPaint5, R.color.colorGraySeekbar)
         setPaint(mPaint6, R.color.colorgray)
         setPaint(mPaint4, R.color.colorBlack)

@@ -208,4 +208,5 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="my_studio_header_title_audio_cutter">Audio Cutter</string>
     <string name="my_studio_header_title_audio_merger">Audio Merger</string>
     <string name="my_studio_header_title_audio_mixer">Audio Mixer</string>
+    <string name="permission_phonecall_text_ask">To use this function, the call permission flash needs to be enabled</string>
 </resources>
