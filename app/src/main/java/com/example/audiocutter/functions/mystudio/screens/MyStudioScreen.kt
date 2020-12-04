@@ -232,6 +232,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                         requestPermissinWriteSetting()
                     }
                     if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
+                        resetRequestingPermission()
                         showDialogSetAs()
                     }
                 })

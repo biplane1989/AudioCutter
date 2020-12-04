@@ -65,6 +65,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     }
 
     override fun getItemViewType(position: Int): Int {
+        Log.d(TAG, "getItemViewType: stauts : " + getItem(position).convertingState)
         return if (getItem(position).convertingState == ConvertingState.SUCCESS) {
             SUCCESS_VIEW
         } else {
@@ -110,12 +111,15 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     override fun onBindViewHolder(holder: MyStudioHolder, position: Int, payloads: MutableList<Any>) {
         super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
+            Log.d(TAG, "onBindViewHolder: orange 1")
             onBindViewHolder(holder, position)
         } else {
-            if (holder is SuccessViewHolder) {
-                val successViewHolder = holder as SuccessViewHolder
-                val newItem = payloads.firstOrNull() as AudioFileView
+            val newItem = payloads.firstOrNull() as AudioFileView
 
+            Log.d(TAG, "onBindViewHolder: orange 2" + " status: "+ newItem.convertingState)
+            if (holder is SuccessViewHolder) {
+
+                val successViewHolder = holder as SuccessViewHolder
                 when (newItem.itemLoadStatus.deleteState) {
                     DeleteState.HIDE -> {
                         successViewHolder.ivItemDelete.visibility = View.GONE
@@ -153,8 +157,9 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
 
             } else {
+                Log.d(TAG, "onBindViewHolder1 LoadingViewHolder ${newItem.getFilePath()} ")
                 val loadingViewHolder = holder as LoadingViewHolder
-                val newItem = payloads.firstOrNull() as AudioFileView
+
                 val convertingItem = getItem(position)
 
                 Log.d(TAG, "onBindViewHolder: convertingItem.percent : " + convertingItem.percent)
@@ -509,6 +514,7 @@ class MusicDiffCallBack : DiffUtil.ItemCallback<AudioFileView>() {
 
     override fun areItemsTheSame(oldItemView: AudioFileView, newItemView: AudioFileView): Boolean {
         return oldItemView.audioFile.file.absoluteFile == newItemView.audioFile.file.absoluteFile
+//        return oldItemView.audioFile.fileName == newItemView.audioFile.fileName
     }
 
     override fun areContentsTheSame(oldItemView: AudioFileView, newItemView: AudioFileView): Boolean {

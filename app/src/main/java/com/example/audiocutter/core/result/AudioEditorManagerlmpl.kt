@@ -161,27 +161,37 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 listConvertingItemData.remove(item)
             }
 
-            if (audioResult != null) {
+            if (audioResult != null) {      // thanh cong
                 // converting progress co thanh cong hay khong
                 ManagerFactory.getAudioFileManager().buildAudioFile(audioResult.file.absolutePath) {
-                    it?.let {
-
+                    if (it != null) {
                         item.outputAudioFile = it
-
                         item.state = ConvertingState.SUCCESS
                         onConvertingItemDetached(item)
                         Log.d(TAG, "processItem: item ID : " + item.id)
                         notifyConvertingItemChanged(item)
-                        listConvertingItems.postValue(listConvertingItemData)
-                        processNextItem()
+                    } else {
+                        item.outputAudioFile = it
+                        item.state = ConvertingState.ERROR
+                        onConvertingItemDetached(item)
+                        Log.d(TAG, "processItem: item ID : " + item.id)
+                        notifyConvertingItemChanged(item)
                     }
+//                    it?.let {                       // thanh cong
+//                        item.outputAudioFile = it
+//                        item.state = ConvertingState.SUCCESS
+//                        onConvertingItemDetached(item)
+//                        Log.d(TAG, "processItem: item ID : " + item.id)
+//                        notifyConvertingItemChanged(item)
+//                    }
+                    listConvertingItems.postValue(listConvertingItemData)
+                    processNextItem()
                 }
-
-//               item.outputAudioFile?.file?.delete()
+//                item.outputAudioFile?.file?.delete()      // test truong hop error
 //                item.state = ConvertingState.ERROR
 //                notifyConvertingItemChanged(item)
 //                latestConvertingItem = null
-            } else {
+            } else {            // error
                 item.state = ConvertingState.ERROR
                 notifyConvertingItemChanged(item)
                 latestConvertingItem = null

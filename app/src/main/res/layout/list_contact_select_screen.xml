@@ -40,9 +40,10 @@
                 app:layout_constraintTop_toTopOf="@id/back_button" />
 
             <ImageView
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:id="@+id/iv_file"
                 android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_height="match_parent"
                 android:scaleType="centerInside"
                 android:src="@drawable/list_contact_file"
                 app:layout_constraintBottom_toBottomOf="@id/iv_search"
@@ -52,7 +53,7 @@
             <ImageView
                 android:id="@+id/iv_search"
                 android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_height="match_parent"
                 android:layout_marginRight="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
@@ -99,7 +100,7 @@
             <ImageView
                 android:id="@+id/iv_clear"
                 android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_height="match_parent"
                 android:layout_marginRight="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"

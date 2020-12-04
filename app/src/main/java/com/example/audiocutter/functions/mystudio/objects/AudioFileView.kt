@@ -10,8 +10,9 @@ enum class DeleteState(value: Int) {
     HIDE(1), CHECKED(2), UNCHECK(3)
 }
 
-data class AudioFileView(var audioFile: AudioFile, var isExpanded: Boolean = false, var itemLoadStatus: ItemLoadStatus = ItemLoadStatus(), var convertingState: ConvertingState, var percent: Int, var id: Int){
+data class AudioFileView(var audioFile: AudioFile, var isExpanded: Boolean = false, var itemLoadStatus: ItemLoadStatus = ItemLoadStatus(), var convertingState: ConvertingState, var percent: Int, var id: Int) {
     fun getFilePath(): String {
         return audioFile.file.absolutePath
+//        return audioFile.file.absolutePath + audioFile.fileName + audioFile.mimeType
     }
 }

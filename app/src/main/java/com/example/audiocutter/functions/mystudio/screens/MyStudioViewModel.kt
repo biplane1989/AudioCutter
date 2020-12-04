@@ -25,6 +25,9 @@ import com.example.audiocutter.objects.StateLoad
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 fun List<AudioFileView>.toMap(): HashMap<String, AudioFileView> {
     val hashMap = HashMap<String, AudioFileView>()
@@ -107,11 +110,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
         mAudioMediatorLiveData.addSource(listScaners) { // khi data co su thay doi thi se goi vao ham nay
 
-            if (it.listAudioFiles.size <= 0) {
-                listScansIsEmptyStatus = true
-            } else {
-                listScansIsEmptyStatus = false
-            }
+            listScansIsEmptyStatus = it.listAudioFiles.size <= 0
             Log.d(TAG, "init: update data: listScaners ${this@MyStudioViewModel} :" + it.listAudioFiles.size + " status: " + listScansIsEmptyStatus)
 
             mListScannedAudioFile.clear()
@@ -128,39 +127,108 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 }
                 notifyMergingListAudio()
             }
+
+            Log.d(TAG, "bug tiem an scaners list size : " + it.listAudioFiles.size)
+            Log.d(TAG, "init: addSource(listScaners)")
         }
 
         mAudioMediatorLiveData.addSource(listConvertingItems) {
 
-            if (it.size <= 0) {
-                listConvertingIsEmptyStatus = true
-            } else {
-                listConvertingIsEmptyStatus = false
-            }
-//            isLoadingDone = false
-            Log.d(TAG, "init: update data: listConvertingItems ${this@MyStudioViewModel} :" + it.size + " status: " + listConvertingIsEmptyStatus)
+            listConvertingIsEmptyStatus = it.size <= 0
             mListConvertingItems.clear()
             if (!it.isEmpty()) {
                 for (item in it) {
                     if (item is CuttingConvertingItem) {
-                        mListConvertingItems.add(AudioFileView(AudioFile(File(item.cuttingConfig.pathFolder), item.cuttingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
+                        val fileCutting = File(item.cuttingConfig.pathFolder + "/" + item.cuttingConfig.fileName + "." + item.cuttingConfig.format.toString()
+                            .toLowerCase(Locale.ROOT))
+                        mListConvertingItems.add(AudioFileView(AudioFile(fileCutting, item.cuttingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
                     }
                     if (item is MergingConvertingItem) {
-                        mListConvertingItems.add(AudioFileView(AudioFile(File(item.mergingConfig.pathFolder), item.mergingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
+                        val fileConverting = File(item.mergingConfig.pathFolder + "/" + item.mergingConfig.fileName + "." + item.mergingConfig.audioFormat.toString()
+                            .toLowerCase(Locale.ROOT))
+                        mListConvertingItems.add(AudioFileView(AudioFile(fileConverting, item.mergingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
                     }
                     if (item is MixingConvertingItem) {
-                        mListConvertingItems.add(AudioFileView(AudioFile(File(item.mixingConfig.pathFolder), item.mixingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
+                        val fileMixing = File(item.mixingConfig.pathFolder + "/" + item.mixingConfig.fileName + "." + item.mixingConfig.format.toString()
+                            .toLowerCase(Locale.ROOT))
+                        mListConvertingItems.add(AudioFileView(AudioFile(fileMixing, item.mixingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
                     }
                 }
             }
-
-            Log.d(TAG, "init: update data: listConvertingItems ${this@MyStudioViewModel}")
+            Log.d(TAG, "bug tiem an converting list size : " + it.size)
             notifyMergingListAudio()
+            Log.d(TAG, "init: addSource(listConvertingItems)")
         }
     }
 
     fun getAudioEditorManager(): AudioEditorManager {
         return ManagerFactory.getAudioEditorManager()
+    }
+
+    private suspend fun mergeList() = coroutineScope {
+
+        for (item in mListConvertingItems) {
+            Log.d(TAG, "mergeList: 002 : " + item.getFilePath())
+        }
+
+        val filePathMapConvertingItem = mListConvertingItems.toMap()
+        val filePathMapItemView = mListAudio.toMap()
+        val newListAudio = ArrayList<AudioFileView>()
+        newListAudio.addAll(mListConvertingItems)
+
+        val listAudioFileExcludedConvertingItems = mListScannedAudioFile.filter { !filePathMapConvertingItem.containsKey(it.getFilePath()) }
+
+        Log.d(TAG, "bug tiem an: list converting : " + filePathMapConvertingItem.size)
+        Log.d(TAG, "bug tiem an: list scanner: " + listAudioFileExcludedConvertingItems.size)
+        for (item in listAudioFileExcludedConvertingItems) {
+            Log.d(TAG, "bug tiem an: status : " + item.convertingState + " filePath: " + item.getFilePath()+ " id: "+item.id)
+        }
+        Log.d(TAG, "mergeList: convertingItems size ${mListConvertingItems.size} mListScannedAudioFile size ${mListScannedAudioFile.size}")
+
+        run lst@{
+            listAudioFileExcludedConvertingItems.forEach {
+                if (!isActive) {              // khi nguoi dung cancel
+                    return@lst
+                }
+                if (it.convertingState in arrayListOf(ConvertingState.WAITING, ConvertingState.PROGRESSING) && filePathMapConvertingItem.containsKey(it.getFilePath()) && filePathMapItemView.containsKey(it.getFilePath())) {
+                    val audioViewItem = filePathMapItemView.get(it.getFilePath())!!
+                    newListAudio.add(audioViewItem.copy())
+                } else {
+                    if (isDeleteStatus) {                           // khi dang o trang thai delete
+                        it.itemLoadStatus.deleteState = DeleteState.UNCHECK
+                    }
+                    newListAudio.add(it.copy())
+                }
+            }
+        }
+
+        if (isActive) {                 // o trang thai ton tai thi moi dc update
+            mListAudio.clear()
+            mListAudio.addAll(newListAudio)
+            mAudioMediatorLiveData.postValue(mListAudio)
+            notificationIsEmptyStatus()
+        }
+    }
+
+    private fun notificationIsEmptyStatus() {
+        if (mListConvertingItems.size <= 0 && mListScannedAudioFile.size <= 0) {
+            isEmptyStatus.postValue(true)
+        } else {
+            isEmptyStatus.postValue(false)
+        }
+    }
+
+    private fun isDoubleDisplay(filePath: String): Boolean {        // kiem tra xem item o listloading co ton tai trong list scan hay khong
+        for (item in mListConvertingItems) {
+//            if (TextUtils.equals(item.audioFile.file.absolutePath.toString() + item.audioFile.fileName + item.audioFile.mimeType, filePath)) {
+            if (TextUtils.equals(item.getFilePath(), filePath)) {
+                Log.d(TAG, "isDoubleDisplay: trueeeeee")
+                return true
+            }
+            Log.d(TAG, "isDoubleDisplay: item.getFilePath() : \n" + item.getFilePath() + "\n :  filePath " + filePath)
+
+        }
+        return false
     }
 
     fun showPlayingAudio(position: Int) {
@@ -197,64 +265,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     fun getAudioPlayer(): AudioPlayer {
         return audioPlayer
-    }
-
-    private suspend fun mergeList() = coroutineScope {
-
-        Log.d(TAG, "mergeList: list  mListConvertingItems.size : " + mListConvertingItems.size + " ${this@MyStudioViewModel}")
-        Log.d(TAG, "mergeList: list  mListScannedAudioFile.size : " + mListScannedAudioFile.size + " ${this@MyStudioViewModel}")
-
-        Log.d(TAG, "mergeList audio 1 ${this@MyStudioViewModel} size " + mListAudio.size)
-        val filePathMapItemView = mListAudio.toMap()
-        val newListAudio = ArrayList<AudioFileView>()
-        newListAudio.addAll(mListConvertingItems)
-
-        val filePathMapConvertingItem = mListConvertingItems.toMap()
-        val listAudioFileExcludedConvertingItems = mListScannedAudioFile.filter { !filePathMapConvertingItem.containsKey(it.getFilePath()) }
-        Log.d(TAG, "mergeList audio 2 ${this@MyStudioViewModel} mListConvertingItems size " + mListConvertingItems.size + "  mListScannedAudioFile size " + mListScannedAudioFile.size)
-
-        run lst@{
-            listAudioFileExcludedConvertingItems.forEach {
-                if (!isActive) {              // khi nguoi dung cancel
-                    return@lst
-                }
-                if (filePathMapItemView.containsKey(it.getFilePath())) {
-                    val audioViewItem = filePathMapItemView.get(it.getFilePath())!!
-                    newListAudio.add(audioViewItem)
-                } else {
-                    if (isDeleteStatus) {                           // khi dang o trang thai delete
-                        it.itemLoadStatus.deleteState = DeleteState.UNCHECK
-                    }
-//                    if (isCheckAllStatus) {
-////                        it.itemLoadStatus.deleteState = DeleteState.CHECKED
-//                        it.itemLoadStatus.deleteState = DeleteState.UNCHECK
-//                    }
-                    newListAudio.add(it)
-                }
-            }
-        }
-
-        if (isActive) {                 // o trang thai ton tai thi moi dc update
-            mListAudio.clear()
-            mListAudio.addAll(newListAudio)
-            mAudioMediatorLiveData.postValue(mListAudio)
-
-            if (mListConvertingItems.size <= 0 && mListScannedAudioFile.size <= 0) {
-                isEmptyStatus.postValue(true)
-            } else {
-                isEmptyStatus.postValue(false)
-            }
-        }
-
-    }
-
-    private fun isDoubleDisplay(filePath: String): Boolean {        // kiem tra xem item o listloading co ton tai trong list scan hay khong
-        for (item in mListConvertingItems) {
-            if (TextUtils.equals(item.audioFile.file.absolutePath.toString() + item.audioFile.fileName + item.audioFile.mimeType, filePath)) {
-                return true
-            }
-        }
-        return false
     }
 
     fun getLoadingStatus(): LiveData<Boolean> {
@@ -334,11 +344,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     fun isExitItemSelectDelete(): Boolean {
-        if (!mListAudio.isEmpty() && isDeleteStatus) {
-            return true
-        } else {
-            return false
-        }
+        return !mListAudio.isEmpty() && isDeleteStatus
     }
 
     // check xem đã có ít nhất 1 item nào được check delete hay chưa

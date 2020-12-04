@@ -42,7 +42,7 @@
                 android:fontFamily="@font/opensans_semibold"
                 android:singleLine="true"
                 android:textColor="@color/colorBlack"
-                android:textSize="@dimen/d_18"
+                android:textSize="@dimen/d_16"
                 app:layout_constraintBottom_toTopOf="@id/tv_info_music"
                 app:layout_constraintEnd_toStartOf="@id/iv_setting"
                 app:layout_constraintStart_toEndOf="@+id/iv_avatar"
