@@ -37,14 +37,6 @@ fun List<AudioFileView>.toMap(): HashMap<String, AudioFileView> {
     return hashMap
 }
 
-//fun List<AudioFileView>.toMap2(): HashMap<String, AudioFileView> {
-//    val hashMap = HashMap<String, AudioFileView>()
-//    this.forEach {
-//        hashMap.put(it.audioFile.fileName + it.audioFile., it)
-//    }
-//    return hashMap
-//}
-
 class MyStudioViewModel(application: Application) : BaseAndroidViewModel(application) {
 
     private val audioPlayer = ManagerFactory.newAudioPlayer()
@@ -136,6 +128,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 notifyMergingListAudio()
             }
 
+            Log.d(TAG, "bug tiem an scaners list size : " + it.listAudioFiles.size)
             Log.d(TAG, "init: addSource(listScaners)")
         }
 
@@ -151,20 +144,21 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                         mListConvertingItems.add(AudioFileView(AudioFile(fileCutting, item.cuttingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
                     }
                     if (item is MergingConvertingItem) {
-                        val fileConverting = File(item.mergingConfig.pathFolder + "/" + item.mergingConfig.fileName + "." + item.mergingConfig.audioFormat.toString())
+                        val fileConverting = File(item.mergingConfig.pathFolder + "/" + item.mergingConfig.fileName + "." + item.mergingConfig.audioFormat.toString()
+                            .toLowerCase(Locale.ROOT))
                         mListConvertingItems.add(AudioFileView(AudioFile(fileConverting, item.mergingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
                     }
                     if (item is MixingConvertingItem) {
-                        val fileMixing = File(item.mixingConfig.pathFolder + "/" + item.mixingConfig.fileName + "." + item.mixingConfig.format.toString())
+                        val fileMixing = File(item.mixingConfig.pathFolder + "/" + item.mixingConfig.fileName + "." + item.mixingConfig.format.toString()
+                            .toLowerCase(Locale.ROOT))
                         mListConvertingItems.add(AudioFileView(AudioFile(fileMixing, item.mixingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
                     }
                 }
             }
-
+            Log.d(TAG, "bug tiem an converting list size : " + it.size)
             notifyMergingListAudio()
             Log.d(TAG, "init: addSource(listConvertingItems)")
         }
-
     }
 
     fun getAudioEditorManager(): AudioEditorManager {
@@ -172,6 +166,10 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     private suspend fun mergeList() = coroutineScope {
+
+        for (item in mListConvertingItems) {
+            Log.d(TAG, "mergeList: 002 : " + item.getFilePath())
+        }
 
         val filePathMapConvertingItem = mListConvertingItems.toMap()
         val filePathMapItemView = mListAudio.toMap()
@@ -183,7 +181,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         Log.d(TAG, "bug tiem an: list converting : " + filePathMapConvertingItem.size)
         Log.d(TAG, "bug tiem an: list scanner: " + listAudioFileExcludedConvertingItems.size)
         for (item in listAudioFileExcludedConvertingItems) {
-            Log.d(TAG, "bug tiem an: status : " + item.convertingState + " filePath: " + item.getFilePath())
+            Log.d(TAG, "bug tiem an: status : " + item.convertingState + " filePath: " + item.getFilePath()+ " id: "+item.id)
         }
         Log.d(TAG, "mergeList: convertingItems size ${mListConvertingItems.size} mListScannedAudioFile size ${mListScannedAudioFile.size}")
 

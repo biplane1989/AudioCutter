@@ -81,7 +81,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:fontFamily="@font/opensans_regular"
                     android:gravity="center"
-                    android:text="@string/my_studio_dialog_btn_yes"
+                    android:text="@string/dialog_advanced_cancel"
                     android:textColor="@color/dialog_advanced_cancel_color"
                     android:textSize="@dimen/text_size_button" />
 

@@ -172,7 +172,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                         notifyConvertingItemChanged(item)
                     } else {
                         item.outputAudioFile = it
-                        item.state = ConvertingState.SUCCESS
+                        item.state = ConvertingState.ERROR
                         onConvertingItemDetached(item)
                         Log.d(TAG, "processItem: item ID : " + item.id)
                         notifyConvertingItemChanged(item)
