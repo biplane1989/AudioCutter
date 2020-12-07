@@ -10,7 +10,6 @@ import androidx.core.content.res.ResourcesCompat
 import com.example.audiocutter.R
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
-import kotlin.math.max
 
 class ChangeRangeView @JvmOverloads constructor(
     context: Context,
@@ -73,7 +72,6 @@ class ChangeRangeView @JvmOverloads constructor(
     private var isChangeLengtDuration = 0
     private var textName1 = ""
     private var textName2 = ""
-
     private var ratioSound1 = "100%"
     private var ratioSound2 = "100%"
     private var maxDistance = 0.0
@@ -591,12 +589,10 @@ class ChangeRangeView @JvmOverloads constructor(
         this.position = position
 
 
-        Log.d(TAG, "setPosition: numpos $numPos")
         startCurrentX = pos.toInt()
         endCurrentX = pos.toInt()
 
         if (startCurrentX > maxDistance && endCurrentX > maxDistance) {
-            Log.d(TAG, "onClick:  maxdistance ${maxDistance} ")
             startCurrentX = maxDistance.toInt()
             endCurrentX = maxDistance.toInt()
             mCallback.endAudioAtMaxdistance()
@@ -621,19 +617,12 @@ class ChangeRangeView @JvmOverloads constructor(
         if (isCompare) {
             currentLength1 = Utils.convertValue(
                 0.0,
-                durAudio1.toDouble(),
-                0.0,
+                durAudio1.toDouble(), 0.0,
                 mWidth.toDouble(),
                 durAudio1.toDouble()
             )
 
-
-            Log.d(TAG, "nmcode:  duration ${durAudio1.toDouble()}  -- dur2 ${durAudio2.toDouble()}  width  ${mWidth.toDouble()}")
-
-
             currentLength2 = (durAudio2.toDouble() / durAudio1.toDouble()) * currentLength1
-
-//            Log.d(TAG, "setLengthAudio: currentLenght $currentLength1  -- dur2 $currentLength2")
 
         } else {
             currentLength2 = Utils.convertValue(
@@ -687,6 +676,33 @@ class ChangeRangeView @JvmOverloads constructor(
         invalidate()
     }
 
+    fun setShortedLength() {
+        position =0
+        if (currentLength1 > currentLength2) {
+            isChangeLengtDuration = 1
+            maxLength = currentLength1
+            currentLength1 = currentLength2
+        } else if (currentLength1 < currentLength2) {
+            isChangeLengtDuration = 2
+            maxLength = currentLength2
+            currentLength2 = currentLength1
+        }
+    }
+
+    fun setLonggestLenght() {
+        position =0
+        if (isChangeLengtDuration != 0) {
+            when (isChangeLengtDuration) {
+                1 -> {
+                    currentLength1 = maxLength
+                }
+                2 -> {
+                    currentLength2 = maxLength
+                }
+            }
+        }
+    }
+
 
     fun seekNext5S(moreDuration: Int) {
 
@@ -720,30 +736,6 @@ class ChangeRangeView @JvmOverloads constructor(
         invalidate()
     }
 
-    fun setCurrent() {
-        if (currentLength1 > currentLength2) {
-            isChangeLengtDuration = 1
-            maxLength = currentLength1
-            currentLength1 = currentLength2
-        } else if (currentLength1 < currentLength2) {
-            isChangeLengtDuration = 2
-            maxLength = currentLength2
-            currentLength2 = currentLength1
-        }
-    }
-
-    fun prevCurrentDuration() {
-        if (isChangeLengtDuration != 0) {
-            when (isChangeLengtDuration) {
-                1 -> {
-                    currentLength1 = maxLength
-                }
-                2 -> {
-                    currentLength2 = maxLength
-                }
-            }
-        }
-    }
 
 
     interface OnPlayLineChange {
