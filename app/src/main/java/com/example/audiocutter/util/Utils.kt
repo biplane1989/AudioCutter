@@ -213,7 +213,7 @@ class Utils {
         @SuppressLint("SimpleDateFormat")
         fun convertTime(time: Int): String {
             if (time < 0) return "00:00"
-            val df = SimpleDateFormat("mm:ss")
+            val df = SimpleDateFormat("mm:ss.SS")
             return df.format(time)
         }
 

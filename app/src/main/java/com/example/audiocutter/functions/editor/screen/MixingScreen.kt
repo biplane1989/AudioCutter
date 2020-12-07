@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
@@ -19,6 +20,7 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.MixingScreenBinding
+import com.example.audiocutter.functions.editor.MixingModel
 import com.example.audiocutter.functions.editor.dialogs.FileNameDialogListener
 import com.example.audiocutter.functions.editor.dialogs.MixerDialog
 import com.example.audiocutter.functions.mystudio.dialog.CancelDialog
@@ -40,6 +42,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     private val TAG = MixingScreen::class.java.name
     private var playerState = PlayerState.IDLE
     private lateinit var binding: MixingScreenBinding
+    private lateinit var mixingModel: MixingModel
     private var audioFile1: AudioFile? = null
     private var audioFile2: AudioFile? = null
     private var isCompare = false
@@ -50,8 +53,13 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     private val listData = mutableListOf<AudioFile>()
 
+    private val playerInfoObserver = Observer<PlayerInfo> {
+
+    }
+
     override fun onPostCreate(savedInstanceState: Bundle?) {
         /** setting maxdistance*/
+        mixingModel = ViewModelProvider(this).get(MixingModel::class.java)
         mPlayer1.init(requireContext())
         mPlayer2.init(requireContext())
         super.onPostCreate(savedInstanceState)
@@ -61,7 +69,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.mixing_screen, container, false)
         initViews()
         return binding.root
@@ -70,7 +78,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mPlayer2.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
+//        mPlayer2.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
         mPlayer1.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
 
     }
@@ -153,20 +161,24 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
             binding.playIv -> {
                 runOnUI {
                     if (playerState == PlayerState.PLAYING) {
-//                        binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
                         mPlayer1.pause()
                         mPlayer2.pause()
                     } else {
                         if (playerState == PlayerState.IDLE) {
-//                            binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
-                            audioFile1?.let {
-                                mPlayer1.play(it)
+                            if (audioFile1 != null && audioFile2 != null) {
+                                val result = audioFile1!!.duration > audioFile2!!.duration
+                                if (result) {
+                                    Log.d(TAG, "onClick: true")
+                                    mPlayer1.play(audioFile1!!)
+                                    mPlayer2.play(audioFile2!!)
+                                } else {
+                                    Log.d(TAG, "onClick: false")
+                                    mPlayer1.play(audioFile2!!)
+                                    mPlayer2.play(audioFile1!!)
+                                }
                             }
-                            audioFile2?.let {
-                                mPlayer2.play(it)
-                            }
+
                         } else {
-//                            binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
                             mPlayer2.resume()
                             mPlayer1.resume()
                         }
@@ -178,6 +190,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 //                    binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
                     changeBackgroundTextView(binding.shortedTv, binding.longestTv)
                     checkCompareDurationMin(durAudio1, durAudio2)
+                    binding.crChangeViewMixing.setCurrent()
                     stopAudio()
                     isCheckClick = 1
                 }
@@ -186,7 +199,8 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 if (isCheckClick == 1) {
 //                    binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
                     changeBackgroundTextView(binding.longestTv, binding.shortedTv)
-                    checkCompareDuration(durAudio1, durAudio2)
+                    checkCompareDurationMax(durAudio1, durAudio2)
+                    binding.crChangeViewMixing.prevCurrentDuration()
                     stopAudio()
                     isCheckClick = 2
                 }
@@ -234,7 +248,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         }
     }
 
-    private fun checkCompareDuration(durAudio1: String, durAudio2: String) {
+    private fun checkCompareDurationMax(durAudio1: String, durAudio2: String) {
         val isCheck = durAudio1.toInt() > durAudio2.toInt()
         if (isCheck) {
             binding.crChangeViewMixing.setDuration(durAudio1)
@@ -250,8 +264,14 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 //            binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
         }
         runOnUI {
-            mPlayer1.play(audioFile1, pos)
-            mPlayer2.play(audioFile2, pos)
+            if (!mPlayer1.getAudioIsPlaying()) {
+                mPlayer1.play(audioFile1, pos)
+                mPlayer2.play(audioFile2, pos)
+            } else {
+                mPlayer1.seek(pos)
+                mPlayer2.seek(pos)
+            }
+
         }
     }
 
@@ -261,8 +281,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     }
 
     override fun changeDuration() {
-        mPlayer1.stop()
-        mPlayer2.stop()
+        stopAudio()
     }
 
     override fun setVolumeAudio1(value: Float, min: Float, max: Float) {
@@ -291,10 +310,10 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         mPlayer2.setVolume(newValueSound.toFloat())
     }
 
-    override fun endAudioBecauseMaxdistance() {
-        mPlayer2.stop()
-        mPlayer1.stop()
+    override fun endAudioAtMaxdistance() {
+        stopAudio()
     }
+
 
     override fun onMixClick(fileName: String) {
         val mixingConfig = AudioMixConfig(
@@ -312,3 +331,4 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         isDeleteClicked = true
     }
 }
+
