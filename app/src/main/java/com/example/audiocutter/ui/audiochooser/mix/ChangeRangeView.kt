@@ -19,7 +19,7 @@ class ChangeRangeView @JvmOverloads constructor(
 
     private val RADIUS_RECT = 15f
     private var mPaint7 = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val DEFAULT_TIME_POSITION: String = "00:00:0"
+    private val DEFAULT_TIME_POSITION: String = "00:00.0"
     private var ratio: Int = 0
     private lateinit var rectImageDst2: Rect
     private lateinit var rectImageDst1: Rect
@@ -273,11 +273,10 @@ class ChangeRangeView @JvmOverloads constructor(
         canvas.drawCircle(
             startCurrentX.toFloat() + RADIUS,
             (mHeight * 1f) - (RANGE + RADIUS),
-            RADIUS,
-            mPaint
+            RADIUS, mPaint
         )
 
-        drawText(canvas, "00:00", 0f + RADIUS, mPaint6)
+        drawText(canvas, DEFAULT_TIME_POSITION, 0f + RADIUS, mPaint6)
         try {
             rs = durationAudio1 > durationAudio2
             if (!rs) {
@@ -291,20 +290,17 @@ class ChangeRangeView @JvmOverloads constructor(
                 drawTextDurationMin(
                     canvas,
                     Utils.convertTime(audioFile1.duration.toInt())
-//                    audioFile1.duration.convertToAudioDuration()
                 )
             } else {
                 drawText(
                     canvas,
                     Utils.convertTime(durationAudio1),
-//                    (mWidth - RANGE - RADIUS * 2),
                     mWidth - rect.width() * 1f - RANGE,
                     mPaint6
                 )
                 drawTextDurationMin(
                     canvas,
                     Utils.convertTime(audioFile2.duration.toInt())
-//                    audioFile2.duration.convertToAudioDuration()
                 )
             }
         } catch (e: NumberFormatException) {
