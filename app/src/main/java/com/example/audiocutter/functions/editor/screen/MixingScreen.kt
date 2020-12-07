@@ -212,12 +212,14 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         if (audioFile1 == null || audioFile2 == null) {
             return null
         }
-        val longestAudioPlayer = if (audioFile1.duration >= audioFile2.duration) mPlayer1 else mPlayer2
-        val shortestAudioPlayer = if (audioFile1.duration < audioFile2.duration) mPlayer1 else mPlayer2
-        if(isLongestAudioChecked){
-            return longestAudioPlayer
-        }else{
-            return shortestAudioPlayer
+        val longestAudioPlayer =
+            if (audioFile1.duration >= audioFile2.duration) mPlayer1 else mPlayer2
+        val shortestAudioPlayer =
+            if (audioFile1.duration < audioFile2.duration) mPlayer1 else mPlayer2
+        return if (isLongestAudioChecked) {
+            longestAudioPlayer
+        } else {
+            shortestAudioPlayer
         }
     }
 
