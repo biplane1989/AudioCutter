@@ -70,7 +70,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mPlayer2.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
+        //mPlayer2.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
         mPlayer1.getPlayerInfo().observe(viewLifecycleOwner, observerAudio())
 
     }
@@ -87,6 +87,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 }
                 PlayerState.PLAYING -> {
                     binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
+                    Log.d(TAG, "observerAudio: ${it.posision}")
                     binding.crChangeViewMixing.setPosition(it.posision)
                     playerState = PlayerState.PLAYING
                 }
@@ -250,7 +251,12 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 //            binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
         }
         runOnUI {
-            mPlayer1.play(audioFile1, pos)
+            if(!mPlayer1.getAudioIsPlaying()){
+                mPlayer1.play(audioFile1, pos)
+            }else{
+
+            }
+
             mPlayer2.play(audioFile2, pos)
         }
     }
