@@ -145,6 +145,7 @@ object AudioFileManagerImpl : AudioFileManager {
                     var hasRow = it.moveToFirst()
                     while (isActive && hasRow) {
                         val filePath = it.getString(clData)
+                        Log.d(TAG, "queryMediaStore: $filePath")
                         val id = it.getString(clID)
                         filterFunc(id, filePath, it.getLong(clDateAdded))
                         hasRow = it.moveToNext()

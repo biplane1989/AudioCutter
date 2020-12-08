@@ -23,6 +23,7 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.ResultScreenBinding
 import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
+import com.example.audiocutter.functions.audiochooser.dialogs.TypeShare
 import com.example.audiocutter.functions.common.ContactPermissionDialog
 import com.example.audiocutter.functions.mystudio.dialog.CancelDialog
 import com.example.audiocutter.functions.mystudio.dialog.CancelDialogListener
@@ -439,7 +440,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
 
     private fun ShowDialogShareFile() {
-        dialogAppShare = DialogAppShare(requireContext())
+        dialogAppShare =
+            DialogAppShare(requireContext(), Utils.getListAppQueryReceiveData(requireContext()), TypeShare.ONLYFILE)
         dialogAppShare.setOnCallBack(this)
         dialogAppShare.show(requireActivity().supportFragmentManager, "TAG_DIALOG")
     }

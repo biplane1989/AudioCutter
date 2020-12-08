@@ -13,11 +13,20 @@ import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.functions.audiochooser.adapters.AppShareAdapter
 import com.example.audiocutter.functions.audiochooser.objects.ItemAppShare
 import com.example.audiocutter.functions.audiochooser.objects.ItemAppShareView
-import com.example.audiocutter.util.Utils
 
-class DialogAppShare(val mContext: Context) : BaseDialog(), AppShareAdapter.AppShareListener {
+enum class TypeShare {
+    ONLYFILE,
+    MULTIFILE
+}
+
+class DialogAppShare(
+    val mContext: Context,
+    val listApps: List<ItemAppShare>,
+    val typeShare: TypeShare
+) :
+    BaseDialog(),
+    AppShareAdapter.AppShareListener {
     private lateinit var listData: MutableList<ItemAppShareView>
-    private lateinit var listTmp: List<ItemAppShare>
     private lateinit var rvApp: RecyclerView
     private lateinit var ivCancel: ImageView
     private lateinit var appShareAdapter: AppShareAdapter
@@ -62,8 +71,7 @@ class DialogAppShare(val mContext: Context) : BaseDialog(), AppShareAdapter.AppS
         appShareAdapter = AppShareAdapter(mContext)
         appShareAdapter.setOnCallBack(this)
         listData = mutableListOf()
-        listTmp = Utils.getListAppQueryReceiveData(requireContext())
-        listTmp.forEach { it ->
+        listApps.forEach { it ->
             listData.add(ItemAppShareView(it, false))
         }
 
@@ -87,15 +95,28 @@ class DialogAppShare(val mContext: Context) : BaseDialog(), AppShareAdapter.AppS
 
     override fun shareApp(position: Int) {
         if (!listData[position].isCheckButton) {
-            mCallBack.shareFilesToAppsDialog(listTmp[position].pkgName)
+            mCallBack.shareFilesToAppsDialog(listApps[position].pkgName)
         } else {
-            mCallBack.shareFileAudioToAppDevices()
+            if (typeShare == TypeShare.ONLYFILE) {
+                mCallBack.shareFileAudioToAppDevices()
+            } else {
+                mCallBack.shareMultiFileAudioToAppDevices()
+            }
         }
     }
 
     interface DialogAppListener {
-        fun shareFileAudioToAppDevices()
-        fun shareFilesToAppsDialog(pkgName: String)
+        fun shareFileAudioToAppDevices() {
+
+        }
+
+        fun shareMultiFileAudioToAppDevices() {
+
+        }
+
+        fun shareFilesToAppsDialog(pkgName: String) {
+
+        }
     }
 
 }
