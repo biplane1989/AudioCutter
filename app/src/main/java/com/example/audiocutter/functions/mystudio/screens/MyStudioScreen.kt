@@ -22,6 +22,7 @@ import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MyStudioFragmentBinding
 import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
+import com.example.audiocutter.functions.audiochooser.dialogs.TypeShare
 import com.example.audiocutter.functions.common.ContactPermissionDialog
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterAdapter
@@ -377,8 +378,12 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         dialogSetAs.show(childFragmentManager, SetAsDialog.TAG)
     }
 
-    private fun showDialogShareFile() {
-        dialogShare = DialogAppShare(requireContext())
+    private fun ShowDialogShareFile() {
+        dialogShare = DialogAppShare(
+            requireContext(),
+            Utils.getListAppQueryReceiveData(requireContext()),
+            TypeShare.ONLYFILE
+        )
         dialogShare.setOnCallBack(this)
         dialogShare.show(requireActivity().supportFragmentManager, "TAG_DIALOG")
     }

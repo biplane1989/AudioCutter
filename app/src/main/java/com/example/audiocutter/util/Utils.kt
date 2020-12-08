@@ -31,6 +31,7 @@ import java.text.Normalizer
 import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
+
 class Utils {
     companion object {
         val KEY_SEND_PATH = "key_send_path"
@@ -236,7 +237,7 @@ class Utils {
         @SuppressLint("SimpleDateFormat")
         fun convertTime(time: Int): String {
             if (time < 0) return "00:00"
-            val df = SimpleDateFormat("mm:ss")
+            val df = SimpleDateFormat("mm:ss.SS")
             return df.format(time)
         }
 
@@ -350,6 +351,26 @@ class Utils {
             return listAppShares
         }
 
+        @SuppressLint("QueryPermissionsNeeded")
+        fun getListAppQueryReceiveMutilData(context: Context): List<ItemAppShare> {
+            val listAppShares = ArrayList<ItemAppShare>()
+            val intent = Intent()
+            intent.action = Intent.ACTION_SEND_MULTIPLE
+            intent.type = "audio/*"
+            val listResolver = context.packageManager.queryIntentActivities(intent, 0)
+
+            for (info in listResolver) {
+                val item = ItemAppShare(
+                    info.loadLabel(AudioFileManagerImpl.mContext.packageManager)
+                        .toString(),
+                    info.loadIcon(AudioFileManagerImpl.mContext.packageManager),
+                    info.activityInfo.packageName
+                )
+                listAppShares.add(item)
+            }
+            return listAppShares
+        }
+
         fun shareFileAudio(context: Context, audioFile: AudioFile): Boolean {
             return try {
                 val intent = Intent()
@@ -369,14 +390,19 @@ class Utils {
             }
         }
 
-        fun shareManyFile(context: Context, listUri: ArrayList<Uri>) {
-            val intent = Intent()
-            intent.action = Intent.ACTION_SEND_MULTIPLE
-            intent.putExtra(Intent.EXTRA_STREAM, listUri)
-            intent.type = "audio/*"
-            val files = ArrayList<Uri>()
-            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
-            context.startActivity(intent)
+
+        fun shareMutilpleFile(context: Context, listUri: ArrayList<Uri>) {
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND_MULTIPLE
+                putParcelableArrayListExtra(Intent.EXTRA_STREAM, listUri)
+                type = "audio/*"
+            }
+            context.startActivity(
+                Intent.createChooser(
+                    shareIntent,
+                    context.resources.getString(R.string.Choose_in_app_inten)
+                )
+            )
         }
 
         private fun getName(file: File): String {
@@ -415,7 +441,9 @@ class Utils {
                 audioInfor.bitRate,
                 audioInfor.duration,
                 uri,
-                getBitmapByPath(file.absolutePath),
+                getBitmapByPath(
+                    file.absolutePath
+                ),
                 audioInfor.title,
                 audioInfor.alBum,
                 audioInfor.artist,

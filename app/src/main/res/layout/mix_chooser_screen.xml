@@ -38,7 +38,7 @@
                     android:hint="@string/search_hint_text"
                     android:paddingStart="@dimen/d_88"
                     android:singleLine="true"
-                    android:visibility="visible">
+                    android:visibility="invisible">
 
                     <requestFocus />
                 </EditText>
