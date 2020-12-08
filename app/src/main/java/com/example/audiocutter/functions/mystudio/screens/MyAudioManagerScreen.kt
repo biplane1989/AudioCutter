@@ -1,7 +1,6 @@
 package com.example.audiocutter.functions.mystudio.screens
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -159,6 +158,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
         binding.ivExtends.setOnClickListener(this)
         binding.ivClose.setOnClickListener(this)
         binding.ivDelete.setOnClickListener(this)
+        binding.ivShare.setOnClickListener(this)
     }
 
     override fun onClick(view: View) {
@@ -184,10 +184,17 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 binding.viewPager.setPagingEnabled(false)
                 setEnabledTablayout(true)
 
-                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_DELETE_STATUS, Constance.NO_TYPE_AUDIO)
+                sendFragmentAction(
+                    MyStudioScreen::class.java.name,
+                    Constance.ACTION_DELETE_STATUS,
+                    Constance.NO_TYPE_AUDIO
+                )
             }
             binding.backButton -> {
                 requireActivity().onBackPressed()
+            }
+            binding.ivShare -> {
+                showToast("share")
             }
         }
     }

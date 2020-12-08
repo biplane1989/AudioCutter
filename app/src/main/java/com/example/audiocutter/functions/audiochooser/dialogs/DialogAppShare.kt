@@ -21,8 +21,8 @@ enum class TypeShare {
 
 class DialogAppShare(
     val mContext: Context,
-    val listApps: List<ItemAppShare>,
-    val typeShare: TypeShare
+    private val listApps: List<ItemAppShare>,
+    private val typeShare: TypeShare
 ) :
     BaseDialog(),
     AppShareAdapter.AppShareListener {
