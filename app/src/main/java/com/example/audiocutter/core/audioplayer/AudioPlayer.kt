@@ -126,9 +126,6 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         }
     }
 
-
-
-
     private fun prepare(audioFile: AudioFile) {
         playInfoData.playerState = PlayerState.PREPARING
         mPlayer.apply {
