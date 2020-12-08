@@ -378,7 +378,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         dialogSetAs.show(childFragmentManager, SetAsDialog.TAG)
     }
 
-    private fun ShowDialogShareFile() {
+    private fun showDialogShareFile() {
         dialogShare = DialogAppShare(
             requireContext(),
             Utils.getListAppQueryReceiveData(requireContext()),
