@@ -371,9 +371,14 @@ class Utils {
             return listAppShares
         }
 
-        fun shareFileAudio(context: Context, audioFile: AudioFile): Boolean {
+
+
+        fun shareFileAudio(context: Context, audioFile: AudioFile, pkgName: String?): Boolean {
             return try {
                 val intent = Intent()
+                if(pkgName!=null){
+                    intent.`package` = pkgName
+                }
                 intent.action = Intent.ACTION_SEND
                 intent.putExtra(Intent.EXTRA_STREAM, audioFile.uri)
                 intent.type = "audio/*"
@@ -391,12 +396,14 @@ class Utils {
         }
 
 
-        fun shareMutilpleFile(context: Context, listUri: ArrayList<Uri>) {
-            val shareIntent = Intent().apply {
-                action = Intent.ACTION_SEND_MULTIPLE
-                putParcelableArrayListExtra(Intent.EXTRA_STREAM, listUri)
-                type = "audio/*"
+        fun shareMutilpleFile(context: Context, listUri: ArrayList<Uri>, pkgName: String?) {
+            val shareIntent = Intent()
+            if (pkgName != null) {
+                shareIntent.`package` = pkgName
             }
+            shareIntent.action = Intent.ACTION_SEND_MULTIPLE
+            shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, listUri)
+            shareIntent.type = "audio/*"
             context.startActivity(
                 Intent.createChooser(
                     shareIntent,

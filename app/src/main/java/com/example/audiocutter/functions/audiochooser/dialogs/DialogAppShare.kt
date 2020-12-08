@@ -95,7 +95,7 @@ class DialogAppShare(
 
     override fun shareApp(position: Int) {
         if (!listData[position].isCheckButton) {
-            mCallBack.shareFilesToAppsDialog(listApps[position].pkgName)
+            mCallBack.shareFilesToAppsDialog(listApps[position].pkgName, typeShare)
         } else {
             if (typeShare == TypeShare.ONLYFILE) {
                 mCallBack.shareFileAudioToAppDevices()
@@ -114,7 +114,7 @@ class DialogAppShare(
 
         }
 
-        fun shareFilesToAppsDialog(pkgName: String) {
+        fun shareFilesToAppsDialog(pkgName: String, typeShare: TypeShare) {
 
         }
     }
