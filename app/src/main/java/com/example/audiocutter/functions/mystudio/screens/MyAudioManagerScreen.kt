@@ -1,8 +1,9 @@
 package com.example.audiocutter.functions.mystudio.screens
 
 import android.annotation.SuppressLint
-import android.graphics.Color
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,11 +20,13 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.IViewModel
 import com.example.audiocutter.databinding.MyStudioScreenBinding
+import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.adapters.MyStudioViewPagerAdapter
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialog
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialogListener
 import com.example.audiocutter.functions.mystudio.objects.ActionData
+import com.example.audiocutter.util.Utils
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.my_studio_custom_header_tablayout_1.view.*
 
@@ -32,10 +35,11 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     private lateinit var binding: MyStudioScreenBinding
     private val TAG = "giangtd"
     private var isDeleteClicked = true
+    private var isShareClicked = true
     private var tabPosition = -1
     private lateinit var myAudioManagerViewModel: MyAudioManagerViewModel
     private val safeArg: MyAudioManagerScreenArgs by navArgs()
-
+    private lateinit var dialogShare: DialogAppShare
 
     private val actionObserver = Observer<ActionData> { it ->
         when (it.action) {
@@ -54,14 +58,8 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
         }
     }
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_screen, container, false)
-
-//        myAudioManagerViewModel.getAction().observe(viewLifecycleOwner, actionObserver)
-
-//        val myStudioAdapter = MyStudioViewPagerAdapter(childFragmentManager)
-//        binding.viewPager.adapter = myStudioAdapter
 
         return binding.root
     }
@@ -107,8 +105,6 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
         binding.viewPager.adapter = myStudioAdapter
 
         binding.tabLayout.setupWithViewPager(binding.viewPager)
-//        binding.tabLayout.tabGravity = TabLayout.GRAVITY_CENTER
-//        binding.tabLayout.tabMode = TabLayout.MODE_FIXED
 
         binding.tabLayout.getTabAt(0)?.setCustomView(R.layout.my_studio_custom_header_tablayout_1)
         binding.tabLayout.getTabAt(1)?.setCustomView(R.layout.my_studio_custom_header_tablayout_2)
@@ -122,11 +118,6 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-//        val myStudioAdapter = MyStudioViewPagerAdapter(childFragmentManager)
-//        binding.viewPager.adapter = myStudioAdapter
-
-//        binding.tabLayout.setupWithViewPager(binding.viewPager)
-
         tabPosition = binding.tabLayout.selectedTabPosition
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -136,7 +127,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 tabPosition = tab.position
 
                 tab.view.tv_header?.let {
-                    it.setTextColor(ContextCompat.getColor(requireContext(),R.color.my_studio_header_select))
+                    it.setTextColor(ContextCompat.getColor(requireContext(), R.color.my_studio_header_select))
                 }
 
             }
@@ -144,7 +135,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
             @SuppressLint("ResourceAsColor")
             override fun onTabUnselected(tab: TabLayout.Tab) {
                 tab.view.tv_header?.let {
-                    it.setTextColor(ContextCompat.getColor(requireContext(),R.color.my_studio_header_unselect))
+                    it.setTextColor(ContextCompat.getColor(requireContext(), R.color.my_studio_header_unselect))
                 }
             }
 
@@ -155,6 +146,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
 //        binding.tabLayout.getTabAt(requireArguments().getInt(Constance.TYPE_AUDIO_TO_NOTIFICATION))
 //            ?.select()
 
+        binding.ivShare.setOnClickListener(this)
         binding.backButton.setOnClickListener(this)
         binding.ivExtends.setOnClickListener(this)
         binding.ivClose.setOnClickListener(this)
@@ -163,6 +155,9 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
 
     override fun onClick(view: View) {
         when (view) {
+            binding.ivShare -> {
+                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_SHARE, tabPosition)
+            }
             binding.ivDelete -> {
                 sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_CHECK_DELETE, tabPosition)
             }

@@ -25,6 +25,7 @@ import com.example.audiocutter.objects.StateLoad
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import java.io.File
+import java.lang.reflect.Array
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -181,7 +182,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         Log.d(TAG, "bug tiem an: list converting : " + filePathMapConvertingItem.size)
         Log.d(TAG, "bug tiem an: list scanner: " + listAudioFileExcludedConvertingItems.size)
         for (item in listAudioFileExcludedConvertingItems) {
-            Log.d(TAG, "bug tiem an: status : " + item.convertingState + " filePath: " + item.getFilePath()+ " id: "+item.id)
+            Log.d(TAG, "bug tiem an: status : " + item.convertingState + " filePath: " + item.getFilePath() + " id: " + item.id)
         }
         Log.d(TAG, "mergeList: convertingItems size ${mListConvertingItems.size} mListScannedAudioFile size ${mListScannedAudioFile.size}")
 
@@ -357,6 +358,16 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         return false
     }
 
+    fun getListShare(): List<String> {
+        val listShare = ArrayList<String>()
+        for (item in mListAudio) {
+            if (item.itemLoadStatus.deleteState == DeleteState.CHECKED) {
+                listShare.add(item.audioFile.uri.toString())
+            }
+        }
+        return listShare
+    }
+
     fun clickSelectAllBtn(): List<AudioFileView> {
         if (isAllChecked()) {
             return unselectAllItems()
@@ -419,6 +430,13 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             }
             ManagerFactory.getAudioFileManager().deleteFile(listAudioItems, folder)
         }
+    }
+
+    fun shareAllFile(typeAudio: Int) {
+        val listAudioItems: List<AudioFile> = mListAudio.filter { it.itemLoadStatus.deleteState == DeleteState.CHECKED }        // list<AudioFile> da duoc viet dang exstent funtion
+            .toListAudioFiles()
+
+
     }
 
     suspend fun deleteItem(pathFolder: String, typeAudio: Int): Boolean {
@@ -536,14 +554,17 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 Constance.ACTION_HIDE -> {  // trang thai undelete
                     actionLiveData.postValue(ActionData(Constance.ACTION_HIDE, typeAudio))
                 }
-                Constance.ACTION_DELETE_ALL -> {
-                    actionLiveData.postValue(ActionData(Constance.ACTION_DELETE_ALL, typeAudio))
-                }
                 Constance.ACTION_STOP_MUSIC -> {
                     actionLiveData.postValue(ActionData(Constance.ACTION_STOP_MUSIC, typeAudio))
                 }
+                Constance.ACTION_DELETE_ALL -> {
+                    actionLiveData.postValue(ActionData(Constance.ACTION_DELETE_ALL, typeAudio))
+                }
                 Constance.ACTION_CHECK_DELETE -> {
                     actionLiveData.postValue(ActionData(Constance.ACTION_CHECK_DELETE, typeAudio))
+                }
+                Constance.ACTION_SHARE -> {
+                    actionLiveData.postValue(ActionData(Constance.ACTION_SHARE, typeAudio))
                 }
             }
         }

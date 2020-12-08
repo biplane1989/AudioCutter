@@ -7,6 +7,10 @@
     android:background="#992E3041">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_marginStart="@dimen/d_24"
+        android:layout_marginLeft="@dimen/d_24"
+        android:layout_marginEnd="@dimen/d_24"
+        android:layout_marginRight="@dimen/d_24"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"

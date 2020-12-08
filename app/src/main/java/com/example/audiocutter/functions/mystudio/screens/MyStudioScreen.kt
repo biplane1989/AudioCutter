@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
@@ -47,6 +48,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     private lateinit var audioCutterAdapter: AudioCutterAdapter
     private var typeAudio: Int = -1
     private var isDeleteClicked = true
+    private var isShareClicked = true
     private var dialog: CancelDialog? = null
     private lateinit var audioFile: AudioFile
     private lateinit var dialogShare: DialogAppShare
@@ -189,6 +191,22 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     sendFragmentAction(MyAudioManagerScreen::class.java.name, Constance.ACTION_DELETE, Constance.TRUE)           // true
                 }
             }
+
+            Constance.ACTION_SHARE -> {
+                if (requireArguments().getInt(BUNDLE_NAME_KEY) == type) {
+                    if (!myStudioViewModel.isChecked()) {
+                        Toast.makeText(context, getString(R.string.my_studio_notification_chose_item_share), Toast.LENGTH_SHORT)
+                            .show()
+                    } else {
+                        if (isShareClicked) {
+                            showDialogShareFile()
+                            val newList = myStudioViewModel.getListShare()
+                            Log.d(TAG, "onReceivedAction: list share size : " + newList.size)
+//                            isShareClicked = false
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -264,12 +282,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         val popup = android.widget.PopupMenu(context, view)
         popup.inflate(R.menu.output_audio_manager_screen_popup_menu)
         popup.setOnMenuItemClickListener { item: MenuItem? ->
-            val dialogSnack =
-                Snackbar.make(
-                    requireView(),
-                    getString(R.string.notification_file_was_short_mystudio_screen),
-                    Snackbar.LENGTH_SHORT
-                )
+            val dialogSnack = Snackbar.make(requireView(), getString(R.string.notification_file_was_short_mystudio_screen), Snackbar.LENGTH_SHORT)
             when (item!!.itemId) {
                 R.id.set_as -> {
                     checkSetAsWriteSettingPermission()
@@ -279,10 +292,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     if (audioFile.duration < MIN_DURATION) {
                         dialogSnack.show()
                     } else {
-                        viewStateManager.myStudioCuttingItemClicked(
-                            this,
-                            audioFile.file.absolutePath
-                        )
+                        viewStateManager.myStudioCuttingItemClicked(this, audioFile.file.absolutePath)
                     }
                 }
                 R.id.open_with -> {
@@ -293,20 +303,14 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     //open with screen
                 }
                 R.id.share -> {
-                    ShowDialogShareFile()
+                    showDialogShareFile()
                 }
                 R.id.rename -> {
-                    val dialog = RenameDialog.newInstance(
-                        this,
-                        typeAudio,
-                        audioFile.file.absolutePath,
-                        audioFile.fileName
-                    )
+                    val dialog = RenameDialog.newInstance(this, typeAudio, audioFile.file.absolutePath, audioFile.fileName)
                     dialog.show(childFragmentManager, RenameDialog.TAG)
                 }
                 R.id.info -> {
-                    val dialog =
-                        InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
+                    val dialog = InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
                     dialog.show(childFragmentManager, InfoDialog.TAG)
                 }
                 R.id.delete -> {
@@ -332,24 +336,24 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         }
     }
 
-   /* private fun checkContactPermission() {
-        if (contactPermissionRequest.isPermissionGranted()) {
-            viewStateManager.myStudioSetContactItemClicked(
-                this,
-                audioFile.file.absolutePath
-            )
-        } else {
-            ContactPermissionDialog.newInstance {
-                resetRequestingPermission()
-                pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
-                contactPermissionRequest.requestPermission()
-            }
-                .show(
-                    requireActivity().supportFragmentManager,
-                    ContactPermissionDialog::class.java.name
-                )
-        }
-    }*/
+    /* private fun checkContactPermission() {
+         if (contactPermissionRequest.isPermissionGranted()) {
+             viewStateManager.myStudioSetContactItemClicked(
+                 this,
+                 audioFile.file.absolutePath
+             )
+         } else {
+             ContactPermissionDialog.newInstance {
+                 resetRequestingPermission()
+                 pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
+                 contactPermissionRequest.requestPermission()
+             }
+                 .show(
+                     requireActivity().supportFragmentManager,
+                     ContactPermissionDialog::class.java.name
+                 )
+         }
+     }*/
 
     private fun checkSetAsWriteSettingPermission() {
 
@@ -363,19 +367,17 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                 if (!contactPermissionRequest.isPermissionGranted()) {
                     contactPermissionRequest.requestPermission()
                 }
-            }.show(
-                requireActivity().supportFragmentManager,
-                ContactPermissionDialog::class.java.name
-            )
+            }
+                .show(requireActivity().supportFragmentManager, ContactPermissionDialog::class.java.name)
         }
     }
 
     private fun showDialogSetAs() {
-         dialogSetAs = SetAsDialog.newInstance(this, audioFile.uri.toString())
+        dialogSetAs = SetAsDialog.newInstance(this, audioFile.uri.toString())
         dialogSetAs.show(childFragmentManager, SetAsDialog.TAG)
     }
 
-    private fun ShowDialogShareFile() {
+    private fun showDialogShareFile() {
         dialogShare = DialogAppShare(requireContext())
         dialogShare.setOnCallBack(this)
         dialogShare.show(requireActivity().supportFragmentManager, "TAG_DIALOG")
@@ -424,7 +426,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
             else -> Folder.TYPE_MIXER
         }
-        if(myStudioViewModel.renameAudio(newName, typeFolder, filePath)){
+        if (myStudioViewModel.renameAudio(newName, typeFolder, filePath)) {
             val mySnackbar = Snackbar.make(requireView(), getString(R.string.my_studio_rename_audio_file_successfull), Snackbar.LENGTH_LONG)
             mySnackbar.show()
         } else {
@@ -484,10 +486,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
 
     override fun setRingtoneForContact() {
         dialogSetAs.dismiss()
-        viewStateManager.myStudioSetContactItemClicked(
-            this,
-            audioFile.file.absolutePath
-        )
+        viewStateManager.myStudioSetContactItemClicked(this, audioFile.file.absolutePath)
     }
 
     // click delete button on dialog delete
@@ -519,13 +518,11 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             val mySnackbar = Snackbar.make(it, getString(R.string.my_studio_delete_successfull), Snackbar.LENGTH_LONG)
             mySnackbar.show()
         }
-
     }
 
     override fun onCancelDialog() {
         isDeleteClicked = true
     }
-
 
     override fun shareFileAudioToAppDevices() {
         dialogShare.dismiss()

@@ -56,6 +56,7 @@
     <string name="AUDIO_MERGER">Audio Merger</string>
     <string name="AUDIO_MIXER">Audio Mixer</string>
     <string name="my_studio_notification_chose_item_delete">Please chose at least one item !</string>
+    <string name="my_studio_notification_chose_item_share">Please chose at least one item !</string>
     <string name="my_studio_delete_fail">Delete Fail !</string>
     <string name="list_contact_select_btn_save">SAVE</string>
     <string name="list_contact_select_bottom_title">Select File</string>
