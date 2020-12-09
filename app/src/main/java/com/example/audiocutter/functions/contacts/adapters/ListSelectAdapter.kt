@@ -197,15 +197,21 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 tvInfo.setText(((selectItemView.audioFile.size) / (1024)).toString() + " KB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s")
             }
 
+//            if (selectItemView.audioFile.bitmap != null) {
+//                Glide.with(itemView).load(selectItemView.audioFile.bitmap)
+//                    .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(recyclerView.context, Utils.convertDp2Px(20, recyclerView.context).toInt(), Utils.convertDp2Px(0, recyclerView.context).toInt())))
+//                    .into(ivAvatarSelect)
+//            } else {
+//                ivAvatarSelect.setImageResource(R.drawable.my_studio_item_ic_avatar)
+//            }
+
             if (selectItemView.audioFile.bitmap != null) {
                 Glide.with(itemView).load(selectItemView.audioFile.bitmap)
-                    .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(recyclerView.context, Utils.convertDp2Px(8, recyclerView.context).toInt(), Utils.convertDp2Px(0, recyclerView.context).toInt())))
+                    .transform(RoundedCorners(Utils.convertDp2Px(15, itemView.context).toInt()))
                     .into(ivAvatarSelect)
             } else {
                 ivAvatarSelect.setImageResource(R.drawable.my_studio_item_ic_avatar)
             }
-
-
 
             tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(selectItemView.audioFile.duration), itemView.context)
                 .toInt() + 50

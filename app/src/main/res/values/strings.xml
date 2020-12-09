@@ -130,10 +130,10 @@
     <string name="common_cancel">CANCEL</string>
     <string name="tv_ok_settings">OK</string>
     <string name="tv_cancel_settings">CANCEL</string>
-    <string name="result_sercice_loading_complete">Loading complete</string>
-    <string name="result_service_loading_fail">Loading Fail</string>
-    <string name="result_service_loading_complete">Loading complete</string>
-    <string name="result_service_content_title">Audio Cutter Loading</string>
+    <string name="result_sercice_loading_complete">Converting complete</string>
+    <string name="result_service_loading_fail">Converting Fail</string>
+    <string name="result_service_loading_complete">Converting complete</string>
+    <string name="result_service_content_title">Audio Cutter Converting</string>
     <string name="result_screen_set_ringtone_successful">Set Ringtone Successfully !</string>
     <string name="result_screen_set_ringtone_fail">Set Ringtone Fail !</string>
     <string name="result_screen_set_alarm_successful">Set Alarm Successfully !</string>

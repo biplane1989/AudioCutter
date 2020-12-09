@@ -43,5 +43,4 @@ class NotificationDialog : BaseDialog() {
     interface NotifiCationListener {
         fun allowNotificationPermission()
     }
-
 }
