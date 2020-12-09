@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">AudioCutter</string>
     <string name="successfully">Set Successfully</string>
-    <string name="main_screen_title">MP3 Cutter &amp; Ringtone Maker</string>
+    <string name="main_screen_title">MP3 Cutter &amp; <br /> Ringtone Maker</string>
     <string name="main_screen_mp3_cutter_text">MP3 Cutter</string>
     <string name="main_screen_audio_merger_text">Audio Merger</string>
     <string name="main_screen_audio_mixer_text">Audio Mixer</string>
