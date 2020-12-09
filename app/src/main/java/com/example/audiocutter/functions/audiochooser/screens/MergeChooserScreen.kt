@@ -138,9 +138,9 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 audioMerModel.stop()
-                searchAudioByName(binding.edtMerSearch.text.toString())
+                searchAudioByName(textChange.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -151,10 +151,10 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     private fun searchAudioByName(yourTextSearch: String) {
         setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_audio_disabled, false)
         binding.tvCountFileMer.text = getString(R.string.countFile)
-        showList()
-        if(yourTextSearch.isEmpty()){
-            audioMerModel.searchAudio("")
-        }
+//        showList()
+//        if(yourTextSearch.isEmpty()){
+//            audioMerModel.searchAudio("")
+//        }
         audioMerModel.searchAudio(yourTextSearch)
     }
 

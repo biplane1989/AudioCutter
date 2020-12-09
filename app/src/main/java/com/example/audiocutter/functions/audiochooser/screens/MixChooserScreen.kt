@@ -152,9 +152,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
             }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 audioMixModel.stop()
-                searchAudioByName(binding.edtMixerSearch.text.toString())
+                searchAudioByName(textChange.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -166,10 +166,10 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     private fun searchAudioByName(yourTextSearch: String) {
         setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_audio_disabled, false)
         binding.tvCountFile.text = getString(R.string.countFile)
-        showList()
-        if (yourTextSearch.isEmpty()) {
-            audioMixModel.searchAudio("")
-        }
+//        showList()
+//        if (yourTextSearch.isEmpty()) {
+//            audioMixModel.searchAudio("")
+//        }
         audioMixModel.searchAudio(yourTextSearch)
     }
 

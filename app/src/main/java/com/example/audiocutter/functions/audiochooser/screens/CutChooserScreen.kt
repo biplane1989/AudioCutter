@@ -168,9 +168,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 audioCutterModel.stop()
-                searchAudioByName(binding.edtCutterSearch.text.toString())
+                searchAudioByName(textChange.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -181,10 +181,10 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
     private fun searchAudioByName(yourTextSearch: String) {
 
-        showList()
-        if (yourTextSearch.isEmpty()) {
-            audioCutterModel.searchAudio("")
-        }
+//        showList()
+//        if (yourTextSearch.isEmpty()) {
+//            audioCutterModel.searchAudio("")
+//        }
         audioCutterModel.searchAudio(yourTextSearch)
     }
 
