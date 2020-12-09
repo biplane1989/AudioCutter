@@ -286,7 +286,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_fragment, container, false)
         runOnUI {
             PermissionManager.getAppPermission()
@@ -294,11 +294,11 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                     if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
                         resetRequestingPermission()
                         requestPermissinWriteSetting()
+                        if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
+                            showDialogSetAs()
+                        }
                     }
-                    if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
-                        resetRequestingPermission()
-                        showDialogSetAs()
-                    }
+
                 })
 //            myStudioViewModel.getListAudioFile().observe(viewLifecycleOwner, listAudioObserver)
             myStudioViewModel.getLoadingStatus().observe(viewLifecycleOwner, loadingStatusObserver)
@@ -425,14 +425,17 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
             ContactPermissionDialog.newInstance {
                 resetRequestingPermission()
                 pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
-                if (!contactPermissionRequest.isPermissionGranted()) {
-                    contactPermissionRequest.requestPermission()
-                }
+                checkPermissionRequest()
             }
-                .show(
-                    requireActivity().supportFragmentManager,
-                    ContactPermissionDialog::class.java.name
-                )
+                .show(requireActivity().supportFragmentManager, ContactPermissionDialog::class.java.name)
+        }
+    }
+
+    private fun checkPermissionRequest() {
+        if (!contactPermissionRequest.isPermissionGranted()) {
+            contactPermissionRequest.requestPermission()
+        } else if (!writeSettingPermissionRequest.isPermissionGranted()) {
+            writeSettingPermissionRequest.requestPermission()
         }
     }
 
@@ -442,11 +445,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     private fun showDialogShareFile() {
-        dialogShare = DialogAppShare(
-            requireContext(),
-            Utils.getListAppQueryReceiveData(requireContext()),
-            TypeShare.ONLYFILE
-        )
+        dialogShare = DialogAppShare(requireContext(), Utils.getListAppQueryReceiveData(requireContext()), TypeShare.ONLYFILE)
         dialogShare.setOnCallBack(this)
         dialogShare.show(requireActivity().supportFragmentManager, "TAG_DIALOG")
     }
