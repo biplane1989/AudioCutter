@@ -41,12 +41,9 @@ interface SelectAudioScreenCallback {
 }
 
 class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<SelectItemView, ListSelectAdapter.ViewHolder>(SelectAudioDiffCallBack()) {
+
     private val TAG = "giangtd"
-
     private lateinit var recyclerView: RecyclerView
-    private var option = Options()
-
-
     @SuppressLint("SimpleDateFormat")
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
@@ -207,7 +204,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
             if (selectItemView.audioFile.bitmap != null) {
                 Glide.with(itemView).load(selectItemView.audioFile.bitmap)
-                    .transform(RoundedCorners(Utils.convertDp2Px(15, itemView.context).toInt()))
+                    .transform(RoundedCorners(Utils.convertDp2Px(20, itemView.context).toInt()))
                     .into(ivAvatarSelect)
             } else {
                 ivAvatarSelect.setImageResource(R.drawable.my_studio_item_ic_avatar)
