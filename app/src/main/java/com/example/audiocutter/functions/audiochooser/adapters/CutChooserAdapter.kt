@@ -66,7 +66,8 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
         } else {
             val itemAudioFile = getItem(position)
 //            val audioCutterView = payloads.firstOrNull() as AudioCutterView
-            when (itemAudioFile.state) {
+
+           /* when (itemAudioFile.state) {
                 PlayerState.PLAYING -> {
                     holder.ivController.setImageResource(R.drawable.ic_audiocutter_pause)
                 }
@@ -94,7 +95,54 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
                         holder.ivController.setImageBitmap(bm)
                     }
                 }
+            }*/
+
+            val bitmap = itemAudioFile.audioFile.bitmap
+            when (itemAudioFile.state) {
+                PlayerState.PLAYING -> {
+                    if (bitmap != null) {
+                        Glide.with(holder.itemView).load(bitmap)
+                            .transform(RoundedCorners(Utils.convertDp2Px(12, holder.itemView.context)
+                                .toInt())).into(holder.ivController)
+                    } else {
+                        holder.ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
+                    }
+                    holder.ivPausePlay.setImageResource(R.drawable.common_audio_item_play)
+                    holder.pgAudio.visibility = View.VISIBLE
+                    holder.waveView.visibility = View.VISIBLE
+
+                }
+                PlayerState.PAUSE -> {
+                    if (bitmap != null) {
+                        Glide.with(holder.itemView).load(bitmap)
+                            .transform(RoundedCorners(Utils.convertDp2Px(12, holder.itemView.context)
+                                .toInt())).into(holder.ivController)
+                    } else {
+                        holder.ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+                    }
+                    holder.ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+                    holder.waveView.visibility = View.INVISIBLE
+                }
+                PlayerState.IDLE -> {
+                    holder.pgAudio.visibility = View.GONE
+                    holder.waveView.visibility = View.INVISIBLE
+                    holder.pgAudio.resetView()
+
+                    if (bitmap != null) {
+                        Glide.with(holder.itemView).load(bitmap)
+                            .transform(RoundedCorners(Utils.convertDp2Px(12, holder.itemView.context)
+                                .toInt())).into(holder.ivController)
+                    } else {
+                        holder.ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+                    }
+                    holder.ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+
+                }
+                else -> {
+                    //nothing
+                }
             }
+
 
         }
     }
@@ -109,6 +157,7 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
         val lnMenu = itemView.findViewById<LinearLayout>(R.id.ln_menu)
         val pgAudio = itemView.findViewById<ProgressView>(R.id.pg_audio_cutter_screen)
         val waveView = itemView.findViewById<WaveAudio>(R.id.wave_audio_cutter)
+        val ivPausePlay = itemView.findViewById<ImageView>(R.id.iv_pause_play_audio)
 
         init {
             ivController.setOnClickListener(this)
@@ -146,7 +195,7 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
                 }
             }
 
-            when (itemAudioFile.state) {
+            /*when (itemAudioFile.state) {
 
                 PlayerState.PLAYING -> {
                     pgAudio.visibility = View.VISIBLE
@@ -179,7 +228,55 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
                        ivController.setImageBitmap(bm)
                     }
                 }
+            }*/
+
+            val bitmap = itemAudioFile.audioFile.bitmap
+
+            when (itemAudioFile.state) {
+                PlayerState.PLAYING -> {
+                    if (bitmap != null) {
+                        Glide.with(itemView).load(bitmap)
+                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+                                .toInt())).into(ivController)
+                    } else {
+                        ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
+                    }
+                    ivPausePlay.setImageResource(R.drawable.common_audio_item_play)
+                    pgAudio.visibility = View.VISIBLE
+                    waveView.visibility = View.VISIBLE
+
+                }
+                PlayerState.PAUSE -> {
+                    if (bitmap != null) {
+                        Glide.with(itemView).load(bitmap)
+                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+                                .toInt())).into(ivController)
+                    } else {
+                        ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+                    }
+                    ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+                    waveView.visibility = View.INVISIBLE
+                }
+                PlayerState.IDLE -> {
+                    pgAudio.visibility = View.GONE
+                    waveView.visibility = View.INVISIBLE
+                    pgAudio.resetView()
+
+                    if (bitmap != null) {
+                        Glide.with(itemView).load(bitmap)
+                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+                                .toInt())).into(ivController)
+                    } else {
+                        ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+                    }
+                    ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+                }
+                else -> {
+                    //nothing
+                }
             }
+
+
 
         }
 
