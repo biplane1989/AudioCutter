@@ -45,9 +45,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     private lateinit var audioCutterAdapter: CutChooserAdapter
     private lateinit var audioCutterModel: CutChooserViewModel
     private val REQ_CODE_PICK_SOUNDFILE = 1989
-    lateinit var dialog: SetAsDialog
-    lateinit var dialogDone: SetAsDoneDialog
-    lateinit var audioCutterItem: AudioCutterView
+    private lateinit var dialog: SetAsDialog
+    private lateinit var dialogDone: SetAsDoneDialog
+    private lateinit var audioCutterItem: AudioCutterView
     private var pendingRequestingPermission = 0
     private val CUT_CHOOSE_REQUESTING_PERMISSION = 1 shl 5
 
@@ -69,19 +69,24 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     var currentPos = -1
 
     private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
-        Log.d(TAG, "listAudioObserver: listSize ${listMusic?.size} ")
-        if(listMusic == null){
+
+
+        if (listMusic == null) {
+            Log.d(TAG, "listAudioObserver: null ")
             binding.rvAudioCutter.visibility = View.INVISIBLE
-        }else{
+        } else {
             if (listMusic.isEmpty()) {
                 showEmptyList()
-            } else {
+                Log.d(TAG, "listAudioObserver: empty ")
+            } else if (listMusic.isNotEmpty()) {
+                Log.d(TAG, "listAudioObserver: isNotEmpty ")
                 audioCutterAdapter.submitList(ArrayList(listMusic))
                 showList()
                 showProgressBar(false)
-
             }
         }
+
+
     }
     private val writeSettingPermissionRequest = object : WriteSettingPermissionRequest {
         override fun getPermissionActivity(): BaseActivity? {
@@ -182,7 +187,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
 
     private fun searchAudioByName(yourTextSearch: String) {
-
         showList()
         if (yourTextSearch.isEmpty()) {
             audioCutterModel.searchAudio("")

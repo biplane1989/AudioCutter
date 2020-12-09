@@ -79,9 +79,8 @@ class CutChooserViewModel : BaseViewModel() {
                 if (filterText.isNotEmpty()) {
                     listResult.clear()
                     it.forEach { item ->
-                        val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
-                            filterText.toLowerCase(Locale.getDefault())
-                        )
+                        val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault())
+                            .contains(filterText.toLowerCase(Locale.getDefault()))
                         listEmpty.add(rs)
                         if (rs) {
                             listResult.add(item)
@@ -93,7 +92,7 @@ class CutChooserViewModel : BaseViewModel() {
                         _isEmptyState.postValue(true)
                     }
                 }
-
+                Log.d(TAG, "listAudioObserver: listSize ${listResult.size} ")
                 listResult
             }
         })
