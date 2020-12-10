@@ -180,36 +180,49 @@ class MixChooserModel : BaseViewModel() {
     fun chooseItemAudioFile(audioCutterView: AudioCutterView, rs: Boolean) {
         try {
             val mListAudios = getListAllAudio()
-            val pos = mListAudios.indexOf(audioCutterView)
-            val itemAudio: AudioCutterView = mListAudios[pos].copy()
-            if (!rs) {
-                itemAudio.isCheckChooseItem = true
-                mListAudios[pos] = itemAudio
-            } else {
-                itemAudio.isCheckChooseItem = false
-                mListAudios[pos] = itemAudio
-            }
-            var count = 0
-            for (item in mListAudios) {
-                if (item.isCheckChooseItem) {
-                    count++
-                    Log.d(TAG, "changeItemAudioFile: $count")
-                    if (count > 2 && itemAudio.isCheckChooseItem) {
-                        itemAudio.isCheckChooseItem = false
-                        mListAudios[pos] = itemAudio
-                        isChooseItem = true
-                    } else if (count < 2) {
-                        isChooseItem = false
+            val pos = getIndexOf(mListAudios, audioCutterView)
+            if (pos != -1) {
+                val itemAudio: AudioCutterView = mListAudios[pos].copy()
+                if (!rs) {
+                    itemAudio.isCheckChooseItem = true
+                    mListAudios[pos] = itemAudio
+                } else {
+                    itemAudio.isCheckChooseItem = false
+                    mListAudios[pos] = itemAudio
+                }
+                var count = 0
+                for (item in mListAudios) {
+                    if (item.isCheckChooseItem) {
+                        count++
+                        Log.d(TAG, "changeItemAudioFile: $count")
+                        if (count > 2 && itemAudio.isCheckChooseItem) {
+                            itemAudio.isCheckChooseItem = false
+                            mListAudios[pos] = itemAudio
+                            isChooseItem = true
+                        } else if (count < 2) {
+                            isChooseItem = false
+                        }
                     }
                 }
+                _listAudioFiles.postValue(mListAudios)
             }
-            _listAudioFiles.postValue(mListAudios)
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
     }
 
+    private fun getIndexOf(mListAudios: ArrayList<AudioCutterView>, audioCutterView: AudioCutterView): Int {
+        var index = 0
+        mListAudios.forEach {
+            if (it == audioCutterView) {
+                return index
+            }
+            index++
+        }
+        return -1
+    }
 
     fun getListItemChoose(): List<AudioCutterView> {
         val mListAudios = getListAllAudio()

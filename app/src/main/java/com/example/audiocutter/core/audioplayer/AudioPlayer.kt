@@ -14,7 +14,8 @@ import com.example.audiocutter.objects.AudioFile
 import kotlinx.coroutines.*
 
 class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
-    val TAG = AudioPlayerImpl::class.java.name
+//    val TAG = AudioPlayerImpl::class.java.name
+    val TAG ="5560"
 
 
 
@@ -85,7 +86,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                 mPlayer.reset()
                 isSeekTo = 0
                 prepare(audioFile)
-                isStopped = false;
+                isStopped = false
             }
             startTimerIfReady()
             return true
@@ -114,7 +115,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                 playInfoData.currentAudio = audioFile
                 mPlayer.reset()
                 prepare(audioFile)
-                isStopped = false;
+                isStopped = false
             }
             startTimerIfReady()
             return true
@@ -140,12 +141,14 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         if (isSeekTo == 0) {
             playInfoData.posision = 0
             playInfoData.duration = player?.duration!!
+            Log.d(TAG, "onPrepared: isSeekto ${player.duration}")
             player.start()
             playInfoData.playerState = PlayerState.PLAYING
             notifyPlayerDataChanged()
         } else {
             playInfoData.posision = isSeekTo
             playInfoData.duration = player?.duration!!
+            Log.d(TAG, "onPrepared: ${player.duration}")
             player.start()
             player.seekTo(isSeekTo)
             playInfoData.playerState = PlayerState.PLAYING
@@ -172,7 +175,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         Log.d("check", "stop")
         if (playInfoData.playerState == PlayerState.PAUSE || playInfoData.playerState == PlayerState.PLAYING) {
             mPlayer.stop()
-            isStopped = true;
+            isStopped = true
         }
     }
 
@@ -215,6 +218,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                 var changed = false
                 delay(500)
                 playInfoData.duration = mPlayer.duration
+                Log.d(TAG, "startTimerIfReady: duration ${mPlayer.duration}")
                 var currentPosition = mPlayer.currentPosition
                 if (currentPosition >= mPlayer.duration) {
                     currentPosition = 0
@@ -223,7 +227,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
                     if (playInfoData.playerState != PlayerState.IDLE) {
                         playInfoData.playerState = PlayerState.IDLE
-                        Log.d("nmcode", "startTimerIfReady11: ${playInfoData.playerState}")
+
                         changed = true
                     }
                 }

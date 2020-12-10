@@ -177,19 +177,34 @@ class MergeChooserModel : BaseViewModel() {
     fun chooseItemAudioFile(audioCutterView: AudioCutterView, rs: Boolean) {
         try {
             val mListAudios = getListAllAudio()
-            val pos = mListAudios.indexOf(audioCutterView)
-            val itemAudio: AudioCutterView = mListAudios[pos].copy()
-            if (!rs) {
-                itemAudio.isCheckChooseItem = true
-                mListAudios[pos] = itemAudio
-            } else {
-                itemAudio.isCheckChooseItem = false
-                mListAudios[pos] = itemAudio
+            val pos = getIndexOf(mListAudios, audioCutterView)
+            if(pos!=-1){
+                val itemAudio: AudioCutterView = mListAudios[pos].copy()
+                if (!rs) {
+                    itemAudio.isCheckChooseItem = true
+                    mListAudios[pos] = itemAudio
+                } else {
+                    itemAudio.isCheckChooseItem = false
+                    mListAudios[pos] = itemAudio
+                }
+                _listAudioFiles.postValue(mListAudios)
             }
-            _listAudioFiles.postValue(mListAudios)
+//            val pos = mListAudios.indexOf(audioCutterView)
+
         } catch (e: ArrayIndexOutOfBoundsException) {
             e.printStackTrace()
         }
+    }
+
+    private fun getIndexOf(mListAudios: ArrayList<AudioCutterView>, audioCutterView: AudioCutterView): Int {
+        var index = 0
+        mListAudios.forEach {
+            if (it == audioCutterView) {
+                return index
+            }
+            index++
+        }
+        return -1
     }
 
 

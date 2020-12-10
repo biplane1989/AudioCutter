@@ -63,7 +63,7 @@ class DialogAppShare(
         dialog?.window?.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
-        );
+        )
     }
 
 
@@ -98,21 +98,17 @@ class DialogAppShare(
             mCallBack.shareFilesToAppsDialog(listApps[position].pkgName, typeShare)
         } else {
             if (typeShare == TypeShare.ONLYFILE) {
-                mCallBack.shareFileAudioToAppDevices()
+                mCallBack.shareFileAudioToAppDevices(TypeShare.ONLYFILE)
             } else {
-                mCallBack.shareMultiFileAudioToAppDevices()
+                mCallBack.shareFileAudioToAppDevices(TypeShare.MULTIFILE)
             }
         }
     }
 
     interface DialogAppListener {
-        fun shareFileAudioToAppDevices() {
-
+        fun shareFileAudioToAppDevices(multifile: TypeShare) {
         }
 
-        fun shareMultiFileAudioToAppDevices() {
-
-        }
 
         fun shareFilesToAppsDialog(pkgName: String, typeShare: TypeShare) {
 

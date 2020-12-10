@@ -221,11 +221,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
             Constance.ACTION_SHARE -> {
                 if (requireArguments().getInt(BUNDLE_NAME_KEY) == type) {
                     if (!myStudioViewModel.isChecked()) {
-                        Toast.makeText(
-                            context,
-                            getString(R.string.my_studio_notification_chose_item_share),
-                            Toast.LENGTH_SHORT
-                        )
+                        Toast.makeText(context, getString(R.string.my_studio_notification_chose_item_share), Toast.LENGTH_SHORT)
                             .show()
                     } else {
                         if (isShareClicked) {
@@ -607,11 +603,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
                 }
             } else {
                 view?.let {
-                    val mySnackbar = Snackbar.make(
-                        it,
-                        getString(R.string.my_studio_delete_fail),
-                        Snackbar.LENGTH_LONG
-                    )
+                    val mySnackbar = Snackbar.make(it, getString(R.string.my_studio_delete_fail), Snackbar.LENGTH_LONG)
                     mySnackbar.show()
                 }
 
@@ -623,15 +615,12 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
     override fun onCancel() {
     }
 
-    override fun onCancelDeleteClick(id: Int) {        // cancel dialog
+    override fun onCancelDeleteClick(id: Int) {
+        // cancel dialog
         myStudioViewModel.cancelLoading(id)
         isDeleteClicked = true
         view?.let {
-            val mySnackbar = Snackbar.make(
-                it,
-                getString(R.string.my_studio_delete_successfull),
-                Snackbar.LENGTH_LONG
-            )
+            val mySnackbar = Snackbar.make(it, getString(R.string.my_studio_delete_successfull), Snackbar.LENGTH_LONG)
             mySnackbar.show()
         }
     }
@@ -640,9 +629,17 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
         isDeleteClicked = true
     }
 
-    override fun shareFileAudioToAppDevices() {
+    override fun shareFileAudioToAppDevices(typeShare: TypeShare) {
         dialogShare.dismiss()
-        Utils.shareFileAudio(requireContext(), audioFile, null)
+        when (typeShare) {
+            TypeShare.ONLYFILE -> {
+                Utils.shareFileAudio(requireContext(), audioFile, null)
+            }
+            TypeShare.MULTIFILE -> {
+                Utils.shareMutilpleFile(requireContext(), listUris, null)
+            }
+        }
+
     }
 
     override fun shareFilesToAppsDialog(pkgName: String, typeShare: TypeShare) {
@@ -659,6 +656,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
         if (listUris.size > 1) {
             listApps = Utils.getListAppQueryReceiveMutilData(requireContext())
             dialogShare = DialogAppShare(requireContext(), listApps, TypeShare.MULTIFILE)
+
         } else {
             listApps = Utils.getListAppQueryReceiveData(requireContext())
             dialogShare = DialogAppShare(requireContext(), listApps, TypeShare.ONLYFILE)
@@ -667,10 +665,6 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
         dialogShare.show(childFragmentManager, DialogAppShare::class.java.name)
     }
 
-    override fun shareMultiFileAudioToAppDevices() {
-        dialogShare.dismiss()
-        Utils.shareMutilpleFile(requireContext(), listUris, null)
-    }
 
     //ToDo ("fragment nao  su dung thi override")
     override fun getFragmentViewModel(): IViewModel? {

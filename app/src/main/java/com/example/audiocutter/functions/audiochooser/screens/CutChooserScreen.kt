@@ -187,6 +187,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
 
     private fun searchAudioByName(yourTextSearch: String) {
+        showList()
         if (yourTextSearch.isEmpty()) {
             audioCutterModel.searchAudio("")
         }

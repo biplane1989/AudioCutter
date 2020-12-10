@@ -103,7 +103,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
             binding.tvInfoMusic.text = String.format("%s kb/s", (it.bitRate / 1000).toString())
 
             binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(it.duration.toInt()))
-            binding.tvInfoMusic.setText(convertAudioSizeToString(it))
+            binding.tvInfoMusic.text = convertAudioSizeToString(it)
         }
         val cancelDialog = childFragmentManager.findFragmentByTag(CancelDialog.TAG)
         if (cancelDialog is CancelDialog) {
@@ -449,7 +449,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         dialogAppShare.show(requireActivity().supportFragmentManager, "TAG_DIALOG")
     }
 
-    override fun shareFileAudioToAppDevices() {
+    override fun shareFileAudioToAppDevices(multifile: TypeShare) {
         dialogAppShare.dismiss()
         Utils.shareFileAudio(requireContext(), audioFile!!, null)
     }
