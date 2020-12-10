@@ -187,7 +187,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
 
     private fun searchAudioByName(yourTextSearch: String) {
-        showList()
         if (yourTextSearch.isEmpty()) {
             audioCutterModel.searchAudio("")
         }
@@ -442,7 +441,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
         intent.type = "audio/*"
 //                intent.type = "audio/mp3"
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
         startActivityForResult(Intent.createChooser(intent, "Select a File "), REQ_CODE_PICK_SOUNDFILE)
     }
 

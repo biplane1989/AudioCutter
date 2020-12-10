@@ -166,7 +166,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     private fun searchAudioByName(yourTextSearch: String) {
         setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_audio_disabled, false)
         binding.tvCountFile.text = getString(R.string.countFile)
-        showList()
+//        showList()
         if (yourTextSearch.isEmpty()) {
             audioMixModel.searchAudio("")
         }

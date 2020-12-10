@@ -24,6 +24,7 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MyStudioFragmentBinding
 import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
 import com.example.audiocutter.functions.audiochooser.dialogs.TypeShare
+import com.example.audiocutter.functions.audiochooser.objects.ItemAppShare
 import com.example.audiocutter.functions.common.ContactPermissionDialog
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.adapters.AudioCutterAdapter
@@ -40,7 +41,7 @@ import com.example.audiocutter.util.Utils
 import com.google.android.material.snackbar.Snackbar
 
 
-class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, CancelDialogListener, DialogAppShare.DialogAppListener {
+class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogListener, SetAsDialogListener, DeleteDialogListener, CancelDialogListener, DialogAppShare.DialogAppListener {
 
     private lateinit var listUris: ArrayList<Uri>
     private lateinit var newList: List<String>
@@ -142,11 +143,11 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     private val actionObserver = Observer<ActionData> { it ->
-        onReceivedAction(it.action, it.data as Int)
+        onReceivedAction(it.action, it.data)
     }
 
     private fun onReceivedAction(action: String, type: Int) {
-        if (action in arrayListOf(Constance.ACTION_CHECK_DELETE, Constance.ACTION_DELETE_ALL)) if (type != (typeAudio as Int)) {
+        if (action in arrayListOf(Constance.ACTION_CHECK_DELETE, Constance.ACTION_DELETE_ALL)) if (type != typeAudio) {
             return
         }
         when (action) {
@@ -233,7 +234,7 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
                             newList.forEach {
                                 val uri = it.toUri()
                                 listUris.add(uri)
-                                Log.d(TAG, "shareMultiFileAudioToAppDevices: ${it.toString()}")
+                                Log.d(TAG, "shareMultiFileAudioToAppDevices: $it")
                             }
                             showDialogShareMultiFile()
                             Log.d(TAG, "onReceivedAction: list share size : " + newList.size)
@@ -654,8 +655,14 @@ class MyStudioScreen() : BaseFragment(), AudioCutterScreenCallback, RenameDialog
     }
 
     private fun showDialogShareMultiFile() {
-        val listApps = Utils.getListAppQueryReceiveMutilData(requireContext())
-        dialogShare = DialogAppShare(requireContext(), listApps, TypeShare.MULTIFILE)
+        val listApps: List<ItemAppShare>
+        if (listUris.size > 1) {
+            listApps = Utils.getListAppQueryReceiveMutilData(requireContext())
+            dialogShare = DialogAppShare(requireContext(), listApps, TypeShare.MULTIFILE)
+        } else {
+            listApps = Utils.getListAppQueryReceiveData(requireContext())
+            dialogShare = DialogAppShare(requireContext(), listApps, TypeShare.ONLYFILE)
+        }
         dialogShare.setOnCallBack(this)
         dialogShare.show(childFragmentManager, DialogAppShare::class.java.name)
     }
