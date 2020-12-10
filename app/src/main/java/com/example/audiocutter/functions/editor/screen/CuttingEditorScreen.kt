@@ -1,4 +1,4 @@
- package com.example.audiocutter.functions.editor.screen
+package com.example.audiocutter.functions.editor.screen
 
 import android.os.Bundle
 import android.os.Handler
@@ -29,7 +29,7 @@ import com.example.core.core.AudioCutConfig
 import com.example.core.core.Effect
 import java.io.File
 
- class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListener,
+class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListener,
     View.OnClickListener, View.OnLongClickListener, OnDialogAdvanceListener,
     DialogConvert.OnDialogConvertListener {
 
@@ -253,7 +253,7 @@ import java.io.File
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if(cuttingViewModel.getAudioFile() == null){
+        if (cuttingViewModel.getAudioFile() == null) {
             requireActivity().onBackPressed()
         }
     }
