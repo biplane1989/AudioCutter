@@ -5,131 +5,126 @@
     <LinearLayout
         android:id="@+id/ll_audio_loading"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/d_70"
-        android:background="#FFFFFF"
+        android:layout_height="@dimen/common_size_item_height"
+        android:background="?attr/selectableItemBackground"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/common_padding_left">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_item"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="?attr/selectableItemBackground"
-            android:orientation="horizontal">
+            android:layout_height="match_parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/cl_item"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            <!-- <androidx.cardview.widget.CardView
+                 android:id="@+id/iv_avatar"
+                 android:layout_width="@dimen/d_40"
+                 android:layout_height="@dimen/d_40"
+                 android:layout_marginLeft="16dp"
 
-                <!-- <androidx.cardview.widget.CardView
-                     android:id="@+id/iv_avatar"
-                     android:layout_width="@dimen/d_40"
-                     android:layout_height="@dimen/d_40"
-                     android:layout_marginLeft="16dp"
+                 app:cardBackgroundColor="#C4C6D2"
+                 app:cardCornerRadius="4dp"
+                 app:layout_constraintBottom_toBottomOf="parent"
+                 app:layout_constraintStart_toStartOf="parent"
+                 app:layout_constraintTop_toTopOf="parent">
 
-                     app:cardBackgroundColor="#C4C6D2"
-                     app:cardCornerRadius="4dp"
-                     app:layout_constraintBottom_toBottomOf="parent"
-                     app:layout_constraintStart_toStartOf="parent"
-                     app:layout_constraintTop_toTopOf="parent">
-
-                     <ImageView
-                         android:id="@+id/iv_avatar_music"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_gravity="center"
-                         android:scaleType="centerInside"
-                         android:src="@drawable/my_studio_item_icon_music" />
-                 </androidx.cardview.widget.CardView>-->
+                 <ImageView
+                     android:id="@+id/iv_avatar_music"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_gravity="center"
+                     android:scaleType="centerInside"
+                     android:src="@drawable/my_studio_item_icon_music" />
+             </androidx.cardview.widget.CardView>-->
 
 
-                <ImageView
-                    android:id="@+id/iv_avatar"
-                    android:layout_width="@dimen/d_40"
-                    android:layout_height="@dimen/d_40"
-                    android:layout_marginLeft="16dp"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/my_studio_item_ic_avatar"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <ImageView
+                android:id="@+id/iv_avatar"
+                android:layout_width="@dimen/common_size_item_imagview"
+                android:layout_height="@dimen/common_size_item_imagview"
+                android:layout_marginStart="@dimen/common_padding_right"
+                android:scaleType="fitXY"
+                android:src="@drawable/my_studio_item_ic_avatar"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/tv_title_music"
+            <TextView
+                android:id="@+id/tv_title_music"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginLeft="@dimen/common_size_item_padding_left"
+                android:ellipsize="end"
+                android:fontFamily="@font/opensans_bold"
+                android:gravity="bottom"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:text="orangeorangeorangeorangeorangeorangeorangeorange"
+                android:textColor="#2E3041"
+                android:textSize="@dimen/d_16"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/tv_wait"
+                app:layout_constraintEnd_toStartOf="@+id/iv_cancel"
+                app:layout_constraintStart_toEndOf="@+id/iv_avatar"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_wait"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginLeft="@dimen/common_size_item_padding_left"
+                android:fontFamily="@font/opensans_light"
+                android:gravity="top"
+                android:text="Wait..."
+                android:textColor="#9C9C9C"
+                android:textSize="14dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iv_avatar"
+                app:layout_constraintTop_toBottomOf="@+id/tv_title_music" />
+
+            <LinearLayout
+                android:id="@+id/ll_progressbar"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginLeft="@dimen/common_size_item_padding_left"
+                android:gravity="center_vertical"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/iv_cancel"
+                app:layout_constraintStart_toEndOf="@id/iv_avatar"
+                app:layout_constraintTop_toBottomOf="@+id/tv_title_music">
+
+                <ProgressBar
+                    android:id="@+id/pb_loading"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:ellipsize="end"
-                    android:fontFamily="@font/opensans_bold"
-                    android:gravity="top"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textColor="#2E3041"
-                    android:textSize="@dimen/d_16"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toStartOf="@+id/iv_cancel"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toEndOf="@+id/iv_avatar"
-                    app:layout_constraintTop_toTopOf="@id/iv_avatar" />
+                    android:layout_height="8dp"
+                    android:layout_weight="1"
+                    android:progress="30"
+                    android:progressDrawable="@drawable/result_bg_progressbar" />
 
                 <TextView
-                    android:id="@+id/tv_wait"
+                    android:id="@+id/tv_loading"
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_marginLeft="15dp"
-                    android:fontFamily="@font/opensans_light"
-                    android:text="Wait..."
-                    android:textColor="#9C9C9C"
-                    android:textSize="14dp"
-                    app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
-                    app:layout_constraintStart_toEndOf="@id/iv_avatar" />
-
-                <LinearLayout
-                    android:id="@+id/ll_progressbar"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
-                    android:layout_marginRight="10dp"
-                    android:gravity="center_vertical"
-                    android:visibility="visible"
-                    app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
-                    app:layout_constraintEnd_toStartOf="@+id/iv_cancel"
-                    app:layout_constraintStart_toEndOf="@id/iv_avatar">
+                    android:gravity="end"
+                    android:text="45%"
+                    android:textSize="@dimen/d_14" />
+            </LinearLayout>
 
-                    <ProgressBar
-                        android:id="@+id/pb_loading"
-                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                        android:layout_width="0dp"
-                        android:layout_height="4dp"
-                        android:layout_weight="1"
-                        android:progress="30"
-                        android:progressDrawable="@drawable/result_bg_progressbar" />
+            <ImageView
+                android:id="@+id/iv_cancel"
+                android:layout_width="@dimen/common_size_item_imagview"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/common_padding_left"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/my_studio_screen_ic_cancel_loading"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/tv_loading"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:gravity="end"
-                        android:text="45%"
-                        android:textSize="@dimen/d_14" />
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/iv_cancel"
-                    android:layout_width="46dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="10dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/my_studio_screen_ic_cancel_loading"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </LinearLayout>
-
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </layout>

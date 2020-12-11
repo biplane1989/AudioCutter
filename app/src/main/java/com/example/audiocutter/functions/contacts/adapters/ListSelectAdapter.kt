@@ -128,7 +128,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         val llAudioHeader: ConstraintLayout = itemView.findViewById(R.id.ll_audio_item_header)
         val llItem: LinearLayout = itemView.findViewById(R.id.ll_item)
         val ivSelect: ImageView = itemView.findViewById(R.id.iv_select)
-        val cvCarview: CardView = itemView.findViewById(R.id.cv_default)
+//        val cvCarview: CardView = itemView.findViewById(R.id.cv_default)
 
         private var isSeekBarStatus = false         // trang thai seekbar co dang duoc keo hay khong
 
@@ -205,8 +205,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 ivAvatarSelect.setImageResource(R.drawable.my_studio_item_ic_avatar)
             }
 
-
-
             tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(selectItemView.audioFile.duration), itemView.context)
                 .toInt() + 50
 
@@ -225,12 +223,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 ivSelect.setImageResource(R.drawable.list_contact_select)
             } else {
                 ivSelect.setImageResource(R.drawable.list_contact_unselect)
-            }
-
-            if (selectItemView.isRingtoneDefault) {
-                cvCarview.visibility = View.VISIBLE
-            } else {
-                cvCarview.visibility = View.GONE
             }
 
             llAudioHeader.setOnClickListener(this)

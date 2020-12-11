@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
+        paddingTopSystemWindowInsets="@{true}"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorWhite"
@@ -11,24 +12,22 @@
 
         <LinearLayout
             android:id="@+id/rlt_actionbar"
-            paddingTopSystemWindowInsets="@{true}"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="?android:actionBarSize">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/d_56"
+                android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackground">
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="0.1dp"
+                    android:layout_height="1dp"
                     android:layout_alignParentBottom="true"
                     android:background="@color/colorgrayAlpha" />
 
                 <EditText
-
-                    android:paddingHorizontal="?actionBarSize"
+                    android:layout_marginBottom="1dp"
                     android:theme="@style/editTextTheme"
                     android:id="@+id/edt_mixer_search"
                     android:layout_width="match_parent"
@@ -36,16 +35,16 @@
                     android:background="@color/colorWhite"
                     android:focusableInTouchMode="true"
                     android:hint="@string/search_hint_text"
-                    android:paddingStart="@dimen/d_88"
+                    android:paddingStart="76dp"
                     android:singleLine="true"
                     android:visibility="invisible">
-
                     <requestFocus />
                 </EditText>
 
                 <ImageView
+                    android:layout_marginStart="@dimen/common_padding_left"
                     android:id="@+id/iv_mixer_screen_back"
-                    android:layout_width="?actionBarSize"
+                    android:layout_width="@dimen/common_size_item_imagview"
                     android:layout_height="?actionBarSize"
                     android:layout_centerVertical="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -54,8 +53,9 @@
 
 
                 <ImageView
+                    android:layout_marginStart="@dimen/common_padding_left"
                     android:id="@+id/iv_mixer_screen_back_edt"
-                    android:layout_width="?actionBarSize"
+                    android:layout_width="@dimen/common_size_item_imagview"
                     android:layout_height="?actionBarSize"
                     android:layout_centerVertical="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -64,6 +64,7 @@
                     android:visibility="gone" />
 
                 <TableRow
+                    android:paddingLeft="@dimen/common_padding_left"
                     android:id="@+id/tb_name_mixer"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -73,7 +74,7 @@
                     android:gravity="center_vertical">
 
                     <TextView
-                        android:paddingLeft="@dimen/d_32"
+                        android:paddingLeft="@dimen/common_size_item_padding_left"
                         android:id="@+id/tv_mixer_screen"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -86,8 +87,9 @@
 
 
                 <ImageView
+                    android:layout_marginRight="@dimen/common_padding_right"
                     android:id="@+id/iv_mixer_screen_search"
-                    android:layout_width="?actionBarSize"
+                    android:layout_width="@dimen/common_size_item_imagview"
                     android:layout_height="?actionBarSize"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
@@ -98,14 +100,14 @@
 
                 <ImageView
                     android:id="@+id/iv_mixer_screen_close"
-                    android:layout_width="?actionBarSize"
-                    android:layout_height="?actionBarSize"
+                    android:layout_width="@dimen/common_size_item_imagview"
+                    android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="10dp"
                     android:padding="@dimen/d_5"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_audiocutter_close"
+                    android:src="@drawable/list_contact_icon_search_clear"
                     android:visibility="gone" />
 
 
@@ -172,7 +174,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="@dimen/d_16"
+                android:layout_marginLeft="@dimen/common_padding_left_title"
                 android:fontFamily="@font/opensans_bold"
                 android:text="@string/countFile"
                 android:textColor="@color/colorBlack"

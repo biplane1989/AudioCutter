@@ -11,73 +11,60 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ll_audio_item_header"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/d_70"
+        android:layout_height="@dimen/common_size_item_height"
+        android:paddingRight="@dimen/common_padding_right"
+        android:paddingLeft="@dimen/common_padding_left"
         android:background="?attr/selectableItemBackground">
 
 
         <ImageView
             android:id="@+id/cv_avatar"
-            android:layout_width="@dimen/d_40"
-            android:layout_height="@dimen/d_40"
-            android:layout_marginStart="16dp"
+            android:layout_width="@dimen/common_size_item_imagview"
+            android:layout_height="@dimen/common_size_item_imagview"
+            android:layout_marginStart="@dimen/common_padding_left"
+            android:scaleType="fitXY"
+            android:src="@drawable/my_studio_item_ic_avatar"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:scaleType="fitXY"
-            android:src="@drawable/my_studio_item_ic_avatar" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_title_music"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/common_size_item_padding_left"
             android:ellipsize="end"
             android:fontFamily="@font/opensans_semibold"
-            android:gravity="top"
+            android:gravity="bottom"
             android:maxLines="1"
+            android:text="apple apple apple apple apple apple apple apple "
             android:textColor="#2E3041"
             android:textSize="16dp"
             app:layout_constraintBottom_toTopOf="@id/ll_info"
             app:layout_constraintEnd_toStartOf="@id/iv_select"
             app:layout_constraintStart_toEndOf="@id/cv_avatar"
-            app:layout_constraintTop_toTopOf="@id/cv_avatar" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:id="@+id/ll_info"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:gravity="bottom"
+            android:gravity="top"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="@id/cv_avatar"
+            android:paddingLeft="@dimen/common_size_item_padding_left"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_select"
-            app:layout_constraintStart_toStartOf="@id/tv_title_music"
+            app:layout_constraintStart_toEndOf="@id/cv_avatar"
             app:layout_constraintTop_toBottomOf="@id/tv_title_music">
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cv_default"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:cardBackgroundColor="#FDAA74"
-                app:cardCornerRadius="4dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="2dp"
-                    android:layout_marginRight="2dp"
-                    android:fontFamily="@font/opensans_light"
-                    android:text="@string/list_contact_item_default"
-                    android:textColor="#FFFFFF"
-                    android:textSize="12dp" />
-            </androidx.cardview.widget.CardView>
 
             <TextView
                 android:id="@+id/tv_info_music"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="2dp"
                 android:fontFamily="@font/opensans_light"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:text="apple apple apple apple apple apple apple apple apple "
                 android:textColor="#9C9C9C"
                 android:textSize="14dp" />
 
@@ -87,8 +74,7 @@
         <ImageView
             android:id="@+id/iv_select"
             android:layout_width="@dimen/d_40"
-            android:layout_height="@dimen/d_40"
-            android:layout_marginRight="10dp"
+            android:layout_height="match_parent"
             android:scaleType="centerInside"
             android:src="@drawable/list_contact_unselect"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -99,6 +85,8 @@
 
 
     <LinearLayout
+        android:paddingLeft="@dimen/common_padding_left"
+        android:paddingRight="@dimen/common_padding_right"
         android:id="@+id/ll_play_music"
         android:layout_width="match_parent"
         android:layout_height="34dp"
@@ -108,9 +96,8 @@
 
         <ImageView
             android:id="@+id/iv_pause_play_music"
-            android:layout_width="30dp"
+            android:layout_width="40dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
             android:src="@drawable/my_studio_item_icon_play" />

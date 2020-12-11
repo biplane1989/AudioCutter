@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/common_size_item_height"
     android:background="@color/colorWhite">
 
     <com.example.audiocutter.ui.audiochooser.cut.ProgressView
@@ -12,14 +12,14 @@
         android:visibility="gone" />
 
     <LinearLayout
+        android:paddingLeft="@dimen/common_padding_left"
+        android:paddingRight="@dimen/common_padding_right"
         android:id="@+id/ln_item_audio_mixer_screen"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="?attr/selectableItemBackground"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingVertical="@dimen/d_8"
-        android:paddingLeft="@dimen/d_10">
+        android:orientation="horizontal">
 
         <!--        <ImageView-->
         <!--            android:id="@+id/iv_controller_audio_recent"-->
@@ -32,16 +32,17 @@
         <!--            android:src="@drawable/ic_audiocutter_play" />-->
 
         <RelativeLayout
-            android:layout_width="@dimen/d_56"
-            android:layout_height="@dimen/d_56">
+            android:layout_width="@dimen/common_size_item_imagview"
+            android:layout_height="@dimen/common_size_item_imagview"
+            android:layout_marginLeft="@dimen/common_padding_left">
 
             <ImageView
                 android:id="@+id/iv_controller_audio_recent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_centerInParent="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="@dimen/d_10"
-                android:scaleType="centerInside"
+                android:scaleType="fitXY"
                 android:src="@drawable/common_audio_item_bg_pause_default" />
 
             <ImageView
@@ -50,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:scaleType="centerInside"
+                android:scaleType="fitXY"
                 android:src="@drawable/common_audio_item_pause" />
         </RelativeLayout>
 
@@ -126,14 +127,14 @@
 
         <LinearLayout
             android:id="@+id/ln_menu_recent"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/common_size_item_imagview"
             android:layout_height="match_parent"
             android:gravity="center">
 
             <ImageView
                 android:id="@+id/iv_recent_check"
-                android:layout_width="@dimen/d_56"
-                android:layout_height="@dimen/d_56"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_noncheck" />

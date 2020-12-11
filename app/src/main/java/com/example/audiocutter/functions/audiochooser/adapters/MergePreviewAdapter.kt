@@ -261,7 +261,7 @@ class MergerChooserAudioDiff : DiffUtil.ItemCallback<AudioCutterView>() {
     }
 
     override fun getChangePayload(oldItem: AudioCutterView, newItem: AudioCutterView): Any? {
-        return newItem.state
+        return newItem.isCheckChooseItem
     }
 
 }

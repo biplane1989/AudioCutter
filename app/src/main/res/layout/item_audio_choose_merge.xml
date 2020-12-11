@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="@dimen/common_size_item_height">
 
     <com.example.audiocutter.ui.audiochooser.cut.ProgressView
         android:id="@+id/pg_merge_choose_screen"
@@ -10,22 +10,21 @@
         android:visibility="gone" />
 
     <LinearLayout
-        android:layout_height="wrap_content"
+        android:paddingRight="@dimen/common_padding_right"
         android:id="@+id/ln_item_merge_choose_screen"
         android:layout_width="match_parent"
-        android:paddingVertical="@dimen/d_8"
+        android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingLeft="@dimen/d_16">
+        android:paddingLeft="@dimen/common_padding_left">
 
         <ImageView
-            android:padding="@dimen/d_10"
             android:id="@+id/iv_controller_audio"
-            android:layout_width="@dimen/d_56"
-            android:layout_height="56dp"
-            android:scaleType="centerInside"
+            android:layout_width="@dimen/common_size_item_imagview"
+            android:layout_height="@dimen/common_size_item_imagview"
             android:background="?attr/selectableItemBackground"
+            android:scaleType="fitXY"
             android:src="@drawable/ic_audiocutter_play" />
 
         <LinearLayout
@@ -42,7 +41,6 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:orientation="vertical">
-
 
                 <TextView
                     android:id="@+id/tv_name_merge_choose_audio"
@@ -79,20 +77,19 @@
 
         <ImageView
             android:id="@+id/iv_trash_merge_choose"
-            android:layout_width="@dimen/d_40"
-            android:layout_height="@dimen/d_40"
-            android:scaleType="centerInside"
+            android:layout_width="@dimen/common_size_item_imagview"
+            android:layout_height="match_parent"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_trash_merge" />
 
         <ImageView
             android:id="@+id/iv_move_item"
-            android:layout_width="@dimen/d_40"
-            android:layout_height="@dimen/d_40"
-            android:scaleType="centerInside"
+            android:layout_width="@dimen/common_size_item_imagview"
+            android:layout_height="match_parent"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_move_item_merge" />
-
 
     </LinearLayout>
 </FrameLayout>

@@ -16,6 +16,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
@@ -69,9 +70,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     var currentPos = -1
 
     private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
-        if(listMusic == null){
+        if (listMusic == null) {
             binding.rvAudioCutter.visibility = View.INVISIBLE
-        }else{
+        } else {
             if (listMusic.isEmpty()) {
                 showEmptyList()
             } else {
@@ -102,9 +103,8 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         }
     }
 
-
     private val playerInfoObserver = Observer<PlayerInfo> {
-        audioCutterModel.updateMediaInfo(it)
+//        audioCutterModel.updateMediaInfo(it)
     }
 
     private val emptyState = Observer<Boolean> {
@@ -115,12 +115,11 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         }
     }
 
-
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioCutterAdapter = CutChooserAdapter(requireContext())
         audioCutterModel = ViewModelProvider(this).get(CutChooserViewModel::class.java)
-        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+        audioCutterAdapter = CutChooserAdapter(requireContext(), audioCutterModel.getAudioPlayer(), lifecycleScope)
+//        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
     override fun onCreateView(
@@ -138,7 +137,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
                 if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CUT_CHOOSE_REQUESTING_PERMISSION) != 0) {
                     showDialogSetAsTypeAudio()
                 }
-
             })
         return binding.root
     }
@@ -178,13 +176,12 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         })
     }
 
-
     private fun searchAudioByName(yourTextSearch: String) {
 
 //        showList()
-//        if (yourTextSearch.isEmpty()) {
-//            audioCutterModel.searchAudio("")
-//        }
+        if (yourTextSearch.isEmpty()) {
+            audioCutterModel.searchAudio("")
+        }
         audioCutterModel.searchAudio(yourTextSearch)
     }
 
@@ -281,10 +278,8 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
                 if (!contactPermissionRequest.isPermissionGranted()) {
                     contactPermissionRequest.requestPermission()
                 }
-            }.show(
-                requireActivity().supportFragmentManager,
-                ContactPermissionDialog::class.java.name
-            )
+            }
+                .show(requireActivity().supportFragmentManager, ContactPermissionDialog::class.java.name)
         }
     }
 
@@ -305,12 +300,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
     override fun onCutItemClicked(itemAudio: AudioCutterView) {
         if (itemAudio.audioFile.duration < MIN_DURATION) {
-            val dialogSnack =
-                Snackbar.make(
-                    requireView(),
-                    getString(R.string.notification_file_was_short_mystudio_screen),
-                    Snackbar.LENGTH_SHORT
-                )
+            val dialogSnack = Snackbar.make(requireView(), getString(R.string.notification_file_was_short_mystudio_screen), Snackbar.LENGTH_SHORT)
             dialogSnack.show()
         } else {
             viewStateManager.onCuttingItemClicked(this, itemAudio)

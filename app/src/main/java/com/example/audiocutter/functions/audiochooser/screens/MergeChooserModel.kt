@@ -1,8 +1,11 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
+import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.base.BaseViewModel
+import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
@@ -13,7 +16,8 @@ import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MergeChooserModel : BaseViewModel() {
+class MergeChooserModel(application: Application) : BaseAndroidViewModel(application) {
+
     private val audioPlayer = ManagerFactory.getDefaultAudioPlayer()
     private val TAG = MergeChooserModel::class.java.name
     private var currentAudioPlaying: File = File("")
@@ -21,6 +25,11 @@ class MergeChooserModel : BaseViewModel() {
     private var _stateLoadProgress = MutableLiveData<Int>()
     val stateLoadProgress: LiveData<Int>
         get() = _stateLoadProgress
+
+
+    private var _stateChecked = MutableLiveData<Int>()
+    val stateChecked: LiveData<Int>
+        get() = _stateChecked
 
 
     private var filterText = ""
@@ -31,7 +40,12 @@ class MergeChooserModel : BaseViewModel() {
 
     private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>?>()
 
+    fun getAudioPlayer(): AudioPlayer {
+        return audioPlayer
+    }
+
     init {
+        audioPlayer.init(application.applicationContext)
 
         _listAudioFiles.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
             var listAudioFiles: List<AudioCutterView>? = null
@@ -58,6 +72,7 @@ class MergeChooserModel : BaseViewModel() {
 
         }
     }
+
     private val _listFilteredAudioFiles = liveData<List<AudioCutterView>?> {
         emitSource(_listAudioFiles.map {
             it?.let {
@@ -67,9 +82,8 @@ class MergeChooserModel : BaseViewModel() {
                 if (filterText.isNotEmpty()) {
                     listResult.clear()
                     it.forEach { item ->
-                        val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
-                            filterText.toLowerCase(Locale.getDefault())
-                        )
+                        val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault())
+                            .contains(filterText.toLowerCase(Locale.getDefault()))
                         listEmpty.add(rs)
                         if (rs) {
                             listResult.add(item)
@@ -86,12 +100,18 @@ class MergeChooserModel : BaseViewModel() {
             }
         })
     }
+
     fun getStateLoading(): LiveData<Int> {
         return stateLoadProgress
     }
 
     fun getStateEmpty(): LiveData<Boolean> {
         return isEmptyState
+    }
+
+    @JvmName("getStateChecked1")
+    fun getStateChecked(): LiveData<Int> {
+        return stateChecked
     }
 
 
@@ -179,14 +199,26 @@ class MergeChooserModel : BaseViewModel() {
             val mListAudios = getListAllAudio()
             val pos = mListAudios.indexOf(audioCutterView)
             val itemAudio: AudioCutterView = mListAudios[pos].copy()
-            if (!rs) {
-                itemAudio.isCheckChooseItem = true
-                mListAudios[pos] = itemAudio
-            } else {
-                itemAudio.isCheckChooseItem = false
-                mListAudios[pos] = itemAudio
+
+            mListAudios[pos].isCheckChooseItem = rs
+
+//            if (!rs) {
+//                itemAudio.isCheckChooseItem = true
+//                mListAudios[pos] = itemAudio
+//            } else {
+//                itemAudio.isCheckChooseItem = false
+//                mListAudios[pos] = itemAudio
+//            }
+
+            var index = 0
+            mListAudios.forEach {
+                if (it.isCheckChooseItem) {
+                    index++
+                }
             }
+            _stateChecked.postValue(index)
             _listAudioFiles.postValue(mListAudios)
+
         } catch (e: ArrayIndexOutOfBoundsException) {
             e.printStackTrace()
         }
@@ -240,10 +272,7 @@ class MergeChooserModel : BaseViewModel() {
         for (index in mListAudios.indices) {
             if (mListAudios[index].audioFile.file.absolutePath.equals(item.audioFile.file.absolutePath)) {
                 mListAudios.remove(mListAudios[index])
-                mListAudios.add(
-                    index,
-                    AudioCutterView(item.audioFile, isCheckChooseItem = false)
-                )
+                mListAudios.add(index, AudioCutterView(item.audioFile, isCheckChooseItem = false))
             }
         }
         _listAudioFiles.postValue(mListAudios)
