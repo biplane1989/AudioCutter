@@ -442,7 +442,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
     }
 
     private fun showDialogShareFile() {
-        dialogShare = DialogAppShare(requireContext(), Utils.getListAppQueryReceiveData(requireContext()), TypeShare.ONLYFILE)
+        dialogShare = DialogAppShare(requireContext(), Utils.getListAppQueryReceiveData(requireContext()), TypeShare.ONLYFILE,false)
         dialogShare.setOnCallBack(this)
         dialogShare.show(requireActivity().supportFragmentManager, "TAG_DIALOG")
     }
@@ -633,7 +633,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
         dialogShare.dismiss()
         when (typeShare) {
             TypeShare.ONLYFILE -> {
-                Utils.shareFileAudio(requireContext(), audioFile, null)
+                Utils.shareFileAudio(requireContext(), audioFile.uri!!, null)
             }
             TypeShare.MULTIFILE -> {
                 Utils.shareMutilpleFile(requireContext(), listUris, null)
@@ -642,9 +642,15 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
 
     }
 
-    override fun shareFilesToAppsDialog(pkgName: String, typeShare: TypeShare) {
+    override fun shareFilesToAppsDialog(pkgName: String, typeShare: TypeShare, isDialogMulti: Boolean?) {
         if (typeShare == TypeShare.ONLYFILE) {
-            Utils.shareFileAudio(requireContext(), audioFile, pkgName)
+            if (isDialogMulti!!) {
+                Utils.shareFileAudio(requireContext(), listUris[0], pkgName)
+            } else {
+                audioFile.uri?.let {
+                    Utils.shareFileAudio(requireContext(), audioFile.uri!!, pkgName)
+                }
+            }
         } else {
             Utils.shareMutilpleFile(requireContext(), listUris, pkgName)
         }
@@ -652,8 +658,15 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
     }
 
     private fun showDialogShareMultiFile() {
-        val listApps: List<ItemAppShare> = Utils.getListAppQueryReceiveMutilData(requireContext())
-        dialogShare = DialogAppShare(requireContext(), listApps, TypeShare.MULTIFILE)
+        val listApps: List<ItemAppShare>
+        if (listUris.size > 1) {
+            listApps = Utils.getListAppQueryReceiveMutilData(requireContext())
+            dialogShare = DialogAppShare(requireContext(), listApps, TypeShare.MULTIFILE, true)
+
+        } else {
+            listApps = Utils.getListAppQueryReceiveData(requireContext())
+            dialogShare = DialogAppShare(requireContext(), listApps, TypeShare.ONLYFILE, true)
+        }
         dialogShare.setOnCallBack(this)
         dialogShare.show(childFragmentManager, DialogAppShare::class.java.name)
     }

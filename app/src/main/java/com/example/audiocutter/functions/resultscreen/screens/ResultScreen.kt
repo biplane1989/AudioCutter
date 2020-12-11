@@ -440,23 +440,19 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
     private fun ShowDialogShareFile() {
         dialogAppShare =
-            DialogAppShare(
-                requireContext(),
-                Utils.getListAppQueryReceiveData(requireContext()),
-                TypeShare.ONLYFILE
-            )
+            DialogAppShare(requireContext(), Utils.getListAppQueryReceiveData(requireContext()), TypeShare.ONLYFILE)
         dialogAppShare.setOnCallBack(this)
         dialogAppShare.show(requireActivity().supportFragmentManager, "TAG_DIALOG")
     }
 
     override fun shareFileAudioToAppDevices(multifile: TypeShare) {
         dialogAppShare.dismiss()
-        Utils.shareFileAudio(requireContext(), audioFile!!, null)
+        Utils.shareFileAudio(requireContext(), audioFile?.uri!!, null)
     }
 
-    override fun shareFilesToAppsDialog(pkgName: String, typeShare: TypeShare) {
+    override fun shareFilesToAppsDialog(pkgName: String, typeShare: TypeShare, isDialogMulti: Boolean?) {
         if (typeShare == TypeShare.ONLYFILE) {
-            Utils.shareFileAudio(requireContext(), audioFile!!, pkgName)
+            Utils.shareFileAudio(requireContext(), audioFile?.uri!!, pkgName)
         }
     }
 

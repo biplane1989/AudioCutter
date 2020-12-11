@@ -19,13 +19,7 @@ enum class TypeShare {
     MULTIFILE
 }
 
-class DialogAppShare(
-    val mContext: Context,
-    private val listApps: List<ItemAppShare>,
-    private val typeShare: TypeShare
-) :
-    BaseDialog(),
-    AppShareAdapter.AppShareListener {
+class DialogAppShare(val mContext: Context, private val listApps: List<ItemAppShare>, private val typeShare: TypeShare, private val isDialogMulti: Boolean?=null) : BaseDialog(), AppShareAdapter.AppShareListener {
     private lateinit var listData: MutableList<ItemAppShareView>
     private lateinit var rvApp: RecyclerView
     private lateinit var ivCancel: ImageView
@@ -95,7 +89,7 @@ class DialogAppShare(
 
     override fun shareApp(position: Int) {
         if (!listData[position].isCheckButton) {
-            mCallBack.shareFilesToAppsDialog(listApps[position].pkgName, typeShare)
+            mCallBack.shareFilesToAppsDialog(listApps[position].pkgName, typeShare, isDialogMulti)
         } else {
             if (typeShare == TypeShare.ONLYFILE) {
                 mCallBack.shareFileAudioToAppDevices(TypeShare.ONLYFILE)
@@ -110,7 +104,7 @@ class DialogAppShare(
         }
 
 
-        fun shareFilesToAppsDialog(pkgName: String, typeShare: TypeShare) {
+        fun shareFilesToAppsDialog(pkgName: String, typeShare: TypeShare, isDialogMulti: Boolean?) {
 
         }
     }

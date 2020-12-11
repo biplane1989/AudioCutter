@@ -373,14 +373,14 @@ class Utils {
 
 
 
-        fun shareFileAudio(context: Context, audioFile: AudioFile, pkgName: String?): Boolean {
+        fun shareFileAudio(context: Context, uriAudioFile: Uri, pkgName: String?): Boolean {
             return try {
                 val intent = Intent()
                 if(pkgName!=null){
                     intent.`package` = pkgName
                 }
                 intent.action = Intent.ACTION_SEND
-                intent.putExtra(Intent.EXTRA_STREAM, audioFile.uri)
+                intent.putExtra(Intent.EXTRA_STREAM, uriAudioFile)
                 intent.type = "audio/*"
                 context.startActivity(
                     Intent.createChooser(
