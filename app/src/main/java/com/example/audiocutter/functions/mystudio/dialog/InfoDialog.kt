@@ -72,13 +72,13 @@ class InfoDialog : BaseDialog() {
             ManagerFactory.getAudioFileManager()
                 .findAudioFile(requireArguments().getString(BUNDLE_FILE_PATH).toString())
                 ?.let { audioFile ->
-                    if (audioFile.artist != "") {
+                    if (audioFile.artist != null) {
                         tv_artist.text = audioFile.artist
                     } else {
                         tv_artist.text = UNKNOWN
                     }
 
-                    if (audioFile.alBum != "") {
+                    if (audioFile.alBum != null) {
                         tv_album.text = audioFile.alBum
                     } else {
                         tv_album.text = UNKNOWN
@@ -86,7 +86,7 @@ class InfoDialog : BaseDialog() {
 
                     tv_birate.text = (audioFile.bitRate / 1000).toString() + " kb/s"
 
-                    if (audioFile.title != "") {
+                    if (audioFile.title != null) {
                         tv_title.text = audioFile.title
                     } else {
                         tv_title.text = UNKNOWN
@@ -94,7 +94,7 @@ class InfoDialog : BaseDialog() {
 
                     tv_length.text = simpleDateFormat.format(audioFile.duration.toInt())
 
-                    if (audioFile.genre != "") {
+                    if (audioFile.genre != null) {
                         tv_genre.text = audioFile.genre
                     } else {
                         tv_genre.text = UNKNOWN

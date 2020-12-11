@@ -41,12 +41,9 @@ interface SelectAudioScreenCallback {
 }
 
 class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<SelectItemView, ListSelectAdapter.ViewHolder>(SelectAudioDiffCallBack()) {
+
     private val TAG = "giangtd"
-
     private lateinit var recyclerView: RecyclerView
-    private var option = Options()
-
-
     @SuppressLint("SimpleDateFormat")
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
@@ -197,9 +194,17 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 tvInfo.setText(((selectItemView.audioFile.size) / (1024)).toString() + " KB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s")
             }
 
+//            if (selectItemView.audioFile.bitmap != null) {
+//                Glide.with(itemView).load(selectItemView.audioFile.bitmap)
+//                    .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(recyclerView.context, Utils.convertDp2Px(20, recyclerView.context).toInt(), Utils.convertDp2Px(0, recyclerView.context).toInt())))
+//                    .into(ivAvatarSelect)
+//            } else {
+//                ivAvatarSelect.setImageResource(R.drawable.my_studio_item_ic_avatar)
+//            }
+
             if (selectItemView.audioFile.bitmap != null) {
                 Glide.with(itemView).load(selectItemView.audioFile.bitmap)
-                    .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(recyclerView.context, Utils.convertDp2Px(8, recyclerView.context).toInt(), Utils.convertDp2Px(0, recyclerView.context).toInt())))
+                    .transform(RoundedCorners(Utils.convertDp2Px(20, itemView.context).toInt()))
                     .into(ivAvatarSelect)
             } else {
                 ivAvatarSelect.setImageResource(R.drawable.my_studio_item_ic_avatar)
