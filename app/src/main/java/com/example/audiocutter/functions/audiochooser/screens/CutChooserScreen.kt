@@ -72,14 +72,11 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
 
         if (listMusic == null) {
-            Log.d(TAG, "listAudioObserver: null ")
             binding.rvAudioCutter.visibility = View.INVISIBLE
         } else {
             if (listMusic.isEmpty()) {
                 showEmptyList()
-                Log.d(TAG, "listAudioObserver: empty ")
             } else if (listMusic.isNotEmpty()) {
-                Log.d(TAG, "listAudioObserver: isNotEmpty ")
                 audioCutterAdapter.submitList(ArrayList(listMusic))
                 showList()
                 showProgressBar(false)

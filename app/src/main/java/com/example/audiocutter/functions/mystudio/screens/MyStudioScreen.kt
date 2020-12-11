@@ -652,15 +652,8 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
     }
 
     private fun showDialogShareMultiFile() {
-        val listApps: List<ItemAppShare>
-        if (listUris.size > 1) {
-            listApps = Utils.getListAppQueryReceiveMutilData(requireContext())
-            dialogShare = DialogAppShare(requireContext(), listApps, TypeShare.MULTIFILE)
-
-        } else {
-            listApps = Utils.getListAppQueryReceiveData(requireContext())
-            dialogShare = DialogAppShare(requireContext(), listApps, TypeShare.ONLYFILE)
-        }
+        val listApps: List<ItemAppShare> = Utils.getListAppQueryReceiveMutilData(requireContext())
+        dialogShare = DialogAppShare(requireContext(), listApps, TypeShare.MULTIFILE)
         dialogShare.setOnCallBack(this)
         dialogShare.show(childFragmentManager, DialogAppShare::class.java.name)
     }

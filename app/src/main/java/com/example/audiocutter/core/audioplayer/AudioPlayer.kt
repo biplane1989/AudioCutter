@@ -73,7 +73,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     override suspend fun play(audioFile: AudioFile): Boolean {
         try {
             Log.d("1010", "playNormal: playaudioFile ${audioFile.fileName}")
-            withContext(Dispatchers.IO) {
+          mainScope.launch {
                 stop()
                 if (playInfoData.playerState != PlayerState.IDLE) {
                     playInfoData.playerState = PlayerState.IDLE
@@ -103,7 +103,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         try {
             isSeekTo = currentPosition
             Log.d("4444", "playNormal:")
-            withContext(Dispatchers.IO) {
+            mainScope.launch {
                 stop()
                 if (playInfoData.playerState != PlayerState.IDLE) {
                     playInfoData.playerState = PlayerState.IDLE
@@ -218,7 +218,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                 var changed = false
                 delay(500)
                 playInfoData.duration = mPlayer.duration
-                Log.d(TAG, "startTimerIfReady: duration ${mPlayer.duration}")
+//                Log.d(TAG, "startTimerIfReady: duration ${mPlayer.duration}")
                 var currentPosition = mPlayer.currentPosition
                 if (currentPosition >= mPlayer.duration) {
                     currentPosition = 0
