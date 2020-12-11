@@ -175,12 +175,12 @@ Go to: phone settings > Battery > Low power mode (Saving battery mode) > Cut Pro
 Or: phone settings > Application Management > Cut Pro music > Saving battery mode > Allow to run in the phone’s background.</string>
     <string name="incoming_call_flcall">Incoming call</string>
     <string name="touch_to_select_an_application_flcall">Touch to select an application</string>
-    <string name="notification_flcall"><![CDATA[Notification for apps (sms & app)]]></string>
+    <string name="notification_flcall"><![CDATA[Notification for apps (SMS & Apps)]]></string>
     <string name="description_flash_off_flcall">Flash is not fired when in use</string>
     <string name="choice_of_lightning_type_flcall">Choice of lightning type</string>
     <string name="continuity_flcall">Continuity</string>
     <string name="default_flcall">Default</string>
-    <string name="number_flash_call_description"><![CDATA[Number of flashes when notified (sms & app)]]></string>
+    <string name="number_flash_call_description"><![CDATA[Number of flashes when notified (SMS & Apps)]]></string>
     <string name="app">Application</string>
     <string name="flashing_type">Flashing type</string>
     <string name="continuity_name">Continuity</string>

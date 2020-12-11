@@ -181,7 +181,10 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
         override fun onClick(p0: View) {
             val itemAudio = getItem(adapterPosition)
             when (p0.id) {
-                R.id.iv_controller_audio -> controllerAudio()
+                R.id.iv_controller_audio -> {
+                    Log.d("TAG", "CheckDUration:  filename:${ currentList[adapterPosition].audioFile.fileName}")
+                    controllerAudio()
+                }
                 R.id.ln_item_audio_cutter_screen -> mCallBack.onCutItemClicked(itemAudio)
                 R.id.ln_menu -> showPopupMenu(itemAudio)
             }

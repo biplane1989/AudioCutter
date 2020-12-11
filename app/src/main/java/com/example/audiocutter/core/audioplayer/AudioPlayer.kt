@@ -175,6 +175,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         Log.d("check", "stop")
         if (playInfoData.playerState == PlayerState.PAUSE || playInfoData.playerState == PlayerState.PLAYING) {
             mPlayer.stop()
+
             isStopped = true
         }
     }

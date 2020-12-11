@@ -77,7 +77,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             if (listMusic.isEmpty()) {
                 showEmptyList()
             } else if (listMusic.isNotEmpty()) {
+
                 audioCutterAdapter.submitList(ArrayList(listMusic))
+
                 showList()
                 showProgressBar(false)
             }

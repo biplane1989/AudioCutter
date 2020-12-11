@@ -118,6 +118,7 @@ class CutChooserViewModel : BaseViewModel() {
     suspend fun play(pos: Int) {
         val listAudios = getListFilteredAudios()
         val audioItem = listAudios[pos]
+        Log.d("TAG", "CheckDUrationModel:  filename:${audioItem.audioFile.fileName}  duration  ${audioItem.duration}")
         audioPlayer.play(audioItem.audioFile)
     }
 
