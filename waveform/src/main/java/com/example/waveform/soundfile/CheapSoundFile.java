@@ -1,4 +1,4 @@
-package com.example.waveform;
+package com.example.waveform.soundfile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -6,11 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class CheapSoundFile {
-    public interface ProgressListener {
-        boolean reportProgress(double fractionComplete);
-    }
-
+class CheapSoundFile {
     public interface Factory {
         CheapSoundFile create();
 
@@ -37,12 +33,14 @@ public class CheapSoundFile {
         }
     }
 
-    public void readFile(File inputFile)  throws FileNotFoundException, IOException{
+    public void readFile(File inputFile) throws IOException {
         mInputFile = inputFile;
     }
+
     public void writeFile(File outputFile, int startFrame, int numFrames)
             throws java.io.IOException {
     }
+
     public static CheapSoundFile create(String fileName, ProgressListener progressListener) throws FileNotFoundException, IOException {
         File f = new File(fileName);
         if (!f.exists()) {

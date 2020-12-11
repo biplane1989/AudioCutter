@@ -1,6 +1,6 @@
-package com.example.waveform;
+package com.example.waveform.soundfile;
 
-public class WavFileException extends Exception {
+class WavFileException extends Exception {
     public WavFileException(final String message) {
         super(message);
     }

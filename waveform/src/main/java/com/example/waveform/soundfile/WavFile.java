@@ -1,11 +1,11 @@
-package com.example.waveform;
+package com.example.waveform.soundfile;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class WavFile {
+class WavFile {
     private enum IOState {
         READING, WRITING, CLOSED
     }

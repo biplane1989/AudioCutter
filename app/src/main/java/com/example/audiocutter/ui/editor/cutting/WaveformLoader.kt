@@ -81,12 +81,7 @@ class WaveformLoader {
             previousByte = ByteArray((sampleRate * (PERIOD_IN_FRAMES / 1000f)).toInt() * chanel * 2)
             publishProgress(null)
             var isEOS = false
-            var time1 = 0L
-            var time2 = 0L
-            var time3 = 0L
-            var time4 = 0L
             while (!isCancelled) {
-                var startTime = System.currentTimeMillis()
                 if (!isEOS) {
                     val inIndex = decoder!!.dequeueInputBuffer(1500)
                     if (inIndex >= 0) {
@@ -113,14 +108,11 @@ class WaveformLoader {
                         }
                     }
                 }
-                time1 += System.currentTimeMillis() - startTime
 
 
-                startTime = System.currentTimeMillis()
                 val outIndex = decoder!!.dequeueOutputBuffer(info, 1500)
-                time2 += System.currentTimeMillis() - startTime
 
-                startTime = System.currentTimeMillis()
+
                 Log.d("taihihihi", "outIndex ${outIndex}")
                 when (outIndex) {
                     MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED -> outputBuffers =
@@ -140,14 +132,10 @@ class WaveformLoader {
                         decoder!!.releaseOutputBuffer(outIndex, true)
                     }
                 }
-                time3 += System.currentTimeMillis() - startTime
                 if (info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
                     break
                 }
             }
-            Log.d("taihihihi", "time1 ${time1}")
-            Log.d("taihihihi", "time2 ${time2}")
-            Log.d("taihihihi", "time3 ${time3}")
         }
 
         private fun getDB(buffer: ByteBuffer, size: Int): DoubleArray? { //50ms for one sample

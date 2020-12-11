@@ -1,9 +1,9 @@
-package com.example.waveform;
+package com.example.waveform.soundfile;
 
 import java.io.File;
 import java.io.FileInputStream;
 
-public class CheapMP3 extends CheapSoundFile {
+class CheapMP3 extends CheapSoundFile {
     public static Factory getFactory() {
         return new Factory() {
             @Override
@@ -68,8 +68,7 @@ public class CheapMP3 extends CheapSoundFile {
     }
     @Override
     public void readFile(File inputFile)
-            throws java.io.FileNotFoundException,
-            java.io.IOException {
+            throws java.io.IOException {
         super.readFile(inputFile);
         mNumFrames = 0;
         mMaxFrames = 64;  // This will grow as needed

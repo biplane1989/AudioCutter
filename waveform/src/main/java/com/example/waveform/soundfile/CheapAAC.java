@@ -1,4 +1,4 @@
-package com.example.waveform;
+package com.example.waveform.soundfile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 
-public class CheapAAC extends CheapSoundFile {
+class CheapAAC extends CheapSoundFile {
     public static Factory getFactory() {
         return new Factory() {
             @Override

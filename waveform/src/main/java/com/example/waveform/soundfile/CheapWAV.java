@@ -1,10 +1,8 @@
-package com.example.waveform;
-
-import android.util.Log;
+package com.example.waveform.soundfile;
 
 import java.io.File;
 
-public class CheapWAV extends CheapSoundFile {
+class CheapWAV extends CheapSoundFile {
     public static Factory getFactory() {
         return new Factory() {
             @Override
