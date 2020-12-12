@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-class CheapSoundFile {
+class CheapSoundFile implements AudioDecoder{
     public interface Factory {
         CheapSoundFile create();
 
@@ -42,6 +42,7 @@ class CheapSoundFile {
     }
 
     public static CheapSoundFile create(String fileName, ProgressListener progressListener) throws FileNotFoundException, IOException {
+
         File f = new File(fileName);
         if (!f.exists()) {
             throw new FileNotFoundException(fileName);
@@ -56,6 +57,7 @@ class CheapSoundFile {
             return null;
         }
         CheapSoundFile soundFile = factory.create();
+        soundFile.mProgressListener = progressListener;
         soundFile.readFile(f);
         return soundFile;
     }

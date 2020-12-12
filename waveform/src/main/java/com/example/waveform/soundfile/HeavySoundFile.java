@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
-class HeavySoundFile {
+class HeavySoundFile implements AudioDecoder {
     private ProgressListener mProgressListener = null;
     private File mInputFile = null;
 
@@ -28,6 +28,15 @@ class HeavySoundFile {
     private int[] mFrameGains;
     private int[] mFrameLens;
     private int[] mFrameOffsets;
+
+    public static HeavySoundFile create(String filePath, ProgressListener progressListener) throws IOException, WavFileException {
+        return new HeavySoundFile(filePath, progressListener);
+    }
+
+    private HeavySoundFile(String filePath, ProgressListener progressListener) throws IOException, WavFileException {
+        mProgressListener = progressListener;
+        readFile(new File(filePath));
+    }
 
     public void readFile(File inputFile) throws IOException, WavFileException {
         MediaExtractor extractor = new MediaExtractor();

@@ -8,7 +8,7 @@ class CheapMP3 extends CheapSoundFile {
         return new Factory() {
             @Override
             public CheapSoundFile create() {
-                return new CheapAMR();
+                return new CheapMP3();
             }
 
             @Override
