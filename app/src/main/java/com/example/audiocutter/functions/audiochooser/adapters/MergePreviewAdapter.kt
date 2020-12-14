@@ -179,7 +179,8 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
 
             val itemAudioFile = getItem(adapterPosition)
             val bitmap = itemAudioFile.audioFile.bitmap
-
+            itemAudioFile.currentPos = playerInfo.posision.toLong()
+            itemAudioFile.duration = playerInfo.duration.toLong()
             when (playerInfo.playerState) {
                 PlayerState.PLAYING -> {
                     if (bitmap != null) {
@@ -292,7 +293,12 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
 
                 }
             }*/
+            if(itemAudioFile.currentPos>0){
+                pgAudio.post {
+                    pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration, false)
+                }
 
+            }
             val bitmap = itemAudioFile.audioFile.bitmap
 
             when (itemAudioFile.state) {
@@ -324,7 +330,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 PlayerState.IDLE -> {
                     pgAudio.visibility = View.GONE
                     waveView.visibility = View.INVISIBLE
-                    pgAudio.resetView()
+//                    pgAudio.resetView()
 
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
@@ -377,6 +383,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
 
             when (playerState) {
                 PlayerState.IDLE -> {
+                    pgAudio.resetView()
                     lifecycleCoroutineScope.launch {
                         audioPlayer.play(itemAudio.audioFile)
                     }
