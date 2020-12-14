@@ -12,8 +12,8 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.util.Util
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.PlayerInfo
@@ -22,14 +22,16 @@ import com.example.audiocutter.databinding.CuttingEditorScreenBinding
 import com.example.audiocutter.functions.editor.dialogs.DialogAdvanced
 import com.example.audiocutter.functions.editor.dialogs.DialogConvert
 import com.example.audiocutter.functions.editor.dialogs.OnDialogAdvanceListener
-import com.example.audiocutter.ui.editor.cutting.WaveformEditView
+import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.PreferencesHelper
 import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioCutConfig
 import com.example.core.core.Effect
+import com.example.waveform.views.WaveformView
+import kotlinx.coroutines.launch
 import java.io.File
 
-class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListener,
+class CuttingEditorScreen : BaseFragment(), WaveformView.WaveformEditListener,
     View.OnClickListener, View.OnLongClickListener, OnDialogAdvanceListener,
     DialogConvert.OnDialogConvertListener {
 
@@ -45,7 +47,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
     private val mHandler: Handler = Handler(Looper.getMainLooper())
     private var runnable = Runnable {}
 
-    private lateinit var mEditView: WaveformEditView
+    private lateinit var mWaveformView: WaveformView
 
     private lateinit var binding: CuttingEditorScreenBinding
     private lateinit var audioPath: String
@@ -65,13 +67,6 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
     override fun onPostCreate(savedInstanceState: Bundle?) {
         cuttingViewModel = ViewModelProvider(this).get(CuttingViewModel::class.java)
         audioPath = safeArg.pathAudio
-        if (!cuttingViewModel.restore(audioPath)) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.audio_file_is_not_found),
-                Toast.LENGTH_SHORT
-            ).show()
-        }
     }
 
     override fun onCreateView(
@@ -107,13 +102,23 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
     }
 
     private fun initView() {
-        mEditView = binding.waveEditView
-
-        binding.waveEditView.apply {
-            setListener(this@CuttingEditorScreen)
-            setDataSource(audioPath)
-        }
+        mWaveformView = binding.waveEditView
         cuttingViewModel.getAudioPlayerInfo().observe(viewLifecycleOwner, observerAudio())
+        cuttingViewModel.loading(audioPath)
+            .observe(viewLifecycleOwner, Observer<AudioFile?> {
+                if (it == null) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.audio_file_is_not_found),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    mWaveformView.setListener(this@CuttingEditorScreen)
+                    lifecycleScope.launch {
+                        mWaveformView.setDataSource(audioPath, it.duration)
+                    }
+                }
+            })
     }
 
     private fun observerAudio(): Observer<PlayerInfo> {
@@ -190,7 +195,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
 
         cuttingViewModel.changeStartPos(startTimeMs.toInt())
         if (cuttingViewModel.getCuttingCurrPos() < startTimeMs) {
-            mEditView.setPlayPositionMs(startTimeMs.toInt(), true)
+            mWaveformView.setPlayPositionMs(startTimeMs.toInt(), true)
         }
     }
 
@@ -206,7 +211,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
         binding.endTimeTv.text = Utils.longDurationMsToStringMs(endTimeMs)
         cuttingViewModel.changeEndPos(endTimeMs.toInt())
         if (cuttingViewModel.getCuttingCurrPos() >= cuttingViewModel.getCuttingEndPos()) {
-            mEditView.setPlayPositionMs(cuttingViewModel.getCuttingEndPos().toInt(), true)
+            mWaveformView.setPlayPositionMs(cuttingViewModel.getCuttingEndPos().toInt(), true)
         }
     }
 
@@ -235,7 +240,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
                 }
 
                 if (isPress && positionMs >= cuttingViewModel.getCuttingEndPos()) {
-                    mEditView.setPlayPositionMs(
+                    mWaveformView.setPlayPositionMs(
                         if (cuttingViewModel.getCuttingCurrPos() == 0) RESET_AUDIO_VALUE else cuttingViewModel.getCuttingCurrPos(),
                         false
                     )
@@ -243,10 +248,10 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
 
             }
             positionMs < cuttingViewModel.getCuttingStartPos() -> {
-                mEditView.setPlayPositionMs(cuttingViewModel.getCuttingStartPos().toInt(), true)
+                mWaveformView.setPlayPositionMs(cuttingViewModel.getCuttingStartPos().toInt(), true)
             }
             positionMs > cuttingViewModel.getCuttingEndPos() -> {
-                mEditView.setPlayPositionMs(cuttingViewModel.getCuttingEndPos().toInt(), true)
+                mWaveformView.setPlayPositionMs(cuttingViewModel.getCuttingEndPos().toInt(), true)
             }
         }
     }
@@ -284,16 +289,16 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
                 }
             }
             binding.increaseStartTimeIv -> {
-                mEditView.setStartTimeMs(mEditView.getTimeStart() + Utils.TIME_CHANGE)
+                mWaveformView.setStartTimeMs(mWaveformView.getTimeStart() + Utils.TIME_CHANGE)
             }
             binding.reductionStartTimeIv -> {
-                mEditView.setStartTimeMs(mEditView.getTimeStart() - Utils.TIME_CHANGE)
+                mWaveformView.setStartTimeMs(mWaveformView.getTimeStart() - Utils.TIME_CHANGE)
             }
             binding.increaseEndTimeIv -> {
-                mEditView.setEndTimeMs(mEditView.getTimeEnd() + Utils.TIME_CHANGE)
+                mWaveformView.setEndTimeMs(mWaveformView.getTimeEnd() + Utils.TIME_CHANGE)
             }
             binding.reductionEndTimeIv -> {
-                mEditView.setEndTimeMs(mEditView.getTimeEnd() - Utils.TIME_CHANGE)
+                mWaveformView.setEndTimeMs(mWaveformView.getTimeEnd() - Utils.TIME_CHANGE)
             }
             binding.zoomOutIv -> {
                 binding.waveEditView.zoomOut()
@@ -302,7 +307,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
                 binding.waveEditView.zoomInt()
             }
             binding.preIv -> {
-                mEditView.setPlayPositionMs(
+                mWaveformView.setPlayPositionMs(
                     if ((cuttingViewModel.getCuttingCurrPos() - Utils.FIVE_SECOND) <= 0) RESET_AUDIO_VALUE else cuttingViewModel.getCuttingCurrPos() - Utils.FIVE_SECOND,
                     true
                 )
@@ -313,7 +318,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
                 }
             }
             binding.nextIv -> {
-                mEditView.setPlayPositionMs(
+                mWaveformView.setPlayPositionMs(
                     cuttingViewModel.getCuttingCurrPos() + Utils.FIVE_SECOND,
                     true
                 )
@@ -362,9 +367,9 @@ class CuttingEditorScreen : BaseFragment(), WaveformEditView.WaveformEditListene
         runnable = Runnable {
             if (!view.isPressed) return@Runnable
             if (isStart) {
-                mEditView.setStartTimeMs(if (isIncrease) mEditView.getTimeStart() + 100 else mEditView.getTimeStart() - 100)
+                mWaveformView.setStartTimeMs(if (isIncrease) mWaveformView.getTimeStart() + 100 else mWaveformView.getTimeStart() - 100)
             } else {
-                mEditView.setEndTimeMs(if (isIncrease) mEditView.getTimeEnd() + 100 else mEditView.getTimeEnd() - 100)
+                mWaveformView.setEndTimeMs(if (isIncrease) mWaveformView.getTimeEnd() + 100 else mWaveformView.getTimeEnd() - 100)
             }
             mHandler.postDelayed(runnable, 50)
         }
