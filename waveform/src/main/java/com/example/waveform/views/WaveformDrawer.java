@@ -37,7 +37,7 @@ class WaveformDrawer {
         mPaint.setStrokeCap(Paint.Cap.ROUND);
 
         mLenByZoomLevel = null;
-        mZoomFactorByZoomLevel=null;
+        mZoomFactorByZoomLevel = null;
     }
 
     void computeDoublesForAllZoomLevels(AudioDecoder audioDecoder) {
@@ -134,10 +134,10 @@ class WaveformDrawer {
 
     void onDraw(final Canvas canvas) {
         int measuredWidth = mView.getMeasuredWidth();
-        int measuredHeight = (int) (mView.getMeasuredHeight() * 0.5f);
+        int measuredHeight = (int) (mView.getMeasuredHeight() * 0.8f);
         int start = mOffset;
         int width = mLenByZoomLevel[mZoomLevel] - start;
-        int ctr = measuredHeight / 2;
+        int ctr = mView.getMeasuredHeight() / 2;
 
         if (width > measuredWidth)
             width = measuredWidth;
