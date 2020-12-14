@@ -25,7 +25,7 @@ class WaveformView1 : View, ProgressListener {
     private var playPositionMs: Long = 0
     private var mDuration: Long = 0
     private var mAudioDecoder: AudioDecoder? = null
-
+    private lateinit var mTouchEventHandler: WaveformTouchEventHandler
     override fun reportProgress(fractionComplete: Double): Boolean {
         return true
     }
@@ -49,6 +49,7 @@ class WaveformView1 : View, ProgressListener {
     private fun init(context: Context) {
         waveformLineWidth = Utils.dpToPx(context, WAVEFORM_LINE_WITH)
         mWaveformDrawer = WaveformDrawer(this, WAVEFORM_COLOR, waveformLineWidth)
+        mTouchEventHandler = WaveformTouchEventHandler(this);
     }
 
     private fun isReadyToDraw(): Boolean {
@@ -56,15 +57,23 @@ class WaveformView1 : View, ProgressListener {
     }
 
     fun zoomIn() {
+        if(!mTouchEventHandler.isReady){
+            return
+        }
         mWaveformDrawer.zoomIn()
+        mTouchEventHandler.onWaveformZoomIn()
     }
 
     fun zoomOut() {
+        if(!mTouchEventHandler.isReady){
+            return
+        }
         mWaveformDrawer.zoomOut()
+        mTouchEventHandler.onWaveformZoomOut()
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (mWaveformDrawer.onTouchEvent(event)) {
+        if (mTouchEventHandler.onTouchEvent(event)) {
             return true;
         }
         return super.onTouchEvent(event)
@@ -73,6 +82,10 @@ class WaveformView1 : View, ProgressListener {
 
 
     suspend fun setDataSource(filePath: String, duration: Long) = withContext(Dispatchers.Default) {
+        mAudioDecoder = null
+        mTouchEventHandler.reset()
+        mWaveformDrawer.reset()
+        postInvalidate()
         mWaveformViewListener?.let {
             it.onCountAudioSelected(duration, true)
             it.onPlayPositionChanged(playPositionMs.toInt(), false)
@@ -81,23 +94,29 @@ class WaveformView1 : View, ProgressListener {
 
         mDuration = duration
         mAudioDecoder = AudioDecoderBuilder.build(filePath, this@WaveformView1)
-        if (isReadyToDraw()) {
-            mWaveformDrawer.computeDoublesForAllZoomLevels(mAudioDecoder)
-            postInvalidate()
-        }
-    }
-
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        if (w != oldw || h != oldh) {
-            if (isReadyToDraw() && mAudioDecoder != null && !mWaveformDrawer.isInitialized) {
-                mWaveformDrawer.computeDoublesForAllZoomLevels(mAudioDecoder)
+        mAudioDecoder?.let {
+            post {
+                mWaveformDrawer.computeDoublesForAllZoomLevels(it)
+                mTouchEventHandler.init()
+                invalidate()
             }
         }
+
     }
 
     override fun onDraw(canvas: Canvas) {
         mWaveformDrawer.onDraw(canvas)
+    }
+
+    fun setParameters(start: Int, end: Int, offset: Int) {
+        mWaveformDrawer.setParameters(start, end, offset)
+    }
+
+    fun getOffset(): Int {
+        return mWaveformDrawer.mOffset
+    }
+    fun maxPos():Int{
+        return mWaveformDrawer.maxPos()
     }
 
 }

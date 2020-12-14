@@ -304,7 +304,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformView.WaveformEditListener,
                 binding.waveEditView.zoomOut()
             }
             binding.zoomInIv -> {
-                binding.waveEditView.zoomInt()
+                binding.waveEditView.zoomIn()
             }
             binding.preIv -> {
                 mWaveformView.setPlayPositionMs(

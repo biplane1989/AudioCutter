@@ -77,6 +77,7 @@ class WaveformView : View, ProgressListener {
     private var mAudioDecoder: AudioDecoder? = null
     private lateinit var mWaveformDrawer: WaveformDrawer
 
+
     constructor(context: Context) : super(context) {
         init(context)
     }
@@ -140,8 +141,8 @@ class WaveformView : View, ProgressListener {
         )
         timeMarkTextMargin = Utils.dpToPx(getContext(), DEFAULT_TIME_TEXT_MARGIN)
         setGestureDetector(context)
-
         mWaveformDrawer = WaveformDrawer(this, WAVEFORM_COLOR, waveformLineWidth.toFloat())
+
     }
 
     private fun initTimeMarks() {
@@ -299,7 +300,7 @@ class WaveformView : View, ProgressListener {
         updateScacle(scale + 0.1f)
     }
 
-    fun zoomInt() {
+    fun zoomIn() {
         updateScacle(scale - 0.1f)
     }
 

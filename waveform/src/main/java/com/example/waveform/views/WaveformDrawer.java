@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -29,11 +30,11 @@ class WaveformDrawer {
     private float[] mZoomFactorByZoomLevel;
 
     private boolean mInitialized;
-    private int mOffset;
+    int mOffset;
     private final String waitingForLoadingText;
     private final Rect textBounds = new Rect();
-    private ScaleGestureDetector mScaleGestureDetector;
-    private float mInitialScaleSpan;
+
+
     WaveformDrawer(View view, int waveformColor, float waveformLineWidth) {
         mView = view;
         mOffset = 0;
@@ -52,28 +53,11 @@ class WaveformDrawer {
 
         mLenByZoomLevel = null;
         mZoomFactorByZoomLevel = null;
-        mScaleGestureDetector = new ScaleGestureDetector(
-                view.getContext(),
-                new ScaleGestureDetector.SimpleOnScaleGestureListener() {
-                    public boolean onScaleBegin(ScaleGestureDetector d) {
-                        mInitialScaleSpan = Math.abs(d.getCurrentSpanX());
-                        return true;
-                    }
-                    public boolean onScale(ScaleGestureDetector d) {
-                        float scale = Math.abs(d.getCurrentSpanX());
-                        if (scale - mInitialScaleSpan > 40) {
-                            //mListener.waveformZoomIn();
-                            zoomIn();
-                            mInitialScaleSpan = scale;
-                        }
-                        if (scale - mInitialScaleSpan < -40) {
-                            //mListener.waveformZoomOut();
-                            zoomOut();
-                            mInitialScaleSpan = scale;
-                        }
-                        return true;
-                    }
-                });
+
+    }
+
+    void reset() {
+        mInitialized = false;
     }
 
     void computeDoublesForAllZoomLevels(AudioDecoder audioDecoder) {
@@ -278,11 +262,6 @@ class WaveformDrawer {
         return mInitialized;
     }
 
-    boolean onTouchEvent(MotionEvent event){
-        mScaleGestureDetector.onTouchEvent(event);
-        return true;
-    }
-
     void zoomIn() {
         if (canZoomIn()) {
             mZoomLevel++;
@@ -311,11 +290,25 @@ class WaveformDrawer {
         }
     }
 
+    void setParameters(int start, int end, int offset) {
+        float zoomFactor = mZoomFactorByZoomLevel[mZoomLevel];
+        if ((mAudioDecoder.getNumFrames() * zoomFactor - offset) < mView.getMeasuredWidth()) {
+            mOffset = (int) (mAudioDecoder.getNumFrames() * zoomFactor - mView.getMeasuredWidth());
+        } else {
+            mOffset = offset;
+        }
+
+    }
+
     boolean canZoomIn() {
         return (mZoomLevel < mNumZoomLevels - 1);
     }
 
     boolean canZoomOut() {
         return (mZoomLevel > 0);
+    }
+
+    public int maxPos() {
+        return mLenByZoomLevel[mZoomLevel];
     }
 }
