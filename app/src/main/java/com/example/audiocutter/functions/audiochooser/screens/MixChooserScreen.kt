@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
@@ -22,8 +23,7 @@ import com.example.audiocutter.databinding.MixChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MixChooserAdapter
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 
-class MixChooserScreen : BaseFragment(), View.OnClickListener,
-    MixChooserAdapter.AudioMixerListener {
+class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter.AudioMixerListener {
 
     val TAG = CutChooserScreen::class.java.name
     private lateinit var audioMixAdapter: MixChooserAdapter
@@ -34,7 +34,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         when (it) {
             1 -> {
                 showProgressBar(true)
-
             }
             0 -> {
                 showProgressBar(false)
@@ -58,29 +57,19 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
                 showList()
                 showProgressBar(false)
             }
-            var count = 0
-            listMusic.forEach {
-                if (it.isCheckChooseItem) {
-                    count++
-                    if (count >= 2) {
-                        setColorButtonNext(
-                            R.color.colorWhite,
-                            R.drawable.bg_next_audio_enabled,
-                            true
-                        )
-                    } else {
-                        setColorButtonNext(
-                            R.color.colorgray,
-                            R.drawable.bg_next_audio_disabled,
-                            false
-                        )
-                    }
-                }
-            }
-            binding.tvCountFile.text = "${count} file"
+//            var count = 0
+//            listMusic.forEach {
+//                if (it.isCheckChooseItem) {
+//                    count++
+//                    if (count >= 2) {
+//                        setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
+//                    } else {
+//                        setColorButtonNext(R.color.colorgray, R.drawable.bg_next_audio_disabled, false)
+//                    }
+//                }
+//            }
+//            binding.tvCountFile.text = "${count} file"
         }
-
-
     }
     private val emptyState = Observer<Boolean> {
         if (it) {
@@ -90,15 +79,31 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         }
     }
 
+    private val isChoseItemObserver = Observer<Boolean> {
+        if (it) {
+            showToast(getString(R.string.ToastExceed))
+        }
+    }
+
+    var stateChecked = Observer<Int> {
+        if (it > 1) {
+            setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
+        } else {
+            setColorButtonNext(R.color.colorgray, R.drawable.bg_next_audio_disabled, false)
+        }
+        binding.tvCountFile.text = "$it file"
+    }
+
+
     private fun showList() {
         binding.rvMixer.visibility = View.VISIBLE
         binding.ivEmptyListMixer.visibility = View.INVISIBLE
         binding.tvEmptyListMixer.visibility = View.INVISIBLE
     }
 
-    private val playerInfoObserver = Observer<PlayerInfo> {
-        audioMixModel.updateMediaInfo(it)
-    }
+//    private val playerInfoObserver = Observer<PlayerInfo> {
+//        audioMixModel.updateMediaInfo(it)
+//    }
 
 
     override fun onPause() {
@@ -110,17 +115,13 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioMixAdapter = MixChooserAdapter(requireContext())
         audioMixModel = ViewModelProvider(this).get(MixChooserModel::class.java)
-        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+        audioMixAdapter = MixChooserAdapter(requireContext(), audioMixModel.getAudioPlayer(), lifecycleScope)
+//        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
 
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.mix_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
@@ -135,6 +136,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
             audioMixModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
             audioMixModel.getStateEmpty().observe(viewLifecycleOwner, emptyState)
+            audioMixModel.getStateChecked().observe(viewLifecycleOwner, stateChecked)
+            audioMixModel.getIsChooseItemState().observe(viewLifecycleOwner, isChoseItemObserver)
+
         }
     }
 
@@ -152,9 +156,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
             }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 audioMixModel.stop()
-                searchAudioByName(binding.edtMixerSearch.text.toString())
+                searchAudioByName(textChange.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -184,7 +188,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         audioMixAdapter.setAudioCutterListtener(this)
 
 
-
     }
 
     private fun hideKeyboard() {
@@ -197,6 +200,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
+
     private fun hideOrShowEditText(status: Int) {
         binding.ivMixerScreenBackEdt.visibility = status
         binding.ivMixerScreenClose.visibility = status
@@ -215,8 +219,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
             binding.pgrAudioMix.visibility = View.INVISIBLE
         }
     }
-
-
 
 
     private fun initLists() {
@@ -250,9 +252,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     override fun chooseItemAudio(itemAudio: AudioCutterView, rs: Boolean) {
         audioMixModel.chooseItemAudioFile(itemAudio, rs)
 
-        if (audioMixModel.isChooseItem) {
-            showToast(getString(R.string.ToastExceed))
-        }
+//        if (audioMixModel.isChooseItem) {
+//            showToast(getString(R.string.ToastExceed))
+//        }
     }
 
 
@@ -287,12 +289,12 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
     private fun handleAudiofile() {
         val listItemHandle = audioMixModel.getListItemChoose()
-        if(listItemHandle.size == 2){
+        if (listItemHandle.size == 2) {
             viewStateManager.mixingOnSelected(this, listItemHandle[0].audioFile, listItemHandle[1].audioFile)
         }
-       /* listItemHandle.forEach {
-            Log.d(TAG, "handleAudiofile: ${it.audioFile.fileName}")
-        }*/
+        /* listItemHandle.forEach {
+             Log.d(TAG, "handleAudiofile: ${it.audioFile.fileName}")
+         }*/
 
 
         /**place handle listItem choose*/

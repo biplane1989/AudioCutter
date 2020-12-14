@@ -13,12 +13,14 @@
             android:layout_width="match_parent"
             android:layout_height="?android:actionBarSize"
             android:layout_marginBottom="2dp"
+            android:paddingRight="@dimen/common_padding_right"
+            android:paddingLeft="@dimen/common_padding_left"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/back_button"
-                android:layout_width="?actionBarSize"
-                android:layout_height="?actionBarSize"
+                android:layout_width="@dimen/common_size_item_imagview"
+                android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/list_contact_icon_back"
@@ -27,11 +29,10 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:gravity="left"
                 android:id="@+id/tv_contacts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
+                android:layout_marginLeft="@dimen/common_size_item_padding_left"
                 android:fontFamily="@font/opensans_bold"
                 android:text="@string/list_contact_title"
                 android:textColor="#2E3041"
@@ -43,9 +44,8 @@
 
             <ImageView
                 android:id="@+id/iv_search"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginRight="10dp"
+                android:layout_width="@dimen/common_size_item_imagview"
+                android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/list_contact_icon_search"
@@ -60,15 +60,16 @@
             android:id="@+id/cl_search"
             android:layout_width="match_parent"
             android:layout_height="?android:actionBarSize"
+            android:layout_marginLeft="@dimen/common_padding_left"
+            android:paddingRight="@dimen/common_padding_right"
             android:layout_marginBottom="2dp"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/iv_search_close"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginLeft="10dp"
+                android:layout_width="@dimen/common_size_item_imagview"
+                android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/list_contact_icon_back"
@@ -77,13 +78,15 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
-                android:theme="@style/editTextTheme"
                 android:id="@+id/edt_search"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="17dp"
+                android:layout_marginLeft="@dimen/common_size_item_padding_left"
                 android:backgroundTint="#FFFFFF"
                 android:hint="Search..."
+                android:maxLines="1"
+                android:singleLine="true"
+                android:theme="@style/editTextTheme"
                 app:layout_constraintBottom_toBottomOf="@id/iv_search_close"
                 app:layout_constraintEnd_toStartOf="@id/iv_clear"
                 app:layout_constraintStart_toEndOf="@id/iv_search_close"
@@ -91,9 +94,8 @@
 
             <ImageView
                 android:id="@+id/iv_clear"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginRight="10dp"
+                android:layout_width="@dimen/common_size_item_imagview"
+                android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/list_contact_icon_search_clear"
@@ -104,18 +106,19 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
+            android:id="@+id/view"
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:layout_marginTop="?android:actionBarSize"
             android:background="#F6F6F6"
-            app:layout_constraintTop_toTopOf="@id/cl_contact" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_contact"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="56dp"
-            app:layout_constraintBottom_toTopOf="@+id/cl_bottom"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintBottom_toTopOf="@id/cl_bottom"
+            app:layout_constraintTop_toBottomOf="@+id/view">
 
             <ProgressBar
                 android:id="@+id/pb_audio_cutter"
@@ -141,13 +144,14 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_no_contact"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
+            android:layout_height="0dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@id/cl_bottom"
+            app:layout_constraintTop_toBottomOf="@+id/view">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
                 android:src="@drawable/list_contact_no_contact"
                 app:layout_constraintBottom_toTopOf="@+id/tv_title_no_contact"
                 app:layout_constraintEnd_toEndOf="parent"

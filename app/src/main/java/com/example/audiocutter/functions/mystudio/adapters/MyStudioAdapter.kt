@@ -171,7 +171,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                         loadingViewHolder.tvLoading.visibility = View.GONE
                     }
                     ConvertingState.PROGRESSING -> {
-                        loadingViewHolder.tvWait.visibility = View.GONE
+                        loadingViewHolder.tvWait.visibility = View.INVISIBLE
                         loadingViewHolder.pbLoading.visibility = View.VISIBLE
                         loadingViewHolder.tvLoading.visibility = View.VISIBLE
                     }

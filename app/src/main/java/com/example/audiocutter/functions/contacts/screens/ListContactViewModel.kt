@@ -136,7 +136,6 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
         }
     }
 
-
     /*// check ringtone contact co phai la ringtone default khong?
     fun checkRingtoneDefault(context: Context, uri: String): Boolean {
         if (TextUtils.equals(uri, Utils.getUriRingtoneDefault(context).toString())) return true

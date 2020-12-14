@@ -143,12 +143,12 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     }
 
     private val errorObserver = Observer<Boolean> {
-        if (it) {
-            view?.let {
-                val mySnackbar = Snackbar.make(it, getString(R.string.result_screen_converting_error), Snackbar.LENGTH_LONG)
-                mySnackbar.show()
-            }
-        }
+//        if (it) {
+//            view?.let {
+//                val mySnackbar = Snackbar.make(it, getString(R.string.result_screen_converting_error), Snackbar.LENGTH_LONG)
+//                mySnackbar.show()
+//            }
+//        }
 
         binding.btnOrigin.visibility = View.GONE
         binding.tvWait.visibility = View.GONE

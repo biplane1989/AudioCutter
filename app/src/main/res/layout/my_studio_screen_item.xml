@@ -11,10 +11,12 @@
     <LinearLayout
         android:id="@+id/ll_audio_item_header"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/d_70"
+        android:layout_height="@dimen/common_size_item_height"
         android:background="?attr/selectableItemBackground"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/common_padding_left"
+        android:paddingRight="@dimen/common_padding_right">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_item"
@@ -23,9 +25,9 @@
 
             <ImageView
                 android:id="@+id/iv_avatar"
-                android:layout_width="@dimen/d_40"
-                android:layout_height="@dimen/d_40"
-                android:layout_marginLeft="16dp"
+                android:layout_width="@dimen/common_size_item_imagview"
+                android:layout_height="@dimen/common_size_item_imagview"
+                android:layout_marginStart="@dimen/common_padding_right"
                 android:scaleType="fitXY"
                 android:src="@drawable/my_studio_item_ic_avatar"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -35,40 +37,39 @@
 
             <TextView
                 android:id="@+id/tv_title_music"
-                android:layout_marginLeft="15dp"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginLeft="@dimen/common_size_item_padding_left"
                 android:ellipsize="marquee"
                 android:fontFamily="@font/opensans_semibold"
+                android:gravity="bottom"
                 android:singleLine="true"
+                android:text="orangeorangeorangeorangeorangeorangeorangeorange"
                 android:textColor="@color/colorBlack"
                 android:textSize="@dimen/d_16"
                 app:layout_constraintBottom_toTopOf="@id/tv_info_music"
                 app:layout_constraintEnd_toStartOf="@id/iv_setting"
                 app:layout_constraintStart_toEndOf="@+id/iv_avatar"
-                app:layout_constraintTop_toTopOf="@+id/iv_avatar"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-
                 android:id="@+id/tv_info_music"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:layout_marginLeft="15dp"
+                android:layout_marginLeft="@dimen/common_size_item_padding_left"
                 android:fontFamily="@font/opensans_light"
-                android:gravity="bottom"
+                android:gravity="top"
                 android:text="5.3 MB | 128kb/s"
                 android:textColor="#9C9C9C"
                 android:textSize="14dp"
-                app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_avatar"
                 app:layout_constraintTop_toBottomOf="@id/tv_title_music" />
 
             <ImageView
                 android:id="@+id/iv_setting"
-                android:layout_width="46dp"
+                android:layout_width="@dimen/common_size_item_imagview"
                 android:layout_height="match_parent"
-                android:layout_marginRight="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/my_studio_item_icon_setting"
@@ -78,9 +79,8 @@
 
             <ImageView
                 android:id="@+id/iv_item_delete"
-                android:layout_width="46dp"
+                android:layout_width="@dimen/common_size_item_imagview"
                 android:layout_height="match_parent"
-                android:layout_marginRight="10dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/my_studio_screen_icon_uncheck"
                 android:visibility="gone"
@@ -91,20 +91,20 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
-
     <LinearLayout
         android:id="@+id/ll_play_music"
         android:layout_width="match_parent"
         android:layout_height="34dp"
         android:gravity="center"
         android:orientation="horizontal"
+        android:paddingLeft="@dimen/common_padding_left"
+        android:paddingRight="@dimen/common_padding_right"
         android:visibility="visible">
 
         <ImageView
             android:id="@+id/iv_pause_play_music"
-            android:layout_width="30dp"
+            android:layout_width="40dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
             android:src="@drawable/my_studio_item_icon_play" />

@@ -18,9 +18,8 @@
 
             <ImageView
                 android:id="@+id/btn_cancel"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginLeft="10dp"
+                android:layout_width="@dimen/common_size_item_imagview"
+                android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/common_ic_close"
@@ -30,9 +29,8 @@
 
             <ImageView
                 android:id="@+id/btn_back"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginLeft="10dp"
+                android:layout_width="@dimen/common_size_item_imagview"
+                android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_back_screen"
@@ -45,7 +43,7 @@
                 android:id="@+id/tv_title_loading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="@dimen/common_size_item_padding_left"
                 android:fontFamily="@font/opensans_bold"
                 android:text="@string/result_screen_title_loading"
                 android:textColor="#2E3041"
@@ -73,8 +71,8 @@
 
             <ImageView
                 android:id="@+id/iv_home"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="@dimen/common_size_item_imagview"
+                android:layout_height="match_parent"
                 android:layout_marginRight="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
@@ -89,7 +87,7 @@
         <LinearLayout
             android:id="@+id/ll_audio_item"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="@dimen/common_size_item_height"
             android:background="?attr/selectableItemBackground"
             android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@+id/cl_converting">
@@ -97,13 +95,13 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_item"
                 android:layout_width="match_parent"
-                android:layout_height="56dp">
+                android:layout_height="match_parent">
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/iv_avatar"
-                    android:layout_width="@dimen/d_40"
-                    android:layout_height="@dimen/d_40"
-                    android:layout_marginLeft="16dp"
+                    android:layout_width="@dimen/common_size_item_imagview"
+                    android:layout_height="@dimen/common_size_item_imagview"
+                    android:layout_marginLeft="@dimen/common_padding_left"
                     app:cardBackgroundColor="#C4C6D2"
                     app:cardCornerRadius="4dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -118,8 +116,8 @@
                         android:scaleType="centerInside" />
 
                     <ImageView
-                        android:layout_width="@dimen/d_40"
-                        android:layout_height="@dimen/d_40"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:scaleType="fitXY"
                         android:src="@drawable/my_studio_item_ic_avatar" />
@@ -130,7 +128,7 @@
                     android:id="@+id/tv_title_music"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="@dimen/common_size_item_padding_left"
                     android:layout_marginRight="16dp"
                     android:ellipsize="end"
                     android:fontFamily="@font/opensans_bold"
@@ -172,7 +170,7 @@
             android:id="@+id/tv_wait"
             android:layout_width="match_parent"
             android:layout_height="34dp"
-            android:layout_marginLeft="16dp"
+            android:layout_marginLeft="@dimen/common_padding_left"
             android:layout_marginRight="16dp"
             android:gravity="center_vertical"
             android:text="@string/result_scren_wait_task"
@@ -230,9 +228,8 @@
 
             <ImageView
                 android:id="@+id/iv_pause_play_music"
-                android:layout_width="30dp"
+                android:layout_width="40dp"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="center"
                 android:src="@drawable/common_ic_play" />
@@ -259,7 +256,7 @@
                 android:id="@+id/tv_time_total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="@dimen/common_padding_right"
                 android:fontFamily="@font/opensans_regular"
                 android:text="@string/result_screen_timetotal_default"
                 android:textColor="#9C9C9C"
@@ -280,8 +277,8 @@
                 android:id="@+id/ll_ringtone"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginLeft="@dimen/common_padding_left"
+                android:layout_marginRight="@dimen/common_padding_right"
                 android:background="@drawable/result_btn_ringtone_selector"
                 android:gravity="center"
                 android:orientation="vertical"

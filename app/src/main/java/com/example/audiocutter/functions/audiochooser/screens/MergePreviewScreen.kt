@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,9 +47,10 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     var currentPos = -1
 
     private lateinit var mergeDialog: MergeDialog
-    private val playerInfoObserver = Observer<PlayerInfo> {
-        audioMerAdapter.submitList(audioMerModel.updateMediaInfo(it))
-    }
+
+//    private val playerInfoObserver = Observer<PlayerInfo> {
+//        audioMerAdapter.submitList(audioMerModel.updateMediaInfo(it))
+//    }
 
     override fun onPause() {
         super.onPause()
@@ -57,10 +59,10 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-
-        audioMerAdapter = MergePreviewAdapter(requireContext())
         audioMerModel = ViewModelProvider(this).get(MergePreviewModel::class.java)
-        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+
+        audioMerAdapter = MergePreviewAdapter(requireContext(), audioMerModel.getAudioPlayer(), lifecycleScope)
+//        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
 
         listPath = ArrayList()
         listAudioPath = safeArg.listaudio
@@ -83,10 +85,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
                     )
                 )
             }
-
-
         }
-
         receiveData(newListAudio)
 
     }

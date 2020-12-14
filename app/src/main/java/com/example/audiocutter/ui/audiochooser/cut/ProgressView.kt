@@ -66,6 +66,7 @@ class ProgressView : View {
 
 
     fun updatePG(currentPos: Long, duration: Long) {
+        Log.d("giangtd123", "updatePG: currentPos: "+ currentPos + " duration : "+ duration)
         this.duration = duration
         if (currentPos > 0 && this.duration > 0) {
             if (prevPos != nextPos) {

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -17,6 +18,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.audiocutter.R
 import com.example.audiocutter.functions.mystudio.objects.SetContactItemView
 import com.example.audiocutter.util.Utils
+import kotlinx.android.synthetic.main.my_studio_contact_item_content.view.*
 import java.util.*
 
 
@@ -25,21 +27,16 @@ interface SetContactCallback {
     fun itemOnClick(phoneNumber: String)
 }
 
-class SetContactAdapter(context: Context?, var contactCallback: SetContactCallback) :
-    ListAdapter<SetContactItemView, RecyclerView.ViewHolder>(SetContactDiffCallBack()) {
+class SetContactAdapter(context: Context?, var contactCallback: SetContactCallback) : ListAdapter<SetContactItemView, RecyclerView.ViewHolder>(SetContactDiffCallBack()) {
 
     private var mContext: Context? = context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == SECTION_VIEW) {
-            HeaderViewHolder(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.my_studio_contact_hearder, parent, false)
-            )
-        } else ItemViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.my_studio_contact_item_content, parent, false), mContext
-        )
+            HeaderViewHolder(LayoutInflater.from(parent.context)
+                .inflate(R.layout.my_studio_contact_hearder, parent, false))
+        } else ItemViewHolder(LayoutInflater.from(parent.context)
+            .inflate(R.layout.my_studio_contact_item_content, parent, false), mContext)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -73,11 +70,7 @@ class SetContactAdapter(context: Context?, var contactCallback: SetContactCallba
     }
 
     // khi chi thay doi 1 truong trong data
-    override fun onBindViewHolder(
-        holder: RecyclerView.ViewHolder,
-        position: Int,
-        payloads: MutableList<Any>
-    ) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
         super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
@@ -105,24 +98,23 @@ class SetContactAdapter(context: Context?, var contactCallback: SetContactCallba
                 }
 
                 if (!newItem.contactItem.isRingtoneDefault) {
-                    itemViewHolder.tvRingtoneDefault.visibility = View.GONE
-                    itemViewHolder.cvDefault.visibility = View.GONE
+//                    itemViewHolder.tvRingtoneDefault.visibility = View.GONE
+//                    itemViewHolder.cvDefault.visibility = View.GONE
+                    itemViewHolder.llRingToneDefault.visibility = View.INVISIBLE
                     itemViewHolder.tvRingtone.visibility = View.VISIBLE
-                    itemViewHolder.tvRingtone.text =
-                        newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)  // get name song by uri    | sua contactItem = newItem
+                    itemViewHolder.tvRingtone.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)  // get name song by uri    | sua contactItem = newItem
                 } else {
-                    itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
-                    itemViewHolder.cvDefault.visibility = View.VISIBLE
+//                    itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
+//                    itemViewHolder.cvDefault.visibility = View.VISIBLE
+                    itemViewHolder.llRingToneDefault.visibility = View.VISIBLE
                     itemViewHolder.tvRingtone.visibility = View.GONE
-                    itemViewHolder.tvRingtoneDefault.text =
-                        newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
+                    itemViewHolder.tvRingtoneDefault.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
                 }
             }
         }
     }
 
-    inner class ItemViewHolder(itemView: View, context: Context?) :
-        RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class ItemViewHolder(itemView: View, context: Context?) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         val tvName: TextView = itemView.findViewById(R.id.tv_name)
         val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar)
         val tvRingtone: TextView = itemView.findViewById(R.id.tv_ringtone)
@@ -130,6 +122,7 @@ class SetContactAdapter(context: Context?, var contactCallback: SetContactCallba
         val cvDefault: CardView = itemView.findViewById(R.id.cv_default)
         val clItemContact: ConstraintLayout = itemView.findViewById(R.id.cl_item_contact)
         val ivSelect: ImageView = itemView.findViewById(R.id.iv_select)
+        val llRingToneDefault: LinearLayout = itemView.findViewById(R.id.ll_ringtone_default)
 
         fun onBind() {
             val contentItem = getItem(adapterPosition)
@@ -155,16 +148,18 @@ class SetContactAdapter(context: Context?, var contactCallback: SetContactCallba
             }
             if (!contentItem.contactItem.isRingtoneDefault) {
 
-                tvRingtoneDefault.visibility = View.GONE
-                cvDefault.visibility = View.GONE
+//                tvRingtoneDefault.visibility = View.INVISIBLE
+//                cvDefault.visibility = View.GONE
+                llRingToneDefault.visibility = View.INVISIBLE
                 tvRingtone.visibility = View.VISIBLE
                 tvRingtone.text = contentItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
             } else {
-                tvRingtoneDefault.visibility = View.VISIBLE
-                cvDefault.visibility = View.VISIBLE
-                tvRingtone.visibility = View.GONE
-                tvRingtoneDefault.text =
-                    contentItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
+//                tvRingtoneDefault.visibility = View.VISIBLE
+//                cvDefault.visibility = View.VISIBLE
+
+                llRingToneDefault.visibility = View.VISIBLE
+                tvRingtone.visibility = View.INVISIBLE
+                tvRingtoneDefault.text = contentItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
             }
 
             clItemContact.setOnClickListener(this)
@@ -197,17 +192,11 @@ class SetContactAdapter(context: Context?, var contactCallback: SetContactCallba
 
 class SetContactDiffCallBack : DiffUtil.ItemCallback<SetContactItemView>() {
 
-    override fun areItemsTheSame(
-        oldItemView: SetContactItemView,
-        newItemView: SetContactItemView
-    ): Boolean {
+    override fun areItemsTheSame(oldItemView: SetContactItemView, newItemView: SetContactItemView): Boolean {
         return oldItemView.contactItem.phoneNumber == newItemView.contactItem.phoneNumber
     }
 
-    override fun areContentsTheSame(
-        oldItemView: SetContactItemView,
-        newItemView: SetContactItemView
-    ): Boolean {
+    override fun areContentsTheSame(oldItemView: SetContactItemView, newItemView: SetContactItemView): Boolean {
         return oldItemView == newItemView
     }
 

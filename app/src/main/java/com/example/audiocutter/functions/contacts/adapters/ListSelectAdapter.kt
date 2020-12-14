@@ -41,12 +41,9 @@ interface SelectAudioScreenCallback {
 }
 
 class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<SelectItemView, ListSelectAdapter.ViewHolder>(SelectAudioDiffCallBack()) {
+
     private val TAG = "giangtd"
-
     private lateinit var recyclerView: RecyclerView
-    private var option = Options()
-
-
     @SuppressLint("SimpleDateFormat")
     private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
@@ -128,7 +125,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         val llAudioHeader: ConstraintLayout = itemView.findViewById(R.id.ll_audio_item_header)
         val llItem: LinearLayout = itemView.findViewById(R.id.ll_item)
         val ivSelect: ImageView = itemView.findViewById(R.id.iv_select)
-        val cvCarview: CardView = itemView.findViewById(R.id.cv_default)
+//        val cvCarview: CardView = itemView.findViewById(R.id.cv_default)
 
         private var isSeekBarStatus = false         // trang thai seekbar co dang duoc keo hay khong
 
@@ -197,15 +194,21 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 tvInfo.setText(((selectItemView.audioFile.size) / (1024)).toString() + " KB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s")
             }
 
+//            if (selectItemView.audioFile.bitmap != null) {
+//                Glide.with(itemView).load(selectItemView.audioFile.bitmap)
+//                    .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(recyclerView.context, Utils.convertDp2Px(20, recyclerView.context).toInt(), Utils.convertDp2Px(0, recyclerView.context).toInt())))
+//                    .into(ivAvatarSelect)
+//            } else {
+//                ivAvatarSelect.setImageResource(R.drawable.my_studio_item_ic_avatar)
+//            }
+
             if (selectItemView.audioFile.bitmap != null) {
                 Glide.with(itemView).load(selectItemView.audioFile.bitmap)
-                    .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(recyclerView.context, Utils.convertDp2Px(8, recyclerView.context).toInt(), Utils.convertDp2Px(0, recyclerView.context).toInt())))
+                    .transform(RoundedCorners(Utils.convertDp2Px(20, itemView.context).toInt()))
                     .into(ivAvatarSelect)
             } else {
                 ivAvatarSelect.setImageResource(R.drawable.my_studio_item_ic_avatar)
             }
-
-
 
             tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(selectItemView.audioFile.duration), itemView.context)
                 .toInt() + 50
@@ -225,12 +228,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 ivSelect.setImageResource(R.drawable.list_contact_select)
             } else {
                 ivSelect.setImageResource(R.drawable.list_contact_unselect)
-            }
-
-            if (selectItemView.isRingtoneDefault) {
-                cvCarview.visibility = View.VISIBLE
-            } else {
-                cvCarview.visibility = View.GONE
             }
 
             llAudioHeader.setOnClickListener(this)

@@ -147,7 +147,11 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
     }
 
     private fun onReceivedAction(action: String, type: Int) {
-        if (action in arrayListOf(Constance.ACTION_CHECK_DELETE, Constance.ACTION_DELETE_ALL)) if (type != typeAudio) {
+        if (action in arrayListOf(
+                Constance.ACTION_CHECK_DELETE,
+                Constance.ACTION_DELETE_ALL
+            )
+        ) if (type != (typeAudio as Int)) {
             return
         }
         when (action) {
@@ -221,7 +225,11 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
             Constance.ACTION_SHARE -> {
                 if (requireArguments().getInt(BUNDLE_NAME_KEY) == type) {
                     if (!myStudioViewModel.isChecked()) {
-                        Toast.makeText(context, getString(R.string.my_studio_notification_chose_item_share), Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            context,
+                            getString(R.string.my_studio_notification_chose_item_share),
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                     } else {
                         if (isShareClicked) {
@@ -365,10 +373,8 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
                     dialog.show(childFragmentManager, RenameDialog.TAG)
                 }
                 R.id.info -> {
-                    val dialog = InfoDialog.newInstance(
-                        audioFile.fileName,
-                        audioFile.file.absolutePath
-                    )
+                    val dialog =
+                        InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
                     dialog.show(childFragmentManager, InfoDialog.TAG)
                 }
                 R.id.delete -> {
@@ -592,7 +598,11 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
     // click delete button on dialog delete
     override fun onDeleteClick(pathFolder: String) {
         runOnUI {
-            if (myStudioViewModel.deleteItem(pathFolder, requireArguments().getInt(BUNDLE_NAME_KEY))) { // nếu delete thành công thì sẽ hiện dialog thành công
+            if (myStudioViewModel.deleteItem(
+                    pathFolder,
+                    requireArguments().getInt(BUNDLE_NAME_KEY)
+                )
+            ) { // nếu delete thành công thì sẽ hiện dialog thành công
                 view?.let {
                     val mySnackbar = Snackbar.make(
                         it,
@@ -603,7 +613,11 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
                 }
             } else {
                 view?.let {
-                    val mySnackbar = Snackbar.make(it, getString(R.string.my_studio_delete_fail), Snackbar.LENGTH_LONG)
+                    val mySnackbar = Snackbar.make(
+                        it,
+                        getString(R.string.my_studio_delete_fail),
+                        Snackbar.LENGTH_LONG
+                    )
                     mySnackbar.show()
                 }
 
@@ -615,12 +629,21 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
     override fun onCancel() {
     }
 
-    override fun onCancelDeleteClick(id: Int) {
         // cancel dialog
+    override fun onDestroyView() {
+        super.onDestroyView()
+        myStudioViewModel.stopMediaPlayerWhenTabSelect()
+    }
+
+    override fun onCancelDeleteClick(id: Int) {        // cancel dialog
         myStudioViewModel.cancelLoading(id)
         isDeleteClicked = true
         view?.let {
-            val mySnackbar = Snackbar.make(it, getString(R.string.my_studio_delete_successfull), Snackbar.LENGTH_LONG)
+            val mySnackbar = Snackbar.make(
+                it,
+                getString(R.string.my_studio_delete_successfull),
+                Snackbar.LENGTH_LONG
+            )
             mySnackbar.show()
         }
     }
