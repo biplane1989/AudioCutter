@@ -66,7 +66,7 @@ class ProgressView : View {
 
 
     fun updatePG(currentPos: Long, duration: Long) {
-        Log.d("giangtd123", "updatePG: currentPos: "+ currentPos + " duration : "+ duration)
+
         this.duration = duration
         if (currentPos > 0 && this.duration > 0) {
             if (prevPos != nextPos) {
@@ -94,6 +94,8 @@ class ProgressView : View {
             width.toDouble(),
             prevPos.toDouble()
         )
+        Log.d("nmCheckInfomation", "updatePG:  pendingPost $pendingPos\n nextPos: $nextPos\n prevPos : $prevPos")
+        Log.e("nmCheckInfomation", "updatePG: start: $startPos \n endpos : $endPos")
         val time = abs(endPos - startPos) / speed
 
 
