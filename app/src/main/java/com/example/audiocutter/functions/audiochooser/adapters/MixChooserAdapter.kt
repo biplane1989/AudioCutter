@@ -306,7 +306,6 @@ class MixChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                 PlayerState.IDLE -> {
                     pgAudio.visibility = View.GONE
                     waveView.visibility = View.INVISIBLE
-                    pgAudio.resetView()
 
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)

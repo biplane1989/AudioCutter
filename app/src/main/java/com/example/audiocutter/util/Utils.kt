@@ -228,7 +228,15 @@ class Utils {
         ): Double {
             return ((value - min1) * ((max2 - min2) / (max1 - min1)) + min2)
         }
-
+        fun convertValue(
+            min1: Float,
+            max1: Float,
+            min2: Float,
+            max2: Float,
+            value: Float
+        ): Float {
+            return ((value - min1) * ((max2 - min2) / (max1 - min1)) + min2)
+        }
         fun convertValue(min1: Int, max1: Int, min2: Int, max2: Int, value: Int): Int {
             return ((value - min1) * ((max2 - min2) * 1f / (max1 - min1)) + min2).toInt()
         }

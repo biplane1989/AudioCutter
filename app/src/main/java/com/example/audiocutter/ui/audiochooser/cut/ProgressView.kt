@@ -5,14 +5,11 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
-import androidx.annotation.RequiresApi
 import com.example.audiocutter.R
 import com.example.audiocutter.util.Utils
-import kotlin.math.abs
 
 class ProgressView : View {
 
@@ -20,11 +17,10 @@ class ProgressView : View {
     private var mPaint1 = Paint(Paint.ANTI_ALIAS_FLAG)
     private var mPaint2 = Paint(Paint.ANTI_ALIAS_FLAG)
     private var currentLineX = 0f
-    private var prevPos = 0L
-    private var nextPos = 0L
-    private var pendingPos = 0L
+    private var currPos: Float = -1f
+    private var destPos: Float = -1f
     private var animator: ValueAnimator? = ValueAnimator()
-    private var duration: Long = 0
+    private var duration: Float = 0f
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -42,13 +38,12 @@ class ProgressView : View {
         mPaint2.style = Paint.Style.FILL
     }
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onDraw(canvas: Canvas?) {
+        Log.e(TAG, "updatePlayInfor $this  onDraw  currentLineX  $currentLineX duration $duration")
         super.onDraw(canvas)
         drawView(canvas)
     }
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun drawView(canvas: Canvas?) {
         canvas?.let {
             it.drawRect(0f, 0f, width.toFloat(), height.toFloat(), mPaint1)
@@ -57,80 +52,97 @@ class ProgressView : View {
     }
 
     fun resetView() {
+        Log.i(
+            TAG,
+            "updatePlayInfor   resetView: $currentLineX  prevPos $currPos nextPos $destPos"
+        )
         currentLineX = 0f
-        prevPos = 0L
-        nextPos = 0L
-        pendingPos = 0L
-        requestLayout()
+        currPos = -1f
+        destPos = -1f
+        invalidate()
     }
 
 
-    fun updatePG(currentPos: Long, duration: Long) {
+    fun updatePG(currentPos: Long, duration: Long, useAnimation: Boolean = true) {
+        Log.e(TAG, "updatePlayInfor  $this updatePG  currentLineX  $currentPos duration $duration")
+        this.duration = duration.toFloat()
+        moveProcess(currentPos.toFloat(), useAnimation)
 
-        this.duration = duration
-        if (currentPos > 0 && this.duration > 0) {
-            if (prevPos != nextPos) {
-                pendingPos = currentPos
+    }
+
+    private fun moveProcess(newPos: Float, useAnimation: Boolean = true) {
+        if (useAnimation && currPos != -1f && newPos != duration && newPos > currPos) {
+            if (animator != null && animator!!.isRunning) {
+                destPos = newPos
+                Log.d("taihhhhh", " destPos ${destPos} ")
             } else {
-                nextPos = currentPos
-                moveProcess()
+                destPos = newPos
+                Log.d(
+                    "taihhhhh",
+                    " currPos ${currPos}  destPos ${destPos} duration ${((destPos - currPos) * 2).toLong()}"
+                )
+
+                animator = ValueAnimator.ofFloat(currPos, destPos)
+                animator?.duration = ((destPos - currPos)).toLong()
+
+                animator?.addUpdateListener {
+                    currPos = (it.animatedValue as Float)
+                    currentLineX = Utils.convertValue(
+                        0f,
+                        duration,
+                        0f,
+                        width.toFloat(),
+                        currPos
+                    )
+                    invalidate()
+                }
+
+                animator?.addListener(object : Animator.AnimatorListener {
+                    override fun onAnimationEnd(p0: Animator?) {
+                        if (currPos < destPos) {
+                            post {
+                                moveProcess(destPos)
+                            }
+                        }
+                    }
+
+                    override fun onAnimationStart(p0: Animator?) {
+                    }
+
+                    override fun onAnimationCancel(p0: Animator?) {
+                    }
+
+                    override fun onAnimationRepeat(p0: Animator?) {
+                    }
+                })
+                animator?.start()
             }
+
+        } else {
+            animator?.cancel()
+            currPos = newPos
+            currentLineX = Utils.convertValue(
+                0f,
+                duration,
+                0f,
+                width.toFloat(),
+                currPos
+            )
+            if (!useAnimation) {
+                Log.e(
+                    TAG,
+                    "updatePlayInfor:  $this  moveProcess currentPos $currPos    currentLineX  $currentLineX     duration$duration     width  ${width.toFloat()}"
+                )
+            }
+            invalidate()
         }
+
+
     }
 
-    private fun moveProcess() {
-        val speed = (width * 1f / duration).toDouble()
-        val endPos = Utils.convertValue(
-            0.0,
-            duration.toDouble(),
-            0.0,
-            width.toDouble(),
-            nextPos.toDouble()
-        )
-        val startPos = Utils.convertValue(
-            0.0,
-            duration.toDouble(),
-            0.0,
-            width.toDouble(),
-            prevPos.toDouble()
-        )
-        Log.d("nmCheckInfomation", "updatePG:  pendingPost $pendingPos\n nextPos: $nextPos\n prevPos : $prevPos")
-        Log.e("nmCheckInfomation", "updatePG: start: $startPos \n endpos : $endPos")
-        val time = abs(endPos - startPos) / speed
-
-
-        animator = ValueAnimator.ofFloat(startPos.toFloat(), endPos.toFloat())
-
-        if (time > 0) {
-            animator!!.duration = time.toLong()
-
-            Log.d(TAG, "infomation: Time $time distance $duration  speed $speed")
-
-            animator!!.addUpdateListener {
-                val start = (it.animatedValue as Float)
-                currentLineX = start
-                requestLayout()
-            }
-            animator!!.addListener(object : Animator.AnimatorListener {
-                override fun onAnimationEnd(p0: Animator?) {
-                    prevPos = nextPos
-                    if (nextPos < pendingPos) {
-                        updatePG(pendingPos, duration)
-                    }
-                }
-
-                override fun onAnimationStart(p0: Animator?) {
-                }
-
-                override fun onAnimationCancel(p0: Animator?) {
-                }
-
-                override fun onAnimationRepeat(p0: Animator?) {
-                }
-            })
-
-        }
-        animator!!.start()
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        Log.e(TAG, "updatePlayInfor  onDetachedFromWindow")
     }
 }
 

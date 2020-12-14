@@ -77,10 +77,10 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
 
     inner class AudiocutterHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, LifecycleOwner {
 
-        val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)!!
-        val tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_audio)
-        val tvSizeAudio = itemView.findViewById<TextView>(R.id.tv_size_audio)
-        val tvBitrateAudio = itemView.findViewById<TextView>(R.id.tv_bitrate_audio)
+        private val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)!!
+        private val tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_audio)
+        private val tvSizeAudio = itemView.findViewById<TextView>(R.id.tv_size_audio)
+        private val tvBitrateAudio = itemView.findViewById<TextView>(R.id.tv_bitrate_audio)
         val lnChild = itemView.findViewById<LinearLayout>(R.id.ln_item_audio_cutter_screen)
         val lnMenu = itemView.findViewById<LinearLayout>(R.id.ln_menu)
         val pgAudio = itemView.findViewById<ProgressView>(R.id.pg_audio_cutter_screen)
@@ -103,14 +103,15 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
 
         private fun updatePlayInfo(playerInfo: PlayerInfo) {
             playerState = playerInfo.playerState
-            pgAudio.updatePG(playerInfo.posision.toLong(), playerInfo.duration.toLong())
             val itemAudioFile = getItem(adapterPosition)
             val bitmap = itemAudioFile.audioFile.bitmap
 
-            when (playerInfo.playerState) {
+            itemAudioFile.currentPos = playerInfo.posision.toLong()
+            itemAudioFile.duration = playerInfo.duration.toLong()
 
+            when (playerInfo.playerState) {
                 PlayerState.PLAYING -> {
-                    Log.d("TAG", "updatePlayInfor: PLAYING")
+                    pgAudio.updatePG(playerInfo.posision.toLong(), playerInfo.duration.toLong())
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
                             .transform(
@@ -127,11 +128,15 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                     waveView.visibility = View.VISIBLE
                 }
                 PlayerState.PAUSE -> {
-                    Log.d("TAG", "updatePlayInfor: PAUSE")
+
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-                                .toInt())).into(ivController)
+                            .transform(
+                                RoundedCorners(
+                                    Utils.convertDp2Px(12, itemView.context)
+                                        .toInt()
+                                )
+                            ).into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -140,7 +145,6 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                     pgAudio.visibility = View.VISIBLE
                 }
                 PlayerState.IDLE -> {
-                    Log.d("TAG", "updatePlayInfor: IDLE")
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
                             .transform(
@@ -191,7 +195,6 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                 "bind: ${itemAudioFile.audioFile.fileName}    state ${itemAudioFile.state}"
             )
             var bitRate = itemAudioFile.audioFile.bitRate / 1000
-
             tvBitrateAudio.text = "${bitRate}${mContext.resources.getString(R.string.kbps)}"
 
             tvNameAudio.text = itemAudioFile.audioFile.fileName
@@ -206,11 +209,17 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                 tvSizeAudio.text = "$size ${mContext.resources.getString(R.string.kilobyte)}"
             }
 
+           if(itemAudioFile.currentPos>0){
+               pgAudio.post {
+                   pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration, false)
+                   Log.d("TAG", "manhnq: currentPos ${itemAudioFile.currentPos} -  duration ${itemAudioFile.duration}")
+               }
+
+           }
             val bitmap = itemAudioFile.audioFile.bitmap
 
             when (itemAudioFile.state) {
                 PlayerState.PLAYING -> {
-                    Log.d("TAG", "updatePlayInfor   bind(): PLAYING")
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
                             .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
@@ -224,7 +233,6 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
 
                 }
                 PlayerState.PAUSE -> {
-                    Log.d("TAG", "updatePlayInfor   bind(): PAUSE")
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
                             .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
@@ -237,10 +245,8 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                     pgAudio.visibility = View.VISIBLE
                 }
                 PlayerState.IDLE -> {
-                    Log.d("TAG", "updatePlayInfor   bind(): IDLE")
                     pgAudio.visibility = View.GONE
                     waveView.visibility = View.INVISIBLE
-                    pgAudio.resetView()
 
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
@@ -266,8 +272,8 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
             when (p0.id) {
                 R.id.iv_controller_audio -> controllerAudio()
                 R.id.ln_item_audio_cutter_screen -> {
-                    controllerAudio()
-//                    mCallBack.onCutItemClicked(itemAudio)
+//                    controllerAudio()
+                    mCallBack.onCutItemClicked(itemAudio)
                 }
                 R.id.ln_menu -> showPopupMenu(itemAudio)
             }
@@ -309,11 +315,6 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                     R.id.menu_play -> {
                         controllerAudio()
                     }
-                    /*  R.id.menu_contacts -> {
-
-                          mCallBack.setRingtoneContact(itemAudio.audioFile.file.absolutePath)
-  //                        Toast.makeText(mContext, "contacts", Toast.LENGTH_SHORT).show()
-                      }*/
                     R.id.menu_setas -> {
                         mCallBack.showDialogSetAs(itemAudio)
                     }
