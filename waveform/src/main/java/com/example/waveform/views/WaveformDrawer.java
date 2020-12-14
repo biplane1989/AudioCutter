@@ -1,14 +1,20 @@
 package com.example.waveform.views;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import com.example.waveform.R;
+import com.example.waveform.Utils;
 import com.example.waveform.soundfile.AudioDecoder;
 
 class WaveformDrawer {
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private AudioDecoder mAudioDecoder;
     private View mView;
 
@@ -24,7 +30,10 @@ class WaveformDrawer {
 
     private boolean mInitialized;
     private int mOffset;
-
+    private final String waitingForLoadingText;
+    private final Rect textBounds = new Rect();
+    private ScaleGestureDetector mScaleGestureDetector;
+    private float mInitialScaleSpan;
     WaveformDrawer(View view, int waveformColor, float waveformLineWidth) {
         mView = view;
         mOffset = 0;
@@ -36,11 +45,39 @@ class WaveformDrawer {
         mPaint.setStrokeWidth(waveformLineWidth);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
 
+        mTextPaint.setColor(Color.BLACK);
+        mTextPaint.setTextSize(Utils.Companion.dpToPx(mView.getContext(), 16));
+
+        waitingForLoadingText = mView.getResources().getString(R.string.waiting_for_loading_waveform);
+
         mLenByZoomLevel = null;
         mZoomFactorByZoomLevel = null;
+        mScaleGestureDetector = new ScaleGestureDetector(
+                view.getContext(),
+                new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                    public boolean onScaleBegin(ScaleGestureDetector d) {
+                        mInitialScaleSpan = Math.abs(d.getCurrentSpanX());
+                        return true;
+                    }
+                    public boolean onScale(ScaleGestureDetector d) {
+                        float scale = Math.abs(d.getCurrentSpanX());
+                        if (scale - mInitialScaleSpan > 40) {
+                            //mListener.waveformZoomIn();
+                            zoomIn();
+                            mInitialScaleSpan = scale;
+                        }
+                        if (scale - mInitialScaleSpan < -40) {
+                            //mListener.waveformZoomOut();
+                            zoomOut();
+                            mInitialScaleSpan = scale;
+                        }
+                        return true;
+                    }
+                });
     }
 
     void computeDoublesForAllZoomLevels(AudioDecoder audioDecoder) {
+        mInitialized = false;
         this.mAudioDecoder = audioDecoder;
         int numFrames = mAudioDecoder.getNumFrames();
 
@@ -133,20 +170,36 @@ class WaveformDrawer {
     }
 
     void onDraw(final Canvas canvas) {
-        int measuredWidth = mView.getMeasuredWidth();
-        int measuredHeight = (int) (mView.getMeasuredHeight() * 0.8f);
-        int start = mOffset;
-        int width = mLenByZoomLevel[mZoomLevel] - start;
-        int ctr = mView.getMeasuredHeight() / 2;
+        if (isInitialized()) {
+            int measuredWidth = mView.getMeasuredWidth();
+            int measuredHeight = (int) (mView.getMeasuredHeight() * 0.8f);
+            int start = mOffset;
+            int width = mLenByZoomLevel[mZoomLevel] - start;
+            int ctr = mView.getMeasuredHeight() / 2;
 
-        if (width > measuredWidth)
-            width = measuredWidth;
+            if (width > measuredWidth)
+                width = measuredWidth;
 
-        int i = 0;
-        while (i < width) {
-            drawWaveform(canvas, i, start, measuredHeight, ctr, mPaint);
-            i++;
+            int i = 0;
+            while (i < width) {
+                drawWaveform(canvas, i, start, measuredHeight, ctr, mPaint);
+                i++;
+            }
+        } else {
+            drawLoadingText(canvas);
         }
+    }
+
+    private void drawLoadingText(Canvas canvas) {
+        int measuredWidth = mView.getMeasuredWidth();
+        int measuredHeight = (int) (mView.getMeasuredHeight());
+        if (measuredHeight > 0 && measuredWidth > 0) {
+            mTextPaint.getTextBounds(waitingForLoadingText, 0, waitingForLoadingText.length(), textBounds);
+            float x = (measuredWidth - textBounds.width() - mView.getPaddingLeft() + mView.getPaddingRight()) / 2f;
+            float y = (measuredHeight - textBounds.height() - mView.getPaddingTop() + mView.getPaddingBottom()) / 2f;
+            canvas.drawText(waitingForLoadingText, x, y, mTextPaint);
+        }
+
     }
 
     private void drawWaveform(final Canvas canvas, final int i, final int start, final int measuredHeight, final int ctr, final Paint paint) {
@@ -223,5 +276,46 @@ class WaveformDrawer {
 
     public boolean isInitialized() {
         return mInitialized;
+    }
+
+    boolean onTouchEvent(MotionEvent event){
+        mScaleGestureDetector.onTouchEvent(event);
+        return true;
+    }
+
+    void zoomIn() {
+        if (canZoomIn()) {
+            mZoomLevel++;
+            float factor = mLenByZoomLevel[mZoomLevel] / (float) mLenByZoomLevel[mZoomLevel - 1];
+
+            int offsetCenter = mOffset + (int) (mView.getMeasuredWidth() / factor);
+            offsetCenter *= factor;
+            mOffset = offsetCenter - (int) (mView.getMeasuredWidth() / factor);
+            if (mOffset < 0) {
+                mOffset = 0;
+            }
+            mView.invalidate();
+        }
+    }
+
+    void zoomOut() {
+        if (canZoomOut()) {
+            mZoomLevel--;
+            float factor = mLenByZoomLevel[mZoomLevel + 1] / (float) mLenByZoomLevel[mZoomLevel];
+            int offsetCenter = (int) (mOffset + mView.getMeasuredWidth() / factor);
+            offsetCenter /= factor;
+            mOffset = offsetCenter - (int) (mView.getMeasuredWidth() / factor);
+            if (mOffset < 0)
+                mOffset = 0;
+            mView.invalidate();
+        }
+    }
+
+    boolean canZoomIn() {
+        return (mZoomLevel < mNumZoomLevels - 1);
+    }
+
+    boolean canZoomOut() {
+        return (mZoomLevel > 0);
     }
 }
