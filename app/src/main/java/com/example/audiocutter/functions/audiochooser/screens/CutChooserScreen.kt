@@ -388,6 +388,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             }
             binding.ivCutterScreenBackEdt -> {
                 previousStatus()
+
             }
             binding.ivCutterScreenClose -> {
                 clearText()
@@ -397,6 +398,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             }
         }
     }
+
 
     private fun clearText() {
         if (binding.edtCutterSearch.text.toString().isNotEmpty()) {

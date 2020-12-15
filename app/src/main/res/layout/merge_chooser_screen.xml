@@ -197,8 +197,8 @@
 
                     <ImageView
                         android:id="@+id/iv_next_mer"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="@dimen/d_24"
+                        android:layout_height="@dimen/d_24"
                         android:scaleType="centerInside"
                         android:src="@drawable/ic_mixer_next"
                         app:tint="@color/colorgray" />
