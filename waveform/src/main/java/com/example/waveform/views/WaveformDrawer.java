@@ -5,9 +5,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
-import android.view.View;
 
 import com.example.waveform.R;
 import com.example.waveform.Utils;
@@ -17,39 +14,40 @@ class WaveformDrawer {
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private AudioDecoder mAudioDecoder;
-    private View mView;
+    private WaveformView1 mWaveformmView;
 
     private float range;
     private float scaleFactor;
     private float minGain;
 
-    private int mZoomLevel;
-    private int mNumZoomLevels;
+    protected int mZoomLevel;
+    protected int mNumZoomLevels;
 
-    private int[] mLenByZoomLevel;
-    private float[] mZoomFactorByZoomLevel;
+    protected int[] mLenByZoomLevel;
+    protected float[] mZoomFactorByZoomLevel;
 
     private boolean mInitialized;
     int mOffset;
     private final String waitingForLoadingText;
     private final Rect textBounds = new Rect();
+    private final Paint mLinePlayingPaint;
 
-
-    WaveformDrawer(View view, int waveformColor, float waveformLineWidth) {
-        mView = view;
+    WaveformDrawer(WaveformView1 waveformView, int waveformColor, int linePlayingColor) {
+        mWaveformmView = waveformView;
         mOffset = 0;
         mPaint.setAntiAlias(false);
-        mPaint.setColor(view.getResources().getColor(R.color.waveform_selected));
-
         mPaint.setColor(waveformColor);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(waveformLineWidth);
-        mPaint.setStrokeCap(Paint.Cap.ROUND);
+
+        mLinePlayingPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mLinePlayingPaint.setColor(linePlayingColor);
+        mLinePlayingPaint.setAntiAlias(true);
+        mLinePlayingPaint.setStyle(Paint.Style.STROKE);
+        mLinePlayingPaint.setStrokeWidth(4f);
 
         mTextPaint.setColor(Color.BLACK);
-        mTextPaint.setTextSize(Utils.Companion.dpToPx(mView.getContext(), 16));
+        mTextPaint.setTextSize(Utils.Companion.dpToPx(mWaveformmView.getContext(), 16));
 
-        waitingForLoadingText = mView.getResources().getString(R.string.waiting_for_loading_waveform);
+        waitingForLoadingText = mWaveformmView.getResources().getString(R.string.waiting_for_loading_waveform);
 
         mLenByZoomLevel = null;
         mZoomFactorByZoomLevel = null;
@@ -113,7 +111,7 @@ class WaveformDrawer {
         mLenByZoomLevel = new int[4];
         mZoomFactorByZoomLevel = new float[4];
 
-        float ratio = mView.getMeasuredWidth() / (float) numFrames;
+        float ratio = mWaveformmView.getMeasuredWidth() / (float) numFrames;
         if (ratio < 1) {
             mLenByZoomLevel[0] = Math.round(numFrames * ratio);
             mZoomFactorByZoomLevel[0] = ratio;
@@ -143,7 +141,7 @@ class WaveformDrawer {
 
             mZoomLevel = 0;
             for (int i = 0; i < 4; i++) {
-                if (mLenByZoomLevel[mZoomLevel] - mView.getMeasuredWidth() > 0) {
+                if (mLenByZoomLevel[mZoomLevel] - mWaveformmView.getMeasuredWidth() > 0) {
                     break;
                 } else {
                     mZoomLevel = i;
@@ -155,11 +153,11 @@ class WaveformDrawer {
 
     void onDraw(final Canvas canvas) {
         if (isInitialized()) {
-            int measuredWidth = mView.getMeasuredWidth();
-            int measuredHeight = (int) (mView.getMeasuredHeight() * 0.8f);
+            int measuredWidth = mWaveformmView.getMeasuredWidth();
+            int measuredHeight = mWaveformmView.getWaveformHeight();
             int start = mOffset;
             int width = mLenByZoomLevel[mZoomLevel] - start;
-            int ctr = mView.getMeasuredHeight() / 2;
+            int ctr = mWaveformmView.getMeasuredHeight() / 2;
 
             if (width > measuredWidth)
                 width = measuredWidth;
@@ -175,12 +173,12 @@ class WaveformDrawer {
     }
 
     private void drawLoadingText(Canvas canvas) {
-        int measuredWidth = mView.getMeasuredWidth();
-        int measuredHeight = (int) (mView.getMeasuredHeight());
+        int measuredWidth = mWaveformmView.getMeasuredWidth();
+        int measuredHeight = (int) (mWaveformmView.getMeasuredHeight());
         if (measuredHeight > 0 && measuredWidth > 0) {
             mTextPaint.getTextBounds(waitingForLoadingText, 0, waitingForLoadingText.length(), textBounds);
-            float x = (measuredWidth - textBounds.width() - mView.getPaddingLeft() + mView.getPaddingRight()) / 2f;
-            float y = (measuredHeight - textBounds.height() - mView.getPaddingTop() + mView.getPaddingBottom()) / 2f;
+            float x = (measuredWidth - textBounds.width() - mWaveformmView.getPaddingLeft() + mWaveformmView.getPaddingRight()) / 2f;
+            float y = (measuredHeight - textBounds.height() - mWaveformmView.getPaddingTop() + mWaveformmView.getPaddingBottom()) / 2f;
             canvas.drawText(waitingForLoadingText, x, y, mTextPaint);
         }
 
@@ -189,7 +187,9 @@ class WaveformDrawer {
     private void drawWaveform(final Canvas canvas, final int i, final int start, final int measuredHeight, final int ctr, final Paint paint) {
         int h = (int) (getScaledHeight(mZoomFactorByZoomLevel[mZoomLevel], start + i) * measuredHeight / 2);
         drawWaveformLine(canvas, i, ctr - h, ctr + 1 + h, paint);
-
+        if (i + start == mWaveformmView.getPlayPos()) {
+            canvas.drawLine(i, mWaveformmView.getDrawingStartY(), i, mWaveformmView.getDrawingEndY(), mLinePlayingPaint);
+        }
     }
 
     private void drawWaveformLine(Canvas canvas, int x, int y0, int y1, Paint paint) {
@@ -262,42 +262,50 @@ class WaveformDrawer {
         return mInitialized;
     }
 
-    void zoomIn() {
+    float zoomIn() {
         if (canZoomIn()) {
             mZoomLevel++;
             float factor = mLenByZoomLevel[mZoomLevel] / (float) mLenByZoomLevel[mZoomLevel - 1];
 
-            int offsetCenter = mOffset + (int) (mView.getMeasuredWidth() / factor);
+            int offsetCenter = mOffset + (int) (mWaveformmView.getMeasuredWidth() / factor);
             offsetCenter *= factor;
-            mOffset = offsetCenter - (int) (mView.getMeasuredWidth() / factor);
+            mOffset = offsetCenter - (int) (mWaveformmView.getMeasuredWidth() / factor);
             if (mOffset < 0) {
                 mOffset = 0;
             }
-            mView.invalidate();
+            mWaveformmView.invalidate();
+            return factor;
         }
+        return -1;
     }
 
-    void zoomOut() {
+    float zoomOut() {
         if (canZoomOut()) {
             mZoomLevel--;
             float factor = mLenByZoomLevel[mZoomLevel + 1] / (float) mLenByZoomLevel[mZoomLevel];
-            int offsetCenter = (int) (mOffset + mView.getMeasuredWidth() / factor);
+            int offsetCenter = (int) (mOffset + mWaveformmView.getMeasuredWidth() / factor);
             offsetCenter /= factor;
-            mOffset = offsetCenter - (int) (mView.getMeasuredWidth() / factor);
+            mOffset = offsetCenter - (int) (mWaveformmView.getMeasuredWidth() / factor);
             if (mOffset < 0)
                 mOffset = 0;
-            mView.invalidate();
+            mWaveformmView.invalidate();
+            return factor;
         }
+        return -1;
     }
 
-    void setParameters(int start, int end, int offset) {
+    boolean setOffset(int offset) {
+        boolean isChanged = false;
         float zoomFactor = mZoomFactorByZoomLevel[mZoomLevel];
-        if ((mAudioDecoder.getNumFrames() * zoomFactor - offset) < mView.getMeasuredWidth()) {
-            mOffset = (int) (mAudioDecoder.getNumFrames() * zoomFactor - mView.getMeasuredWidth());
-        } else {
-            mOffset = offset;
+        if ((mAudioDecoder.getNumFrames() * zoomFactor - offset) < mWaveformmView.getMeasuredWidth()) {
+            offset = (int) (mAudioDecoder.getNumFrames() * zoomFactor - mWaveformmView.getMeasuredWidth());
+            offset = Math.max(0, offset);
         }
-
+        if (mOffset != offset) {
+            mOffset = offset;
+            isChanged = true;
+        }
+        return isChanged;
     }
 
     boolean canZoomIn() {

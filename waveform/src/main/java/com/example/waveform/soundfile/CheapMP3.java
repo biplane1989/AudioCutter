@@ -66,6 +66,7 @@ class CheapMP3 extends CheapSoundFile {
     public String getFiletype() {
         return "MP3";
     }
+
     @Override
     public void readFile(File inputFile)
             throws java.io.IOException {
@@ -78,7 +79,7 @@ class CheapMP3 extends CheapSoundFile {
         mMaxGain = 0;
 
         // No need to handle filesizes larger than can fit in a 32-bit int
-        mFileSize = (int)mInputFile.length();
+        mFileSize = (int) mInputFile.length();
 
         FileInputStream stream = new FileInputStream(mInputFile);
 
@@ -170,7 +171,7 @@ class CheapMP3 extends CheapSoundFile {
                 // 2 channels
                 mGlobalChannels = 2;
                 if (mpgVersion == 1) {
-                    gain = ((buffer[9]  & 0x7F) << 1) +
+                    gain = ((buffer[9] & 0x7F) << 1) +
                             ((buffer[10] & 0x80) >> 7);
                 } else {
                     gain = 0;  // ???
@@ -224,13 +225,13 @@ class CheapMP3 extends CheapSoundFile {
     }
 
     static private int BITRATES_MPEG1_L3[] = {
-            0,  32,  40,  48,  56,  64,  80,  96,
-            112, 128, 160, 192, 224, 256, 320,  0 };
+            0, 32, 40, 48, 56, 64, 80, 96,
+            112, 128, 160, 192, 224, 256, 320, 0};
     static private int BITRATES_MPEG2_L3[] = {
-            0,   8,  16,  24,  32,  40,  48,  56,
-            64,  80,  96, 112, 128, 144, 160, 0 };
+            0, 8, 16, 24, 32, 40, 48, 56,
+            64, 80, 96, 112, 128, 144, 160, 0};
     static private int SAMPLERATES_MPEG1_L3[] = {
-            44100, 48000, 32000, 0 };
+            44100, 48000, 32000, 0};
     static private int SAMPLERATES_MPEG2_L3[] = {
-            22050, 24000, 16000, 0 };
+            22050, 24000, 16000, 0};
 }

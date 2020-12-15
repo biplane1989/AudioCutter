@@ -141,7 +141,7 @@ class WaveformView : View, ProgressListener {
         )
         timeMarkTextMargin = Utils.dpToPx(getContext(), DEFAULT_TIME_TEXT_MARGIN)
         setGestureDetector(context)
-        mWaveformDrawer = WaveformDrawer(this, WAVEFORM_COLOR, waveformLineWidth.toFloat())
+        //mWaveformDrawer = WaveformDrawer(this, WAVEFORM_COLOR, waveformLineWidth.toFloat())
 
     }
 

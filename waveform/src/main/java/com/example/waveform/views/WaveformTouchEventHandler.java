@@ -6,6 +6,9 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
 class WaveformTouchEventHandler {
+    public static final int NONE_RANGE_BUTTON_SELECTED = 0;
+    public static final int LEFT_RANGE_BUTTON_SELECTED = 1 << 1;
+    public static final int RIGHT_RANGE_BUTTON_SELECTED = 1 << 2;
     private ScaleGestureDetector mScaleGestureDetector;
     protected GestureDetector mGestureDetector;
     private boolean mTouchDragging = false;
@@ -16,13 +19,19 @@ class WaveformTouchEventHandler {
     private int mFlingVelocity;
     private long mWaveformTouchStartMsec;
 
-    private int mMaxPos;
-    private int mStartPos;
-    private int mEndPos;
+    protected int mMaxPos;
+    protected int mStartPos;
+    protected int mEndPos;
     protected int mOffsetGoal;
+    protected int mPlaybackPos;
 
-    private boolean mInitialized = false;
+    private int mMinFrameDistance;
     private WaveformView1 mWaveformView;
+
+    protected int mTouchInitialStartPos;
+    protected int mTouchInitialEndPos;
+
+    private int mRangeButtonSelected = NONE_RANGE_BUTTON_SELECTED;
 
     WaveformTouchEventHandler(WaveformView1 waveformView) {
         mWaveformView = waveformView;
@@ -50,7 +59,7 @@ class WaveformTouchEventHandler {
                         return true;
                     }
                 });
-       /* mGestureDetector = new GestureDetector(
+        mGestureDetector = new GestureDetector(
                 waveformView.getContext(),
                 new GestureDetector.SimpleOnGestureListener() {
                     public boolean onFling(
@@ -58,41 +67,106 @@ class WaveformTouchEventHandler {
                         waveformFling(vx);
                         return true;
                     }
-                });*/
+                });
     }
 
     void reset() {
-        mInitialized = false;
+
     }
 
     void init() {
         mMaxPos = mWaveformView.maxPos();
-        mInitialized = true;
+        mOffsetGoal = 0;
+        mFlingVelocity = 0;
+        mOffset = 0;
+        mStartPos = 0;
+        mPlaybackPos = 0;
+        mEndPos = mMaxPos;
+        mMinFrameDistance = WaveformView1.MIN_RANGE_SELECTION_IN_SECONDS * mWaveformView.fps();
 
     }
 
-    boolean isReady() {
-        return mInitialized;
+    void onWaveformDraw() {
+        if (mFlingVelocity != 0) {
+            updateDisplay();
+        }
     }
 
     boolean onTouchEvent(MotionEvent event) {
-        if (!mInitialized) {
+        if (!mWaveformView.isInitialized()) {
             return false;
         }
-        mScaleGestureDetector.onTouchEvent(event);
+        if (mWaveformView.getCursorLeftRect().contains(event.getX(), event.getY())) {
+            mRangeButtonSelected = LEFT_RANGE_BUTTON_SELECTED;
+        }
+        if (mWaveformView.getCursorRightRect().contains(event.getX(), event.getY())) {
+            mRangeButtonSelected = RIGHT_RANGE_BUTTON_SELECTED;
+        }
+        if (mRangeButtonSelected == NONE_RANGE_BUTTON_SELECTED) {
+            mScaleGestureDetector.onTouchEvent(event);
+            if (mGestureDetector.onTouchEvent(event)) {
+                return true;
+            }
+        }
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                waveformTouchStart(event.getX());
+                if (mRangeButtonSelected == NONE_RANGE_BUTTON_SELECTED) {
+                    waveformTouchStart(event.getX());
+                } else {
+                    markerTouchStart(event.getX());
+                }
+
                 break;
             case MotionEvent.ACTION_MOVE:
-                waveformTouchMove(event.getX());
+                if (mRangeButtonSelected == NONE_RANGE_BUTTON_SELECTED) {
+                    waveformTouchMove(event.getX());
+                } else {
+                    markerTouchMove(event.getX());
+                }
                 break;
             case MotionEvent.ACTION_UP:
-                waveformTouchEnd();
+            case MotionEvent.ACTION_CANCEL:
+                if (mRangeButtonSelected == NONE_RANGE_BUTTON_SELECTED) {
+                    waveformTouchEnd();
+                } else {
+                    markerTouchEnd();
+                }
+                mRangeButtonSelected = NONE_RANGE_BUTTON_SELECTED;
                 break;
         }
         return true;
     }
+
+    private void markerTouchStart(float x) {
+        mTouchDragging = true;
+        mTouchStart = x;
+        mTouchInitialStartPos = mStartPos;
+        mTouchInitialEndPos = mEndPos;
+    }
+
+    private void markerTouchMove(float x) {
+        float delta = x - mTouchStart;
+        if (mRangeButtonSelected == LEFT_RANGE_BUTTON_SELECTED) {
+            mStartPos = trap((int) (mTouchInitialStartPos + delta));
+        } else {
+            mEndPos = trap((int) (mTouchInitialEndPos + delta));
+        }
+
+        if ((mEndPos - mStartPos) < mMinFrameDistance) {
+            mEndPos = mStartPos + mMinFrameDistance;
+            if (mEndPos > mWaveformView.maxPos()) {
+                mEndPos = mWaveformView.maxPos();
+            }
+        }
+        mWaveformView.invalidate();
+    }
+
+    private void markerTouchEnd() {
+        mTouchDragging = false;
+        mRangeButtonSelected = NONE_RANGE_BUTTON_SELECTED;
+    }
+
 
     private void waveformFling(float vx) {
         mTouchDragging = false;
@@ -110,15 +184,23 @@ class WaveformTouchEventHandler {
     }
 
     private void waveformTouchMove(float x) {
-        Log.d("taihhhhh", "waveformTouchMove mTouchInitialOffset" + mTouchInitialOffset + " mTouchStart " + mTouchStart + " x " + x);
         changeOffset(trap((int) (mTouchInitialOffset + (mTouchStart - x))));
         updateDisplay();
     }
 
     private void waveformTouchEnd() {
         mTouchDragging = false;
-        // mOffsetGoal = mOffset;
+        mOffsetGoal = mOffset;
         long elapsedMsec = System.currentTimeMillis() - mWaveformTouchStartMsec;
+        // handle clicked event
+        if (elapsedMsec < 300) {
+            int ms = mWaveformView.pixelsToMillisecs((int) mTouchStart);
+            int frameDelta = mWaveformView.millisecsToPixels(ms);
+            int newPos = trap((int) (mWaveformView.getOffset() + frameDelta));
+            mPlaybackPos = newPos;
+            mWaveformView.invalidate();
+        }
+
     }
 
     private int trap(int pos) {
@@ -131,14 +213,13 @@ class WaveformTouchEventHandler {
 
     private void changeOffset(int newOffset) {
         mOffset = newOffset;
-        Log.d("taihhhhh", " mOffset " + mOffset);
     }
 
     private void updateDisplay() {
-        /*if(!mTouchDragging){
+        if (!mTouchDragging) {
             int offsetDelta;
 
-            if(mFlingVelocity != 0){
+            if (mFlingVelocity != 0) {
                 offsetDelta = mFlingVelocity / 30;
                 if (mFlingVelocity > 80) {
                     mFlingVelocity -= 80;
@@ -149,7 +230,16 @@ class WaveformTouchEventHandler {
                 }
 
                 mOffset += offsetDelta;
-            }else{
+                if (mOffset + mWaveformView.getMeasuredWidth() / 2 > mMaxPos) {
+                    mOffset = mMaxPos - mWaveformView.getMeasuredWidth() / 2;
+                    mFlingVelocity = 0;
+                }
+                if (mOffset < 0) {
+                    mOffset = 0;
+                    mFlingVelocity = 0;
+                }
+                mOffsetGoal = mOffset;
+            } else {
                 offsetDelta = mOffsetGoal - mOffset;
 
                 if (offsetDelta > 10)
@@ -162,22 +252,37 @@ class WaveformTouchEventHandler {
                     offsetDelta = -1;
                 else
                     offsetDelta = 0;
-
+                Log.d("taihihi", "onFling offsetDelta " + offsetDelta);
                 mOffset += offsetDelta;
             }
-        }*/
-        mWaveformView.setParameters(mStartPos, mEndPos, mOffset);
-        mWaveformView.invalidate();
+        }
+        if (mWaveformView.setOffset(mOffset)) {
+            mWaveformView.invalidate();
+        }
+
     }
 
-    void onWaveformZoomIn() {
+    void onWaveformZoomIn(float factor) {
         changeOffset(mWaveformView.getOffset());
         mMaxPos = mWaveformView.maxPos();
+        mOffset = mWaveformView.getOffset();
+        mOffsetGoal = mOffset;
+        mStartPos *= factor;
+        mEndPos *= factor;
+        mPlaybackPos *= factor;
+        mMinFrameDistance *= factor;
     }
 
-    void onWaveformZoomOut() {
+    void onWaveformZoomOut(float factor) {
         changeOffset(mWaveformView.getOffset());
         mMaxPos = mWaveformView.maxPos();
+        mOffset = mWaveformView.getOffset();
+        mOffsetGoal = mOffset;
+        mStartPos /= factor;
+        mEndPos /= factor;
+        mPlaybackPos /= factor;
+        mMinFrameDistance /= factor;
+
     }
 
 }
