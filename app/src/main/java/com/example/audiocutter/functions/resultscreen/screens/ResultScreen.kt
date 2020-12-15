@@ -20,6 +20,7 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
+import com.example.audiocutter.core.result.AudioEditorManagerlmpl
 import com.example.audiocutter.databinding.ResultScreenBinding
 import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
 import com.example.audiocutter.functions.audiochooser.dialogs.TypeShare
@@ -78,6 +79,12 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         override fun getLifeCycle(): Lifecycle {
             return lifecycle
         }
+    }
+
+    private val lastItemObserver = Observer<ConvertingItem> {
+
+        binding.tvTitleMusic.text = it.getFileName()
+        binding.tvInfoMusic.text = String.format("%s kb/s", (it.bitRate).toString())
     }
 
     private val processDoneObserver = Observer<AudioFile> {         // observer trang thai done
@@ -221,14 +228,14 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         mResultViewModel.getProcessDoneLiveData().observe(viewLifecycleOwner, processDoneObserver)
         mResultViewModel.getPlayerInfo().observe(viewLifecycleOwner, playInfoObserver)
         mResultViewModel.getErrorLiveData().observe(viewLifecycleOwner, errorObserver)
+
+        ManagerFactory.getAudioEditorManager().getLastItem()
+            .observe(viewLifecycleOwner, lastItemObserver)
         PermissionManager.getAppPermission()
             .observe(this.viewLifecycleOwner, Observer<AppPermission> {
                 if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
-                    viewStateManager.resultScreenSetContactItemClicked(
-                        this,
-                        audioFile!!.file.absolutePath
-                    )
+                    viewStateManager.resultScreenSetContactItemClicked(this, audioFile!!.file.absolutePath)
                 }
                 if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
@@ -372,54 +379,30 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
     private fun setNotifiCation() {
         if (mResultViewModel.setNotification()) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.result_screen_set_notification_successful),
-                Toast.LENGTH_SHORT
-            )
+            Toast.makeText(requireContext(), getString(R.string.result_screen_set_notification_successful), Toast.LENGTH_SHORT)
                 .show()
         } else {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.result_screen_set_notification_fail),
-                Toast.LENGTH_SHORT
-            )
+            Toast.makeText(requireContext(), getString(R.string.result_screen_set_notification_fail), Toast.LENGTH_SHORT)
                 .show()
         }
     }
 
     private fun setAlarm() {
         if (mResultViewModel.setAlarm()) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.result_screen_set_alarm_successful),
-                Toast.LENGTH_SHORT
-            )
+            Toast.makeText(requireContext(), getString(R.string.result_screen_set_alarm_successful), Toast.LENGTH_SHORT)
                 .show()
         } else {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.result_screen_set_alarm_fail),
-                Toast.LENGTH_SHORT
-            )
+            Toast.makeText(requireContext(), getString(R.string.result_screen_set_alarm_fail), Toast.LENGTH_SHORT)
                 .show()
         }
     }
 
     private fun setRingtone() {
         if (mResultViewModel.setRingTone()) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.result_screen_set_ringtone_successful),
-                Toast.LENGTH_SHORT
-            )
+            Toast.makeText(requireContext(), getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
                 .show()
         } else {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.result_screen_set_ringtone_fail),
-                Toast.LENGTH_SHORT
-            )
+            Toast.makeText(requireContext(), getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
                 .show()
         }
     }
@@ -439,8 +422,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
 
     private fun ShowDialogShareFile() {
-        dialogAppShare =
-            DialogAppShare(requireContext(), Utils.getListAppQueryReceiveData(requireContext()), TypeShare.ONLYFILE)
+        dialogAppShare = DialogAppShare(requireContext(), Utils.getListAppQueryReceiveData(requireContext()), TypeShare.ONLYFILE)
         dialogAppShare.setOnCallBack(this)
         dialogAppShare.show(requireActivity().supportFragmentManager, "TAG_DIALOG")
     }

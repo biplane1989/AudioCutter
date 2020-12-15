@@ -38,6 +38,9 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     private val mainScope = MainScope()
     private val currentProcessingItem = MutableLiveData<ConvertingItem>()
     private var latestConvertingItem: ConvertingItem? = null   //phan tu cuoi cung
+
+    private var lastItem = MutableLiveData<ConvertingItem>()
+
     fun init(context: Context) {
         mContext = context
 
@@ -221,6 +224,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             listConvertingItemData.add(item)
             Utils.addGeneratedName(Folder.TYPE_CUTTER, File(cuttingConfig.pathFolder + File.separator + cuttingConfig.fileName))
             latestConvertingItem = item
+            lastItem.postValue(item)
         }
 
         val processingItem = getProcessingItem()
@@ -247,6 +251,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             listConvertingItemData.add(item)
             Utils.addGeneratedName(Folder.TYPE_MIXER, File(mixingConfig.pathFolder + File.separator + mixingConfig.fileName))
             latestConvertingItem = item
+            lastItem.postValue(item)
         }
 
         val processingItem = getProcessingItem()
@@ -273,6 +278,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             listConvertingItemData.add(item)
             Utils.addGeneratedName(Folder.TYPE_MERGER, File(mergingConfig.pathFolder + File.separator + mergingConfig.fileName))
             latestConvertingItem = item
+            lastItem.postValue(item)
         }
         val processingItem = getProcessingItem()
         if (processingItem == null) {
@@ -329,6 +335,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
     override fun getCurrentProcessingItem(): LiveData<ConvertingItem?> { // tra ra live data cho update progressbar
         return currentProcessingItem
+    }
+
+    override fun getLastItem(): LiveData<ConvertingItem> {
+        return lastItem
     }
 
     override fun getListCuttingItems(): LiveData<List<ConvertingItem>> {  // tra live data cho list pending cho cutting

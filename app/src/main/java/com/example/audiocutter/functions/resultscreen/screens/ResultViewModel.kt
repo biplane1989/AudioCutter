@@ -41,7 +41,9 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
                         if (item.id == it.id) {         // neu id item loading = item cuoi cung
                             processingLiveData.postValue(it)
                         } else {
-                            pendingProcessLiveData.postValue(item.getFileName())
+                            val convertingItem = ManagerFactory.getAudioEditorManager()
+                                .getLatestConvertingItem()
+                            pendingProcessLiveData.postValue(convertingItem?.getFileName())
                         }
 
                     }
