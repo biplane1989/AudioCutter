@@ -107,7 +107,7 @@ class SetContactAdapter(context: Context?, var contactCallback: SetContactCallba
 //                    itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
 //                    itemViewHolder.cvDefault.visibility = View.VISIBLE
                     itemViewHolder.llRingToneDefault.visibility = View.VISIBLE
-                    itemViewHolder.tvRingtone.visibility = View.GONE
+                    itemViewHolder.tvRingtone.visibility = View.INVISIBLE
                     itemViewHolder.tvRingtoneDefault.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
                 }
             }

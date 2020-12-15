@@ -145,6 +145,7 @@
                     android:id="@+id/ll_info"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="16dp"
                     android:gravity="bottom"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="@id/iv_avatar"

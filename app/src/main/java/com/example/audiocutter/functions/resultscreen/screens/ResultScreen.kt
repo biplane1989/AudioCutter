@@ -56,7 +56,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
 
     @SuppressLint("SimpleDateFormat")
-    private var simpleDateFormat = SimpleDateFormat("mm:ss")
+    private var simpleDateFormat = SimpleDateFormat("HH:mm:ss")
     private var pendingRequestingPermission = 0
     private val CONTACTS_ITEM_REQUESTING_PERMISSION = 1 shl 4
     private val WRITESETTING_ITEM_REQUESTING_PERMISSION = 1 shl 5

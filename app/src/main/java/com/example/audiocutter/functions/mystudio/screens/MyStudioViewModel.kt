@@ -119,10 +119,11 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             if (it.state == StateLoad.LOADING) {
                 isEmptyStatus.postValue(false)
                 loadingStatus.postValue(true)
+                loadingDone.postValue(false)
             }
             if (it.state == StateLoad.LOADDONE) {       // khi loading xong thi check co data hay khong de show man hinh empty data
-
                 loadingStatus.postValue(false)
+                loadingDone.postValue(true)
                 for (item in it.listAudioFiles) {
                     mListScannedAudioFile.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
                 }
@@ -134,7 +135,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         }
 
         mAudioMediatorLiveData.addSource(listConvertingItems) {
-
             listConvertingIsEmptyStatus = it.size <= 0
             mListConvertingItems.clear()
             if (!it.isEmpty()) {
@@ -191,17 +191,31 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 if (!isActive) {              // khi nguoi dung cancel
                     return@lst
                 }
-                if (it.convertingState in arrayListOf(ConvertingState.WAITING, ConvertingState.PROGRESSING) && filePathMapConvertingItem.containsKey(it.getFilePath()) && filePathMapItemView.containsKey(it.getFilePath())) {
-                    val audioViewItem = filePathMapItemView.get(it.getFilePath())!!
-                    newListAudio.add(audioViewItem.copy())
+//                if (it.convertingState in arrayListOf(ConvertingState.WAITING, ConvertingState.PROGRESSING) && filePathMapConvertingItem.containsKey(it.getFilePath()) && filePathMapItemView.containsKey(it.getFilePath())) {
+                if (filePathMapItemView.containsKey(it.getFilePath())) {
+                    if (filePathMapItemView.get(it.getFilePath())!!.convertingState == ConvertingState.SUCCESS) {
+                        val audioViewItem = filePathMapItemView.get(it.getFilePath())!!
+                        newListAudio.add(audioViewItem.copy())
+                        Log.d(TAG, "mergeList: aloha 1")
+                    } else {
+                        if (isDeleteStatus) {                           // khi dang o trang thai delete
+                            it.itemLoadStatus.deleteState = DeleteState.UNCHECK
+                        }
+                        newListAudio.add(it.copy())
+                        Log.d(TAG, "mergeList: aloha 2")
+                    }
+
                 } else {
                     if (isDeleteStatus) {                           // khi dang o trang thai delete
                         it.itemLoadStatus.deleteState = DeleteState.UNCHECK
                     }
                     newListAudio.add(it.copy())
+                    Log.d(TAG, "mergeList: aloha 3")
                 }
+
             }
         }
+
 
         if (isActive) {                 // o trang thai ton tai thi moi dc update
             mListAudio.clear()
@@ -481,7 +495,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         }
         mAudioMediatorLiveData.postValue(mListAudio)
     }
-
 
 
     fun cancelLoading(id: Int) {

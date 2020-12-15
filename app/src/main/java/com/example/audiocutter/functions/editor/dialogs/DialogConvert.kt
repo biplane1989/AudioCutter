@@ -64,7 +64,7 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, R.style.DialogConvert)
+        setStyle(STYLE_NO_TITLE, R.style.DialogGray)
     }
 
     override fun initViews(view: View, savedInstanceState: Bundle?) {

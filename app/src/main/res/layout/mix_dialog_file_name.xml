@@ -23,52 +23,45 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingTop="@dimen/common_padding_top_dialog">
 
-            <LinearLayout
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="visible"
-                tools:visibility="visible">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/size_item_dialog"
-                    android:paddingHorizontal="@dimen/margin_item_dialog"
-                    android:fontFamily="@font/opensans_bold"
-                    android:gravity="center"
-                    android:text="Audio Mixer"
-                    android:textColor="#2E3041"
-                    android:textSize="20dp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                android:fontFamily="@font/opensans_bold"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/margin_item_dialog"
+                android:text="Audio Mixer"
+                android:textColor="#2E3041"
+                android:textSize="20dp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_item_dialog"
-                android:paddingHorizontal="@dimen/margin_item_dialog"
                 android:fontFamily="@font/opensans_regular"
                 android:gravity="start"
+                android:paddingHorizontal="@dimen/margin_item_dialog"
                 android:text="File Name"
                 android:textColor="#6E6E6E"
                 android:textSize="12dp" />
 
             <EditText
-                android:theme="@style/editTextTheme"
-                android:singleLine="true"
                 android:id="@+id/edt_file_name"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/size_item_dialog"
-                android:layout_marginTop="@dimen/margin_item_dialog"
                 android:layout_marginHorizontal="@dimen/margin_item_dialog"
+                android:layout_marginTop="@dimen/margin_item_dialog"
                 android:layout_marginBottom="@dimen/margin_item_dialog"
                 android:background="@drawable/bg_edt_ctm"
                 android:fontFamily="@font/opensans_regular"
                 android:hint="Audio Mix"
+                android:singleLine="true"
                 android:textColor="#2E3041"
-                android:textSize="@dimen/text_size_edt" />
+                android:textSize="@dimen/text_size_edt"
+                android:theme="@style/editTextTheme" />
 
             <LinearLayout
                 android:layout_width="match_parent"

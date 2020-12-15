@@ -12,12 +12,11 @@
         android:id="@+id/ll_audio_item_header"
         android:layout_width="match_parent"
         android:layout_height="@dimen/common_size_item_height"
-        android:paddingRight="@dimen/common_padding_right"
+        android:background="?attr/selectableItemBackground"
         android:paddingLeft="@dimen/common_padding_left"
-        android:background="?attr/selectableItemBackground">
+        android:paddingRight="@dimen/common_padding_right">
 
-
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/cv_avatar"
             android:layout_width="@dimen/common_size_item_imagview"
             android:layout_height="@dimen/common_size_item_imagview"
@@ -26,7 +25,19 @@
             android:src="@drawable/my_studio_item_ic_avatar"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/roundedCornersImageView"/>
+
+        <!--        <ImageView-->
+        <!--            android:id="@+id/cv_avatar"-->
+        <!--            android:layout_width="@dimen/common_size_item_imagview"-->
+        <!--            android:layout_height="@dimen/common_size_item_imagview"-->
+        <!--            android:layout_marginStart="@dimen/common_padding_left"-->
+        <!--            android:scaleType="fitXY"-->
+        <!--            android:src="@drawable/my_studio_item_ic_avatar"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent" />-->
 
         <TextView
             android:id="@+id/tv_title_music"
@@ -85,13 +96,13 @@
 
 
     <LinearLayout
-        android:paddingLeft="@dimen/common_padding_left"
-        android:paddingRight="@dimen/common_padding_right"
         android:id="@+id/ll_play_music"
         android:layout_width="match_parent"
         android:layout_height="34dp"
         android:gravity="center"
         android:orientation="horizontal"
+        android:paddingLeft="@dimen/common_padding_left"
+        android:paddingRight="@dimen/common_padding_right"
         android:visibility="visible">
 
         <ImageView

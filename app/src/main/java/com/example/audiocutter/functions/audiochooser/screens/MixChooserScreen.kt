@@ -159,6 +159,11 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 audioMixModel.stop()
                 searchAudioByName(textChange.toString())
+                if (textChange.toString() != "") {
+                    binding.ivMixerScreenClose.visibility = View.VISIBLE
+                } else {
+                    binding.ivMixerScreenClose.visibility = View.INVISIBLE
+                }
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -203,7 +208,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
 
     private fun hideOrShowEditText(status: Int) {
         binding.ivMixerScreenBackEdt.visibility = status
-        binding.ivMixerScreenClose.visibility = status
+//        binding.ivMixerScreenClose.visibility = status
         binding.edtMixerSearch.visibility = status
     }
 

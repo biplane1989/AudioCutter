@@ -47,7 +47,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     private val TAG = "giangtd"
 
     @SuppressLint("SimpleDateFormat")
-    private var simpleDateFormat = SimpleDateFormat("mm:ss")
+    private var simpleDateFormat = SimpleDateFormat("HH:mm:ss")
 
     private var mListAudio = ArrayList<AudioFileView>()
     private lateinit var recyclerView: RecyclerView
@@ -116,13 +116,13 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         } else {
             val newItem = payloads.firstOrNull() as AudioFileView
 
-            Log.d(TAG, "onBindViewHolder: orange 2" + " status: "+ newItem.convertingState)
+            Log.d(TAG, "onBindViewHolder: orange 2" + " status: " + newItem.convertingState)
             if (holder is SuccessViewHolder) {
 
                 val successViewHolder = holder as SuccessViewHolder
                 when (newItem.itemLoadStatus.deleteState) {
                     DeleteState.HIDE -> {
-                        successViewHolder.ivItemDelete.visibility = View.GONE
+                        successViewHolder.ivItemDelete.visibility = View.INVISIBLE
                         successViewHolder.ivSetting.visibility = View.VISIBLE
                     }
                     DeleteState.UNCHECK -> {
@@ -167,8 +167,8 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 when (newItem.convertingState) {
                     ConvertingState.WAITING -> {
                         loadingViewHolder.tvWait.visibility = View.VISIBLE
-                        loadingViewHolder.pbLoading.visibility = View.GONE
-                        loadingViewHolder.tvLoading.visibility = View.GONE
+                        loadingViewHolder.pbLoading.visibility = View.INVISIBLE
+                        loadingViewHolder.tvLoading.visibility = View.INVISIBLE
                     }
                     ConvertingState.PROGRESSING -> {
                         loadingViewHolder.tvWait.visibility = View.INVISIBLE
@@ -338,68 +338,73 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         }
 
         override fun onClick(view: View) {
-            val audioFileView = getItem(adapterPosition)
-            when (view.id) {
-                R.id.ll_audio_item_header -> {
-                    when (audioFileView.itemLoadStatus.deleteState) {
-                        DeleteState.CHECKED -> {
-                            audioCutterScreenCallback.checkDeletePos(adapterPosition)
+            try {
+                val audioFileView = getItem(adapterPosition)
+                when (view.id) {
+                    R.id.ll_audio_item_header -> {
+                        when (audioFileView.itemLoadStatus.deleteState) {
+                            DeleteState.CHECKED -> {
+                                audioCutterScreenCallback.checkDeletePos(adapterPosition)
+                            }
+                            DeleteState.UNCHECK -> {
+                                audioCutterScreenCallback.checkDeletePos(adapterPosition)
+                            }
+                            DeleteState.HIDE -> {
+                                audioCutterScreenCallback.isShowPlayingAudio(adapterPosition)
+                            }
                         }
-                        DeleteState.UNCHECK -> {
-                            audioCutterScreenCallback.checkDeletePos(adapterPosition)
+                        when (playerState) {
+                            PlayerState.IDLE -> {
+                            }
+                            PlayerState.PAUSE -> {
+                                // khi ở trạng thái delete sẽ không stop dc
+                                if (audioFileView.itemLoadStatus.deleteState == DeleteState.HIDE) {
+                                    audioPlayer.stop()
+                                    playerState = PlayerState.IDLE
+                                }
+                            }
+                            PlayerState.PLAYING -> {
+                                if (audioFileView.itemLoadStatus.deleteState == DeleteState.HIDE) {
+                                    audioPlayer.stop()
+                                    playerState = PlayerState.IDLE
+                                }
+                            }
+                            else -> {
+                                //nothing
+                            }
                         }
-                        DeleteState.HIDE -> {
-                            audioCutterScreenCallback.isShowPlayingAudio(adapterPosition)
-                        }
+
                     }
-                    when (playerState) {
-                        PlayerState.IDLE -> {
-                        }
-                        PlayerState.PAUSE -> {
-                            // khi ở trạng thái delete sẽ không stop dc
-                            if (audioFileView.itemLoadStatus.deleteState == DeleteState.HIDE) {
-                                audioPlayer.stop()
-                                playerState = PlayerState.IDLE
+                    R.id.iv_pause_play_music -> {
+
+                        Log.d(TAG, "onClick: status : " + playerState)
+                        when (playerState) {
+                            PlayerState.IDLE -> {
+                                lifecycleCoroutineScope.launch {
+                                    audioPlayer.play(audioFileView.audioFile)
+                                    Log.d(TAG, "onClick: audioFileView.audioFile uri : " + audioFileView.audioFile.uri)
+                                }
                             }
-                        }
-                        PlayerState.PLAYING -> {
-                            if (audioFileView.itemLoadStatus.deleteState == DeleteState.HIDE) {
-                                audioPlayer.stop()
-                                playerState = PlayerState.IDLE
+                            PlayerState.PAUSE -> {
+                                audioPlayer.resume()
                             }
-                        }
-                        else -> {
-                            //nothing
+                            PlayerState.PLAYING -> {
+                                audioPlayer.pause()
+                            }
+                            else -> {
+                                //nothing
+                            }
                         }
                     }
 
-                }
-                R.id.iv_pause_play_music -> {
-
-                    Log.d(TAG, "onClick: status : " + playerState)
-                    when (playerState) {
-                        PlayerState.IDLE -> {
-                            lifecycleCoroutineScope.launch {
-                                audioPlayer.play(audioFileView.audioFile)
-                                Log.d(TAG, "onClick: audioFileView.audioFile uri : " + audioFileView.audioFile.uri)
-                            }
-                        }
-                        PlayerState.PAUSE -> {
-                            audioPlayer.resume()
-                        }
-                        PlayerState.PLAYING -> {
-                            audioPlayer.pause()
-                        }
-                        else -> {
-                            //nothing
-                        }
+                    R.id.iv_setting -> {
+                        audioCutterScreenCallback.showMenu(view, audioFileView.audioFile)
                     }
                 }
-
-                R.id.iv_setting -> {
-                    audioCutterScreenCallback.showMenu(view, audioFileView.audioFile)
-                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
+
         }
     }
 
@@ -473,11 +478,11 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             when (loadingItem.convertingState) {
                 ConvertingState.WAITING -> {
                     tvWait.visibility = View.VISIBLE
-                    pbLoading.visibility = View.GONE
-                    tvLoading.visibility = View.GONE
+                    pbLoading.visibility = View.INVISIBLE
+                    tvLoading.visibility = View.INVISIBLE
                 }
                 ConvertingState.PROGRESSING -> {
-                    tvWait.visibility = View.GONE
+                    tvWait.visibility = View.INVISIBLE
                     pbLoading.visibility = View.VISIBLE
                     tvLoading.visibility = View.VISIBLE
                     pbLoading.max = 100
@@ -514,7 +519,6 @@ class MusicDiffCallBack : DiffUtil.ItemCallback<AudioFileView>() {
 
     override fun areItemsTheSame(oldItemView: AudioFileView, newItemView: AudioFileView): Boolean {
         return oldItemView.audioFile.file.absoluteFile == newItemView.audioFile.file.absoluteFile
-//        return oldItemView.audioFile.fileName == newItemView.audioFile.fileName
     }
 
     override fun areContentsTheSame(oldItemView: AudioFileView, newItemView: AudioFileView): Boolean {
@@ -522,7 +526,6 @@ class MusicDiffCallBack : DiffUtil.ItemCallback<AudioFileView>() {
     }
 
     override fun getChangePayload(oldItem: AudioFileView, newItem: AudioFileView): Any? {
-
         return newItem
     }
 }

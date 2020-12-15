@@ -21,7 +21,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/opensans_bold"
-                android:gravity="center_vertical"
                 android:paddingLeft="@dimen/d_16"
                 android:text="@string/main_screen_title"
                 android:textColor="@color/main_screen_title_text_color"
@@ -32,6 +31,7 @@
                 android:id="@+id/btn_vip"
                 android:layout_width="@dimen/d_30"
                 android:layout_height="@dimen/d_48"
+                android:layout_gravity="top"
                 android:background="?android:selectableItemBackground"
                 android:scaleType="centerInside"
                 android:src="@drawable/home_screen_ic_vip" />
@@ -40,6 +40,7 @@
                 android:id="@+id/advertisement_button"
                 android:layout_width="@dimen/d_30"
                 android:layout_height="@dimen/d_48"
+                android:layout_gravity="top"
                 android:background="?android:selectableItemBackground"
                 android:scaleType="centerInside"
                 android:src="@drawable/home_ic_advertisement" />
@@ -48,6 +49,8 @@
                 android:id="@+id/setting_button"
                 android:layout_width="@dimen/d_30"
                 android:layout_height="@dimen/d_48"
+                android:layout_gravity="top"
+                android:layout_marginEnd="10dp"
                 android:background="?android:selectableItemBackground"
                 android:scaleType="centerInside"
                 android:src="@drawable/home_ic_setting" />

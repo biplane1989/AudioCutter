@@ -70,9 +70,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     var currentPos = -1
 
     private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
-        if(listMusic == null){
+        if (listMusic == null) {
             binding.rvAudioCutter.visibility = View.INVISIBLE
-        }else{
+        } else {
             if (listMusic.isEmpty()) {
                 showEmptyList()
             } else {
@@ -171,6 +171,11 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 audioCutterModel.stop()
                 searchAudioByName(textChange.toString())
+                if (textChange.toString() != "") {
+                    binding.ivCutterScreenClose.visibility = View.VISIBLE
+                } else {
+                    binding.ivCutterScreenClose.visibility = View.INVISIBLE
+                }
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -207,7 +212,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
     private fun hideOrShowEditText(status: Int) {
         binding.ivCutterScreenBackEdt.visibility = status
-        binding.ivCutterScreenClose.visibility = status
+//        binding.ivCutterScreenClose.visibility = status
         binding.edtCutterSearch.visibility = status
     }
 
@@ -298,7 +303,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             ContactPermissionDialog.newInstance {
                 resetRequestingPermission()
                 pendingRequestingPermission = CUT_CHOOSE_REQUESTING_PERMISSION
-               checkPermissionRequest()
+                checkPermissionRequest()
             }
                 .show(requireActivity().supportFragmentManager, ContactPermissionDialog::class.java.name)
         }
@@ -330,12 +335,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
     override fun onCutItemClicked(itemAudio: AudioCutterView) {
         if (itemAudio.audioFile.duration < MIN_DURATION) {
-            val dialogSnack =
-                Snackbar.make(
-                    requireView(),
-                    getString(R.string.notification_file_was_short_mystudio_screen),
-                    Snackbar.LENGTH_SHORT
-                )
+            val dialogSnack = Snackbar.make(requireView(), getString(R.string.notification_file_was_short_mystudio_screen), Snackbar.LENGTH_SHORT)
             dialogSnack.show()
         } else {
             viewStateManager.onCuttingItemClicked(this, itemAudio)

@@ -275,6 +275,14 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
                 mListAudios.add(index, AudioCutterView(item.audioFile, isCheckChooseItem = false))
             }
         }
+
+        var count = 0           // xu ly khi delete: dong bo hoa item mergerChose screen & preview sreen
+        for (item in mListAudios) {
+            if (item.isCheckChooseItem) {
+                count++
+            }
+        }
+        _stateChecked.postValue(count)
         _listAudioFiles.postValue(mListAudios)
     }
 

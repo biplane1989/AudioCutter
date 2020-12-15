@@ -48,12 +48,10 @@ class MergeChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
         }
     }
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MergeHolder {
         val view = LayoutInflater.from(mContext).inflate(R.layout.item_audio_merger, parent, false)
         return MergeHolder(view)
     }
-
 
     override fun onBindViewHolder(holder: MergeHolder, position: Int) {
         holder.bind()
@@ -74,7 +72,7 @@ class MergeChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
         } else {
-            val itemAudioFile = getItem(position)
+//            val itemAudioFile = getItem(position)
 //            val audioCutterView = payloads.firstOrNull() as AudioCutterView
 //            val isChecked = payloads.firstOrNull() as Boolean
 
@@ -204,8 +202,9 @@ class MergeChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 PlayerState.PLAYING -> {
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-                                .toInt())).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
                     }
@@ -216,8 +215,9 @@ class MergeChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 PlayerState.PAUSE -> {
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-                                .toInt())).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -228,8 +228,9 @@ class MergeChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 PlayerState.IDLE -> {
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-                                .toInt())).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -333,8 +334,9 @@ class MergeChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 PlayerState.PLAYING -> {
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-                                .toInt())).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
                     }
@@ -346,8 +348,9 @@ class MergeChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 PlayerState.PAUSE -> {
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-                                .toInt())).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -362,8 +365,9 @@ class MergeChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
 
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-                                .toInt())).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -408,7 +412,6 @@ class MergeChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
             }
         }
 
-
         private fun controllerAudio() {
             val itemAudio = getItem(adapterPosition)
             if (adapterPosition == -1) {
@@ -417,6 +420,7 @@ class MergeChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
             when (playerState) {
                 PlayerState.IDLE -> {
                     lifecycleCoroutineScope.launch {
+                        pgAudio.resetView()
                         audioPlayer.play(itemAudio.audioFile)
                     }
 //                    mCallBack.play(adapterPosition)

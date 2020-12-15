@@ -2,34 +2,36 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#FFFFFF"
+        android:gravity="center"
+        android:orientation="vertical"
         android:padding="16dp">
 
         <FrameLayout
             android:id="@+id/fm_splash"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_weight="0.4"
             app:layout_constraintBottom_toTopOf="@+id/cl_bot"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_bot"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/fm_splash">
+            android:layout_weight="0.6"
+            android:gravity="center"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tv_inducation"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="71dp"
                 android:fontFamily="@font/opensans_bold"
                 android:gravity="center"
                 android:text="@string/introduction_screen_title"
@@ -44,6 +46,7 @@
                 android:id="@+id/tv_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:fontFamily="@font/opensans_regular"
                 android:gravity="center"
                 android:lineSpacingExtra="5dp"
@@ -55,11 +58,11 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_inducation" />
 
-
             <ImageView
                 android:id="@+id/btn_start"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
+                android:layout_centerInParent="true"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/main_screen_item_selector_mp3_cutter"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -69,6 +72,7 @@
                 android:id="@+id/tv_start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:fontFamily="@font/opensans_bold"
                 android:text="@string/introduction_info_screen_next"
                 android:textColor="#FFFFFF"
@@ -78,7 +82,6 @@
                 app:layout_constraintStart_toStartOf="@id/btn_start"
                 app:layout_constraintTop_toTopOf="@id/btn_start" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </layout>
 

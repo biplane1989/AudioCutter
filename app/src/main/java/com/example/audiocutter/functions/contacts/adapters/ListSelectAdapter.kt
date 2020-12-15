@@ -44,8 +44,9 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
     private val TAG = "giangtd"
     private lateinit var recyclerView: RecyclerView
+
     @SuppressLint("SimpleDateFormat")
-    private var simpleDateFormat = SimpleDateFormat("mm:ss")
+    private var simpleDateFormat = SimpleDateFormat("HH:mm:ss")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         recyclerView = parent as RecyclerView
@@ -204,8 +205,9 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
             if (selectItemView.audioFile.bitmap != null) {
                 Glide.with(itemView).load(selectItemView.audioFile.bitmap)
-                    .transform(RoundedCorners(Utils.convertDp2Px(20, itemView.context).toInt()))
+//                    .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
                     .into(ivAvatarSelect)
+
             } else {
                 ivAvatarSelect.setImageResource(R.drawable.my_studio_item_ic_avatar)
             }

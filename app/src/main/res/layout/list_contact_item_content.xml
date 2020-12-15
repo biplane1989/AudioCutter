@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/common_padding_left"
     android:paddingRight="@dimen/common_padding_right">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/iv_avatar"
         android:layout_width="@dimen/common_size_item_imagview"
         android:layout_height="@dimen/common_size_item_imagview"
@@ -17,7 +17,19 @@
         android:src="@drawable/list_contact_item_avatar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/roundedCornersImageView" />
+
+<!--    <ImageView-->
+<!--        android:id="@+id/iv_avatar"-->
+<!--        android:layout_width="@dimen/common_size_item_imagview"-->
+<!--        android:layout_height="@dimen/common_size_item_imagview"-->
+<!--        android:layout_marginLeft="@dimen/common_padding_left"-->
+<!--        android:scaleType="fitXY"-->
+<!--        android:src="@drawable/list_contact_item_avatar"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
 
     <TextView
@@ -63,7 +75,6 @@
         android:layout_marginLeft="@dimen/common_size_item_padding_left"
         android:gravity="top"
         android:orientation="horizontal"
-        android:paddingRight="10dp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
