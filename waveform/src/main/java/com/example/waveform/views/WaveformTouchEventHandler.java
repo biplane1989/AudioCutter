@@ -30,6 +30,7 @@ class WaveformTouchEventHandler {
 
     protected int mTouchInitialStartPos;
     protected int mTouchInitialEndPos;
+    private boolean mIsPlayingLineSliding = false;
 
     private int mRangeButtonSelected = NONE_RANGE_BUTTON_SELECTED;
 
@@ -133,6 +134,7 @@ class WaveformTouchEventHandler {
                     markerTouchEnd();
                 }
                 mRangeButtonSelected = NONE_RANGE_BUTTON_SELECTED;
+                mIsPlayingLineSliding = false;
                 break;
         }
         return true;
@@ -158,6 +160,14 @@ class WaveformTouchEventHandler {
             if (mEndPos > mWaveformView.maxPos()) {
                 mEndPos = mWaveformView.maxPos();
             }
+        }
+        if (mPlaybackPos < mStartPos) {
+            mPlaybackPos = mStartPos;
+            mIsPlayingLineSliding = true;
+        }
+        if (mPlaybackPos > mEndPos) {
+            mPlaybackPos = mEndPos;
+            mIsPlayingLineSliding = true;
         }
         mWaveformView.invalidate();
     }
@@ -197,6 +207,10 @@ class WaveformTouchEventHandler {
             int ms = mWaveformView.pixelsToMillisecs((int) mTouchStart);
             int frameDelta = mWaveformView.millisecsToPixels(ms);
             int newPos = trap((int) (mWaveformView.getOffset() + frameDelta));
+            if (newPos < mStartPos || newPos > mEndPos) {
+                return;
+            }
+
             mPlaybackPos = newPos;
             mWaveformView.invalidate();
         }

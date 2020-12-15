@@ -27,6 +27,7 @@ class WaveformView1 : View, ProgressListener {
         val DEFAULT_LINE_SELECTION_COLOR = parseColor("#D8D8D8")
         val DEFAULT_LINE_PLAYING_COLOR = parseColor("#FF6161")
         val DEFAULT_SELECT_TEXT_COLOR = parseColor("#707489")
+        const val RANGE_SELECTION_TOTAL_INTERVAL = 6
 
     }
 
@@ -89,6 +90,7 @@ class WaveformView1 : View, ProgressListener {
         if (factor != -1f) {
             mTouchEventHandler.onWaveformZoomIn(factor)
             setOffset(getOffset())
+            mRangeDrawer.onWaveformZoomIn(factor)
             invalidate()
         }
 
@@ -102,6 +104,7 @@ class WaveformView1 : View, ProgressListener {
         if (factor != -1f) {
             mTouchEventHandler.onWaveformZoomOut(factor)
             setOffset(getOffset())
+            mRangeDrawer.onWaveformZoomOut(factor)
             invalidate()
         }
     }
@@ -149,7 +152,11 @@ class WaveformView1 : View, ProgressListener {
     }
 
     protected fun setOffset(offset: Int): Boolean {
-        return mWaveformDrawer.setOffset(offset)
+        if (mWaveformDrawer.setOffset(offset)) {
+            mRangeDrawer.onChangeOffset()
+            return true;
+        }
+        return false;
     }
 
     protected fun getOffset(): Int {
@@ -238,11 +245,10 @@ class WaveformView1 : View, ProgressListener {
     protected fun getCursorRightRect(): RectF {
         return mRangeDrawer.mCursorRightRect
     }
-    protected fun duration():Long{
+
+    protected fun duration(): Long {
         return mDuration
     }
-
-
 
 
 }
