@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.lifecycle.*
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -33,6 +34,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.util.*
+import java.util.Locale.UK
+import kotlin.collections.ArrayList
 
 interface AudioCutterScreenCallback {
     fun showMenu(view: View, audioFile: AudioFile)
@@ -47,7 +51,8 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     private val TAG = "giangtd"
 
     @SuppressLint("SimpleDateFormat")
-    private var simpleDateFormat = SimpleDateFormat("HH:mm:ss")
+    private var simpleDateFormatHour = SimpleDateFormat("HH:mm:ss", Locale.UK)
+    private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
     private var mListAudio = ArrayList<AudioFileView>()
     private lateinit var recyclerView: RecyclerView
@@ -229,6 +234,13 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             sbMusic.progress = playerInfo.posision
             tvTimeLife.text = simpleDateFormat.format(playerInfo.posision)
 
+            if (audioFileView.audioFile.duration.toInt() / 1000 > 3600) {
+                tvTimeLife.text = simpleDateFormatHour.format(playerInfo.posision)
+
+            } else {
+                tvTimeLife.text = simpleDateFormat.format(playerInfo.posision)
+            }
+
             Log.d(TAG, "onClick updatePlayInfor: " + playerInfo.playerState)
             when (playerInfo.playerState) {
                 PlayerState.PLAYING -> {
@@ -283,7 +295,22 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 tvInfo.setText(((audioFileView.audioFile.size) / (1024)).toString() + " KB" + " | " + bitrate + "kb/s")
             }
 
-            tvTotal.text = "/" + simpleDateFormat.format(audioFileView.audioFile.duration.toInt())
+            Log.d(TAG, "onBind: duration: " + audioFileView.audioFile.duration.toInt())
+
+            if (audioFileView.audioFile.duration.toInt() / 1000 > 3600) {
+                tvTotal.text = "/" + simpleDateFormatHour.format(audioFileView.audioFile.duration.toInt())
+                tvTimeLife.width = Utils.getWidthText(simpleDateFormatHour.format(audioFileView.audioFile.duration), itemView.context)
+                    .toInt() + 25
+                tvTotal.width = Utils.getWidthText(simpleDateFormatHour.format(audioFileView.audioFile.duration), itemView.context)
+                    .toInt() + 25
+            } else {
+                tvTotal.text = "/" + simpleDateFormat.format(audioFileView.audioFile.duration.toInt())
+                tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(audioFileView.audioFile.duration), itemView.context)
+                    .toInt() + 25
+                tvTotal.width = Utils.getWidthText(simpleDateFormat.format(audioFileView.audioFile.duration), itemView.context)
+                    .toInt() + 25
+            }
+
 
             if (audioFileView.isExpanded) {
                 llPlayMusic.visibility = View.VISIBLE
@@ -312,8 +339,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
             }
 
-            tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(audioFileView.audioFile.duration), itemView.context)
-                .toInt() + 50
+
 
             llAudioHeader.setOnClickListener(this)
 
@@ -518,7 +544,8 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 class MusicDiffCallBack : DiffUtil.ItemCallback<AudioFileView>() {
 
     override fun areItemsTheSame(oldItemView: AudioFileView, newItemView: AudioFileView): Boolean {
-        return oldItemView.audioFile.file.absoluteFile == newItemView.audioFile.file.absoluteFile
+//        return oldItemView.audioFile.file.absoluteFile == newItemView.audioFile.file.absoluteFile
+        return oldItemView.audioFile == newItemView.audioFile
     }
 
     override fun areContentsTheSame(oldItemView: AudioFileView, newItemView: AudioFileView): Boolean {
