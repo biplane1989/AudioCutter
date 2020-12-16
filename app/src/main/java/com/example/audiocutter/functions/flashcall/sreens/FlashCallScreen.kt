@@ -355,21 +355,23 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
 
                 flashTypeDialog = FlashTypeDialog.newInstance(num)
                 flashTypeDialog.setOnCallBack(this)
-                flashTypeDialog.show(childFragmentManager, "TAG")
+                flashTypeDialog.show(childFragmentManager, FlashTypeDialog::class.java.name)
             }
             binding.tbEndTime -> {
                 numCheckClick = 2
-                dialogSettime.show(childFragmentManager, "TAG")
+                dialogSettime.show(childFragmentManager, SettimeDialog::class.java.name)
             }
             binding.tbStartTime -> {
                 numCheckClick = 1
-                dialogSettime.show(childFragmentManager, "TAG")
+                dialogSettime.show(childFragmentManager, SettimeDialog::class.java.name)
             }
             binding.tvTestSpeedFlashcall -> {
+                numCheckClick = 3
                 ManagerFactory.getFlashCallSetting().startTestingLightningSpeed()
                 changeColorButton(R.color.colorYelowDark, R.color.colorgray)
             }
             binding.tvStopTestSpeedFlashcall -> {
+                numCheckClick = 4
                 ManagerFactory.getFlashCallSetting().stopTestingLightningSpeed()
                 changeColorButton(R.color.colorgray, R.color.colorYelowDark)
             }
@@ -422,7 +424,6 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
         ManagerFactory.getFlashCallSetting().changeFlashCallConfig(flashCallConfig)
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         when (seekBar) {
             binding.sbNumberOfLightning -> {
@@ -435,11 +436,11 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
             }
             binding.sbLinghtningSpeedFlcall -> {
 
-                val speedValue =
-                    Utils.convertValue(MIN_PROGRESS, MAX_PROGRESS, MIN_VALUE, MAX_VALUE, progress)
-
+                val speedValue = Utils.convertValue(MIN_PROGRESS, MAX_PROGRESS, MIN_VALUE, MAX_VALUE, progress)
                 flashCallConfig.lightningSpeed = speedValue.toLong()
-                Log.d(TAG, "onProgressChanged:  ${flashCallConfig.lightningSpeed}")
+                if (fromUser && numCheckClick == 3) {
+                    ManagerFactory.getFlashCallSetting().startTestingLightningSpeed()
+                }
             }
         }
         changeFlashConfig(flashCallConfig)
