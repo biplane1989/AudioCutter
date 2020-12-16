@@ -54,9 +54,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
     private val listenerError = MediaPlayer.OnErrorListener { mp, what, extra ->
         Log.d(TAG, "OnErrorListener: what $what isplaying ${mp.isPlaying} MediaPlayer.MEDIA_ERROR_IO ${MediaPlayer.MEDIA_ERROR_IO}")
-        if (what == -38) {
             stop()
-        }
         true
     }
 
@@ -234,10 +232,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                 var changed = false
                 delay(500)
 
-                /*if (playInfoData.playerState == PlayerState.PREPARING) {
-                    changed = false
-                } else*/
-                if (playInfoData.playerState != PlayerState.PREPARING) {
+                if (playInfoData.playerState != PlayerState.PREPARING && playInfoData.playerState != PlayerState.IDLE) {
                     playInfoData.duration = mPlayer.duration
                     var currentPosition = mPlayer.currentPosition
                     if (currentPosition >= mPlayer.duration) {
