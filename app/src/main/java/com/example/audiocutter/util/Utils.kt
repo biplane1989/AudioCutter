@@ -36,7 +36,7 @@ class Utils {
     companion object {
         val KEY_SEND_PATH = "key_send_path"
         val FIVE_SECOND = 5000
-        val TIME_CHANGE = 100
+        val TIME_CHANGE = 1000
         val generatedNameHashMap = HashMap<Folder, HashSet<String>>()
 
 

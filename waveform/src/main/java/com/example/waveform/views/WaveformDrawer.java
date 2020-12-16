@@ -142,6 +142,9 @@ class WaveformDrawer {
             mZoomLevel = 0;
             for (int i = 0; i < 4; i++) {
                 if (mLenByZoomLevel[mZoomLevel] - mWaveformmView.getMeasuredWidth() > 0) {
+                    if (mLenByZoomLevel[mZoomLevel] > mWaveformmView.getMeasuredWidth() && mZoomLevel > 0) {
+                        mZoomLevel--;
+                    }
                     break;
                 } else {
                     mZoomLevel = i;
@@ -157,7 +160,7 @@ class WaveformDrawer {
             int measuredHeight = mWaveformmView.getWaveformHeight();
             int start = mOffset;
             int width = mLenByZoomLevel[mZoomLevel] - start;
-            int ctr = mWaveformmView.getMeasuredHeight() / 2;
+            int ctr = (mWaveformmView.getDrawingStartY() + mWaveformmView.getDrawingEndY())/2;
 
             if (width > measuredWidth)
                 width = measuredWidth;

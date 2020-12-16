@@ -27,11 +27,12 @@ import com.example.audiocutter.util.PreferencesHelper
 import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioCutConfig
 import com.example.core.core.Effect
-import com.example.waveform.views.WaveformView
+import com.example.waveform.views.WaveformView1
+import com.example.waveform.views.WaveformViewListener
 import kotlinx.coroutines.launch
 import java.io.File
 
-class CuttingEditorScreen : BaseFragment(), WaveformView.WaveformEditListener,
+class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
     View.OnClickListener, View.OnLongClickListener, OnDialogAdvanceListener,
     DialogConvert.OnDialogConvertListener {
 
@@ -47,7 +48,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformView.WaveformEditListener,
     private val mHandler: Handler = Handler(Looper.getMainLooper())
     private var runnable = Runnable {}
 
-    private lateinit var mWaveformView: WaveformView
+    private lateinit var mWaveformView: WaveformView1
 
     private lateinit var binding: CuttingEditorScreenBinding
     private lateinit var audioPath: String
@@ -113,7 +114,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformView.WaveformEditListener,
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
-                    mWaveformView.setListener(this@CuttingEditorScreen)
+                    mWaveformView.setWaveformViewListener(this@CuttingEditorScreen)
                     lifecycleScope.launch {
                         mWaveformView.setDataSource(audioPath, it.duration)
                     }
@@ -156,7 +157,8 @@ class CuttingEditorScreen : BaseFragment(), WaveformView.WaveformEditListener,
                     )
                 }
             }
-            binding.waveEditView.setPlayPositionMs(it.posision, false)
+            //binding.waveEditView.setPlayPositionMs(it.posision, false)
+            binding.waveEditView.updatePlaybackInMs(it.posision)
         }
     }
 
@@ -192,11 +194,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformView.WaveformEditListener,
             binding.startTimeTv.layoutParams = layoutParams
         }
         binding.startTimeTv.text = startTimeStr
-
         cuttingViewModel.changeStartPos(startTimeMs.toInt())
-        if (cuttingViewModel.getCuttingCurrPos() < startTimeMs) {
-            mWaveformView.setPlayPositionMs(startTimeMs.toInt(), true)
-        }
     }
 
     override fun onEndTimeChanged(endTimeMs: Long) {
@@ -210,50 +208,30 @@ class CuttingEditorScreen : BaseFragment(), WaveformView.WaveformEditListener,
         }
         binding.endTimeTv.text = Utils.longDurationMsToStringMs(endTimeMs)
         cuttingViewModel.changeEndPos(endTimeMs.toInt())
-        if (cuttingViewModel.getCuttingCurrPos() >= cuttingViewModel.getCuttingEndPos()) {
-            mWaveformView.setPlayPositionMs(cuttingViewModel.getCuttingEndPos().toInt(), true)
-        }
     }
 
     override fun onPlayPositionChanged(positionMs: Int, isPress: Boolean) {
         when {
             positionMs in cuttingViewModel.getCuttingStartPos()..cuttingViewModel.getCuttingEndPos() -> {
-                /* if (isPress && playerState == PlayerState.PLAYING) {
-                     if (positionMs.toLong() == endPos) {
-                         ManagerFactory.getAudioPlayer().stop()
-                         playPos = startPos.toInt()
-                         mEditView.setPlayPositionMs(if (playPos == 0) 50 else playPos, false)
-                     } else {
-                         ManagerFactory.getAudioPlayer().seek(positionMs)
-                         playPos = positionMs
-                     }
-                 } else {
-                     if (playerState != PlayerState.PLAYING) {
-                         ManagerFactory.getAudioPlayer().seek(positionMs)
-                     }
-                     playPos = positionMs
-                 }*/
                 if (isPress) {
                     cuttingViewModel.changeCurrPos(positionMs)
                 } else {
                     cuttingViewModel.changeCurrPos(positionMs, false)
                 }
 
-                if (isPress && positionMs >= cuttingViewModel.getCuttingEndPos()) {
-                    mWaveformView.setPlayPositionMs(
-                        if (cuttingViewModel.getCuttingCurrPos() == 0) RESET_AUDIO_VALUE else cuttingViewModel.getCuttingCurrPos(),
-                        false
-                    )
-                }
-
-            }
-            positionMs < cuttingViewModel.getCuttingStartPos() -> {
-                mWaveformView.setPlayPositionMs(cuttingViewModel.getCuttingStartPos().toInt(), true)
-            }
-            positionMs > cuttingViewModel.getCuttingEndPos() -> {
-                mWaveformView.setPlayPositionMs(cuttingViewModel.getCuttingEndPos().toInt(), true)
             }
         }
+    }
+
+    override fun onDraggingPlayPos(isFinished: Boolean) {
+        cuttingViewModel.pauseAudio()
+        if (isFinished) {
+            cuttingViewModel.changeCurrPos(mWaveformView.getPlaybackInMs())
+        }
+    }
+
+    override fun onPlayPosOutOfRange() {
+        cuttingViewModel.pauseAudio()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -261,12 +239,6 @@ class CuttingEditorScreen : BaseFragment(), WaveformView.WaveformEditListener,
         if (cuttingViewModel.getAudioFile() == null) {
             requireActivity().onBackPressed()
         }
-    }
-
-    override fun onCountAudioSelected(positionMs: Long, isFirstTime: Boolean) {
-        val longDurationMsToStringMs = Utils.longDurationMsToStringMs(positionMs)
-        binding.timeAudioTv.text = longDurationMsToStringMs
-        if (isFirstTime) binding.endTimeTv.text = longDurationMsToStringMs
     }
 
     override fun onClick(v: View?) {
@@ -289,16 +261,16 @@ class CuttingEditorScreen : BaseFragment(), WaveformView.WaveformEditListener,
                 }
             }
             binding.increaseStartTimeIv -> {
-                mWaveformView.setStartTimeMs(mWaveformView.getTimeStart() + Utils.TIME_CHANGE)
+                mWaveformView.setStartTimeMs(mWaveformView.getStartTimeMs() + Utils.TIME_CHANGE)
             }
             binding.reductionStartTimeIv -> {
-                mWaveformView.setStartTimeMs(mWaveformView.getTimeStart() - Utils.TIME_CHANGE)
+                mWaveformView.setStartTimeMs(mWaveformView.getStartTimeMs() - Utils.TIME_CHANGE)
             }
             binding.increaseEndTimeIv -> {
-                mWaveformView.setEndTimeMs(mWaveformView.getTimeEnd() + Utils.TIME_CHANGE)
+                mWaveformView.setEndTimeMs(mWaveformView.getEndTimeMs() + Utils.TIME_CHANGE)
             }
             binding.reductionEndTimeIv -> {
-                mWaveformView.setEndTimeMs(mWaveformView.getTimeEnd() - Utils.TIME_CHANGE)
+                mWaveformView.setEndTimeMs(mWaveformView.getEndTimeMs() - Utils.TIME_CHANGE)
             }
             binding.zoomOutIv -> {
                 binding.waveEditView.zoomOut()
@@ -307,10 +279,11 @@ class CuttingEditorScreen : BaseFragment(), WaveformView.WaveformEditListener,
                 binding.waveEditView.zoomIn()
             }
             binding.preIv -> {
-                mWaveformView.setPlayPositionMs(
-                    if ((cuttingViewModel.getCuttingCurrPos() - Utils.FIVE_SECOND) <= 0) RESET_AUDIO_VALUE else cuttingViewModel.getCuttingCurrPos() - Utils.FIVE_SECOND,
-                    true
-                )
+                if (cuttingViewModel.getCuttingCurrPos() - Utils.FIVE_SECOND <= 0) {
+                    cuttingViewModel.seekAudio(0)
+                } else {
+                    cuttingViewModel.seekAudio(cuttingViewModel.getCuttingCurrPos() - Utils.FIVE_SECOND)
+                }
             }
             binding.playRl -> {
                 runOnUI {
@@ -318,10 +291,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformView.WaveformEditListener,
                 }
             }
             binding.nextIv -> {
-                mWaveformView.setPlayPositionMs(
-                    cuttingViewModel.getCuttingCurrPos() + Utils.FIVE_SECOND,
-                    true
-                )
+                cuttingViewModel.seekAudio(cuttingViewModel.getCuttingCurrPos() + Utils.FIVE_SECOND)
             }
         }
     }
@@ -367,9 +337,9 @@ class CuttingEditorScreen : BaseFragment(), WaveformView.WaveformEditListener,
         runnable = Runnable {
             if (!view.isPressed) return@Runnable
             if (isStart) {
-                mWaveformView.setStartTimeMs(if (isIncrease) mWaveformView.getTimeStart() + 100 else mWaveformView.getTimeStart() - 100)
+                mWaveformView.setStartTimeMs(if (isIncrease) mWaveformView.getStartTimeMs() + 100 else mWaveformView.getStartTimeMs() - 100)
             } else {
-                mWaveformView.setEndTimeMs(if (isIncrease) mWaveformView.getTimeEnd() + 100 else mWaveformView.getTimeEnd() - 100)
+                mWaveformView.setEndTimeMs(if (isIncrease) mWaveformView.getEndTimeMs() + 100 else mWaveformView.getEndTimeMs() - 100)
             }
             mHandler.postDelayed(runnable, 50)
         }

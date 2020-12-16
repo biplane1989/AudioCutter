@@ -62,7 +62,7 @@ class WaveformView : View, ProgressListener {
     private var endTimeMs: Long = 0
     private var trackDurationMs: Long = 0
     private var playPositionMs: Long = 0
-    private var listener: WaveformEditListener? = null
+    private var listener: WaveformViewListener? = null
     private var maxWaveHeight = 0.0
     private var centerLinePaint: Paint? = null
     private var timeMarkPaint: Paint? = null
@@ -158,7 +158,6 @@ class WaveformView : View, ProgressListener {
     suspend fun setDataSource(filePath: String, duration: Long) = withContext(Dispatchers.Default) {
         trackDurationMs = 0
         listener?.let {
-            it.onCountAudioSelected(duration, true)
             it.onPlayPositionChanged(playPositionMs.toInt(), false)
             it.onEndTimeChanged(duration)
         }
@@ -579,8 +578,8 @@ class WaveformView : View, ProgressListener {
         if (listener != null) {
             listener!!.onStartTimeChanged(startTimeMs)
         }
-        if (listener != null)
-            listener!!.onCountAudioSelected(endTimeMs - startTimeMs, false)
+        /*if (listener != null)
+            listener!!.onCountAudioSelected(endTimeMs - startTimeMs, false)*/
     }
 
     private fun updateEndTime() {
@@ -589,8 +588,8 @@ class WaveformView : View, ProgressListener {
         if (listener != null) {
             listener!!.onEndTimeChanged(endTimeMs)
         }
-        if (listener != null)
-            listener!!.onCountAudioSelected(endTimeMs - startTimeMs, false)
+       /* if (listener != null)
+            listener!!.onCountAudioSelected(endTimeMs - startTimeMs, false)*/
     }
 
 
@@ -647,7 +646,7 @@ class WaveformView : View, ProgressListener {
             invalidate()
             if (listener != null) {
                 listener!!.onStartTimeChanged(startTimeMs)
-                listener!!.onCountAudioSelected(endTimeMs - startTimeMs, false)
+                //listener!!.onCountAudioSelected(endTimeMs - startTimeMs, false)
             }
         }
     }
@@ -660,12 +659,12 @@ class WaveformView : View, ProgressListener {
             invalidate()
             if (listener != null) {
                 listener!!.onEndTimeChanged(this.endTimeMs)
-                listener!!.onCountAudioSelected(this.endTimeMs - startTimeMs, false)
+                //listener!!.onCountAudioSelected(this.endTimeMs - startTimeMs, false)
             }
         }
     }
 
-    fun setListener(listener: WaveformEditListener?) {
+    fun setListener(listener: WaveformViewListener?) {
         this.listener = listener
     }
 
@@ -744,13 +743,6 @@ class WaveformView : View, ProgressListener {
 
     override fun reportProgress(fractionComplete: Double): Boolean {
         return true
-    }
-
-    interface WaveformEditListener {
-        fun onStartTimeChanged(startTimeMs: Long)
-        fun onEndTimeChanged(endTimeMs: Long)
-        fun onPlayPositionChanged(positionMs: Int, isPress: Boolean)
-        fun onCountAudioSelected(positionMs: Long, isFirstTime: Boolean)
     }
 
     companion object {

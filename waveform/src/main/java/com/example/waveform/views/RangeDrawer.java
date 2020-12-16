@@ -6,8 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
-import androidx.core.view.accessibility.AccessibilityViewCommand;
-
 import com.example.waveform.R;
 import com.example.waveform.Utils;
 
@@ -144,7 +142,7 @@ public class RangeDrawer {
         String endTimeText = toTimeStr(mWaveformView.pixelsToMillisecs(mWaveformView.getSelectionEnd()), mTimeFormat);
         canvas.drawText(startTimeText, mCursorLeftRect.left, mCursorLeftRect.top - 20f, mTimeRangePaint);
         canvas.drawText(endTimeText, mCursorRightRect.right - mTimeRangePaint.measureText(endTimeText), mCursorLeftRect.top - 20f, mTimeRangePaint);
-        drawDurationTime(canvas);
+        drawTimeDistanceValue(canvas);
         drawTimeInterval(canvas);
     }
 
@@ -154,10 +152,10 @@ public class RangeDrawer {
         }
     }
 
-    private void drawDurationTime(final Canvas canvas) {
+    private void drawTimeDistanceValue(final Canvas canvas) {
         float centerX = mWaveformView.getWaveformWidth() / 2f;
         float y = mWaveformView.getDrawingEndY() + (mWaveformView.getHeight() - (mWaveformView.getDrawingEndY() - mWaveformView.getDrawingStartY())) / 4f;
-        String durationStr = toTimeStr(mWaveformView.duration(), mTimeFormat);
+        String durationStr = toTimeStr(mWaveformView.getEndTimeMs() - mWaveformView.getStartTimeMs(), mTimeFormat);
         canvas.drawText(durationStr, centerX - mDurationPaint.measureText(durationStr) / 2f, y, mDurationPaint);
     }
 
@@ -222,7 +220,8 @@ public class RangeDrawer {
     void onWaveformZoomOut(float factor) {
         splitTimeInterval();
     }
-    void onChangeOffset(){
+
+    void onChangeOffset() {
         splitTimeInterval();
     }
 }

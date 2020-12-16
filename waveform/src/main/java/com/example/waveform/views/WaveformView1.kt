@@ -2,7 +2,6 @@ package com.example.waveform.views
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Color.parseColor
 import android.graphics.RectF
 import android.util.AttributeSet
@@ -13,6 +12,8 @@ import com.example.waveform.soundfile.AudioDecoder
 import com.example.waveform.soundfile.AudioDecoderBuilder
 import com.example.waveform.soundfile.ProgressListener
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class WaveformView1 : View, ProgressListener {
@@ -34,15 +35,17 @@ class WaveformView1 : View, ProgressListener {
     private lateinit var mWaveformDrawer: WaveformDrawer
     private lateinit var mRangeDrawer: RangeDrawer
     private var waveformLineWidth = 0f
-    private val mWaveformViewListener: WaveformViewListener? = null
+    private var mWaveformViewListener: WaveformViewListener? = null
     private var playPositionMs: Long = 0
     private var mFPS = 0
     private var mDuration: Long = 0
     private var mAudioDecoder: AudioDecoder? = null
     private lateinit var mTouchEventHandler: WaveformTouchEventHandler
-    private var isDettachedWindow: Boolean = false
+    private var isDetachedWindow: Boolean = false
+    private val mainScope = MainScope()
+
     override fun reportProgress(fractionComplete: Double): Boolean {
-        return !isDettachedWindow
+        return !isDetachedWindow
     }
 
     constructor(context: Context) : super(context) {
@@ -63,6 +66,10 @@ class WaveformView1 : View, ProgressListener {
 
     fun isInitialized(): Boolean {
         return mWaveformDrawer.isInitialized
+    }
+
+    fun setWaveformViewListener(waveformViewListener: WaveformViewListener) {
+        mWaveformViewListener = waveformViewListener;
     }
 
     private fun init(context: Context) {
@@ -124,9 +131,10 @@ class WaveformView1 : View, ProgressListener {
         mWaveformDrawer.reset()
         postInvalidate()
         mWaveformViewListener?.let {
-            it.onCountAudioSelected(duration, true)
-            it.onPlayPositionChanged(playPositionMs.toInt(), false)
-            it.onEndTimeChanged(duration)
+            mainScope.launch {
+                it.onPlayPositionChanged(playPositionMs.toInt(), false)
+                it.onEndTimeChanged(duration)
+            }
         }
 
         mDuration = duration
@@ -151,6 +159,33 @@ class WaveformView1 : View, ProgressListener {
         mTouchEventHandler.onWaveformDraw()
     }
 
+    fun updatePlaybackInMs(currPos: Int) {
+        val frames: Int = millisecsToPixels(currPos)
+        mTouchEventHandler.onPlaybackChanged(frames)
+    }
+
+    fun setStartTimeMs(newPos: Int) {
+        val frames: Int = millisecsToPixels(newPos)
+        mTouchEventHandler.changeStartPos(frames)
+    }
+
+    fun setEndTimeMs(newPos: Int) {
+        val frames: Int = millisecsToPixels(newPos)
+        mTouchEventHandler.changeEndPos(frames)
+    }
+
+    fun getStartTimeMs(): Int {
+        return pixelsToMillisecs(getSelectionStart())
+    }
+
+    fun getEndTimeMs(): Int {
+        return pixelsToMillisecs(getSelectionEnd())
+    }
+
+    fun getPlaybackInMs(): Int {
+        return pixelsToMillisecs(getPlayPos())
+    }
+
     protected fun setOffset(offset: Int): Boolean {
         if (mWaveformDrawer.setOffset(offset)) {
             mRangeDrawer.onChangeOffset()
@@ -168,7 +203,7 @@ class WaveformView1 : View, ProgressListener {
     }
 
     protected fun getPlayPos(): Int {
-        return mTouchEventHandler.mPlaybackPos
+        return mTouchEventHandler.getPlaybackPos()
     }
 
     protected fun getSelectionStart(): Int {
@@ -180,12 +215,13 @@ class WaveformView1 : View, ProgressListener {
     }
 
     override fun onDetachedFromWindow() {
-        isDettachedWindow = true
+        isDetachedWindow = true
         super.onDetachedFromWindow()
+        mTouchEventHandler.release()
     }
 
     protected fun getWaveformHeight(): Int {
-        return (0.7f * this.measuredHeight).toInt()
+        return (0.6f * this.measuredHeight).toInt()
     }
 
     protected fun getWaveformWidth(): Int {
@@ -193,11 +229,14 @@ class WaveformView1 : View, ProgressListener {
     }
 
     protected fun getDrawingStartY(): Int {
-        return ((this.measuredHeight - 0.8f * this.measuredHeight) / 2f).toInt()
+        val marginBottom = 0.1f * this.measuredHeight
+        val timeRangeHeight = 0.65f * this.measuredHeight
+        return (this.measuredHeight - timeRangeHeight - marginBottom).toInt()
     }
 
     protected fun getDrawingEndY(): Int {
-        return getDrawingStartY() + (0.8f * this.measuredHeight).toInt()
+        val timeRangeHeight = 0.65f * this.measuredHeight
+        return getDrawingStartY() + timeRangeHeight.toInt()
     }
 
     protected fun secondsToPixels(seconds: Double): Int {
@@ -248,6 +287,28 @@ class WaveformView1 : View, ProgressListener {
 
     protected fun duration(): Long {
         return mDuration
+    }
+
+    protected fun onPlayPosOutOfRange() {
+        mWaveformViewListener?.onPlayPosOutOfRange()
+    }
+
+    protected fun onStartDraggingPlayPos() {
+        mWaveformViewListener?.onDraggingPlayPos(false)
+    }
+
+    protected fun onFinishDraggingPlayPos() {
+        mWaveformViewListener?.onDraggingPlayPos(true)
+    }
+    protected fun onPlayingLineClicked() {
+        mWaveformViewListener?.onPlayPositionChanged(pixelsToMillisecs(getPlayPos()), true)
+    }
+
+    protected fun onTimeRangeChanged() {
+        val startTime = pixelsToMillisecs(getSelectionStart()).toLong()
+        val endTime = pixelsToMillisecs(getSelectionEnd()).toLong()
+        mWaveformViewListener?.onStartTimeChanged(startTime)
+        mWaveformViewListener?.onEndTimeChanged(endTime)
     }
 
 

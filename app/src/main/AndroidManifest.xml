@@ -34,10 +34,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activities.TestWaveformActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
         </activity>
 
         <provider
@@ -54,7 +51,10 @@
             android:name=".activities.MainActivity"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustNothing">
-
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <service android:name=".functions.resultscreen.services.ResultService" />
