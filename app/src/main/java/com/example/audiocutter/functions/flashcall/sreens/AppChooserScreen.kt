@@ -111,7 +111,7 @@ class AppChooserScreen : BaseFragment(), View.OnClickListener, AppFlashAdapter.A
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                searchAudioByName(binding.edtAppsSearch.text.toString())
+                searchAudioByName(p0.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {
