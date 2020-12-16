@@ -379,7 +379,6 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
                 val dialog = SuggestionDialog()
                 dialog.show(childFragmentManager, SuggestionDialog::class.java.name)
             }
-
         }
     }
 
