@@ -51,7 +51,6 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     private val listData = mutableListOf<AudioFile>()
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
-        /** setting maxdistance*/
         mPlayer1.init(requireContext())
         mPlayer2.init(requireContext())
         super.onPostCreate(savedInstanceState)
@@ -87,7 +86,6 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                     binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
                 }
                 PlayerState.PLAYING -> {
-                    Log.d(TAG, "observerAudio : playing")
                     binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
                     binding.crChangeViewMixing.setPosition(it.posision)
                     playerState = PlayerState.PLAYING
@@ -257,11 +255,9 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
         runOnUI {
             if (!mPlayer1.getAudioIsPlaying()) {
-                Log.d(TAG, "onLineChange: play at pos $pos")
                 mPlayer1.play(audioFile1, pos)
                 mPlayer2.play(audioFile2, pos)
             } else {
-                Log.d(TAG, "onLineChange: seek to pos $pos")
                 mPlayer1.seek(pos)
                 mPlayer2.seek(pos)
             }
@@ -293,14 +289,12 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     override fun setVolumeAudio2(value: Float, min: Float, max: Float) {
         var newValueSound =
             Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
-        Log.d("1010", "setVolumeAudio2: value $newValueSound")
         if (newValueSound > 1) {
             newValueSound = 1.0
         }
         if (newValueSound < 0) {
             newValueSound = 0.0
         }
-        Log.d(TAG, "setVolumeAudio2: editValue ${newValueSound.toFloat()}")
         mPlayer2.setVolume(newValueSound.toFloat())
     }
 

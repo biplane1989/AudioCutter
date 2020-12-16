@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -92,14 +93,18 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
 //                }
 
                 if (!newItem.contactItem.isRingtoneDefault) {
-                    itemViewHolder.tvRingtoneDefault.visibility = View.GONE
-                    itemViewHolder.cvDefault.visibility = View.GONE
+//                    itemViewHolder.tvRingtoneDefault.visibility = View.GONE
+//                    itemViewHolder.cvDefault.visibility = View.GONE
+
+                    itemViewHolder.llRingToneDefault.visibility = View.INVISIBLE
                     itemViewHolder.tvRingtone.visibility = View.VISIBLE
                     itemViewHolder.tvRingtone.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)  // get name song by uri    | sua contactItem = newItem
                 } else {
-                    itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
-                    itemViewHolder.cvDefault.visibility = View.VISIBLE
-                    itemViewHolder.tvRingtone.visibility = View.GONE
+//                    itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
+//                    itemViewHolder.cvDefault.visibility = View.VISIBLE
+
+                    itemViewHolder.llRingToneDefault.visibility = View.VISIBLE
+                    itemViewHolder.tvRingtone.visibility = View.INVISIBLE
                     itemViewHolder.tvRingtoneDefault.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
 
                 }
@@ -114,6 +119,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
         val tvRingtoneDefault: TextView = itemView.findViewById(R.id.tv_ringtone_default)
         val cvDefault: CardView = itemView.findViewById(R.id.cv_default)
         val clItemContact: ConstraintLayout = itemView.findViewById(R.id.cl_item_contact)
+        val llRingToneDefault: LinearLayout = itemView.findViewById(R.id.ll_ringtone_default)
 
         fun onBind() {
             val contentItem = getItem(adapterPosition)
@@ -130,14 +136,18 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
 
             if (!contentItem.contactItem.isRingtoneDefault) {
 
-                tvRingtoneDefault.visibility = View.GONE
-                cvDefault.visibility = View.GONE
+//                tvRingtoneDefault.visibility = View.GONE
+//                cvDefault.visibility = View.GONE
+
+                llRingToneDefault.visibility = View.INVISIBLE
                 tvRingtone.visibility = View.VISIBLE
                 tvRingtone.text = contentItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
             } else {
-                tvRingtoneDefault.visibility = View.VISIBLE
-                cvDefault.visibility = View.VISIBLE
-                tvRingtone.visibility = View.GONE
+//                tvRingtoneDefault.visibility = View.VISIBLE
+//                cvDefault.visibility = View.VISIBLE
+
+                llRingToneDefault.visibility = View.VISIBLE
+                tvRingtone.visibility = View.INVISIBLE
                 tvRingtoneDefault.text = contentItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
             }
 

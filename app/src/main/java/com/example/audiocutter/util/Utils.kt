@@ -57,7 +57,7 @@ class Utils {
             if (generatedNameHashMap.containsKey(folder)) {
                 return generatedNameHashMap.get(folder)!!.contains(baseName)
             }
-            return false;
+            return false
         }
 
         fun dpToPx(context: Context, dp: Float): Float {
@@ -194,7 +194,7 @@ class Utils {
             if (cursor != null) {
                 try {
                     if (cursor.moveToFirst()) {
-                        val filePath = cursor.getString(0);
+                        val filePath = cursor.getString(0)
                         return File(filePath).exists()
                     } else {
                         return false        // Uri was ok but no entry found.
@@ -237,7 +237,7 @@ class Utils {
         @SuppressLint("SimpleDateFormat")
         fun convertTime(time: Int): String {
             if (time < 0) return "00:00"
-            val df = SimpleDateFormat("mm:ss.SS")
+            val df = SimpleDateFormat("mm:ss")
             return df.format(time)
         }
 
@@ -371,11 +371,16 @@ class Utils {
             return listAppShares
         }
 
-        fun shareFileAudio(context: Context, audioFile: AudioFile): Boolean {
+
+
+        fun shareFileAudio(context: Context, uriAudioFile: Uri, pkgName: String?): Boolean {
             return try {
                 val intent = Intent()
+                if(pkgName!=null){
+                    intent.`package` = pkgName
+                }
                 intent.action = Intent.ACTION_SEND
-                intent.putExtra(Intent.EXTRA_STREAM, audioFile.uri)
+                intent.putExtra(Intent.EXTRA_STREAM, uriAudioFile)
                 intent.type = "audio/*"
                 context.startActivity(
                     Intent.createChooser(
@@ -391,12 +396,14 @@ class Utils {
         }
 
 
-        fun shareMutilpleFile(context: Context, listUri: ArrayList<Uri>) {
-            val shareIntent = Intent().apply {
-                action = Intent.ACTION_SEND_MULTIPLE
-                putParcelableArrayListExtra(Intent.EXTRA_STREAM, listUri)
-                type = "audio/*"
+        fun shareMutilpleFile(context: Context, listUri: ArrayList<Uri>, pkgName: String?) {
+            val shareIntent = Intent()
+            if (pkgName != null) {
+                shareIntent.`package` = pkgName
             }
+            shareIntent.action = Intent.ACTION_SEND_MULTIPLE
+            shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, listUri)
+            shareIntent.type = "audio/*"
             context.startActivity(
                 Intent.createChooser(
                     shareIntent,
@@ -456,13 +463,13 @@ class Utils {
         fun hideKeyboard(context: Context, editText: EditText) {
             val inputMethodManager =
                 context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+            inputMethodManager.hideSoftInputFromWindow(editText.windowToken, 0)
         }
 
         fun showKeyboard(context: Context, editText: EditText) {
             val inputMethodManager =
                 context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+            inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
         }
 
         fun checkFlashOnDeviceAvailable(context: Context): Boolean? {

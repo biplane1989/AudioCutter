@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
@@ -23,8 +24,7 @@ import com.example.audiocutter.databinding.MergeChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergeChooserAdapter
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 
-class MergeChooserScreen : BaseFragment(), View.OnClickListener,
-    MergeChooserAdapter.AudioMergeListener {
+class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAdapter.AudioMergeListener {
     private lateinit var binding: MergeChooserScreenBinding
     private lateinit var audioMerAdapter: MergeChooserAdapter
     private lateinit var audioMerModel: MergeChooserModel
@@ -41,6 +41,16 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
             }
         }
     }
+
+    var stateChecked = Observer<Int> {
+        if (it > 1) {
+            setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
+        } else {
+            setColorButtonNext(R.color.colorgray, R.drawable.bg_next_audio_disabled, false)
+        }
+        binding.tvCountFileMer.text = "$it file"
+    }
+
     var currentPos = -1
 
     @SuppressLint("SetTextI18n")
@@ -58,26 +68,18 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
                 showProgressBar(false)
 
             }
-            var count = 0
-            listMusic.forEach {
-                if (it.isCheckChooseItem) {
-                    count++
-                    if (count >= 2) {
-                        setColorButtonNext(
-                            R.color.colorWhite,
-                            R.drawable.bg_next_audio_enabled,
-                            true
-                        )
-                    } else {
-                        setColorButtonNext(
-                            R.color.colorgray,
-                            R.drawable.bg_next_audio_disabled,
-                            false
-                        )
-                    }
-                }
-            }
-            binding.tvCountFileMer.text = "$count ${resources.getString(R.string.filecount)}"
+//            var count = 0
+//            listMusic.forEach {
+//                if (it.isCheckChooseItem) {
+//                    count++
+//                        if (count >= 2) {
+//                            setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
+//                        } else {
+//                            setColorButtonNext(R.color.colorgray, R.drawable.bg_next_audio_disabled, false)
+//                    }
+//                }
+//            }
+
         }
 
 
@@ -97,24 +99,20 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         audioMerModel.pause()
     }
 
-    private val playerInfoObserver = Observer<PlayerInfo> {
-    audioMerModel.updateMediaInfo(it)
-    }
+//    private val playerInfoObserver = Observer<PlayerInfo> {
+//    audioMerModel.updateMediaInfo(it)
+//    }
 
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-
-        audioMerAdapter = MergeChooserAdapter(requireContext())
         audioMerModel = ViewModelProvider(this).get(MergeChooserModel::class.java)
-        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+
+        audioMerAdapter = MergeChooserAdapter(requireContext(), audioMerModel.getAudioPlayer(), lifecycleScope)
+//        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.merge_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
@@ -128,6 +126,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
             audioMerModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
             audioMerModel.getAllAudioFile().observe(viewLifecycleOwner, listAudioObserver)
             audioMerModel.getStateEmpty().observe(viewLifecycleOwner, emptyState)
+            audioMerModel.getStateChecked().observe(viewLifecycleOwner, stateChecked)
 
         }
     }
@@ -138,9 +137,9 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 audioMerModel.stop()
-                searchAudioByName(binding.edtMerSearch.text.toString())
+                searchAudioByName(textChange.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -151,8 +150,8 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     private fun searchAudioByName(yourTextSearch: String) {
         setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_audio_disabled, false)
         binding.tvCountFileMer.text = getString(R.string.countFile)
-        showList()
-        if(yourTextSearch.isEmpty()){
+//        showList()
+        if (yourTextSearch.isEmpty()) {
             audioMerModel.searchAudio("")
         }
         audioMerModel.searchAudio(yourTextSearch)
@@ -197,7 +196,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     }
 
 
-
     private fun initLists() {
 
         binding.rvMerge.adapter = audioMerAdapter
@@ -226,6 +224,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
 
     @SuppressLint("SetTextI18n")
     override fun chooseItemAudio(audioCutterView: AudioCutterView, rs: Boolean) {
+        var count = 0
 
         audioMerModel.chooseItemAudioFile(audioCutterView, rs)
 
@@ -276,7 +275,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
             }
         }
     }
-
 
 
     private fun handleAudiofile() {

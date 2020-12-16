@@ -341,6 +341,8 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
                 requireActivity().onBackPressed()
             }
             binding.tbFlashType -> {
+                ManagerFactory.getFlashCallSetting().stopTestingLightningSpeed()
+                changeColorButton(R.color.colorgray, R.color.colorYelowDark)
                 flashTypeDialog = FlashTypeDialog()
                 flashTypeDialog.setOnCallBack(this)
                 flashTypeDialog.show(childFragmentManager, "TAG")

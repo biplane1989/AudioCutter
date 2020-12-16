@@ -10,6 +10,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.example.audiocutter.R
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
+import java.text.SimpleDateFormat
 
 class ChangeRangeView @JvmOverloads constructor(
     context: Context,
@@ -276,57 +277,37 @@ class ChangeRangeView @JvmOverloads constructor(
             RADIUS, mPaint
         )
 
-        drawText(canvas, DEFAULT_TIME_POSITION, 0f + RADIUS, mPaint6)
+        drawTextDurationMax(canvas, DEFAULT_TIME_POSITION, 0f + RADIUS, mPaint6)
         try {
             rs = durationAudio1 > durationAudio2
             if (!rs) {
-                drawText(
-                    canvas,
-                    Utils.convertTime(durationAudio2),
-//                    (mWidth - RANGE*2 - RADIUS * 2),
-                    mWidth - rect.width() * 1f - RANGE,
-                    mPaint6
-                )
-                drawTextDurationMin(
-                    canvas,
-                    Utils.convertTime(audioFile1.duration.toInt())
-                )
+                drawTextDurationMax(canvas, convertTime(durationAudio2), (mWidth - RANGE *2), mPaint6)
+                drawTextDurationMin(canvas, convertTime(audioFile1.duration.toInt()))
             } else {
-                drawText(
-                    canvas,
-                    Utils.convertTime(durationAudio1),
-                    mWidth - rect.width() * 1f - RANGE,
-                    mPaint6
-                )
-                drawTextDurationMin(
-                    canvas,
-                    Utils.convertTime(audioFile2.duration.toInt())
-                )
+                drawTextDurationMax(canvas, convertTime(durationAudio1), (mWidth - RANGE * 2), mPaint6)
+                drawTextDurationMin(canvas, convertTime(audioFile2.duration.toInt()))
             }
         } catch (e: NumberFormatException) {
             e.printStackTrace()
         }
 
         /**text number position*/
-        drawTextPosition(canvas, numPos, startCurrentX.toFloat() - rect.width() / 2.5f, mPaint)
+        drawTextPosition(canvas, numPos, startCurrentX.toFloat() - rect.width() / 2.5f+RADIUS, mPaint)
 
 
     }
 
+    private fun convertTime(time: Int): String {
+        if (time < 0) return "00:00"
+        val df = SimpleDateFormat("mm:ss.S")
+        return df.format(time)
+    }
+
+
     private fun drawBitmap(canvas: Canvas, fl: Float) {
         val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_sound_mixing)
-        rectImage = Rect(
-            0,
-            0,
-            imageSound.width,
-            imageSound.height
-        )
-        rectImageDst1 = Rect(
-            (RADIUS * 2).toInt(),
-            fl.toInt(),
-            (RADIUS * 2 + RANGE).toInt(),
-            (fl + RANGE).toInt()
-        )
+        rectImage = Rect(0, 0, imageSound.width, imageSound.height)
+        rectImageDst1 = Rect((RADIUS * 2).toInt(), fl.toInt(), (RADIUS * 2 + RANGE).toInt(), (fl + RANGE).toInt())
         Log.d(TAG, "checkRange: $RANGE")
         Log.d(TAG, "drawBitmap1: $rectImageDst1")
         canvas.drawBitmap(
@@ -357,14 +338,9 @@ class ChangeRangeView @JvmOverloads constructor(
         )
     }
 
-    private fun drawText(canvas: Canvas, text: String, getX: Float, mPaint: Paint) {
+    private fun drawTextDurationMax(canvas: Canvas, text: String, getX: Float, mPaint: Paint) {
         mPaint.getTextBounds(text, 0, text.length, rect)
-        canvas.drawText(
-            text,
-            getX,
-            rect.height().toFloat(),
-            mPaint
-        )
+        canvas.drawText(text, getX, rect.height().toFloat(), mPaint)
 
     }
 
@@ -393,10 +369,9 @@ class ChangeRangeView @JvmOverloads constructor(
 
         if (textGetX < rect.width() + RADIUS * 2) {
             textGetX = rect.width() + RADIUS * 2
-        } else
-            if (textGetX >= (mWidth - rect.width() - (RADIUS * 4))) {
-                textGetX = mWidth - rect.width() * 2 - RANGE
-            }
+        } else if (textGetX >= (mWidth - rect.width() - (RADIUS * 4))) {
+            textGetX = mWidth - rect.width() * 2 - RANGE
+        }
         canvas.drawText(
             text, textGetX,
             rect.height().toFloat(), mPaint6

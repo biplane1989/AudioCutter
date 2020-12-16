@@ -16,6 +16,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
@@ -45,9 +46,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     private lateinit var audioCutterAdapter: CutChooserAdapter
     private lateinit var audioCutterModel: CutChooserViewModel
     private val REQ_CODE_PICK_SOUNDFILE = 1989
-    lateinit var dialog: SetAsDialog
-    lateinit var dialogDone: SetAsDoneDialog
-    lateinit var audioCutterItem: AudioCutterView
+    private lateinit var dialog: SetAsDialog
+    private lateinit var dialogDone: SetAsDoneDialog
+    private lateinit var audioCutterItem: AudioCutterView
     private var pendingRequestingPermission = 0
     private val CUT_CHOOSE_REQUESTING_PERMISSION = 1 shl 5
 
@@ -102,9 +103,8 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         }
     }
 
-
     private val playerInfoObserver = Observer<PlayerInfo> {
-        audioCutterModel.updateMediaInfo(it)
+//        audioCutterModel.updateMediaInfo(it)
     }
 
     private val emptyState = Observer<Boolean> {
@@ -115,12 +115,11 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         }
     }
 
-
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioCutterAdapter = CutChooserAdapter(requireContext())
         audioCutterModel = ViewModelProvider(this).get(CutChooserViewModel::class.java)
-        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+        audioCutterAdapter = CutChooserAdapter(requireContext(), audioCutterModel.getAudioPlayer(), lifecycleScope)
+//        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
     override fun onCreateView(
@@ -134,10 +133,11 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
                 if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CUT_CHOOSE_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
                     requestPermissinWriteSetting()
+                    if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CUT_CHOOSE_REQUESTING_PERMISSION) != 0) {
+                        showDialogSetAsTypeAudio()
+                    }
                 }
-                if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CUT_CHOOSE_REQUESTING_PERMISSION) != 0) {
-                    showDialogSetAsTypeAudio()
-                }
+
 
             })
         return binding.root
@@ -168,9 +168,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 audioCutterModel.stop()
-                searchAudioByName(binding.edtCutterSearch.text.toString())
+                searchAudioByName(textChange.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -178,10 +178,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         })
     }
 
-
     private fun searchAudioByName(yourTextSearch: String) {
 
-        showList()
+//        showList()
         if (yourTextSearch.isEmpty()) {
             audioCutterModel.searchAudio("")
         }
@@ -268,9 +267,30 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         audioCutterModel.resume()
     }
 
+    /*  override fun showDialogSetAs(itemAudio: AudioCutterView) {
+          audioCutterItem = itemAudio
+          filePathAudio = itemAudio.audioFile.getFilePath()
+          if (contactPermissionRequest.isPermissionGranted() && writeSettingPermissionRequest.isPermissionGranted()) {
+              ManagerFactory.getAudioFileManager().init(requireContext())
+              showDialogSetAsTypeAudio()
+          } else {
+              ContactPermissionDialog.newInstance {
+                  resetRequestingPermission()
+                  pendingRequestingPermission = CUT_CHOOSE_REQUESTING_PERMISSION
+                  if (!contactPermissionRequest.isPermissionGranted()) {
+                      contactPermissionRequest.requestPermission()
+                  }
+              }.show(
+                  requireActivity().supportFragmentManager,
+                  ContactPermissionDialog::class.java.name
+              )
+          }
+      }*/
+
     override fun showDialogSetAs(itemAudio: AudioCutterView) {
         audioCutterItem = itemAudio
         filePathAudio = itemAudio.audioFile.getFilePath()
+
         if (contactPermissionRequest.isPermissionGranted() && writeSettingPermissionRequest.isPermissionGranted()) {
             ManagerFactory.getAudioFileManager().init(requireContext())
             showDialogSetAsTypeAudio()
@@ -278,13 +298,18 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             ContactPermissionDialog.newInstance {
                 resetRequestingPermission()
                 pendingRequestingPermission = CUT_CHOOSE_REQUESTING_PERMISSION
-                if (!contactPermissionRequest.isPermissionGranted()) {
-                    contactPermissionRequest.requestPermission()
-                }
-            }.show(
-                requireActivity().supportFragmentManager,
-                ContactPermissionDialog::class.java.name
-            )
+               checkPermissionRequest()
+            }
+                .show(requireActivity().supportFragmentManager, ContactPermissionDialog::class.java.name)
+        }
+
+    }
+
+    private fun checkPermissionRequest() {
+        if (!contactPermissionRequest.isPermissionGranted()) {
+            contactPermissionRequest.requestPermission()
+        } else if (!writeSettingPermissionRequest.isPermissionGranted()) {
+            writeSettingPermissionRequest.requestPermission()
         }
     }
 
@@ -410,7 +435,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
         intent.type = "audio/*"
 //                intent.type = "audio/mp3"
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
         startActivityForResult(Intent.createChooser(intent, "Select a File "), REQ_CODE_PICK_SOUNDFILE)
     }
 

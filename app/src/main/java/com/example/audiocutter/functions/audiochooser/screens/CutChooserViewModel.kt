@@ -1,8 +1,11 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
+import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.base.BaseViewModel
+import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
@@ -13,15 +16,15 @@ import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
-class CutChooserViewModel : BaseViewModel() {
+class CutChooserViewModel(application: Application) : BaseAndroidViewModel(application) {
 
-
+    private val mContext = getApplication<Application>().applicationContext
     private val TAG = CutChooserViewModel::class.java.name
     private var currentAudioPlaying: File = File("")
 
     var duration: Long? = 0L
 
-    var audioPlayer = ManagerFactory.getDefaultAudioPlayer()
+    private var audioPlayer = ManagerFactory.getDefaultAudioPlayer()
     private lateinit var mcallBack: OnActionCallback
 
     private var _stateLoadProgress = MutableLiveData<Int>()
@@ -38,14 +41,19 @@ class CutChooserViewModel : BaseViewModel() {
         return stateLoadProgress
     }
 
+    fun getAudioPlayer(): AudioPlayer {
+        return audioPlayer
+    }
+
     private var filterText = ""
 
     private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>?>()
 
     init {
+        audioPlayer.init(application.applicationContext)
 
         _listAudioFiles.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
-            var listAudioFiles:List<AudioCutterView>?=null
+            var listAudioFiles: List<AudioCutterView>? = null
 
             when (it.state) {
                 StateLoad.LOADING -> {
@@ -63,8 +71,6 @@ class CutChooserViewModel : BaseViewModel() {
                     _stateLoadProgress.postValue(-1)
                 }
             }
-
-
             _listAudioFiles.postValue(listAudioFiles)
 
         }
@@ -79,9 +85,8 @@ class CutChooserViewModel : BaseViewModel() {
                 if (filterText.isNotEmpty()) {
                     listResult.clear()
                     it.forEach { item ->
-                        val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault()).contains(
-                            filterText.toLowerCase(Locale.getDefault())
-                        )
+                        val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault())
+                            .contains(filterText.toLowerCase(Locale.getDefault()))
                         listEmpty.add(rs)
                         if (rs) {
                             listResult.add(item)
@@ -93,7 +98,7 @@ class CutChooserViewModel : BaseViewModel() {
                         _isEmptyState.postValue(true)
                     }
                 }
-
+                Log.d(TAG, "listAudioObserver: listSize ${listResult.size} ")
                 listResult
             }
         })
@@ -119,6 +124,7 @@ class CutChooserViewModel : BaseViewModel() {
     suspend fun play(pos: Int) {
         val listAudios = getListFilteredAudios()
         val audioItem = listAudios[pos]
+        Log.d("TAG", "CheckDUrationModel:  filename:${audioItem.audioFile.fileName}  duration  ${audioItem.duration}")
         audioPlayer.play(audioItem.audioFile)
     }
 
@@ -200,7 +206,6 @@ class CutChooserViewModel : BaseViewModel() {
         }
         return -1
     }
-
 
 
 }

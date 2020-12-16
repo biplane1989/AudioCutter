@@ -1,20 +1,30 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
 
+import android.app.Application
 import android.util.Log
+import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.base.BaseViewModel
+import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import java.io.File
 
-class MergePreviewModel : BaseViewModel() {
+class MergePreviewModel(application: Application) : BaseAndroidViewModel(application) {
     private val TAG = MergePreviewModel::class.java.name
     private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
 
+    private val audioPlayer = ManagerFactory.getDefaultAudioPlayer()
+    fun getAudioPlayer(): AudioPlayer {
+        return audioPlayer
+    }
 
+    init {
+        audioPlayer.init(application.applicationContext)
+    }
     fun updateMediaInfo(playerInfo: PlayerInfo): List<AudioCutterView> {
         Log.d(TAG, "updateMediaInfo: ${playerInfo.playerState}")
         if (playerInfo.currentAudio != null) {

@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -19,18 +20,24 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.audiocutter.R
 import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
+import com.example.audiocutter.core.manager.AudioPlayer
+import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.contacts.adapters.ListSelectAdapter
+import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
 import com.example.audiocutter.util.Utils
+import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
+import kotlinx.coroutines.launch
 import kotlin.math.floor
 
-class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, CutChooserAdapter.AudiocutterHolder>(CutChooserAudioDiff()) {
+class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<AudioCutterView, CutChooserAdapter.AudiocutterHolder>(CutChooserAudioDiff()) {
     lateinit var mCallBack: CutChooserListener
     val SIZE_MB = 1024 * 1024
     var listAudios = mutableListOf<AudioCutterView>()
-
 
     fun setAudioCutterListtener(event: CutChooserListener) {
         mCallBack = event
@@ -46,60 +53,69 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
         }
     }
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AudiocutterHolder {
-        val view = LayoutInflater.from(mContext).inflate(R.layout.item_audio_cutter, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_audio_cutter, parent, false)
         return AudiocutterHolder(view)
     }
 
 
     override fun onBindViewHolder(holder: AudiocutterHolder, position: Int) {
         holder.bind()
-
     }
 
+    override fun onViewAttachedToWindow(holder: AudiocutterHolder) {
+        super.onViewAttachedToWindow(holder)
+        holder.onViewAttachedToWindow()
+    }
+
+    override fun onViewDetachedFromWindow(holder: AudiocutterHolder) {
+        super.onViewDetachedFromWindow(holder)
+        holder.onViewDetachedFromWindow()
+    }
 
     override fun onBindViewHolder(holder: AudiocutterHolder, position: Int, payloads: MutableList<Any>) {
         super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
         } else {
-            val itemAudioFile = getItem(position)
+//            val itemAudioFile = getItem(position)
 //            val audioCutterView = payloads.firstOrNull() as AudioCutterView
-            when (itemAudioFile.state) {
-                PlayerState.PLAYING -> {
-                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_pause)
-                }
-                PlayerState.PAUSE -> {
-                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
-                }
-                PlayerState.IDLE -> {
-                    holder.pgAudio.resetView()
-//                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
-                    val bitmap = itemAudioFile.audioFile.bitmap
-                    if (bitmap != null) {
-                        Glide.with(holder.itemView).load(bitmap)
-                            .transform(
-                                RoundedCorners(
-                                    Utils.convertDp2Px(4, context = holder.itemView.context).toInt()
-                                )
-                            )
-                            .into( holder.ivController)
-//                        holder.ivController.setImageBitmap(bitmap)
-                    } else {
-                        val bm = BitmapFactory.decodeResource(
-                            AudioFileManagerImpl.mContext.resources,
-                            R.drawable.ic_audiocutter_play
-                        )
-                        holder.ivController.setImageBitmap(bm)
-                    }
-                }
-            }
+
+            /*   when (audioCutterView.state) {
+                   PlayerState.PLAYING -> {
+                       holder.ivController.setImageResource(R.drawable.ic_audiocutter_pause)
+                   }
+                   PlayerState.PAUSE -> {
+                       holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
+                   }
+                   PlayerState.IDLE -> {
+                       holder.pgAudio.resetView()
+   //                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
+                       val bitmap = itemAudioFile.audioFile.bitmap
+                       if (bitmap != null) {
+                           Glide.with(holder.itemView).load(bitmap)
+                               .transform(
+                                   RoundedCorners(
+                                       Utils.convertDp2Px(4, context = holder.itemView.context).toInt()
+                                   )
+                               )
+                               .into( holder.ivController)
+   //                        holder.ivController.setImageBitmap(bitmap)
+                       } else {
+                           val bm = BitmapFactory.decodeResource(
+                               AudioFileManagerImpl.mContext.resources,
+                               R.drawable.ic_audiocutter_play
+                           )
+                           holder.ivController.setImageBitmap(bm)
+                       }
+                   }
+               }*/
 
         }
     }
 
-    inner class AudiocutterHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class AudiocutterHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, LifecycleOwner {
 
         val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)!!
         val tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_audio)
@@ -109,6 +125,7 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
         val lnMenu = itemView.findViewById<LinearLayout>(R.id.ln_menu)
         val pgAudio = itemView.findViewById<ProgressView>(R.id.pg_audio_cutter_screen)
         val waveView = itemView.findViewById<WaveAudio>(R.id.wave_audio_cutter)
+        val ivPausePlay = itemView.findViewById<ImageView>(R.id.iv_pause_play_audio)
 
         init {
             ivController.setOnClickListener(this)
@@ -116,12 +133,90 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
             lnChild.setOnClickListener(this)
         }
 
+
+        private var lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
+        var playerState: PlayerState = PlayerState.IDLE
+
+        override fun getLifecycle(): Lifecycle {
+            return lifecycleRegistry
+        }
+
+        private fun updatePlayInfor(playerInfo: PlayerInfo) {
+            playerState = playerInfo.playerState
+            pgAudio.updatePG(playerInfo.posision.toLong(), playerInfo.duration.toLong())
+            Log.d("giangtd123", "updatePlayInfor: pecent: " + playerInfo.posision + " duration : " + playerInfo.duration + "status: " + playerInfo.playerState)
+            val itemAudioFile = getItem(adapterPosition)
+            val bitmap = itemAudioFile.audioFile.bitmap
+
+            when (playerInfo.playerState) {
+                PlayerState.PLAYING -> {
+                    if (bitmap != null) {
+                        Glide.with(itemView).load(bitmap)
+                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+                                .toInt())).into(ivController)
+                    } else {
+                        ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
+                    }
+                    ivPausePlay.setImageResource(R.drawable.common_audio_item_play)
+                    pgAudio.visibility = View.VISIBLE
+                    waveView.visibility = View.VISIBLE
+                }
+                PlayerState.PAUSE -> {
+                    if (bitmap != null) {
+                        Glide.with(itemView).load(bitmap)
+                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+                                .toInt())).into(ivController)
+                    } else {
+                        ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+                    }
+                    ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+                    waveView.visibility = View.INVISIBLE
+                    pgAudio.visibility = View.VISIBLE
+                }
+                PlayerState.IDLE -> {
+                    if (bitmap != null) {
+                        Glide.with(itemView).load(bitmap)
+                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+                                .toInt())).into(ivController)
+                    } else {
+                        ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+                    }
+                    pgAudio.visibility = View.GONE
+                    waveView.visibility = View.INVISIBLE
+                    pgAudio.resetView()
+                    ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+                }
+                else -> {
+                    //nothing
+                }
+            }
+        }
+
+        fun onViewAttachedToWindow() {
+            lifecycleRegistry.currentState = Lifecycle.State.STARTED
+            audioPlayer.getPlayerInfo().observe(this, object : Observer<PlayerInfo> {
+                override fun onChanged(playerInfo: PlayerInfo) {
+                    playerInfo.currentAudio?.let {
+                        if (adapterPosition != -1) {
+                            val audioCutterView = getItem(adapterPosition)
+                            if (audioCutterView.audioFile.getFilePath() == it.getFilePath()) {
+                                updatePlayInfor(playerInfo)
+                            }
+                        }
+                    }
+                }
+            })
+        }
+
+        fun onViewDetachedFromWindow() {
+            lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        }
+
         @SuppressLint("SetTextI18n")
         fun bind() {
-            val itemAudioFile = getItem(position)
+            val itemAudioFile = getItem(adapterPosition)
             Log.d("TAG", "bind: ${itemAudioFile.isCheckDistance}    state ${itemAudioFile.state}")
             var bitRate = itemAudioFile.audioFile.bitRate / 1000
-
 
             tvBitrateAudio.text = "${bitRate}${mContext.resources.getString(R.string.kbps)}"
 
@@ -137,16 +232,16 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
                 tvSizeAudio.text = "$size ${mContext.resources.getString(R.string.kilobyte)}"
             }
 
-            when (itemAudioFile.isCheckDistance) {
-                true -> {
-                    pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration)
-                }
-                false -> {
-                    pgAudio.resetView()
-                }
-            }
+//            when (itemAudioFile.isCheckDistance) {
+//                true -> {
+//                    pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration)
+//                }
+//                false -> {
+//                    pgAudio.resetView()
+//                }
+//            }
 
-            when (itemAudioFile.state) {
+            /*when (itemAudioFile.state) {
 
                 PlayerState.PLAYING -> {
                     pgAudio.visibility = View.VISIBLE
@@ -179,10 +274,55 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
                        ivController.setImageBitmap(bm)
                     }
                 }
+            }*/
+
+            val bitmap = itemAudioFile.audioFile.bitmap
+
+            when (itemAudioFile.state) {
+                PlayerState.PLAYING -> {
+                    if (bitmap != null) {
+                        Glide.with(itemView).load(bitmap)
+                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+                                .toInt())).into(ivController)
+                    } else {
+                        ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
+                    }
+                    ivPausePlay.setImageResource(R.drawable.common_audio_item_play)
+                    pgAudio.visibility = View.VISIBLE
+                    waveView.visibility = View.VISIBLE
+
+                }
+                PlayerState.PAUSE -> {
+                    if (bitmap != null) {
+                        Glide.with(itemView).load(bitmap)
+                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+                                .toInt())).into(ivController)
+                    } else {
+                        ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+                    }
+                    ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+                    waveView.visibility = View.INVISIBLE
+                    pgAudio.visibility = View.VISIBLE
+                }
+                PlayerState.IDLE -> {
+                    pgAudio.visibility = View.GONE
+                    waveView.visibility = View.INVISIBLE
+                    pgAudio.resetView()
+
+                    if (bitmap != null) {
+                        Glide.with(itemView).load(bitmap)
+                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+                                .toInt())).into(ivController)
+                    } else {
+                        ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+                    }
+                    ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+                }
+                else -> {
+                    //nothing
+                }
             }
-
         }
-
 
         override fun onClick(p0: View) {
             val itemAudio = getItem(adapterPosition)
@@ -193,21 +333,28 @@ class CutChooserAdapter(val mContext: Context) : ListAdapter<AudioCutterView, Cu
             }
         }
 
-
         private fun controllerAudio() {
-            val itemAudio = listAudios[adapterPosition]
+            val itemAudio = getItem(adapterPosition)
             if (adapterPosition == -1) {
                 return
             }
-            when (itemAudio.state) {
+            when (playerState) {
                 PlayerState.IDLE -> {
-                    mCallBack.play(adapterPosition)
+                    lifecycleCoroutineScope.launch {
+                        audioPlayer.play(itemAudio.audioFile)
+                    }
+//                    mCallBack.play(adapterPosition)
                 }
                 PlayerState.PAUSE -> {
-                    mCallBack.resume(adapterPosition)
+                    audioPlayer.resume()
+//                    mCallBack.resume(adapterPosition)
                 }
                 PlayerState.PLAYING -> {
-                    mCallBack.pause(adapterPosition)
+                    audioPlayer.pause()
+//                    mCallBack.pause(adapterPosition)
+                }
+                else -> {
+
                 }
             }
         }

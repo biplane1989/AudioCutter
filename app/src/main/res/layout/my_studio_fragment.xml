@@ -51,18 +51,20 @@
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:background="?attr/selectableItemBackground"
                 android:id="@+id/cl_delete_all"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.1"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
+                android:paddingLeft="@dimen/common_padding_left"
+                android:paddingRight="@dimen/common_padding_right"
                 android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
+                    android:layout_marginLeft="@dimen/common_padding_right"
                     android:fontFamily="@font/opensans_regular"
                     android:text="@string/my_studio_fragment_select_all"
                     android:textColor="#9C9C9C"
@@ -73,9 +75,8 @@
 
                 <ImageView
                     android:id="@+id/iv_check"
-                    android:layout_width="46dp"
+                    android:layout_width="@dimen/common_size_item_imagview"
                     android:layout_height="match_parent"
-                    android:layout_marginRight="10dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
                     android:src="@drawable/my_studio_screen_icon_uncheck"

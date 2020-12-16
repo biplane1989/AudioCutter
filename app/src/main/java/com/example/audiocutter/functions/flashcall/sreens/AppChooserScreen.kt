@@ -120,7 +120,7 @@ class AppChooserScreen : BaseFragment(), View.OnClickListener, AppFlashAdapter.A
     }
 
     private fun searchAudioByName(yourTextSearch: String) {
-        showList()
+//        showList()
         if (yourTextSearch.isEmpty()) {
             appFlashModel.searchApps("")
         }

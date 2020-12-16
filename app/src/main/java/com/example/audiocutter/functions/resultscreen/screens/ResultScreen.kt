@@ -1,7 +1,6 @@
 package com.example.audiocutter.functions.resultscreen.screens
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
@@ -104,7 +103,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
             binding.tvInfoMusic.text = String.format("%s kb/s", (it.bitRate / 1000).toString())
 
             binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(it.duration.toInt()))
-            binding.tvInfoMusic.setText(convertAudioSizeToString(it))
+            binding.tvInfoMusic.text = convertAudioSizeToString(it)
         }
         val cancelDialog = childFragmentManager.findFragmentByTag(CancelDialog.TAG)
         if (cancelDialog is CancelDialog) {
@@ -144,12 +143,12 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     }
 
     private val errorObserver = Observer<Boolean> {
-        if (it) {
-            view?.let {
-                val mySnackbar = Snackbar.make(it, getString(R.string.result_screen_converting_error), Snackbar.LENGTH_LONG)
-                mySnackbar.show()
-            }
-        }
+//        if (it) {
+//            view?.let {
+//                val mySnackbar = Snackbar.make(it, getString(R.string.result_screen_converting_error), Snackbar.LENGTH_LONG)
+//                mySnackbar.show()
+//            }
+//        }
 
         binding.btnOrigin.visibility = View.GONE
         binding.tvWait.visibility = View.GONE
@@ -446,18 +445,15 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         dialogAppShare.show(requireActivity().supportFragmentManager, "TAG_DIALOG")
     }
 
-    override fun shareFileAudioToAppDevices() {
+    override fun shareFileAudioToAppDevices(multifile: TypeShare) {
         dialogAppShare.dismiss()
-        Utils.shareFileAudio(requireContext(), audioFile!!)
+        Utils.shareFileAudio(requireContext(), audioFile?.uri!!, null)
     }
 
-    override fun shareFilesToAppsDialog(pkgName: String) {
-        val intent = Intent()
-        intent.putExtra(Intent.EXTRA_STREAM, audioFile!!.uri)
-        intent.type = "audio/*"
-        intent.`package` = pkgName
-        intent.action = Intent.ACTION_SEND
-        startActivity(intent)
+    override fun shareFilesToAppsDialog(pkgName: String, typeShare: TypeShare, isDialogMulti: Boolean?) {
+        if (typeShare == TypeShare.ONLYFILE) {
+            Utils.shareFileAudio(requireContext(), audioFile?.uri!!, pkgName)
+        }
     }
 
 

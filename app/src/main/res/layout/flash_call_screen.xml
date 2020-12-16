@@ -352,7 +352,8 @@
                             android:fontFamily="@font/opensans_light"
                             android:text="Lightning speed"
                             android:textColor="@color/colorBlack"
-                            android:textSize="@dimen/text_size_header" />
+                            android:textSize="@dimen/text_size_edt"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/tv_default_speed"
@@ -451,7 +452,8 @@
                             android:fontFamily="@font/opensans_light"
                             android:text="@string/number_flash_call_description"
                             android:textColor="@color/colorBlack"
-                            android:textSize="@dimen/text_size_header" />
+                            android:textSize="@dimen/text_size_edt"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="0dp"
