@@ -1,3 +1,5 @@
+include ':waveform'
+include ':confetti'
 include ':mergeaudiocore'
 include ':app'
 rootProject.name = "AudioCutter"

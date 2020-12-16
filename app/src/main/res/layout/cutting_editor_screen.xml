@@ -59,25 +59,13 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"/>
 
-        <com.example.audiocutter.ui.editor.cutting.WaveformEditView
+        <com.example.waveform.views.WaveformView1
             android:layout_above="@id/ads_view"
             android:id="@+id/wave_edit_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="10dp"
             android:layout_below="@id/view_line" />
-
-        <TextView
-            android:id="@+id/time_audio_tv"
-            android:layout_width="match_parent"
-            android:layout_height="38dp"
-            android:layout_above="@id/ads_view"
-            android:fontFamily="@font/opensans_regular"
-            android:gravity="center"
-            android:text="05:23.9"
-            android:textColor="@color/fragment_cutter_text_time_color"
-            android:textSize="14sp" />
-
         <View
             android:id="@+id/ads_view"
             android:layout_width="match_parent"
@@ -170,7 +158,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/zoom_in_iv"
+                    android:id="@+id/zoom_out_iv"
                     android:layout_width="@dimen/d_40"
                     android:layout_height="@dimen/d_40"
                     android:layout_centerVertical="true"
@@ -232,7 +220,7 @@
 
 
                 <ImageView
-                    android:id="@+id/zoom_out_iv"
+                    android:id="@+id/zoom_in_iv"
                     android:layout_width="@dimen/d_40"
                     android:layout_height="@dimen/d_40"
                     android:layout_alignParentRight="true"
