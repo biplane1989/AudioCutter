@@ -1,26 +1,25 @@
 package com.example.audiocutter.functions.mystudio.adapters
 
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.graphics.Color
-import android.media.MediaMetadataRetriever
-import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.DecelerateInterpolator
 import android.widget.*
 import androidx.lifecycle.*
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.util.Util
 import com.example.audiocutter.R
-import com.example.audiocutter.core.manager.*
-import com.example.audiocutter.functions.contacts.adapters.ListSelectAdapter
+import com.example.audiocutter.core.manager.AudioEditorManager
+import com.example.audiocutter.core.manager.AudioPlayer
+import com.example.audiocutter.core.manager.PlayerInfo
+import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.objects.AudioFileView
 import com.example.audiocutter.functions.mystudio.objects.DeleteState
@@ -28,15 +27,9 @@ import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
-import java.util.Locale.UK
-import kotlin.collections.ArrayList
 
 interface AudioCutterScreenCallback {
     fun showMenu(view: View, audioFile: AudioFile)
@@ -50,13 +43,10 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
     private val TAG = "giangtd"
 
-    @SuppressLint("SimpleDateFormat")
-    private var simpleDateFormatHour = SimpleDateFormat("HH:mm:ss", Locale.UK)
-    private var simpleDateFormat = SimpleDateFormat("mm:ss")
 
     private var mListAudio = ArrayList<AudioFileView>()
     private lateinit var recyclerView: RecyclerView
-
+    private var sbAnimation: ObjectAnimator? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyStudioHolder {
         recyclerView = parent as RecyclerView
@@ -65,8 +55,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 .inflate(R.layout.my_studio_screen_item, parent, false))
         } else LoadingViewHolder(LayoutInflater.from(parent.context)
             .inflate(R.layout.my_studio_item_loading, parent, false))
-
-
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -155,10 +143,20 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                         }
                     }
 
+                    successViewHolder.sbMusic.progress = 0
+                    successViewHolder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
+                    successViewHolder.tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
+
+                    successViewHolder.sbMusic.clearAnimation()
+                    sbAnimation?.cancel()
+
                 } else {
                     successViewHolder.llPlayMusic.visibility = View.GONE
                     successViewHolder.llItem.setBackgroundColor(Color.WHITE)
                     successViewHolder.llItem.setPadding(0, 0, 0, 0)
+
+                    successViewHolder.sbMusic.clearAnimation()
+//                    sbAnimation?.cancel()
                 }
 
             } else {
@@ -223,51 +221,60 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         var playerState: PlayerState = PlayerState.IDLE
         private var isSeekBarStatus = false      // trang thai seekbar co dang duoc keo hay khong
         var filePath: String = ""
-
+        var timeFomat = 0
         private fun updatePlayInfor(playerInfo: PlayerInfo) {
 
             val audioFileView = getItem(adapterPosition)
             filePath = playerInfo.currentAudio?.getFilePath().toString()
 
-            playerState = playerInfo.playerState
-            sbMusic.max = playerInfo.duration
-            sbMusic.progress = playerInfo.posision
-            tvTimeLife.text = simpleDateFormat.format(playerInfo.posision)
+//            playerState = playerInfo.playerState
+            sbMusic.max = playerInfo.duration * 100
 
-            if (audioFileView.audioFile.duration.toInt() / 1000 > 3600) {
-                tvTimeLife.text = simpleDateFormatHour.format(playerInfo.posision)
+            timeFomat = Utils.chooseTimeFormat(playerInfo.duration.toLong())
+            tvTimeLife.text = Utils.toTimeStr(playerInfo.posision.toLong(), timeFomat)
 
-            } else {
-                tvTimeLife.text = simpleDateFormat.format(playerInfo.posision)
-            }
-
-            Log.d(TAG, "onClick updatePlayInfor: " + playerInfo.playerState)
             when (playerInfo.playerState) {
                 PlayerState.PLAYING -> {
                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
+                    setProgressAnimate(sbMusic, playerInfo.posision, 1000)
+
                 }
                 PlayerState.PAUSE -> {
                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
-
                 }
                 PlayerState.IDLE -> {
                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
                     tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
+                    sbMusic.clearAnimation()
+//                    sbAnimation?.cancel()
                     sbMusic.progress = 0
+                    setProgressAnimate(sbMusic, 0, 1000)
+                    sbMusic.clearAnimation()
+//                    sbAnimation?.cancel()
+
                 }
                 else -> {
                     //nothing
                 }
             }
-
         }
 
+
+        private fun setProgressAnimate(pb: SeekBar, progressTo: Int, duration: Long) {
+            // smooth animation
+            sbAnimation?.cancel()
+            sbAnimation = ObjectAnimator.ofInt(pb, "progress", pb.progress, progressTo * 100)
+            sbAnimation?.setDuration(duration)
+            sbAnimation?.setInterpolator(DecelerateInterpolator())
+            sbAnimation?.start()
+        }
 
         override fun onViewAttachedToWindow() {
             super.onViewAttachedToWindow()
             val audioFileView = getItem(adapterPosition)
             audioPlayer.getPlayerInfo().observe(this, object : Observer<PlayerInfo> {
                 override fun onChanged(playerInfo: PlayerInfo) {
+                    playerState = playerInfo.playerState
                     playerInfo.currentAudio?.let {
                         if (!isSeekBarStatus && adapterPosition != -1) {                            // khi summitlist: ham onViewDetachedFromWindow() vua chay va  audioPlayer.getPlayerInfo().observe cung chay nen adapterPosition = -1 (chua kip lay data)
                             if (audioFileView.getFilePath() == it.getFilePath()) {
@@ -281,6 +288,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
         override fun onViewDetachedFromWindow() {
             super.onViewDetachedFromWindow()
+            sbAnimation?.cancel()
         }
 
         @SuppressLint("SetTextI18n")
@@ -295,22 +303,13 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 tvInfo.setText(((audioFileView.audioFile.size) / (1024)).toString() + " KB" + " | " + bitrate + "kb/s")
             }
 
-            Log.d(TAG, "onBind: duration: " + audioFileView.audioFile.duration.toInt())
+            timeFomat = Utils.chooseTimeFormat(audioFileView.audioFile.duration)
 
-            if (audioFileView.audioFile.duration.toInt() / 1000 > 3600) {
-                tvTotal.text = "/" + simpleDateFormatHour.format(audioFileView.audioFile.duration.toInt())
-                tvTimeLife.width = Utils.getWidthText(simpleDateFormatHour.format(audioFileView.audioFile.duration), itemView.context)
-                    .toInt() + 25
-                tvTotal.width = Utils.getWidthText(simpleDateFormatHour.format(audioFileView.audioFile.duration), itemView.context)
-                    .toInt() + 25
-            } else {
-                tvTotal.text = "/" + simpleDateFormat.format(audioFileView.audioFile.duration.toInt())
-                tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(audioFileView.audioFile.duration), itemView.context)
-                    .toInt() + 25
-                tvTotal.width = Utils.getWidthText(simpleDateFormat.format(audioFileView.audioFile.duration), itemView.context)
-                    .toInt() + 25
-            }
-
+            tvTotal.text = "/" + Utils.toTimeStr(audioFileView.audioFile.duration, timeFomat)
+            tvTimeLife.width = Utils.getWidthText(Utils.toTimeStr(audioFileView.audioFile.duration, timeFomat)!!, itemView.context)
+                .toInt() + 35
+            tvTotal.width = Utils.getWidthText("/" + Utils.toTimeStr(audioFileView.audioFile.duration, timeFomat)!!, itemView.context)
+                .toInt() + 35
 
             if (audioFileView.isExpanded) {
                 llPlayMusic.visibility = View.VISIBLE
@@ -339,8 +338,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
             }
 
-
-
             llAudioHeader.setOnClickListener(this)
 
             ivPausePlay.setOnClickListener(this)
@@ -348,18 +345,49 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             ivSetting.setOnClickListener(this)
 
             sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(sb: SeekBar?, p1: Int, p2: Boolean) {
-                    tvTimeLife.text = simpleDateFormat.format(sb?.progress)             // update time cho tvTimeLife khi keo seekbar
+                override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
+
+                    Log.d(TAG, "onProgressChanged: PlayerState.PAUSE ${playerState}")
+                    if (playerState != PlayerState.IDLE) {
+                        if (fromUser) {
+                            sbMusic.clearAnimation()
+//                            sbAnimation?.cancel()
+                            setProgressAnimate(sbMusic, progress / 100, 1000)
+                        }
+//                        if (playerState != PlayerState.PLAYING) {
+//                            tvTimeLife.text = Utils.toTimeStr(sb?.progress!!.toLong() / 100, timeFomat)
+//                        }
+                    }
+                    if (playerState == PlayerState.PAUSE) {
+                        tvTimeLife.text = Utils.toTimeStr(progress.toLong() / 100, timeFomat)
+                        Log.d(TAG, "onProgressChanged: PlayerState.PAUSE")
+                    }
                 }
 
-                override fun onStartTrackingTouch(p0: SeekBar?) {
+                override fun onStartTrackingTouch(sb: SeekBar?) {
+                    audioPlayer.pause()
+                    sbMusic.clearAnimation()
+//                    sbAnimation?.cancel()
                     isSeekBarStatus = true
                 }
 
-                override fun onStopTrackingTouch(p0: SeekBar?) {
-                    audioPlayer.seek(sbMusic.progress)
-                    isSeekBarStatus = false
-                }
+                override fun onStopTrackingTouch(sb: SeekBar?) {
+
+//                    Log.d(TAG, "onStopTrackingTouch: playerState : " + playerState)
+//                    when (playerState) {
+//                        PlayerState.IDLE -> {
+//                            lifecycleScope.launch {
+//                                audioPlayer.play(audioFileView.audioFile, 23)
+//                            }
+//                        }
+
+//                        PlayerState.PAUSE -> {
+                            audioPlayer.seek(sbMusic.progress / 100)
+                            audioPlayer.resume()
+                            isSeekBarStatus = false
+                        }
+//                    }
+//                }
             })
         }
 
@@ -434,7 +462,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         }
     }
 
-    inner class LoadingViewHolder(itemView: View) : MyStudioHolder(itemView), View.OnClickListener {
+    inner class LoadingViewHolder(itemView: View) : AudioCutterAdapter.MyStudioHolder(itemView), View.OnClickListener {
 
         val pbLoading: ProgressBar = itemView.findViewById(R.id.pb_loading)
         val tvTitle: TextView = itemView.findViewById(R.id.tv_title_music)

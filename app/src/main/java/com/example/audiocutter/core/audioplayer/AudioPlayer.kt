@@ -158,16 +158,16 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
 
     override fun pause() {
-        if (playInfoData.playerState == PlayerState.PLAYING) {
+        //if (playInfoData.playerState == PlayerState.PLAYING) {
             mPlayer.pause()
-        }
+        //}
     }
 
 
     override fun resume() {
-        if (playInfoData.playerState == PlayerState.PAUSE) {
+        //if (playInfoData.playerState == PlayerState.PAUSE) {
             mPlayer.start()
-        }
+        //}
     }
 
 

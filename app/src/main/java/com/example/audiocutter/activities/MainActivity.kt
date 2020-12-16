@@ -2,7 +2,9 @@ package com.example.audiocutter.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateScreen
 import com.example.audiocutter.R
@@ -47,10 +49,14 @@ class MainActivity : BaseActivity() {
 
                 val typeAudio = intent.getIntExtra(Constance.TYPE_RESULT, -1)
                 if (typeAudio != -1) {
-                    viewStateManager.goToMyStudioScreen(
-                        findNavController(R.id.app_nav_host_fragment),
-                        typeAudio
-                    )
+                    Log.d("TAG", "handleNotificationIntent: ")
+                    lifecycleScope.launchWhenResumed {
+                        viewStateManager.goToMyStudioScreen(
+                            findNavController(R.id.app_nav_host_fragment),
+                            typeAudio
+                        )
+                    }
+
                 }
             }
         }
