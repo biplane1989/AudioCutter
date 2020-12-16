@@ -39,7 +39,6 @@ class ProgressView : View {
     }
 
     override fun onDraw(canvas: Canvas?) {
-        Log.e(TAG, "updatePlayInfor $this  onDraw  currentLineX  $currentLineX duration $duration")
         super.onDraw(canvas)
         drawView(canvas)
     }
@@ -52,10 +51,6 @@ class ProgressView : View {
     }
 
     fun resetView() {
-        Log.i(
-            TAG,
-            "updatePlayInfor   resetView: $currentLineX  prevPos $currPos nextPos $destPos"
-        )
         currentLineX = 0f
         currPos = -1f
         destPos = -1f
@@ -63,10 +58,9 @@ class ProgressView : View {
     }
 
 
-    fun updatePG(currentPos: Long, duration: Long, useAnimation: Boolean = true) {
-        Log.e(TAG, "updatePlayInfor  $this updatePG  currentLineX  $currentPos duration $duration")
+    fun updatePG(percent: Long, duration: Long, useAnimation: Boolean = true) {
         this.duration = duration.toFloat()
-        moveProcess(currentPos.toFloat(), useAnimation)
+        moveProcess(percent.toFloat(), useAnimation)
 
     }
 
@@ -74,13 +68,8 @@ class ProgressView : View {
         if (useAnimation && currPos != -1f && newPos != duration && newPos > currPos) {
             if (animator != null && animator!!.isRunning) {
                 destPos = newPos
-                Log.d("taihhhhh", " destPos ${destPos} ")
             } else {
                 destPos = newPos
-                Log.d(
-                    "taihhhhh",
-                    " currPos ${currPos}  destPos ${destPos} duration ${((destPos - currPos) * 2).toLong()}"
-                )
 
                 animator = ValueAnimator.ofFloat(currPos, destPos)
                 animator?.duration = ((destPos - currPos)).toLong()
@@ -129,10 +118,10 @@ class ProgressView : View {
                 currPos
             )
             if (!useAnimation) {
-                Log.e(
+               /* Log.e(
                     TAG,
                     "updatePlayInfor:  $this  moveProcess currentPos $currPos    currentLineX  $currentLineX     duration$duration     width  ${width.toFloat()}"
-                )
+                )*/
             }
             invalidate()
         }

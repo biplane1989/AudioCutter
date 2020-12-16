@@ -7,9 +7,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.audiocutter.core.manager.AudioPlayer
-import com.example.audiocutter.core.manager.PlayerInfo
-import com.example.audiocutter.core.manager.PlayerState
+import com.example.audiocutter.core.manager.*
 import com.example.audiocutter.objects.AudioFile
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
@@ -18,9 +16,8 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
-//    val TAG = AudioPlayerImpl::class.java.name
-    val TAG ="5560"
-
+    //    val TAG = AudioPlayerImpl::class.java.name
+    val TAG = "5560"
 
 
     private lateinit var appContext: Context
@@ -28,6 +25,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     private val mainScope = MainScope()
     private var isStopped = false
     private var isSeekTo = 0
+    private lateinit var mAudioFile: AudioFile
 
 
     private var _mPlayInfo = MutableLiveData<PlayerInfo>()
@@ -58,9 +56,8 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         Log.d(TAG, "OnErrorListener: what $what isplaying ${mp.isPlaying} MediaPlayer.MEDIA_ERROR_IO ${MediaPlayer.MEDIA_ERROR_IO}")
         if (what == -38) {
             stop()
-
         }
-        false
+        true
     }
 
 
@@ -76,6 +73,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     }
 
     override suspend fun play(audioFile: AudioFile): Boolean {
+        mAudioFile = audioFile
         try {
           mainScope.launch {
               mPlayer.stop()
@@ -90,7 +88,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                 mPlayer.reset()
                 isSeekTo = 0
                 prepare(audioFile)
-              playInfoData.duration = audioFile.duration.toInt()
+              /*playInfoData.duration = audioFile.duration.toInt()*/
                 isStopped = false
             }
             startTimerIfReady()
@@ -104,6 +102,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     }
 
     override suspend fun play(audioFile: AudioFile, currentPosition: Int): Boolean {
+        mAudioFile = audioFile
         try {
             isSeekTo = currentPosition
             mainScope.launch {
@@ -118,7 +117,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                 playInfoData.currentAudio = audioFile
                 mPlayer.reset()
                 prepare(audioFile)
-                playInfoData.duration = audioFile.duration.toInt()
+                /* playInfoData.duration = audioFile.duration.toInt()*/
                 isStopped = false
             }
             startTimerIfReady()
@@ -131,37 +130,39 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     }
 
     private fun prepare(audioFile: AudioFile) {
-        playInfoData.playerState = PlayerState.PREPARING
-
-        mPlayer.apply {
-            setOnPreparedListener(this@AudioPlayerImpl)
-            setDataSource(appContext, audioFile.uri!!)
-            prepareAsync()
-
+        try {
+            playInfoData.playerState = PlayerState.PREPARING
+            mPlayer.apply {
+                setOnPreparedListener(this@AudioPlayerImpl)
+                setDataSource(appContext, audioFile.uri!!)
+                prepareAsync()
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, "prepare: ${e.printStackTrace()}")
+            e.printStackTrace()
         }
+
     }
 
 
     override fun onPrepared(player: MediaPlayer?) {
-
         if (isSeekTo == 0) {
             player?.let {
                 playInfoData.posision = 0
                 player.start()
                 if (player.isPlaying) {
-                    Log.d(TAG, "onPrepared: in get duration   ${Calendar.HOUR_OF_DAY}")
-                    /* playInfoData.duration = player.duration!!*/
+                    playInfoData.duration = player.duration
                 }
                 playInfoData.playerState = PlayerState.PLAYING
                 notifyPlayerDataChanged()
+
             }
         } else {
             playInfoData.posision = isSeekTo
             player?.let {
-
                 player.start()
                 if (player.isPlaying) {
-                   /* playInfoData.duration = player.duration*/
+                    playInfoData.duration = player.duration
                 }
                 player.seekTo(isSeekTo)
                 playInfoData.playerState = PlayerState.PLAYING
@@ -212,6 +213,7 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     }
 
     override fun setVolume(volume: Float) {
+
         mPlayer.setVolume(volume, volume)
         playInfoData.volume = volume
 
@@ -231,51 +233,53 @@ class    AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
             while (mainScope.isActive) {
                 var changed = false
                 delay(500)
-                playInfoData.duration = mPlayer.duration
-                var currentPosition = mPlayer.currentPosition
-                if (currentPosition >= mPlayer.duration) {
-                    currentPosition = 0
-                    playInfoData.posision = currentPosition
-                    mPlayer.stop()
 
-                    if (playInfoData.playerState != PlayerState.IDLE) {
-                        playInfoData.playerState = PlayerState.IDLE
-                        changed = true
-                    }
-                }
-
-                if (playInfoData.playerState == PlayerState.PREPARING) {
+                /*if (playInfoData.playerState == PlayerState.PREPARING) {
                     changed = false
-                }
+                } else*/
+                if (playInfoData.playerState != PlayerState.PREPARING) {
+                    playInfoData.duration = mPlayer.duration
+                    var currentPosition = mPlayer.currentPosition
+                    if (currentPosition >= mPlayer.duration) {
+                        currentPosition = 0
+                        playInfoData.posision = currentPosition
+                        mPlayer.stop()
 
-                if (mPlayer.isPlaying) {
-                    if (playInfoData.playerState != PlayerState.PLAYING) {
-                        playInfoData.playerState = PlayerState.PLAYING
-                        changed = true
-                    }
-                } else {
-                    if (playInfoData.playerState == PlayerState.PLAYING) {
-                        if (isStopped) {
+                        if (playInfoData.playerState != PlayerState.IDLE) {
                             playInfoData.playerState = PlayerState.IDLE
-                            currentPosition = 0
-                            playInfoData.posision = currentPosition
-                        } else {
-                            playInfoData.playerState = PlayerState.PAUSE
+                            changed = true
                         }
-                        changed = true
                     }
-                }
+                    if (mPlayer.isPlaying) {
+                        if (playInfoData.playerState != PlayerState.PLAYING) {
+                            playInfoData.playerState = PlayerState.PLAYING
+                            changed = true
+                        }
+                    } else {
+                        if (playInfoData.playerState == PlayerState.PLAYING) {
+                            if (isStopped) {
+                                playInfoData.playerState = PlayerState.IDLE
+                                currentPosition = 0
+                                playInfoData.posision = currentPosition
+                            } else {
+                                playInfoData.playerState = PlayerState.PAUSE
+                            }
+                            changed = true
+                        }
+                    }
 
-                if (playInfoData.posision != currentPosition && playInfoData.playerState == PlayerState.PLAYING) {
-                    changed = true
-                    playInfoData.posision = currentPosition
-                }
-                if (changed) {
-                    notifyPlayerDataChanged()
+                    if (playInfoData.posision != currentPosition && playInfoData.playerState == PlayerState.PLAYING) {
+                        changed = true
+                        playInfoData.posision = currentPosition
+                    }
+                    if (changed) {
+                        notifyPlayerDataChanged()
+                    }
                 }
             }
         }
     }
+
 
     override fun getPlayerInfoData(): PlayerInfo {
         return playInfoData

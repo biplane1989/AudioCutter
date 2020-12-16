@@ -272,8 +272,8 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
             when (p0.id) {
                 R.id.iv_controller_audio -> controllerAudio()
                 R.id.ln_item_audio_cutter_screen -> {
-//                    controllerAudio()
-                    mCallBack.onCutItemClicked(itemAudio)
+                    controllerAudio()
+//                    mCallBack.onCutItemClicked(itemAudio)
                 }
                 R.id.ln_menu -> showPopupMenu(itemAudio)
             }
