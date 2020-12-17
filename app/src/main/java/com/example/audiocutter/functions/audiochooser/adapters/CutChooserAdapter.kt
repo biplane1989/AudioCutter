@@ -3,7 +3,6 @@ package com.example.audiocutter.functions.audiochooser.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.PlayerInfo
@@ -24,7 +22,6 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
-import com.example.audiocutter.util.Utils
 import kotlinx.coroutines.launch
 import kotlin.math.floor
 
@@ -234,6 +231,7 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                 PlayerState.IDLE -> {
                     pgAudio.visibility = View.GONE
                     waveView.visibility = View.INVISIBLE
+
 
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
