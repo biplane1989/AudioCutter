@@ -13,7 +13,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/confetti" />
             <option value="$PROJECT_DIR$/mergeaudiocore" />
+            <option value="$PROJECT_DIR$/waveform" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

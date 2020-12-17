@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.SeekBar
 import androidx.annotation.RequiresApi
@@ -20,7 +22,10 @@ import com.example.audiocutter.core.manager.FlashCallConfig
 import com.example.audiocutter.core.manager.FlashType
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.FlashCallScreenBinding
-import com.example.audiocutter.functions.flashcall.dialogs.*
+import com.example.audiocutter.functions.flashcall.dialogs.FlashTypeDialog
+import com.example.audiocutter.functions.flashcall.dialogs.NotificationDialog
+import com.example.audiocutter.functions.flashcall.dialogs.SettimeDialog
+import com.example.audiocutter.functions.flashcall.dialogs.SuggestionDialog
 import com.example.audiocutter.permissions.AppPermission
 import com.example.audiocutter.permissions.NotificationListenerPermissionRequest
 import com.example.audiocutter.permissions.PermissionManager
@@ -36,6 +41,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
     private lateinit var dialogSettime: SettimeDialog
     private lateinit var binding: FlashCallScreenBinding
     private var numCheckClick = 0
+    private lateinit var typeFlash: FlashType
     val manager = ManagerFactory.getFlashCallSetting()
 
     private lateinit var flashModel: FlashCallModel
@@ -47,6 +53,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
     private val MIN_VALUE = 150
     private val NOTIFICATION_LISTENER_REQUESTING_PERMISSION = 1 shl 1
     private var pendingRequestingPermission = 0
+
 
     @SuppressLint("SetTextI18n")
     var flashObserver = Observer<FlashCallConfig> {
@@ -79,9 +86,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
         binding.swVibrateFlashcall.isChecked = it.flashMode.vibrateEnable
         binding.swSilentFlashCall.isChecked = it.flashMode.silentEnable
         binding.swSettimeFlash.isChecked = it.flashTimer.enable
-
             binding.sbNumberOfLightning.progress = it.numberOfLightning
-
         binding.sbLinghtningSpeedFlcall.progress = Utils.convertValue(
             MIN_VALUE,
             MAX_VALUE,
@@ -128,7 +133,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
                 )
             )
         }
-
+        typeFlash = it.flashType
         when (it.flashType) {
             FlashType.BEAT -> {
                 binding.tvTypeflashFlcall.text = getString(R.string.beat_type_flash_call)
@@ -343,23 +348,30 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
             binding.tbFlashType -> {
                 ManagerFactory.getFlashCallSetting().stopTestingLightningSpeed()
                 changeColorButton(R.color.colorgray, R.color.colorYelowDark)
-                flashTypeDialog = FlashTypeDialog()
+                val num: Int = when (typeFlash) {
+                    FlashType.CONTINUITY -> 1
+                    FlashType.BEAT -> 0
+                }
+
+                flashTypeDialog = FlashTypeDialog.newInstance(num)
                 flashTypeDialog.setOnCallBack(this)
-                flashTypeDialog.show(childFragmentManager, "TAG")
+                flashTypeDialog.show(childFragmentManager, FlashTypeDialog::class.java.name)
             }
             binding.tbEndTime -> {
                 numCheckClick = 2
-                dialogSettime.show(childFragmentManager, "TAG")
+                dialogSettime.show(childFragmentManager, SettimeDialog::class.java.name)
             }
             binding.tbStartTime -> {
                 numCheckClick = 1
-                dialogSettime.show(childFragmentManager, "TAG")
+                dialogSettime.show(childFragmentManager, SettimeDialog::class.java.name)
             }
             binding.tvTestSpeedFlashcall -> {
+                numCheckClick = 3
                 ManagerFactory.getFlashCallSetting().startTestingLightningSpeed()
                 changeColorButton(R.color.colorYelowDark, R.color.colorgray)
             }
             binding.tvStopTestSpeedFlashcall -> {
+                numCheckClick = 4
                 ManagerFactory.getFlashCallSetting().stopTestingLightningSpeed()
                 changeColorButton(R.color.colorgray, R.color.colorYelowDark)
             }
@@ -367,7 +379,6 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
                 val dialog = SuggestionDialog()
                 dialog.show(childFragmentManager, SuggestionDialog::class.java.name)
             }
-
         }
     }
 
@@ -412,7 +423,6 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
         ManagerFactory.getFlashCallSetting().changeFlashCallConfig(flashCallConfig)
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         when (seekBar) {
             binding.sbNumberOfLightning -> {
@@ -425,11 +435,11 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
             }
             binding.sbLinghtningSpeedFlcall -> {
 
-                val speedValue =
-                    Utils.convertValue(MIN_PROGRESS, MAX_PROGRESS, MIN_VALUE, MAX_VALUE, progress)
-
+                val speedValue = Utils.convertValue(MIN_PROGRESS, MAX_PROGRESS, MIN_VALUE, MAX_VALUE, progress)
                 flashCallConfig.lightningSpeed = speedValue.toLong()
-                Log.d(TAG, "onProgressChanged:  ${flashCallConfig.lightningSpeed}")
+                if (fromUser && numCheckClick == 3) {
+                    ManagerFactory.getFlashCallSetting().startTestingLightningSpeed()
+                }
             }
         }
         changeFlashConfig(flashCallConfig)
@@ -440,14 +450,14 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
 
     override fun onStopTrackingTouch(seekBar: SeekBar?) {}
 
-    override fun changeMode(type: TypeFlash) {
+    override fun changeMode(type: FlashType) {
         flashTypeDialog.dismiss()
         when (type) {
-            TypeFlash.CONTINUITY -> {
+            FlashType.CONTINUITY -> {
                 flashCallConfig.flashType = FlashType.CONTINUITY
                 binding.tvTypeflashFlcall.text = getString(R.string.Continuity_flash_call)
             }
-            TypeFlash.BEAT -> {
+            FlashType.BEAT -> {
                 flashCallConfig.flashType = FlashType.BEAT
                 binding.tvTypeflashFlcall.text = getString(R.string.beat_type_flash_call)
             }

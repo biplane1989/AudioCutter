@@ -36,7 +36,7 @@ class Utils {
     companion object {
         val KEY_SEND_PATH = "key_send_path"
         val FIVE_SECOND = 5000
-        val TIME_CHANGE = 100
+        val TIME_CHANGE = 1000
         val generatedNameHashMap = HashMap<Folder, HashSet<String>>()
 
         var TIME_FORMAT_INCLUDED_HOUR_TWO_ZERO = 1
@@ -209,7 +209,15 @@ class Utils {
         fun convertValue(min1: Double, max1: Double, min2: Double, max2: Double, value: Double): Double {
             return ((value - min1) * ((max2 - min2) / (max1 - min1)) + min2)
         }
-
+        fun convertValue(
+            min1: Float,
+            max1: Float,
+            min2: Float,
+            max2: Float,
+            value: Float
+        ): Float {
+            return ((value - min1) * ((max2 - min2) / (max1 - min1)) + min2)
+        }
         fun convertValue(min1: Int, max1: Int, min2: Int, max2: Int, value: Int): Int {
             return ((value - min1) * ((max2 - min2) * 1f / (max1 - min1)) + min2).toInt()
         }

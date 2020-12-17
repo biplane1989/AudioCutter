@@ -1,6 +1,7 @@
 package com.example.audiocutter.activities
 
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import androidx.databinding.DataBindingUtil
@@ -18,8 +19,6 @@ class MainActivity : BaseActivity() {
     lateinit var binding: ActivityMainBinding
     override fun onPostCreate() {
         super.onPostCreate()
-
-
         if (PreferencesHelper.isFirstTimeToUsedApp()) {
             viewStateManager.initState(ViewStateScreen.HOME_SCREEN)
             handleNotificationIntent(intent)

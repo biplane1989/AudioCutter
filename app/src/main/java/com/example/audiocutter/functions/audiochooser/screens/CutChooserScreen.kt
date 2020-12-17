@@ -117,10 +117,13 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioCutterModel = ViewModelProvider(this).get(CutChooserViewModel::class.java)
-        audioCutterAdapter = CutChooserAdapter(requireContext(), audioCutterModel.getAudioPlayer(), lifecycleScope)
+        audioCutterModel =
+            ViewModelProvider(this).get(CutChooserViewModel::class.java)
+        audioCutterAdapter =
+            CutChooserAdapter(requireContext(), audioCutterModel.getAudioPlayer(), lifecycleScope)
 //        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
+
 
     override fun onCreateView(
 
@@ -388,6 +391,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             }
             binding.ivCutterScreenBackEdt -> {
                 previousStatus()
+
             }
             binding.ivCutterScreenClose -> {
                 clearText()
@@ -397,6 +401,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             }
         }
     }
+
 
     private fun clearText() {
         if (binding.edtCutterSearch.text.toString().isNotEmpty()) {

@@ -36,7 +36,6 @@ class AppFlashModel : BaseViewModel() {
         _listApps.addSource(
             ManagerFactory.getFlashCallSetting().getListNotificationApps()
         ) { it ->
-            Log.d(TAG, "checkListApps:data start ${it.data!!.size}  is loading ${it.isLoading}")
             var listAppsTmp: List<AppFlashItem>? = null
             when (it.isLoading) {
                 false -> {
@@ -52,7 +51,6 @@ class AppFlashModel : BaseViewModel() {
                 }
 
             }
-            Log.d(TAG, "checkListApps:data end ${it.data!!.size}  is loading ${it.isLoading}")
             _listApps.postValue(listAppsTmp)
 
         }

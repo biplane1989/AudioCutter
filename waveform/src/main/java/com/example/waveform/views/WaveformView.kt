@@ -1,35 +1,36 @@
-package com.example.audiocutter.ui.editor.cutting;
+package com.example.waveform.views;
 
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
 import androidx.dynamicanimation.animation.FlingAnimation
 import androidx.dynamicanimation.animation.FloatValueHolder
-import com.example.audiocutter.R
-import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.util.Utils
-import com.example.core.utils.FileUtil
+
+import com.example.waveform.R
+import com.example.waveform.Utils
+import com.example.waveform.soundfile.AudioDecoder
+import com.example.waveform.soundfile.AudioDecoderBuilder
+import com.example.waveform.soundfile.ProgressListener
+import kotlinx.coroutines.*
 import kotlin.math.abs
 import kotlin.math.sqrt
 
-class WaveformEditView : View {
+class WaveformView : View, ProgressListener {
     private var widthView = 0
     private var heightView = 0
     private var waveformLineWidth = 0
     private var waveformLineSpace = 0
     private var waveformWidth = 0
-    private var waveformDataIndex = 0
-    private lateinit var waveformData: DoubleArray
+
     private var minScale = 0f
     private var scale = 0f
     private var translate = 0f
     private var lastScale = 0f
-    private var waveformPaint: Paint? = null
+
     private var detector: GestureDetector? = null
     private var fling: FlingAnimation? = null
     private var distanceStart = 0f
@@ -61,7 +62,7 @@ class WaveformEditView : View {
     private var endTimeMs: Long = 0
     private var trackDurationMs: Long = 0
     private var playPositionMs: Long = 0
-    private var listener: WaveformEditListener? = null
+    private var listener: WaveformViewListener? = null
     private var maxWaveHeight = 0.0
     private var centerLinePaint: Paint? = null
     private var timeMarkPaint: Paint? = null
@@ -73,6 +74,9 @@ class WaveformEditView : View {
     private var a = 0
     private var mEndTime = 0L
     private lateinit var paintLineSpace: Paint
+    private var mAudioDecoder: AudioDecoder? = null
+    private lateinit var mWaveformDrawer: WaveformDrawer
+
 
     constructor(context: Context) : super(context) {
         init(context)
@@ -97,12 +101,7 @@ class WaveformEditView : View {
 
         waveformLineWidth = dp2px(WAVEFORM_LINE_WITH)
         waveformLineSpace = dp2px(WAVEFORM_LINE_SPACE)
-        waveformPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        waveformPaint!!.color = WAVEFORM_COLOR
-        waveformPaint!!.style = Paint.Style.STROKE
-        waveformPaint!!.strokeWidth = waveformLineWidth.toFloat()
-        waveformPaint!!.strokeCap = Paint.Cap.ROUND
-        waveformPaint!!.isAntiAlias = true
+
         centerLinePaint = Paint()
         centerLinePaint!!.color = CENTER_LINE_COLOR
         val centerLineWidth = Utils.dpToPx(context, CENTER_LINE_WIDTH)
@@ -142,6 +141,8 @@ class WaveformEditView : View {
         )
         timeMarkTextMargin = Utils.dpToPx(getContext(), DEFAULT_TIME_TEXT_MARGIN)
         setGestureDetector(context)
+        //mWaveformDrawer = WaveformDrawer(this, WAVEFORM_COLOR, waveformLineWidth.toFloat())
+
     }
 
     private fun initTimeMarks() {
@@ -150,50 +151,66 @@ class WaveformEditView : View {
         invalidate()
     }
 
-    fun setDataSource(path: String) {
-        val duration = getDuration(path)
-        if (listener != null) {
-            listener!!.onCountAudioSelected(duration, true)
-            listener!!.onPlayPositionChanged(playPositionMs.toInt(), false)
-            listener!!.onEndTimeChanged(duration)
-        }
-        trackDurationMs = duration
-        invalidate()
-        if (duration > WaveformLoader.PERIOD_IN_FRAMES) {
-            val numberSample = (duration / WaveformLoader.PERIOD_IN_FRAMES).toInt()
-            waveformDataIndex = 0
-            waveformData = DoubleArray(numberSample)
-            waveformWidth =
-                numberSample * waveformLineWidth + (numberSample - 1) * waveformLineSpace
-            Log.d(TAG, String.format("numberSample = %d", numberSample))
-            initWaveformProperties()
-            WaveformLoader.get()!!.extractor(path, object : WaveformLoader.OnWaveformLoaderCallBack {
-                override fun onWaveformUpdate(db: DoubleArray?, chanelCount: Int) {
-                    if (db != null) {
-                        var i = 0
-                        while (i < db.size) {
-                            val value: Double = if (chanelCount == 2) {
-                                (db[i] + db[i + 1]) / 2.0
-                            } else {
-                                db[i]
-                            }
-                            if (waveformDataIndex < waveformData.size) {
-                                waveformData[waveformDataIndex] = value
-                                waveformDataIndex++
-                            }
-                            i += chanelCount
-                        }
-                        invalidate()
-                    }
-                }
+    private fun isReadyToDraw(): Boolean {
+        return width > 0 && height > 0
+    }
 
-                override fun onWaveformFinish() {
-                    invalidate()
-                }
-            })
-        } else {
-            waveformWidth = 0
+    suspend fun setDataSource(filePath: String, duration: Long) = withContext(Dispatchers.Default) {
+        trackDurationMs = 0
+        listener?.let {
+            it.onPlayPositionChanged(playPositionMs.toInt(), false)
+            it.onEndTimeChanged(duration)
         }
+
+        trackDurationMs = duration
+        mAudioDecoder = AudioDecoderBuilder.build(filePath, this@WaveformView)
+        mAudioDecoder?.let {
+            waveformWidth =
+                it.numFrames * waveformLineWidth + (it.numFrames - 1) * waveformLineSpace
+        }
+        if (isReadyToDraw()) {
+            mWaveformDrawer.computeDoublesForAllZoomLevels(mAudioDecoder)
+            initWaveformProperties()
+            postInvalidate()
+        }
+
+
+        /* invalidate()
+         if (duration > WaveformLoader.PERIOD_IN_FRAMES) {
+             val numberSample = (duration / WaveformLoader.PERIOD_IN_FRAMES).toInt()
+             waveformDataIndex = 0
+             waveformData = DoubleArray(numberSample)
+             waveformWidth =
+                 numberSample * waveformLineWidth + (numberSample - 1) * waveformLineSpace
+             Log.d(TAG, String.format("numberSample = %d", numberSample))
+             initWaveformProperties()
+             WaveformLoader.get()!!.extractor(path, object : WaveformLoader.OnWaveformLoaderCallBack {
+                 override fun onWaveformUpdate(db: DoubleArray?, chanelCount: Int) {
+                     if (db != null) {
+                         var i = 0
+                         while (i < db.size) {
+                             val value: Double = if (chanelCount == 2) {
+                                 (db[i] + db[i + 1]) / 2.0
+                             } else {
+                                 db[i]
+                             }
+                             if (waveformDataIndex < waveformData.size) {
+                                 waveformData[waveformDataIndex] = value
+                                 waveformDataIndex++
+                             }
+                             i += chanelCount
+                         }
+                         invalidate()
+                     }
+                 }
+
+                 override fun onWaveformFinish() {
+                     invalidate()
+                 }
+             })
+         } else {
+             waveformWidth = 0
+         }*/
     }
 
     private fun setGestureDetector(context: Context) {
@@ -221,16 +238,6 @@ class WaveformEditView : View {
                 return true
             }
         })
-    }
-
-    private fun getDuration(path: String): Long {
-        return try {
-           val audioFile = ManagerFactory.getAudioFileManager().findAudioFile(path)
-            return audioFile?.duration ?: 0
-        } catch (e: IllegalArgumentException) {
-            e.printStackTrace()
-            0
-        }
     }
 
     private fun initWaveformProperties() {
@@ -264,16 +271,19 @@ class WaveformEditView : View {
         if (w != oldw || h != oldh) {
             widthView = w
             heightView = h
-            initWaveformProperties()
+            if (isReadyToDraw() && mAudioDecoder != null && !mWaveformDrawer.isInitialized) {
+                mWaveformDrawer.computeDoublesForAllZoomLevels(mAudioDecoder)
+                initWaveformProperties()
+            }
             initDimensions()
         }
     }
 
     override fun onDraw(canvas: Canvas) {
-        if (widthView > 0 && heightView > 0 && waveformWidth > 0) {
-            drawCenterLine(canvas)
+        if (isReadyToDraw()) {
+            //drawCenterLine(canvas)
             drawTimeMark(canvas)
-            drawWaveform(canvas)
+            mWaveformDrawer.onDraw(canvas)
             drawSelectRect(canvas)
             drawPlayLine(canvas)
             drawSelectCursors(canvas)
@@ -289,7 +299,7 @@ class WaveformEditView : View {
         updateScacle(scale + 0.1f)
     }
 
-    fun zoomInt() {
+    fun zoomIn() {
         updateScacle(scale - 0.1f)
     }
 
@@ -358,62 +368,6 @@ class WaveformEditView : View {
         }
     }
 
-    private fun drawWaveform(canvas: Canvas) {
-        val startIndex = (translate / scale / (waveformLineWidth + waveformLineSpace)).toInt()
-        var endIndex =
-            startIndex + (widthView / scale / (waveformLineWidth + waveformLineSpace).toFloat()).toInt()
-        endIndex = Math.min(endIndex, waveformData.size)
-        val step = (endIndex - startIndex).toFloat() / widthView.toFloat()
-        if (step > 1) {
-            var max: Double
-            var k: Int
-            var l: Int
-            for (index in 0 until widthView) {
-                max = 0.0
-                k = (startIndex + index * step).toInt()
-                l = (startIndex + (index + 1) * step).toInt()
-                for (i in k until l) {
-                    if (i < waveformDataIndex) {
-                        val value = waveformData[i] - WaveformLoader.DB_MIN
-                        if (value > max) {
-                            max = value
-                        }
-                    }
-                }
-                if (max > 0) {
-                    val lineHeight = calculatorLineHeight(max)
-                    val startY = (heightView / 2f + lineHeight / 2f)
-                    val stopY = (heightView / 2f - lineHeight / 2f)
-                    waveformPaint!!.strokeWidth = 1f
-                    canvas.drawLine(
-                        index.toFloat(),
-                        startY,
-                        index.toFloat(),
-                        stopY,
-                        waveformPaint!!
-                    )
-                }
-            }
-        } else {
-            canvas.save()
-            canvas.translate(-translate, 0f)
-            canvas.scale(scale, 1f, 0f, 0f)
-            endIndex = if (endIndex > waveformDataIndex) waveformDataIndex else endIndex
-            for (index in startIndex until endIndex) {
-                val value = waveformData[index] - WaveformLoader.DB_MIN
-                val lineHeight = calculatorLineHeight(value)
-                val centerX =
-                    index * (waveformLineWidth + waveformLineSpace) + waveformLineWidth / 2f
-                val startY = (heightView / 2f + lineHeight / 2f)
-                val stopY = (heightView / 2f - lineHeight / 2f)
-                waveformPaint!!.strokeWidth = waveformLineWidth.toFloat()
-                canvas.drawLine(centerX, startY, centerX, stopY, waveformPaint!!)
-            }
-            canvas.scale(1f, 1f, widthView / 2f, 0f)
-            canvas.translate(0f, 0f)
-            canvas.restore()
-        }
-    }
 
     private fun drawSelectCursors(canvas: Canvas) {
         timeMarkPaint!!.color = selectTextColor
@@ -514,7 +468,7 @@ class WaveformEditView : View {
                 }
             }
             MotionEvent.ACTION_MOVE -> if (touchCount >= 2) {
-                val centerPointX = (event.getX(0) + event.getX(1)) / 2f
+                /*val centerPointX = (event.getX(0) + event.getX(1)) / 2f
                 val centerPointWaveformX = (centerPointX + translate) / scale
                 val distanceEnd =
                     distance(event.getX(0), event.getX(1), event.getY(0), event.getY(1))
@@ -530,7 +484,7 @@ class WaveformEditView : View {
                 }
                 updateDividerTimeRange()
                 lastScale = scale
-                invalidate()
+                invalidate()*/
                 return true
             } else {
                 if (selecting) {
@@ -624,8 +578,8 @@ class WaveformEditView : View {
         if (listener != null) {
             listener!!.onStartTimeChanged(startTimeMs)
         }
-        if (listener != null)
-            listener!!.onCountAudioSelected(endTimeMs - startTimeMs, false)
+        /*if (listener != null)
+            listener!!.onCountAudioSelected(endTimeMs - startTimeMs, false)*/
     }
 
     private fun updateEndTime() {
@@ -634,13 +588,10 @@ class WaveformEditView : View {
         if (listener != null) {
             listener!!.onEndTimeChanged(endTimeMs)
         }
-        if (listener != null)
-            listener!!.onCountAudioSelected(endTimeMs - startTimeMs, false)
+       /* if (listener != null)
+            listener!!.onCountAudioSelected(endTimeMs - startTimeMs, false)*/
     }
 
-    private fun calculatorLineHeight(value: Double): Float {
-        return if (value > 35f) ((value - 35f) / (WaveformLoader.DB_MIN + 35f) * maxWaveHeight).toFloat() else 0f
-    }
 
     private fun correctTranslate(tempTranslate: Float) {
         translate = if (tempTranslate < 0) {
@@ -695,7 +646,7 @@ class WaveformEditView : View {
             invalidate()
             if (listener != null) {
                 listener!!.onStartTimeChanged(startTimeMs)
-                listener!!.onCountAudioSelected(endTimeMs - startTimeMs, false)
+                //listener!!.onCountAudioSelected(endTimeMs - startTimeMs, false)
             }
         }
     }
@@ -708,22 +659,17 @@ class WaveformEditView : View {
             invalidate()
             if (listener != null) {
                 listener!!.onEndTimeChanged(this.endTimeMs)
-                listener!!.onCountAudioSelected(this.endTimeMs - startTimeMs, false)
+                //listener!!.onCountAudioSelected(this.endTimeMs - startTimeMs, false)
             }
         }
     }
 
-    fun setListener(listener: WaveformEditListener?) {
+    fun setListener(listener: WaveformViewListener?) {
         this.listener = listener
-    }
-
-    private fun cancelLoad() {
-        WaveformLoader.get()!!.cancel()
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        cancelLoad()
     }
 
     fun setPlayPositionMs(currentPositionMs: Int, isPress: Boolean) {
@@ -795,15 +741,12 @@ class WaveformEditView : View {
         }
     }
 
-    interface WaveformEditListener {
-        fun onStartTimeChanged(startTimeMs: Long)
-        fun onEndTimeChanged(endTimeMs: Long)
-        fun onPlayPositionChanged(positionMs: Int, isPress: Boolean)
-        fun onCountAudioSelected(positionMs: Long, isFirstTime: Boolean)
+    override fun reportProgress(fractionComplete: Double): Boolean {
+        return true
     }
 
     companion object {
-        val TAG = WaveformEditView::class.java.simpleName
+        val TAG = WaveformView::class.java.simpleName
         val TIME_RANGE_STEPS = longArrayOf(
             1800000,
             900000,
@@ -831,5 +774,6 @@ class WaveformEditView : View {
         private val DEFAULT_PLAY_LINE_COLOR = Color.parseColor("#D81B60")
         private val DEFAULT_LINE_SPACE_COLOR = Color.parseColor("#D8D8D8")
     }
+
 
 }

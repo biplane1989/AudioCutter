@@ -184,6 +184,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 }
             }
             binding.ivNextMixing -> {
+
                 binding.crChangeViewMixing.seekNext5S(5000)
             }
             binding.ivPreviousMixing -> {
