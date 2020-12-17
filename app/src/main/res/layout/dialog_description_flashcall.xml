@@ -22,20 +22,15 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
+            android:paddingTop="@dimen/common_padding_top_dialog"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="visible"
-                tools:visibility="visible">
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/d_48"
+                    android:layout_height="wrap_content"
                     android:fontFamily="@font/opensans_bold"
                     android:gravity="center"
                     android:paddingHorizontal="@dimen/d_16"
@@ -43,8 +38,6 @@
                     android:textColor="#2E3041"
                     android:textSize="@dimen/text_size_header"
                     android:textStyle="bold" />
-            </LinearLayout>
-
 
             <RadioGroup
                 android:id="@+id/rg_set_language"

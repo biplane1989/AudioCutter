@@ -27,6 +27,8 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     private lateinit var binding: MergeChooserScreenBinding
     private lateinit var audioMerAdapter: MergeChooserAdapter
     private lateinit var audioMerModel: MergeChooserModel
+    var currentPos = -1
+
     var stateObserver = Observer<Int> {
         when (it) {
             1 -> {
@@ -49,8 +51,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         }
         binding.tvCountFileMer.text = "$it file"
     }
-
-    var currentPos = -1
 
     @SuppressLint("SetTextI18n")
     private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
@@ -139,6 +139,11 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 audioMerModel.stop()
                 searchAudioByName(textChange.toString())
+                if (textChange.toString() != "") {
+                    binding.ivMerScreenClose.visibility = View.VISIBLE
+                } else {
+                    binding.ivMerScreenClose.visibility = View.INVISIBLE
+                }
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -185,7 +190,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
 
     private fun hideOrShowEditText(status: Int) {
         binding.ivMerScreenBackEdt.visibility = status
-        binding.ivMerScreenClose.visibility = status
+//        binding.ivMerScreenClose.visibility = status
         binding.edtMerSearch.visibility = status
     }
 
@@ -226,7 +231,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         var count = 0
 
         audioMerModel.chooseItemAudioFile(audioCutterView, rs)
-
     }
 
     private fun showEmptyList() {

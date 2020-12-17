@@ -146,8 +146,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="@dimen/common_padding_left"
-            android:background="@drawable/list_contact_select_bottom_bg"
-
             app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView

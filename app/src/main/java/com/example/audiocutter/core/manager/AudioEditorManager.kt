@@ -18,4 +18,5 @@ interface AudioEditorManager {
     fun getListMergingItems(): LiveData<List<ConvertingItem>>
     fun getListMixingItems(): LiveData<List<ConvertingItem>>
     fun getLatestConvertingItem(): ConvertingItem?
+    fun getLastItem(): LiveData<ConvertingItem>
 }

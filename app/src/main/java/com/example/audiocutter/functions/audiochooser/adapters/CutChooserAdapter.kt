@@ -115,12 +115,9 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                     pgAudio.updatePG(playerInfo.posision.toLong(), playerInfo.duration.toLong())
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(
-                                RoundedCorners(
-                                    Utils.convertDp2Px(12, itemView.context)
-                                        .toInt()
-                                )
-                            ).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
                     }
@@ -129,15 +126,11 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                     waveView.visibility = View.VISIBLE
                 }
                 PlayerState.PAUSE -> {
-
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(
-                                RoundedCorners(
-                                    Utils.convertDp2Px(12, itemView.context)
-                                        .toInt()
-                                )
-                            ).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -148,12 +141,9 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                 PlayerState.IDLE -> {
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(
-                                RoundedCorners(
-                                    Utils.convertDp2Px(12, itemView.context)
-                                        .toInt()
-                                )
-                            ).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -223,8 +213,9 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                 PlayerState.PLAYING -> {
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-                                .toInt())).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
                     }
@@ -236,8 +227,9 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                 PlayerState.PAUSE -> {
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-                                .toInt())).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -251,12 +243,9 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
 
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(
-                                RoundedCorners(
-                                    Utils.convertDp2Px(12, itemView.context)
-                                        .toInt()
-                                )
-                            ).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -288,8 +277,9 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
             }
             when (playerState) {
                 PlayerState.IDLE -> {
-                    pgAudio.resetView()
+
                     lifecycleCoroutineScope.launch {
+                        pgAudio.resetView()
                         audioPlayer.play(itemAudio.audioFile)
                     }
                 }

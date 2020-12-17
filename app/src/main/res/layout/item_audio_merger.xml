@@ -37,13 +37,22 @@
             android:layout_height="@dimen/common_size_item_imagview"
             android:layout_marginLeft="@dimen/common_padding_left">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/iv_controller_audio_merger"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="fitXY"
-                android:src="@drawable/common_audio_item_bg_pause_default" />
+                android:src="@drawable/common_audio_item_bg_pause_default"
+                app:shapeAppearanceOverlay="@style/roundedCornersImageView" />
+
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_controller_audio_merger"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--                android:scaleType="fitXY"-->
+<!--                android:src="@drawable/common_audio_item_bg_pause_default" />-->
 
             <ImageView
                 android:id="@+id/iv_pause_play_audio"

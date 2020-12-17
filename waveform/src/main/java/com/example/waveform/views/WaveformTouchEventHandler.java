@@ -10,6 +10,7 @@ import android.view.ScaleGestureDetector;
 import android.view.animation.LinearInterpolator;
 
 class WaveformTouchEventHandler {
+    private static final int NONE_PENDING_PLAYBACK_POS = -1;
     public static final int NONE_RANGE_BUTTON_SELECTED = 0;
     public static final int LEFT_RANGE_BUTTON_SELECTED = 1 << 1;
     public static final int RIGHT_RANGE_BUTTON_SELECTED = 1 << 2;
@@ -35,10 +36,11 @@ class WaveformTouchEventHandler {
     protected int mTouchInitialStartPos;
     protected int mTouchInitialEndPos;
     private boolean mIsPlayingLineSliding = false;
-    private int pendingPlaybackPos = -1;
+    private int pendingPlaybackPos = NONE_PENDING_PLAYBACK_POS;
 
     private int mRangeButtonSelected = NONE_RANGE_BUTTON_SELECTED;
     private ValueAnimator mAnimator = null;
+    private boolean isAnimationUsed = true;
 
     WaveformTouchEventHandler(WaveformView1 waveformView) {
         mWaveformView = waveformView;
@@ -87,6 +89,7 @@ class WaveformTouchEventHandler {
         mFlingVelocity = 0;
         mOffset = 0;
         mStartPos = 0;
+        cancelPlayPosAnimation();
         mPlaybackPos = 0;
         mEndPos = mMaxPos;
         mMinFrameDistance = WaveformView1.MIN_RANGE_SELECTION_IN_SECONDS * mWaveformView.fps();
@@ -147,7 +150,7 @@ class WaveformTouchEventHandler {
                     }
                     onFinishDraggingPlayPos();
                 }
-                pendingPlaybackPos = -1;
+                pendingPlaybackPos = NONE_PENDING_PLAYBACK_POS;
                 break;
         }
         return true;
@@ -193,6 +196,7 @@ class WaveformTouchEventHandler {
     }
 
     void changeEndPos(int newEndPos) {
+
         mEndPos = newEndPos;
         if ((mEndPos - mStartPos) < mMinFrameDistance) {
             mEndPos = mStartPos + mMinFrameDistance;
@@ -201,10 +205,12 @@ class WaveformTouchEventHandler {
             }
         }
         if (mPlaybackPos < mStartPos) {
+            cancelPlayPosAnimation();
             mPlaybackPos = mStartPos;
             mIsPlayingLineSliding = true;
         }
         if (mPlaybackPos > mEndPos) {
+            cancelPlayPosAnimation();
             mPlaybackPos = mEndPos;
             mIsPlayingLineSliding = true;
         }
@@ -321,9 +327,6 @@ class WaveformTouchEventHandler {
 
     void onWaveformZoomIn(float factor) {
         cancelPlayPosAnimation();
-        if(mPlaybackPos < pendingPlaybackPos){
-            mPlaybackPos = pendingPlaybackPos;
-        }
         changeOffset(mWaveformView.getOffset());
         mMaxPos = mWaveformView.maxPos();
         mOffset = mWaveformView.getOffset();
@@ -336,9 +339,6 @@ class WaveformTouchEventHandler {
 
     void onWaveformZoomOut(float factor) {
         cancelPlayPosAnimation();
-        if(mPlaybackPos < pendingPlaybackPos){
-            mPlaybackPos = pendingPlaybackPos;
-        }
         changeOffset(mWaveformView.getOffset());
         mMaxPos = mWaveformView.maxPos();
         mOffset = mWaveformView.getOffset();
@@ -350,9 +350,10 @@ class WaveformTouchEventHandler {
     }
 
     void onPlaybackChanged(int newPlayPos) {
+
         if (newPlayPos >= 0 && newPlayPos <= mMaxPos) {
             if (newPlayPos < mStartPos || newPlayPos > mEndPos) {
-                onPlayPosOutOfRange();
+                onPlayPosOutOfRange(newPlayPos > mEndPos);
                 return;
             }
             if (mIsPlayingLineSliding) {
@@ -366,11 +367,13 @@ class WaveformTouchEventHandler {
 
 
     private void movePlaybackPos(int newPlayPos) {
-        if (newPlayPos > mPlaybackPos) {
+      /*  mPlaybackPos = newPlayPos;
+        mWaveformView.invalidate();*/
+        if (isAnimationUsed && newPlayPos > mPlaybackPos) {
             if (mAnimator != null) {
                 pendingPlaybackPos = newPlayPos;
             } else {
-                pendingPlaybackPos = -1;
+                pendingPlaybackPos = NONE_PENDING_PLAYBACK_POS;
                 mAnimator = ValueAnimator.ofInt(mPlaybackPos, newPlayPos);
                 int duration = mWaveformView.pixelsToMillisecs(newPlayPos) - mWaveformView.pixelsToMillisecs(mPlaybackPos);
                 mAnimator.setDuration(Math.min(duration, 500));
@@ -380,20 +383,24 @@ class WaveformTouchEventHandler {
                 mAnimator.start();
             }
         } else {
-            pendingPlaybackPos = -1;
+            pendingPlaybackPos = NONE_PENDING_PLAYBACK_POS;
             cancelPlayPosAnimation();
             mPlaybackPos = newPlayPos;
             mWaveformView.invalidate();
         }
     }
+
     private final LinearInterpolator mPlayPosInterpolator = new LinearInterpolator();
 
 
     private final ValueAnimator.AnimatorUpdateListener mPlayPosAnimatorUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
-            mPlaybackPos = (int) animation.getAnimatedValue();
-            mWaveformView.invalidate();
+            if(isAnimationUsed){
+                mPlaybackPos = (int) animation.getAnimatedValue();
+                mWaveformView.invalidate();
+            }
+
         }
     };
     private final AnimatorListenerAdapter mPlayPosAnimatorListener = new AnimatorListenerAdapter() {
@@ -408,19 +415,25 @@ class WaveformTouchEventHandler {
     };
 
     private void cancelPlayPosAnimation() {
+        isAnimationUsed = false;
         if (mAnimator != null) {
             mAnimator.cancel();
             mAnimator = null;
+            if (pendingPlaybackPos != NONE_PENDING_PLAYBACK_POS) {
+                mPlaybackPos = pendingPlaybackPos;
+                pendingPlaybackPos = NONE_PENDING_PLAYBACK_POS;
+            }
         }
+        isAnimationUsed = true;
     }
 
     int getPlaybackPos() {
         return mPlaybackPos;
     }
 
-    private void onPlayPosOutOfRange() {
+    private void onPlayPosOutOfRange(boolean isEnd) {
         cancelPlayPosAnimation();
-        mWaveformView.onPlayPosOutOfRange();
+        mWaveformView.onPlayPosOutOfRange(isEnd);
     }
 
     private void onStartDraggingPlayPos() {
@@ -440,7 +453,8 @@ class WaveformTouchEventHandler {
     private void onTimeRangeChanged() {
         mWaveformView.onTimeRangeChanged();
     }
-    void release(){
+
+    void release() {
         cancelPlayPosAnimation();
     }
 

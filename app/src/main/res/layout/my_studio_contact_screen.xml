@@ -13,8 +13,8 @@
             android:layout_width="match_parent"
             android:layout_height="?android:actionBarSize"
             android:layout_marginBottom="2dp"
-            android:paddingRight="@dimen/common_padding_right"
             android:paddingLeft="@dimen/common_padding_left"
+            android:paddingRight="@dimen/common_padding_right"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
@@ -61,8 +61,8 @@
             android:layout_width="match_parent"
             android:layout_height="?android:actionBarSize"
             android:layout_marginLeft="@dimen/common_padding_left"
-            android:paddingRight="@dimen/common_padding_right"
             android:layout_marginBottom="2dp"
+            android:paddingRight="@dimen/common_padding_right"
             android:visibility="invisible"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -99,6 +99,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/list_contact_icon_search_clear"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

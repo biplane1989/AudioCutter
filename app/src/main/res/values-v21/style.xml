@@ -31,5 +31,4 @@
         <item name="android:windowSoftInputMode">stateHidden|adjustResize</item>
 
     </style>
-
 </resources>

@@ -85,9 +85,6 @@ class WaveformView1 : View, ProgressListener {
             )
     }
 
-    private fun isReadyToDraw(): Boolean {
-        return width > 0 && height > 0
-    }
 
     fun zoomIn() {
         if (!isInitialized()) {
@@ -289,8 +286,8 @@ class WaveformView1 : View, ProgressListener {
         return mDuration
     }
 
-    protected fun onPlayPosOutOfRange() {
-        mWaveformViewListener?.onPlayPosOutOfRange()
+    protected fun onPlayPosOutOfRange(isEnd:Boolean) {
+        mWaveformViewListener?.onPlayPosOutOfRange(isEnd)
     }
 
     protected fun onStartDraggingPlayPos() {

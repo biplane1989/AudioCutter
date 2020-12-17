@@ -122,7 +122,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         return binding.root
     }
 
-
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
@@ -155,6 +154,11 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
             override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
                 mListSelectAudioViewModel.searchAudioFile(textChange.toString())
+                if (textChange.toString() != "") {
+                    binding.ivClear.visibility = View.VISIBLE
+                } else {
+                    binding.ivClear.visibility = View.INVISIBLE
+                }
             }
         })
     }

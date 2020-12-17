@@ -36,6 +36,7 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
             listContactAdapter.submitList(ArrayList(listContact))
         }
     }
+
     // observer loading status
     private val loadingStatusObserver = Observer<Boolean> {
         if (it) {
@@ -110,6 +111,11 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
 
             override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
                 mListContactViewModel.searchContact(textChange.toString())
+                if (textChange.toString() != "") {
+                    binding.ivClear.visibility = View.VISIBLE
+                } else {
+                    binding.ivClear.visibility = View.INVISIBLE
+                }
             }
         })
     }

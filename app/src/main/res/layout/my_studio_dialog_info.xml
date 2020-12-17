@@ -24,7 +24,10 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/d_16">
+            android:paddingLeft="16dp"
+            android:paddingTop="@dimen/common_padding_top_dialog"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp">
 
             <TextView
                 android:id="@+id/tv_info"

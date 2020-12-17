@@ -5,5 +5,5 @@ interface WaveformViewListener {
     fun onEndTimeChanged(endTimeMs: Long)
     fun onPlayPositionChanged(positionMs: Int, isPress: Boolean)
     fun onDraggingPlayPos(isFinished: Boolean)
-    fun onPlayPosOutOfRange()
+    fun onPlayPosOutOfRange(isEnd:Boolean)
 }

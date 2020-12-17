@@ -105,8 +105,9 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 PlayerState.PLAYING -> {
                     if (bitmap != null) {
                         Glide.with(holder.itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, holder.itemView.context)
-                                .toInt())).into(holder.ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, holder.itemView.context)
+//                                .toInt()))
+                            .into(holder.ivController)
                     } else {
                         holder.ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
                     }
@@ -118,8 +119,9 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 PlayerState.PAUSE -> {
                     if (bitmap != null) {
                         Glide.with(holder.itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, holder.itemView.context)
-                                .toInt())).into(holder.ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, holder.itemView.context)
+//                                .toInt()))
+                            .into(holder.ivController)
                     } else {
                         holder.ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -133,8 +135,9 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
 
                     if (bitmap != null) {
                         Glide.with(holder.itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, holder.itemView.context)
-                                .toInt())).into(holder.ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, holder.itemView.context)
+//                                .toInt()))
+                            .into(holder.ivController)
                     } else {
                         holder.ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -187,8 +190,9 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 PlayerState.PLAYING -> {
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-                                .toInt())).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
                     }
@@ -199,8 +203,9 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 PlayerState.PAUSE -> {
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-                                .toInt())).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -211,8 +216,9 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 PlayerState.IDLE -> {
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-                                .toInt())).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -307,8 +313,9 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 PlayerState.PLAYING -> {
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-                                .toInt())).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
                     }
@@ -320,8 +327,9 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 PlayerState.PAUSE -> {
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-                                .toInt())).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -336,8 +344,9 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
 
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
-                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-                                .toInt())).into(ivController)
+//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
+//                                .toInt()))
+                            .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -387,6 +396,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 PlayerState.IDLE -> {
                     pgAudio.resetView()
                     lifecycleCoroutineScope.launch {
+                        pgAudio.resetView()
                         audioPlayer.play(itemAudio.audioFile)
                     }
 //                    mCallBack.play(adapterPosition)

@@ -39,6 +39,10 @@ class Utils {
         val TIME_CHANGE = 1000
         val generatedNameHashMap = HashMap<Folder, HashSet<String>>()
 
+        var TIME_FORMAT_INCLUDED_HOUR_TWO_ZERO = 1
+        var TIME_FORMAT_INCLUDED_MINUTE_TWO_ZERO = 2
+        var TIME_FORMAT_INCLUDED_SECOND_TWO_ZERO = 3
+
 
         fun addGeneratedName(folder: Folder, file: File) {
             if (!generatedNameHashMap.containsKey(folder)) {
@@ -70,11 +74,7 @@ class Utils {
         }
 
         fun spToPx(context: Context, sp: Float): Float {
-            return TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP,
-                sp,
-                context.resources.displayMetrics
-            )
+            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.resources.displayMetrics)
         }
 
         fun longDurationMsToStringMs(time: Long): String {
@@ -101,7 +101,7 @@ class Utils {
             return minutes.toString() + ":" + ((if (oddSeconds > 9) oddSeconds.toString() else "0$oddSeconds").toString() + if (oddMsTrimmed != 0L) ".$oddMsTrimmed" else "")
         }
 
-        fun getWidthText(str: String = "00:00:00", context: Context): Float {
+        fun getWidthText(str: String = "00:00", context: Context): Float {
             val paint = Paint()
             paint.textSize = spToPx(context, 12f)
             val result = Rect()
@@ -126,8 +126,7 @@ class Utils {
         fun getPathByUri(context: Context, uri: String): String? {
             var audioTitle = ""
             val proj = arrayOf(MediaStore.Audio.Media.DATA)
-            val audioCursor: Cursor? =
-                context.contentResolver.query(Uri.parse(uri), proj, null, null, null)
+            val audioCursor: Cursor? = context.contentResolver.query(Uri.parse(uri), proj, null, null, null)
             try {
                 if (audioCursor != null) {
                     if (audioCursor.moveToFirst()) {
@@ -143,15 +142,8 @@ class Utils {
         // lay uri cua ringtone mac dinh
         fun getUriRingtoneDefault(context: Context): String? {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                if (RingtoneManager.getActualDefaultRingtoneUri(
-                        context,
-                        RingtoneManager.TYPE_RINGTONE
-                    ) != null
-                ) {
-                    return RingtoneManager.getActualDefaultRingtoneUri(
-                        context.applicationContext,
-                        RingtoneManager.TYPE_RINGTONE
-                    )
+                if (RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE) != null) {
+                    return RingtoneManager.getActualDefaultRingtoneUri(context.applicationContext, RingtoneManager.TYPE_RINGTONE)
                         .toString()
                 }
             } else {
@@ -167,8 +159,7 @@ class Utils {
         fun getImageCover(context: Context, path: String?): Bitmap? {
             try {
                 if (path != null) {
-                    val bitmap =
-                        MediaStore.Images.Media.getBitmap(context.contentResolver, Uri.parse(path))
+                    val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, Uri.parse(path))
                     return bitmap
                 }
             } catch (e: Exception) {
@@ -183,14 +174,10 @@ class Utils {
             return false
         }
 
-        fun checkUriIsExits(
-            context: Context,
-            uri: String
-        ): Boolean {       // kiem tra uri co ton tai khong
+        fun checkUriIsExits(context: Context, uri: String): Boolean {       // kiem tra uri co ton tai khong
 
             val projecttion = arrayOf(MediaStore.MediaColumns.DATA)
-            val cursor: Cursor? =
-                context.contentResolver.query(Uri.parse(uri), projecttion, null, null, null)
+            val cursor: Cursor? = context.contentResolver.query(Uri.parse(uri), projecttion, null, null, null)
             if (cursor != null) {
                 try {
                     if (cursor.moveToFirst()) {
@@ -219,13 +206,7 @@ class Utils {
             return null
         }
 
-        fun convertValue(
-            min1: Double,
-            max1: Double,
-            min2: Double,
-            max2: Double,
-            value: Double
-        ): Double {
+        fun convertValue(min1: Double, max1: Double, min2: Double, max2: Double, value: Double): Double {
             return ((value - min1) * ((max2 - min2) / (max1 - min1)) + min2)
         }
         fun convertValue(
@@ -263,11 +244,7 @@ class Utils {
 
 
         fun convertDp2Px(dip: Int, context: Context): Float {
-            return TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                dip.toFloat(),
-                context.resources.displayMetrics
-            )
+            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip.toFloat(), context.resources.displayMetrics)
         }
 
         //test
@@ -299,11 +276,7 @@ class Utils {
         }
 
         @SuppressLint("SimpleDateFormat")
-        fun genAudioFileName(
-            typeFile: Folder,
-            newName: String = "",
-            prefixName: String = "file"
-        ): String {
+        fun genAudioFileName(typeFile: Folder, newName: String = "", prefixName: String = "file"): String {
             var baseFileName = ""
             //val dateStr = SimpleDateFormat("dd_MM_yyyy").format(Date())
             val folderPath = ManagerFactory.getAudioFileManager().getFolderPath(typeFile)
@@ -348,12 +321,8 @@ class Utils {
             val listResolver = context.packageManager.queryIntentActivities(intent, 0)
 
             for (info in listResolver) {
-                val item = ItemAppShare(
-                    info.loadLabel(AudioFileManagerImpl.mContext.packageManager)
-                        .toString(),
-                    info.loadIcon(AudioFileManagerImpl.mContext.packageManager),
-                    info.activityInfo.packageName
-                )
+                val item = ItemAppShare(info.loadLabel(AudioFileManagerImpl.mContext.packageManager)
+                    .toString(), info.loadIcon(AudioFileManagerImpl.mContext.packageManager), info.activityInfo.packageName)
                 listAppShares.add(item)
             }
             return listAppShares
@@ -368,34 +337,24 @@ class Utils {
             val listResolver = context.packageManager.queryIntentActivities(intent, 0)
 
             for (info in listResolver) {
-                val item = ItemAppShare(
-                    info.loadLabel(AudioFileManagerImpl.mContext.packageManager)
-                        .toString(),
-                    info.loadIcon(AudioFileManagerImpl.mContext.packageManager),
-                    info.activityInfo.packageName
-                )
+                val item = ItemAppShare(info.loadLabel(AudioFileManagerImpl.mContext.packageManager)
+                    .toString(), info.loadIcon(AudioFileManagerImpl.mContext.packageManager), info.activityInfo.packageName)
                 listAppShares.add(item)
             }
             return listAppShares
         }
 
 
-
         fun shareFileAudio(context: Context, uriAudioFile: Uri, pkgName: String?): Boolean {
             return try {
                 val intent = Intent()
-                if(pkgName!=null){
+                if (pkgName != null) {
                     intent.`package` = pkgName
                 }
                 intent.action = Intent.ACTION_SEND
                 intent.putExtra(Intent.EXTRA_STREAM, uriAudioFile)
                 intent.type = "audio/*"
-                context.startActivity(
-                    Intent.createChooser(
-                        intent,
-                        context.resources.getString(R.string.Choose_in_app_inten)
-                    )
-                )
+                context.startActivity(Intent.createChooser(intent, context.resources.getString(R.string.Choose_in_app_inten)))
                 true
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -412,12 +371,7 @@ class Utils {
             shareIntent.action = Intent.ACTION_SEND_MULTIPLE
             shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, listUri)
             shareIntent.type = "audio/*"
-            context.startActivity(
-                Intent.createChooser(
-                    shareIntent,
-                    context.resources.getString(R.string.Choose_in_app_inten)
-                )
-            )
+            context.startActivity(Intent.createChooser(shareIntent, context.resources.getString(R.string.Choose_in_app_inten)))
         }
 
         private fun getName(file: File): String {
@@ -449,40 +403,51 @@ class Utils {
 
         fun convertToAudioFile(audioInfor: AudioInfor, modified: Long, uri: Uri): AudioFile {
             val file = File(audioInfor.filePath)
-            return AudioFile(
-                file,
-                getName(file),
-                audioInfor.size,
-                audioInfor.bitRate,
-                audioInfor.duration,
-                uri,
-                getBitmapByPath(
-                    file.absolutePath
-                ),
-                audioInfor.title,
-                audioInfor.alBum,
-                audioInfor.artist,
-                modified,
-                audioInfor.genre,
-                audioInfor.format
-            )
+            return AudioFile(file, getName(file), audioInfor.size, audioInfor.bitRate, audioInfor.duration, uri, getBitmapByPath(file.absolutePath), audioInfor.title, audioInfor.alBum, audioInfor.artist, modified, audioInfor.genre, audioInfor.format)
         }
 
         fun hideKeyboard(context: Context, editText: EditText) {
-            val inputMethodManager =
-                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(editText.windowToken, 0)
         }
 
         fun showKeyboard(context: Context, editText: EditText) {
-            val inputMethodManager =
-                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
         }
 
         fun checkFlashOnDeviceAvailable(context: Context): Boolean? {
             return context.packageManager?.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)
         }
-    }
 
+        fun toTimeStr(timeInMs: Long, timeFormat: Int): String? {
+            val hours = (timeInMs / 36e5).toInt()
+            var remainingTime = (timeInMs - hours * 36e5).toLong()
+            val minutes = (remainingTime / 6e4).toInt()
+            remainingTime = (remainingTime - minutes * 6e4).toLong()
+            val seconds = (remainingTime / 1e3).toInt()
+            when (timeFormat) {
+                TIME_FORMAT_INCLUDED_HOUR_TWO_ZERO -> return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+                TIME_FORMAT_INCLUDED_MINUTE_TWO_ZERO -> return String.format("%02d:%02d", minutes, seconds)
+                TIME_FORMAT_INCLUDED_SECOND_TWO_ZERO -> return String.format("00:%02d", seconds)
+            }
+            return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        }
+
+        fun chooseTimeFormat(duration: Long): Int {
+            val hours = (duration / 36e5).toInt()
+            var remainingTime = (duration - hours * 36e5).toLong()
+            val minutes = (remainingTime / 6e4).toInt()
+            return if (hours > 0) {
+                TIME_FORMAT_INCLUDED_HOUR_TWO_ZERO
+            } else {
+                if (minutes > 0) {
+                    TIME_FORMAT_INCLUDED_MINUTE_TWO_ZERO
+                } else {
+                    TIME_FORMAT_INCLUDED_SECOND_TWO_ZERO
+                }
+            }
+        }
+
+    }
 }

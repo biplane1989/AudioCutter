@@ -83,32 +83,26 @@ class SetContactAdapter(context: Context?, var contactCallback: SetContactCallba
                 headerViewHolder.onBind()
             } else {
                 val itemViewHolder = holder as ItemViewHolder
-                val newItem = payloads.firstOrNull() as SetContactItemView
+                val data = payloads.firstOrNull()
 
-//                newItem.contactItem.thumb?.let {
-//                    Glide.with(mContext!!).load(it)
-//                        .transform(RoundedCorners(Utils.convertDp2Px(4, mContext).toInt()))
-//                        .into(itemViewHolder.ivAvatar)
-//                }
+                data?.let {
+                    val newItem = data as SetContactItemView
+                    if (newItem.isSelect) {
+                        itemViewHolder.ivSelect.setImageResource(R.drawable.list_contact_select)
+                    } else {
+                        itemViewHolder.ivSelect.setImageResource(R.drawable.list_contact_unselect)
+                    }
 
-                if (newItem.isSelect) {
-                    itemViewHolder.ivSelect.setImageResource(R.drawable.list_contact_select)
-                } else {
-                    itemViewHolder.ivSelect.setImageResource(R.drawable.list_contact_unselect)
-                }
+                    if (!newItem.contactItem.isRingtoneDefault) {
 
-                if (!newItem.contactItem.isRingtoneDefault) {
-//                    itemViewHolder.tvRingtoneDefault.visibility = View.GONE
-//                    itemViewHolder.cvDefault.visibility = View.GONE
-                    itemViewHolder.llRingToneDefault.visibility = View.INVISIBLE
-                    itemViewHolder.tvRingtone.visibility = View.VISIBLE
-                    itemViewHolder.tvRingtone.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)  // get name song by uri    | sua contactItem = newItem
-                } else {
-//                    itemViewHolder.tvRingtoneDefault.visibility = View.VISIBLE
-//                    itemViewHolder.cvDefault.visibility = View.VISIBLE
-                    itemViewHolder.llRingToneDefault.visibility = View.VISIBLE
-                    itemViewHolder.tvRingtone.visibility = View.GONE
-                    itemViewHolder.tvRingtoneDefault.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
+                        itemViewHolder.llRingToneDefault.visibility = View.INVISIBLE
+                        itemViewHolder.tvRingtone.visibility = View.VISIBLE
+                        itemViewHolder.tvRingtone.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)  // get name song by uri    | sua contactItem = newItem
+                    } else {
+                        itemViewHolder.llRingToneDefault.visibility = View.VISIBLE
+                        itemViewHolder.tvRingtone.visibility = View.INVISIBLE
+                        itemViewHolder.tvRingtoneDefault.text = newItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
+                    }
                 }
             }
         }

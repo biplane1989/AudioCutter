@@ -89,7 +89,7 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
 
             val firstContact = newListContact.get(0).contactHeader  // neu co cac ky tu dac biet thi them 1 header = "#"
             if (!firstContact[0].isLetter()) {
-                listContact.add(ContactItemView("#", "", ContactItem("","", "", null, null, false, ""), true))
+                listContact.add(ContactItemView("#", "", ContactItem("", "", "", null, null, false, ""), true))
             }
             var lastHeader: String? = ""
             for (contact in newListContact) {           // gom cac contact vao chung 1 header
@@ -128,7 +128,7 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
         if (mListSearch.size > 0) {
             isEmptyStatus.postValue(false)
         } else {
-            if (data.equals("")) {
+            if (mListContact.size > 0) {
                 isEmptyStatus.postValue(false)
             } else {
                 isEmptyStatus.postValue(true)

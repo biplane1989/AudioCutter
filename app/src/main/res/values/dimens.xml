@@ -56,5 +56,7 @@
     <dimen name="common_padding_left">10dp</dimen>
     <dimen name="common_padding_right">10dp</dimen>
     <dimen name="common_padding_left_title">20dp</dimen>
+    <dimen name="common_padding_top_dialog">25dp</dimen>
+    <dimen name="common_card_cornerradius">5dp</dimen>
     <dimen name="d_size_peek_height_bottomsheet">320dp</dimen>
 </resources>
