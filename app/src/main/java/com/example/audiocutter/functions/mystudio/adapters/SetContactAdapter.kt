@@ -27,16 +27,14 @@ interface SetContactCallback {
     fun itemOnClick(phoneNumber: String)
 }
 
-class SetContactAdapter(context: Context?, var contactCallback: SetContactCallback) : ListAdapter<SetContactItemView, RecyclerView.ViewHolder>(SetContactDiffCallBack()) {
-
-    private var mContext: Context? = context
+class SetContactAdapter(var contactCallback: SetContactCallback) : ListAdapter<SetContactItemView, RecyclerView.ViewHolder>(SetContactDiffCallBack()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == SECTION_VIEW) {
             HeaderViewHolder(LayoutInflater.from(parent.context)
                 .inflate(R.layout.my_studio_contact_hearder, parent, false))
         } else ItemViewHolder(LayoutInflater.from(parent.context)
-            .inflate(R.layout.my_studio_contact_item_content, parent, false), mContext)
+            .inflate(R.layout.my_studio_contact_item_content, parent, false), parent.context)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -57,9 +55,9 @@ class SetContactAdapter(context: Context?, var contactCallback: SetContactCallba
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (mContext == null) {
-            return
-        }
+//        if (mContext == null) {
+//            return
+//        }
         if (SECTION_VIEW == getItemViewType(position)) {
             val headerViewHolder = holder as HeaderViewHolder
             headerViewHolder.onBind()
@@ -75,9 +73,9 @@ class SetContactAdapter(context: Context?, var contactCallback: SetContactCallba
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
         } else {
-            if (mContext == null) {
-                return
-            }
+//            if (mContext == null) {
+//                return
+//            }
             if (holder is HeaderViewHolder) {
                 val headerViewHolder = holder
                 headerViewHolder.onBind()
@@ -130,8 +128,8 @@ class SetContactAdapter(context: Context?, var contactCallback: SetContactCallba
 //            }
 
             contentItem.contactItem.thumb?.let {
-                Glide.with(mContext!!).load(it)
-                    .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
+                Glide.with(itemView.context).load(it)
+//                    .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
                     .into(ivAvatar)
             }
 

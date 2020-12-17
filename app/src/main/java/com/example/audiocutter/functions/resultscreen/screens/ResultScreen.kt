@@ -16,6 +16,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
@@ -214,17 +215,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     val playInfoObserver = Observer<PlayerInfo> { playInfo ->       // observer info play music
         playerState = playInfo.playerState
         if (!isSeekBarStatus) {
-
-//            binding.sbMusic.max = playInfo.duration * 100
-
-//            binding.sbMusic.progress = playInfo.posision
-//
-//            binding.tvTimeTotal.text = "/" + simpleDateFormat.format(playInfo.duration)
-//            binding.tvTimeLife.text = simpleDateFormat.format(playInfo.posision)
-
             timeFomat = Utils.chooseTimeFormat(playInfo.duration.toLong())
             binding.tvTimeLife.text = Utils.toTimeStr(playInfo.posision.toLong(), timeFomat)
-//            binding.tvTimeTotal.text = "/" + Utils.toTimeStr(playInfo.duration.toLong(), timeFomat)
 
             when (playInfo.playerState) {
                 PlayerState.IDLE -> {
@@ -234,7 +226,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                     sbAnimation?.cancel()
                     binding.sbMusic.progress = 0
                     setSeekbarAnimate(binding.sbMusic, 0, 1000)
-                    binding.sbMusic.clearAnimation()
+//                    binding.sbMusic.clearAnimation()
                 }
                 PlayerState.PAUSE -> {
                     binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
@@ -274,7 +266,9 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
             .observe(this.viewLifecycleOwner, Observer<AppPermission> {
                 if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
-                    viewStateManager.resultScreenSetContactItemClicked(this, audioFile!!.file.absolutePath)
+                    audioFile?.let {
+                        viewStateManager.resultScreenSetContactItemClicked(this, it.file.absolutePath)
+                    }
                 }
                 if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
@@ -330,40 +324,52 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                 }
                 if (playerState == PlayerState.PAUSE) {
                     binding.tvTimeLife.text = Utils.toTimeStr(progress.toLong() / 100, timeFomat)
-                    Log.d(TAG, "onProgressChanged: PlayerState.PAUSE")
                 }
 
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
-                when (playerState) {
+                if (playerState == PlayerState.PLAYING) {
 
-                    PlayerState.PLAYING -> {
-                        mResultViewModel.pauseAudio()
-                        binding.sbMusic.clearAnimation()
-                        sbAnimation?.cancel()
-                        isSeekBarStatus = true
-                    }
+                    mResultViewModel.pauseAudio()
+                    binding.sbMusic.clearAnimation()
+                    sbAnimation?.cancel()
+                    isSeekBarStatus = true
                 }
             }
 
             override fun onStopTrackingTouch(sb: SeekBar?) {
-                //                    when (playerState) {
-//                        PlayerState.IDLE -> {
-//                            lifecycleScope.launch {
-//                                audioPlayer.play(audioFileView.audioFile, sbMusic.progress / 100)
-//                            }
-//                        }
+                if (playerState == PlayerState.IDLE) {
+                    lifecycleScope.launch {
+                        binding.sbMusic.clearAnimation()
+                        sbAnimation?.cancel()
 
-//                        PlayerState.PAUSE -> {
+                        val audioFile = ManagerFactory.getAudioEditorManager()
+                            .getLatestConvertingItem()?.outputAudioFile
+                        audioFile?.let {
+                            val newValue = Utils.convertValue(0, binding.sbMusic.max, 0, it.duration.toInt(), binding.sbMusic.progress)
+
+                            Log.d(TAG, "onStopTrackingTouch: playAudioByPositition ")
+                            mResultViewModel.playAudioByPositition(it, newValue)
+                        }
+                    }
+                } else {
+
+//                        Log.d(TAG, "onStopTrackingTouch: status 4: " + playerState)
+//                        sbMusic.clearAnimation()
+//                        sbAnimation?.cancel()
+//                        audioPlayer.seek(sbMusic.progress / 100)
+//                        audioPlayer.resume()
+//                        isSeekBarStatus = false
+                }
+
+                Log.d(TAG, "onStopTrackingTouch: status 4: " + playerState)
                 binding.sbMusic.clearAnimation()
                 sbAnimation?.cancel()
                 mResultViewModel.seekToAudio(binding.sbMusic.progress / 100)
                 mResultViewModel.resumeAudio()
                 isSeekBarStatus = false
-//                        }
             }
-//                }
         })
     }
 
@@ -460,8 +466,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
             }
             binding.llOpenwith -> {
-                audioFile?.let {
-                    Utils.openWithApp(requireContext(), audioFile!!.uri!!)
+                audioFile?.uri?.let {
+                    Utils.openWithApp(requireContext(), it)
                 }
             }
         }
@@ -499,7 +505,9 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
     private fun checkPermissionContact() {
         if (contactPermissionRequest.isPermissionGranted()) {
-            viewStateManager.resultScreenSetContactItemClicked(this, audioFile!!.file.absolutePath)
+            audioFile?.let {
+                viewStateManager.resultScreenSetContactItemClicked(this, it.file.absolutePath)
+            }
         } else {
             ContactPermissionDialog.newInstance {
                 resetRequestingPermission()
@@ -519,12 +527,17 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
     override fun shareFileAudioToAppDevices(multifile: TypeShare) {
         dialogAppShare.dismiss()
-        Utils.shareFileAudio(requireContext(), audioFile?.uri!!, null)
+        audioFile?.uri?.let {
+            Utils.shareFileAudio(requireContext(), it, null)
+        }
+
     }
 
     override fun shareFilesToAppsDialog(pkgName: String, typeShare: TypeShare, isDialogMulti: Boolean?) {
         if (typeShare == TypeShare.ONLYFILE) {
-            Utils.shareFileAudio(requireContext(), audioFile?.uri!!, pkgName)
+            audioFile?.uri?.let {
+                Utils.shareFileAudio(requireContext(), it, pkgName)
+            }
         }
     }
 

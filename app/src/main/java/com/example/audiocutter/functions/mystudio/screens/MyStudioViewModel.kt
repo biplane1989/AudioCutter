@@ -193,16 +193,20 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 }
 //                if (it.convertingState in arrayListOf(ConvertingState.WAITING, ConvertingState.PROGRESSING) && filePathMapConvertingItem.containsKey(it.getFilePath()) && filePathMapItemView.containsKey(it.getFilePath())) {
                 if (filePathMapItemView.containsKey(it.getFilePath())) {
-                    if (filePathMapItemView.get(it.getFilePath())!!.convertingState == ConvertingState.SUCCESS) {
-                        val audioViewItem = filePathMapItemView.get(it.getFilePath())!!
-                        newListAudio.add(audioViewItem.copy())
-                        Log.d(TAG, "mergeList: aloha 1")
-                    } else {
-                        if (isDeleteStatus) {                           // khi dang o trang thai delete
-                            it.itemLoadStatus.deleteState = DeleteState.UNCHECK
+                    filePathMapItemView.get(it.getFilePath())?.let {
+                        if (it.convertingState == ConvertingState.SUCCESS) {
+                            val audioViewItem = filePathMapItemView.get(it.getFilePath())
+                            audioViewItem?.let {
+                                newListAudio.add(audioViewItem.copy())
+                            }
+                            Log.d(TAG, "mergeList: aloha 1")
+                        } else {
+                            if (isDeleteStatus) {                           // khi dang o trang thai delete
+                                it.itemLoadStatus.deleteState = DeleteState.UNCHECK
+                            }
+                            newListAudio.add(it.copy())
+                            Log.d(TAG, "mergeList: aloha 2")
                         }
-                        newListAudio.add(it.copy())
-                        Log.d(TAG, "mergeList: aloha 2")
                     }
 
                 } else {

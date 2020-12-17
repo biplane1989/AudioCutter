@@ -26,6 +26,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     private val mAudioMediatorLiveData = MediatorLiveData<ArrayList<SelectItemView>>()
     private var loadingStatus: MutableLiveData<Boolean> = MutableLiveData()
     private var isEmptyStatus: MutableLiveData<Boolean> = MutableLiveData()
+    private var isChoseMusic: MutableLiveData<Boolean> = MutableLiveData()
 
     fun getLoadingStatus(): LiveData<Boolean> {
         return loadingStatus
@@ -37,6 +38,10 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
     fun getListAudioFile(): MediatorLiveData<ArrayList<SelectItemView>> {
         return mAudioMediatorLiveData
+    }
+
+    fun getChoseMusic(): LiveData<Boolean> {
+        return isChoseMusic
     }
 
     init {
@@ -82,6 +87,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
             }
             index++
         }
+        checkIsChoseRingTone()
     }
 
     fun getIndexSelectRingtone(ringtonePath: String): Int {         // lay vi tri cua file audio la nhac chuong cua contact
@@ -101,6 +107,23 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
             index++
         }
         return 0
+    }
+
+    fun checkIsChoseRingTone() {
+        if (checkIsSelect()) {
+            isChoseMusic.postValue(true)
+        } else {
+            isChoseMusic.postValue(false)
+        }
+    }
+
+    private fun checkIsSelect(): Boolean {
+        for (item in mListAudioFileView) {
+            if (item.isSelect) {
+                return true
+            }
+        }
+        return false
     }
 
     fun showPlayingAudio(position: Int) {
@@ -129,7 +152,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         selectItemView.isExpanded = !newAudioList.get(position).isExpanded
         newAudioList.set(position, selectItemView)
         mAudioMediatorLiveData.postValue(newAudioList)
-
+        checkIsChoseRingTone()
     }
 
     private fun getRingtoneDefault(list: List<SelectItemView>): List<SelectItemView> {

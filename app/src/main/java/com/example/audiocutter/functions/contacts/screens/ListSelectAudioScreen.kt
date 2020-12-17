@@ -31,6 +31,7 @@ import com.example.audiocutter.functions.contacts.adapters.ListSelectAdapter
 import com.example.audiocutter.functions.contacts.adapters.SelectAudioScreenCallback
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.util.FileUtils
+import kotlinx.android.synthetic.main.my_studio_contact_screen.view.*
 import kotlinx.coroutines.delay
 
 
@@ -74,6 +75,22 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
         }
     }
 
+    private val isChoseRingTone = Observer<Boolean> {
+        if (!it) {
+            binding.btnSave.visibility = View.INVISIBLE
+            binding.tvSave.visibility = View.INVISIBLE
+
+            binding.btnNotSave.visibility = View.VISIBLE
+            binding.tvNotSave.visibility = View.VISIBLE
+        } else {
+            binding.btnSave.visibility = View.VISIBLE
+            binding.tvSave.visibility = View.VISIBLE
+
+            binding.btnNotSave.visibility = View.INVISIBLE
+            binding.tvNotSave.visibility = View.INVISIBLE
+        }
+    }
+
     private fun init() {
         binding.rvListSelectAudio.layoutManager = LinearLayoutManager(context)
         //binding.rvListSelectAudio.setHasFixedSize(true)
@@ -87,6 +104,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
             .observe(viewLifecycleOwner, isEmptyStatusObserver)
         mListSelectAudioViewModel.getLoadingStatus()
             .observe(viewLifecycleOwner, loadingStatusObserver)
+        mListSelectAudioViewModel.getChoseMusic().observe(viewLifecycleOwner, isChoseRingTone)
     }
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {       // khi ket thuc animation chuyen man hinh thi moi cho dang ky observe
@@ -220,15 +238,17 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         if (requestCode == REQ_CODE_PICK_SOUNDFILE && resultCode == Activity.RESULT_OK && intent != null) {
 
-            val path = FileUtils.getUriPath(requireContext(), intent.data!!)
+            intent.data?.let {
 
-            path?.let {
-                if (mListSelectAudioViewModel.setRingtoneWithUri(safeArg.phoneNumber, path)) {
-                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
-                        .show()
-                } else {
-                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
-                        .show()
+                val path = FileUtils.getUriPath(requireContext(), it)
+                path?.let {
+                    if (mListSelectAudioViewModel.setRingtoneWithUri(safeArg.phoneNumber, path)) {
+                        Toast.makeText(context, getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
+                            .show()
+                    } else {
+                        Toast.makeText(context, getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             }
         }

@@ -79,8 +79,10 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
                 if (arg.listAudioPath.size == 1) {
                     val audioFile = ManagerFactory.getAudioFileManager()
                         .findAudioFile(arg.listAudioPath[0])
-                    audioFile?.let {
-                        ManagerFactory.getAudioEditorManager().cutAudio(it, arg.cuttingConfig!!)
+                    audioFile?.let { audio ->
+                        arg.cuttingConfig?.let {
+                            ManagerFactory.getAudioEditorManager().cutAudio(audio, it)
+                        }
                     }
 
                 }
@@ -95,8 +97,10 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
                         }
 
                     }
-                    ManagerFactory.getAudioEditorManager()
-                        .mergeAudio(listAudio, arg.mergingConfig!!)
+                    arg.mergingConfig?.let {
+                        ManagerFactory.getAudioEditorManager().mergeAudio(listAudio, it)
+                    }
+
                 }
             }
             ResultScreen.MIX -> {
@@ -107,8 +111,10 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
                         .findAudioFile(arg.listAudioPath[1])
                     audioFile1?.let {
                         audioFile2?.let {
-                            ManagerFactory.getAudioEditorManager()
-                                .mixAudio(audioFile1, audioFile2, arg.mixingConfig!!)
+                            arg.mixingConfig?.let {
+                                ManagerFactory.getAudioEditorManager()
+                                    .mixAudio(audioFile1, audioFile2, it)
+                            }
                         }
                     }
 
@@ -135,26 +141,17 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
 
     // chuyen trang thai play nhac
     suspend fun playAudio() {
-//        when (audioPlayer.getPlayerInfoData().playerState) {
-//            PlayerState.IDLE -> {
+
         val audioFile = ManagerFactory.getAudioEditorManager()
             .getLatestConvertingItem()?.outputAudioFile
         audioFile?.let {
 
             audioPlayer.play(audioFile)
-//                }
         }
-//            PlayerState.PAUSE -> {
-//                audioPlayer.resume()
-//            }
-//
-//            PlayerState.PLAYING -> {
-//                audioPlayer.pause()
-//            }
-//            PlayerState.PREPARING -> {
-//
-//            }
-//    }
+    }
+
+    suspend fun playAudioByPositition(audioFile: AudioFile, position: Int) {
+        audioPlayer.play(audioFile, position)
     }
 
     fun pauseAudio() {

@@ -129,8 +129,10 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
 
     // observer loading done danh cho dialog
     private val loadingDoneObserver = Observer<Boolean> {
-        if (it && dialog != null) {
-            dialog!!.dismiss()
+        if (it) {
+            dialog?.let {
+                it.dismiss()
+            }
         }
     }
 
@@ -297,40 +299,47 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
         popup.inflate(R.menu.output_audio_manager_screen_popup_menu)
         popup.setOnMenuItemClickListener { item: MenuItem? ->
             val dialogSnack = Snackbar.make(requireView(), getString(R.string.notification_file_was_short_mystudio_screen), Snackbar.LENGTH_SHORT)
-            when (item!!.itemId) {
-                R.id.set_as -> {
-                    checkSetAsWriteSettingPermission()
-                }
-                R.id.cut -> {
-                    Log.d(TAG, "showMenu: duration ${audioFile.duration}")
-                    if (audioFile.duration < MIN_DURATION) {
-                        dialogSnack.show()
-                    } else {
-                        viewStateManager.myStudioCuttingItemClicked(this, audioFile.file.absolutePath)
+            item?.let {
+                when (item.itemId) {
+                    R.id.set_as -> {
+                        checkSetAsWriteSettingPermission()
                     }
-                }
-                R.id.open_with -> {
-                    audioFile.uri?.let {
-                        Utils.openWithApp(requireContext(), it)
+                    R.id.cut -> {
+                        Log.d(TAG, "showMenu: duration ${audioFile.duration}")
+                        if (audioFile.duration < MIN_DURATION) {
+                            dialogSnack.show()
+                        } else {
+                            viewStateManager.myStudioCuttingItemClicked(this, audioFile.file.absolutePath)
+                        }
                     }
+                    R.id.open_with -> {
+                        audioFile.uri?.let {
+                            Utils.openWithApp(requireContext(), it)
+                        }
 
-                    //open with screen
-                }
-                R.id.share -> {
-                    showDialogShareFile()
-                }
-                R.id.rename -> {
-                    val dialog = RenameDialog.newInstance(this, typeAudio, audioFile.file.absolutePath, audioFile.fileName)
-                    dialog.show(childFragmentManager, RenameDialog.TAG)
-                }
-                R.id.info -> {
-                    val dialog = InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
-                    dialog.show(childFragmentManager, InfoDialog.TAG)
-                }
-                R.id.delete -> {
-                    if (childFragmentManager.findFragmentByTag(DeleteDialog.TAG) == null) {
-                        val dialog = DeleteDialog.newInstance(this, audioFile.file.absolutePath)
-                        dialog.show(childFragmentManager, DeleteDialog.TAG)
+                        //open with screen
+                    }
+                    R.id.share -> {
+                        showDialogShareFile()
+                    }
+                    R.id.rename -> {
+                        val dialog = RenameDialog.newInstance(this, typeAudio, audioFile.file.absolutePath, audioFile.fileName)
+                        dialog.show(childFragmentManager, RenameDialog.TAG)
+                    }
+                    R.id.info -> {
+                        val dialog = InfoDialog.newInstance(audioFile.fileName, audioFile.file.absolutePath)
+                        dialog.show(childFragmentManager, InfoDialog.TAG)
+                    }
+                    R.id.delete -> {
+                        if (childFragmentManager.findFragmentByTag(DeleteDialog.TAG) == null) {
+                            val dialog = DeleteDialog.newInstance(this, audioFile.file.absolutePath)
+                            dialog.show(childFragmentManager, DeleteDialog.TAG)
+                        } else {
+                            // no thing
+                        }
+                    }
+                    else -> {
+                        // no thing
                     }
                 }
             }
@@ -430,7 +439,9 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
     override fun cancelLoading(id: Int) {      // cancel loading item
         if (isDeleteClicked) {
             dialog = CancelDialog.newInstance(this, id)
-            dialog!!.show(childFragmentManager, CancelDialog.TAG)
+            dialog?.let {
+                it.show(childFragmentManager, CancelDialog.TAG)
+            }
             isDeleteClicked = false
         }
     }
@@ -537,7 +548,10 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
         dialogShare.dismiss()
         when (typeShare) {
             TypeShare.ONLYFILE -> {
-                Utils.shareFileAudio(requireContext(), audioFile.uri!!, null)
+                audioFile.uri?.let {
+
+                    Utils.shareFileAudio(requireContext(), it, null)
+                }
             }
             TypeShare.MULTIFILE -> {
                 Utils.shareMutilpleFile(requireContext(), listUris, null)
@@ -548,11 +562,13 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
 
     override fun shareFilesToAppsDialog(pkgName: String, typeShare: TypeShare, isDialogMulti: Boolean?) {
         if (typeShare == TypeShare.ONLYFILE) {
-            if (isDialogMulti!!) {
-                Utils.shareFileAudio(requireContext(), listUris[0], pkgName)
-            } else {
-                audioFile.uri?.let {
-                    Utils.shareFileAudio(requireContext(), audioFile.uri!!, pkgName)
+            isDialogMulti?.let {
+                if (isDialogMulti) {
+                    Utils.shareFileAudio(requireContext(), listUris[0], pkgName)
+                } else {
+                    audioFile.uri?.let {
+                        Utils.shareFileAudio(requireContext(), it, pkgName)
+                    }
                 }
             }
         } else {

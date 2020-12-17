@@ -60,10 +60,14 @@ class InfoDialog : BaseDialog() {
         if (requireArguments().getString(BUNDLE_FILE_PATH) != null) {
             val size = File(requireArguments().getString(BUNDLE_FILE_PATH).toString()).length()
             val index = requireArguments().getString(BUNDLE_FILE_PATH)?.lastIndexOf(".")
-            val format = requireArguments().getString(BUNDLE_FILE_PATH)
-                ?.substring(index!! + 1, requireArguments().getString(BUNDLE_FILE_PATH)?.length!!)
+            index?.let {
+                val format = requireArguments().getString(BUNDLE_FILE_PATH)
+                    ?.substring(it + 1, requireArguments().getString(BUNDLE_FILE_PATH)?.length!!)
+                tv_format.text = "$format($format)"
+            }
 
-            tv_format.text = "$format($format)"
+
+
             tv_file.text = requireArguments().getString(BUNDLE_FILE_NAME)
             tv_size.text = (size.toInt() / 1024).toString() + " kb" + " (" + size + " bytes)"
             tv_location.text = requireArguments().getString(BUNDLE_FILE_PATH).toString()

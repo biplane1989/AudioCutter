@@ -113,7 +113,8 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
         super.onPostCreate(savedInstanceState)
 
         mListContactViewModel = ViewModelProviders.of(this).get(SetContactViewModel::class.java)
-        listContactAdapter = SetContactAdapter(context, this)
+
+        listContactAdapter = SetContactAdapter( this)
 
 
 //        lifecycleScope.launch {
