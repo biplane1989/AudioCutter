@@ -20,6 +20,7 @@ class MainActivity : BaseActivity() {
         if (PreferencesHelper.isFirstTimeToUsedApp()) {
             viewStateManager.initState(ViewStateScreen.HOME_SCREEN)
             handleNotificationIntent(intent)
+
             val navGraph = findNavController(R.id.app_nav_host_fragment).graph
             navGraph.startDestination = R.id.main_screen
             findNavController(R.id.app_nav_host_fragment).graph = navGraph

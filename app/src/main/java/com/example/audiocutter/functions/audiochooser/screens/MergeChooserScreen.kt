@@ -19,7 +19,6 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.IViewModel
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MergeChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergeChooserAdapter
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
@@ -279,7 +278,9 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
 
     private fun handleAudiofile() {
 
-        ManagerFactory.getDefaultAudioPlayer().stop()
+      if(audioMerModel.getAudioPlayer().getAudioIsPlaying()){
+          audioMerModel.stop()
+      }
         val listItemHandle = audioMerModel.getListItemChoose()
 
         val arrayAudio: Array<String> = Array(listItemHandle.size) { "" }

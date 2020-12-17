@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.MixChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MixChooserAdapter
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
@@ -288,9 +287,16 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     }
 
     private fun handleAudiofile() {
+        if (audioMixModel.getAudioPlayer().getAudioIsPlaying()) {
+            audioMixModel.stop()
+        }
         val listItemHandle = audioMixModel.getListItemChoose()
         if (listItemHandle.size == 2) {
-            viewStateManager.mixingOnSelected(this, listItemHandle[0].audioFile, listItemHandle[1].audioFile)
+            viewStateManager.mixingOnSelected(
+                this,
+                listItemHandle[0].audioFile,
+                listItemHandle[1].audioFile
+            )
         }
         /* listItemHandle.forEach {
              Log.d(TAG, "handleAudiofile: ${it.audioFile.fileName}")

@@ -332,6 +332,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     }
 
     override fun onCutItemClicked(itemAudio: AudioCutterView) {
+        if (audioCutterModel.getAudioPlayer().getAudioIsPlaying()) {
+            audioCutterModel.stop()
+        }
         if (itemAudio.audioFile.duration < MIN_DURATION) {
             val dialogSnack =
                 Snackbar.make(
