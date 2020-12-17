@@ -2,7 +2,6 @@ package com.example.audiocutter.functions.audiochooser.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
@@ -13,9 +12,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.audiocutter.R
-import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
@@ -23,7 +20,6 @@ import com.example.audiocutter.functions.audiochooser.event.OnItemTouchHelper
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
-import com.example.audiocutter.util.Utils
 import kotlinx.coroutines.launch
 
 class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<AudioCutterView, MergePreviewAdapter.MergeChooseHolder>(MergerChooserAudioDiff()), OnItemTouchHelper {
@@ -177,18 +173,19 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
             return lifecycleRegistry
         }
 
-        private fun updatePlayInfor(playerInfo: PlayerInfo) {
+        private fun updatePlayInfo(playerInfo: PlayerInfo) {
             playerState = playerInfo.playerState
-            pgAudio.updatePG(playerInfo.posision.toLong(), playerInfo.duration.toLong())
-            Log.d("giangtd123", "updatePlayInfor: pecent: " + playerInfo.posision.toLong() + "status: " + playerInfo.playerState)
 
+            Log.d("giangtd123", "updatePlayInfor: pecent: " + playerInfo.posision.toLong() + "status: " + playerInfo.playerState)
             val itemAudioFile = getItem(adapterPosition)
             val bitmap = itemAudioFile.audioFile.bitmap
             itemAudioFile.currentPos = playerInfo.posision.toLong()
             itemAudioFile.duration = playerInfo.duration.toLong()
             when (playerInfo.playerState) {
                 PlayerState.PLAYING -> {
+                    pgAudio.updatePG(playerInfo.posision.toLong(), playerInfo.duration.toLong())
                     if (bitmap != null) {
+
                         Glide.with(itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
 //                                .toInt()))
@@ -241,7 +238,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                         if (adapterPosition != -1) {
                             val audioCutterView = getItem(adapterPosition)
                             if (audioCutterView.audioFile.getFilePath() == it.getFilePath()) {
-                                updatePlayInfor(playerInfo)
+                                updatePlayInfo(playerInfo)
                             }
                         }
                     }
@@ -477,7 +474,7 @@ class MergerChooserAudioDiff : DiffUtil.ItemCallback<AudioCutterView>() {
     }
 
     override fun getChangePayload(oldItem: AudioCutterView, newItem: AudioCutterView): Any? {
-        return newItem.isCheckChooseItem
+        return newItem
     }
 
 }

@@ -118,7 +118,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     private fun initLists() {
 
-        val callBack = MyItemTouchHelper(audioMerAdapter)
+        val callBack = MyItemTouchHelper(audioMerAdapter,requireContext())
         val itemTouchHelper = ItemTouchHelper(callBack)
         audioMerAdapter.setTouchHelper(itemTouchHelper)
         binding.rvMergeChoose.adapter = audioMerAdapter
