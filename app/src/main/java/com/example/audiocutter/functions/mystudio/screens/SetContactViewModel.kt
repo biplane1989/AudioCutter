@@ -147,7 +147,7 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
         if (mListSearch.size > 0) {
             isEmptyStatus.postValue(false)
         } else {
-            if (data.equals("")) {
+            if (mListContact.size > 0) {
                 isEmptyStatus.postValue(false)
             } else {
                 isEmptyStatus.postValue(true)

@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.resultscreen.screens
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +8,8 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
+import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
@@ -25,6 +28,7 @@ import com.example.audiocutter.databinding.ResultScreenBinding
 import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
 import com.example.audiocutter.functions.audiochooser.dialogs.TypeShare
 import com.example.audiocutter.functions.common.ContactPermissionDialog
+import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.dialog.CancelDialog
 import com.example.audiocutter.functions.mystudio.dialog.CancelDialogListener
 import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
@@ -35,6 +39,7 @@ import com.example.audiocutter.permissions.PermissionManager
 import com.example.audiocutter.permissions.WriteSettingPermissionRequest
 import com.example.audiocutter.util.Utils
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 
 
@@ -54,13 +59,15 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     private lateinit var mResultViewModel: ResultViewModel
     private var isSeekBarStatus = false
     private var numberClick = 0
+    private var sbAnimation: ObjectAnimator? = null
+    private var progressbarAnimation: ObjectAnimator? = null
+    private var playerState: PlayerState = PlayerState.IDLE
+    private var timeFomat = 0
 
-
-    @SuppressLint("SimpleDateFormat")
-    private var simpleDateFormat = SimpleDateFormat("HH:mm:ss")
     private var pendingRequestingPermission = 0
     private val CONTACTS_ITEM_REQUESTING_PERMISSION = 1 shl 4
     private val WRITESETTING_ITEM_REQUESTING_PERMISSION = 1 shl 5
+
     private val contactPermissionRequest = object : ContactItemPermissionRequest {
         override fun getPermissionActivity(): BaseActivity? {
             return getBaseActivity()
@@ -87,6 +94,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         binding.tvInfoMusic.text = String.format("%s kb/s", (it.bitRate).toString())
     }
 
+    @SuppressLint("SetTextI18n")
     private val processDoneObserver = Observer<AudioFile> {         // observer trang thai done
 
         binding.btnBack.visibility = View.VISIBLE
@@ -102,20 +110,27 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
         isLoadingDone = true
         it?.let {
-            context?.let { context ->
-                binding.tvTimeLife.width = Utils.getWidthText(simpleDateFormat.format(it.duration), context)
-                    .toInt() + 50
-            }
+
+            timeFomat = Utils.chooseTimeFormat(it.duration.toLong())
+
             binding.tvTitleMusic.text = it.fileName
             binding.tvInfoMusic.text = String.format("%s kb/s", (it.bitRate / 1000).toString())
 
-            binding.tvTimeTotal.text = String.format("/%s", simpleDateFormat.format(it.duration.toInt()))
+            binding.tvTimeLife.width = binding.tvTimeTotal.paint.measureText(Utils.toTimeStr(it.duration, timeFomat))
+                .toInt()
+            binding.tvTimeTotal.width = binding.tvTimeLife.paint.measureText("/" + Utils.toTimeStr(it.duration, timeFomat))
+                .toInt()
+
+            binding.sbMusic.max = (it.duration * 100).toInt()
+            binding.tvTimeTotal.text = "/" + Utils.toTimeStr(it.duration.toLong(), timeFomat)
             binding.tvInfoMusic.text = convertAudioSizeToString(it)
         }
         val cancelDialog = childFragmentManager.findFragmentByTag(CancelDialog.TAG)
         if (cancelDialog is CancelDialog) {
             cancelDialog.dismiss()
         }
+
+        progressbarAnimation?.cancel()
     }
     private val pendingProcessObserver = Observer<String> {     // observer trang thai pending
         binding.tvWait.visibility = View.VISIBLE
@@ -139,12 +154,13 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         binding.llProgressbar.visibility = View.VISIBLE
         binding.llPlayMusic.visibility = View.GONE
         binding.btnCancel.visibility = View.VISIBLE
-        binding.pbLoading.progress = it.percent
         binding.tvLoading.visibility = View.VISIBLE
         binding.tvLoading.text = it.percent.toString() + "%"
         binding.tvTitleMusic.text = it.getFileName()
         binding.tvInfoMusic.text = it.bitRate.toString() + resources.getString(R.string.kbps_result)
         binding.ivNotificationError.visibility = View.GONE
+
+        setProgressAnimate(binding.pbLoading, it.percent, 1000)
 
         isLoadingDone = false
     }
@@ -170,6 +186,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
         binding.ivNotificationError.visibility = View.VISIBLE
         isLoadingDone = false
+
+        progressbarAnimation?.cancel()
     }
 
     private fun convertAudioSizeToString(audioFile: AudioFile): String {
@@ -194,23 +212,36 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
     @SuppressLint("SetTextI18n")
     val playInfoObserver = Observer<PlayerInfo> { playInfo ->       // observer info play music
-
+        playerState = playInfo.playerState
         if (!isSeekBarStatus) {
-            binding.sbMusic.max = playInfo.duration
-            binding.sbMusic.progress = playInfo.posision
-            binding.tvTimeTotal.text = "/" + simpleDateFormat.format(playInfo.duration)
-            binding.tvTimeLife.text = simpleDateFormat.format(playInfo.posision)
+
+//            binding.sbMusic.max = playInfo.duration * 100
+
+//            binding.sbMusic.progress = playInfo.posision
+//
+//            binding.tvTimeTotal.text = "/" + simpleDateFormat.format(playInfo.duration)
+//            binding.tvTimeLife.text = simpleDateFormat.format(playInfo.posision)
+
+            timeFomat = Utils.chooseTimeFormat(playInfo.duration.toLong())
+            binding.tvTimeLife.text = Utils.toTimeStr(playInfo.posision.toLong(), timeFomat)
+//            binding.tvTimeTotal.text = "/" + Utils.toTimeStr(playInfo.duration.toLong(), timeFomat)
 
             when (playInfo.playerState) {
                 PlayerState.IDLE -> {
                     binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
+                    binding.tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
+                    binding.sbMusic.clearAnimation()
+                    sbAnimation?.cancel()
                     binding.sbMusic.progress = 0
+                    setSeekbarAnimate(binding.sbMusic, 0, 1000)
+                    binding.sbMusic.clearAnimation()
                 }
                 PlayerState.PAUSE -> {
                     binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
                 }
                 PlayerState.PLAYING -> {
                     binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_pause)
+                    setSeekbarAnimate(binding.sbMusic, playInfo.posision, 1000)
                 }
                 else -> {
                     //nothing
@@ -219,6 +250,14 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         }
     }
 
+    fun setSeekbarAnimate(pb: SeekBar, progressTo: Int, duration: Long) {
+        // smooth animation
+        sbAnimation?.cancel()
+        sbAnimation = ObjectAnimator.ofInt(pb, "progress", pb.progress, progressTo * 100)
+        sbAnimation?.setDuration(duration)
+        sbAnimation?.setInterpolator(DecelerateInterpolator())
+        sbAnimation?.start()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.result_screen, container, false)
@@ -265,7 +304,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.pbLoading.max = 100
+        binding.pbLoading.max = 100 * 100
 
         binding.ivPausePlayMusic.setOnClickListener(this)
         binding.llRingtone.setOnClickListener(this)
@@ -280,18 +319,51 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         binding.btnOrigin.setOnClickListener(this)
 
         binding.sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
-                binding.tvTimeLife.text = simpleDateFormat.format(binding.sbMusic.progress)             // update time cho tvTimeLife khi keo seekbar
+            override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
+
+                if (playerState != PlayerState.IDLE) {
+                    if (fromUser) {
+                        binding.sbMusic.clearAnimation()
+                        sbAnimation?.cancel()
+                        setSeekbarAnimate(binding.sbMusic, progress / 100, 1000)
+                    }
+                }
+                if (playerState == PlayerState.PAUSE) {
+                    binding.tvTimeLife.text = Utils.toTimeStr(progress.toLong() / 100, timeFomat)
+                    Log.d(TAG, "onProgressChanged: PlayerState.PAUSE")
+                }
+
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
-                isSeekBarStatus = true
+                when (playerState) {
+
+                    PlayerState.PLAYING -> {
+                        mResultViewModel.pauseAudio()
+                        binding.sbMusic.clearAnimation()
+                        sbAnimation?.cancel()
+                        isSeekBarStatus = true
+                    }
+                }
             }
 
             override fun onStopTrackingTouch(sb: SeekBar?) {
+                //                    when (playerState) {
+//                        PlayerState.IDLE -> {
+//                            lifecycleScope.launch {
+//                                audioPlayer.play(audioFileView.audioFile, sbMusic.progress / 100)
+//                            }
+//                        }
+
+//                        PlayerState.PAUSE -> {
+                binding.sbMusic.clearAnimation()
+                sbAnimation?.cancel()
+                mResultViewModel.seekToAudio(binding.sbMusic.progress / 100)
+                mResultViewModel.resumeAudio()
                 isSeekBarStatus = false
-                mResultViewModel.seekToAudio(sb!!.progress)
+//                        }
             }
+//                }
         })
     }
 
@@ -301,9 +373,27 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
             .getLatestConvertingItem()?.outputAudioFile
         when (view) {
             binding.ivPausePlayMusic -> {
-                runOnUI {
-                    Log.d("001", "onClick: ")
-                    mResultViewModel.playAudio()
+                when (playerState) {
+                    PlayerState.IDLE -> {
+                        runOnUI {
+                            Log.d("001", "onClick: ")
+                            mResultViewModel.playAudio()
+
+                            binding.sbMusic.clearAnimation()
+                            sbAnimation?.cancel()
+                            binding.sbMusic.progress = 0
+                            setSeekbarAnimate(binding.sbMusic, 0, 1000)
+                        }
+                    }
+                    PlayerState.PAUSE -> {
+                        mResultViewModel.resumeAudio()
+                    }
+                    PlayerState.PLAYING -> {
+                        mResultViewModel.pauseAudio()
+                    }
+                    else -> {
+                        //nothing
+                    }
                 }
             }
 
@@ -448,11 +538,14 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         // no thing
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        progressbarAnimation?.cancel()
+    }
 
     private fun resetRequestingPermission() {
         pendingRequestingPermission = 0
     }
-
 
     override fun onResume() {       // xu ly back button
         super.onResume()
@@ -474,5 +567,14 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                 true
             } else false
         }
+    }
+
+    fun setProgressAnimate(pb: ProgressBar, progressTo: Int, duration: Long) {
+        // smooth animation
+        progressbarAnimation?.cancel()
+        progressbarAnimation = ObjectAnimator.ofInt(pb, "progress", pb.progress, progressTo * 100)
+        progressbarAnimation?.setDuration(duration)
+        progressbarAnimation?.setInterpolator(DecelerateInterpolator())
+        progressbarAnimation?.start()
     }
 }

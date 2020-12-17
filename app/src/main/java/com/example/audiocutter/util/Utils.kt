@@ -101,7 +101,7 @@ class Utils {
             return minutes.toString() + ":" + ((if (oddSeconds > 9) oddSeconds.toString() else "0$oddSeconds").toString() + if (oddMsTrimmed != 0L) ".$oddMsTrimmed" else "")
         }
 
-        fun getWidthText(str: String = "00:00:00", context: Context): Float {
+        fun getWidthText(str: String = "00:00", context: Context): Float {
             val paint = Paint()
             paint.textSize = spToPx(context, 12f)
             val result = Rect()

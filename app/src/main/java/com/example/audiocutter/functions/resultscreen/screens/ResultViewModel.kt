@@ -135,28 +135,34 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
 
     // chuyen trang thai play nhac
     suspend fun playAudio() {
-        when (audioPlayer.getPlayerInfoData().playerState) {
-            PlayerState.IDLE -> {
-                val audioFile = ManagerFactory.getAudioEditorManager()
-                    .getLatestConvertingItem()?.outputAudioFile
-                audioFile?.let {
-                    Log.d("001", "playAudio: file path " + it.getFilePath())
-                    audioPlayer.play(audioFile)
-                }
-//                        audioPlayer.play(AudioFile(it.file, it.fileName, it.size, it.bitRate, it.duration, Uri.parse(it.file.absolutePath)))
-                Log.d("001", "playAudio: audio file: " + audioFile?.fileName)
-            }
-            PlayerState.PAUSE -> {
-                audioPlayer.resume()
-            }
+//        when (audioPlayer.getPlayerInfoData().playerState) {
+//            PlayerState.IDLE -> {
+        val audioFile = ManagerFactory.getAudioEditorManager()
+            .getLatestConvertingItem()?.outputAudioFile
+        audioFile?.let {
 
-            PlayerState.PLAYING -> {
-                audioPlayer.pause()
-            }
-            PlayerState.PREPARING -> {
-
-            }
+            audioPlayer.play(audioFile)
+//                }
         }
+//            PlayerState.PAUSE -> {
+//                audioPlayer.resume()
+//            }
+//
+//            PlayerState.PLAYING -> {
+//                audioPlayer.pause()
+//            }
+//            PlayerState.PREPARING -> {
+//
+//            }
+//    }
+    }
+
+    fun pauseAudio() {
+        audioPlayer.pause()
+    }
+
+    fun resumeAudio() {
+        audioPlayer.resume()
     }
 
     fun seekToAudio(cusorPos: Int) {

@@ -8,6 +8,7 @@
         paddingTopSystemWindowInsets="@{true}"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingLeft="@dimen/common_padding_left"
         android:background="#FFFFFF">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -244,6 +245,7 @@
                 android:thumbTint="#FDAA74" />
 
             <TextView
+                android:maxLines="1"
                 android:id="@+id/tv_time_life"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -254,6 +256,7 @@
                 android:textSize="12dp" />
 
             <TextView
+                android:maxLines="1"
                 android:id="@+id/tv_time_total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

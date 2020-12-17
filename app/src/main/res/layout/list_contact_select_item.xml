@@ -26,7 +26,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/roundedCornersImageView"/>
+            app:shapeAppearanceOverlay="@style/roundedCornersImageView" />
 
         <!--        <ImageView-->
         <!--            android:id="@+id/cv_avatar"-->
@@ -127,6 +127,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/opensans_regular"
             android:gravity="end"
+            android:maxLines="1"
             android:text="00:00"
             android:textColor="#9C9C9C"
             android:textSize="12dp" />
@@ -137,6 +138,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:fontFamily="@font/opensans_regular"
+            android:maxLines="1"
             android:text="/00:00"
             android:textColor="#9C9C9C"
             android:textSize="12dp" />

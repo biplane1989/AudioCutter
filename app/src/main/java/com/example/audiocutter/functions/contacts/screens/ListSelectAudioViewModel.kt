@@ -196,7 +196,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         if (mListSearch.size > 0) {
             isEmptyStatus.postValue(false)
         } else {
-            if (data.equals("")) {
+            if (mListAudioFileView.size > 0) {
                 isEmptyStatus.postValue(false)
             } else {
                 isEmptyStatus.postValue(true)

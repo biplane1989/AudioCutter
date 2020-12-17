@@ -3,6 +3,7 @@ package com.example.audiocutter.functions.mystudio.adapters
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.lifecycle.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.AudioEditorManager
 import com.example.audiocutter.core.manager.AudioPlayer
@@ -45,6 +47,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     private lateinit var recyclerView: RecyclerView
     private var sbAnimation: ObjectAnimator? = null
     private var progressbarAnimation: ObjectAnimator? = null
+    private val PADDING_TIME_PLAY = 10
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyStudioHolder {
         recyclerView = parent as RecyclerView
@@ -100,87 +103,100 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     // khi chi thay doi 1 truong trong data
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: MyStudioHolder, position: Int, payloads: MutableList<Any>) {
-        super.onBindViewHolder(holder, position, payloads)
+//        super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
             Log.d(TAG, "onBindViewHolder: orange 1")
-            onBindViewHolder(holder, position)
+            super.onBindViewHolder(holder, position, payloads)
         } else {
-            val newItem = payloads.firstOrNull() as AudioFileView
 
-            Log.d(TAG, "onBindViewHolder: orange 2" + " status: " + newItem.convertingState)
-            if (holder is SuccessViewHolder) {
+            val data = payloads.firstOrNull()
+            data?.let {
+                val newItem = data as AudioFileView
+                Log.d(TAG, "onBindViewHolder: orange 2" + " status: " + newItem.convertingState)
+                if (holder is SuccessViewHolder) {
 
-                val successViewHolder = holder as SuccessViewHolder
-                when (newItem.itemLoadStatus.deleteState) {
-                    DeleteState.HIDE -> {
-                        successViewHolder.ivItemDelete.visibility = View.INVISIBLE
-                        successViewHolder.ivSetting.visibility = View.VISIBLE
-                    }
-                    DeleteState.UNCHECK -> {
-                        successViewHolder.ivSetting.visibility = View.INVISIBLE
-                        successViewHolder.ivItemDelete.visibility = View.VISIBLE
-                        successViewHolder.ivItemDelete.setImageResource(R.drawable.my_studio_screen_icon_uncheck)
-                    }
-                    DeleteState.CHECKED -> {
-                        successViewHolder.ivSetting.visibility = View.INVISIBLE
-                        successViewHolder.ivItemDelete.visibility = View.VISIBLE
-                        successViewHolder.ivItemDelete.setImageResource(R.drawable.my_studio_screen_icon_checked)
-                    }
-                }
-
-                Log.d(TAG, "onBindViewHolder: " + newItem.isExpanded)
-
-                if (newItem.isExpanded) {
-                    successViewHolder.llPlayMusic.visibility = View.VISIBLE
-                    successViewHolder.llItem.setBackgroundResource(R.drawable.my_studio_item_bg)
-
-                    Log.d(TAG, "onBindViewHolder: 1")
-                    holder.itemView.post {
-                        if (holder.itemView.bottom > recyclerView.height) {
-                            recyclerView.smoothScrollBy(0, (holder.itemView.bottom - recyclerView.height))
+//                val diff = payloads.get(0) as Bundle          // lay ra data duoc thay doi o ham payload va update len view
+//                if(diff.containsKey("item1")){
+//
+//                }
+//                if(diff.containsKey("item2")){
+//
+//                }
+//                if(diff.containsKey("item3")){
+//
+//                }
+                    val successViewHolder = holder as SuccessViewHolder
+                    when (newItem.itemLoadStatus.deleteState) {
+                        DeleteState.HIDE -> {
+                            successViewHolder.ivItemDelete.visibility = View.INVISIBLE
+                            successViewHolder.ivSetting.visibility = View.VISIBLE
+                        }
+                        DeleteState.UNCHECK -> {
+                            successViewHolder.ivSetting.visibility = View.INVISIBLE
+                            successViewHolder.ivItemDelete.visibility = View.VISIBLE
+                            successViewHolder.ivItemDelete.setImageResource(R.drawable.my_studio_screen_icon_uncheck)
+                        }
+                        DeleteState.CHECKED -> {
+                            successViewHolder.ivSetting.visibility = View.INVISIBLE
+                            successViewHolder.ivItemDelete.visibility = View.VISIBLE
+                            successViewHolder.ivItemDelete.setImageResource(R.drawable.my_studio_screen_icon_checked)
                         }
                     }
 
-                    successViewHolder.sbMusic.progress = 0
-                    successViewHolder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
-                    successViewHolder.tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
+                    Log.d(TAG, "onBindViewHolder: " + newItem.isExpanded)
 
-                    successViewHolder.sbMusic.clearAnimation()
-                    sbAnimation?.cancel()
+                    if (newItem.isExpanded) {
+                        successViewHolder.llPlayMusic.visibility = View.VISIBLE
+                        successViewHolder.llItem.setBackgroundResource(R.drawable.my_studio_item_bg)
+
+                        Log.d(TAG, "onBindViewHolder: 1")
+                        holder.itemView.post {
+                            if (holder.itemView.bottom > recyclerView.height) {
+                                recyclerView.smoothScrollBy(0, (holder.itemView.bottom - recyclerView.height))
+                            }
+                        }
+
+                        successViewHolder.sbMusic.progress = 0
+                        successViewHolder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
+                        successViewHolder.tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
+
+                        successViewHolder.sbMusic.clearAnimation()
+                        sbAnimation?.cancel()
+
+                    } else {
+                        successViewHolder.llPlayMusic.visibility = View.GONE
+                        successViewHolder.llItem.setBackgroundColor(Color.WHITE)
+                        successViewHolder.llItem.setPadding(0, 0, 0, 0)
+
+                        successViewHolder.sbMusic.clearAnimation()
+                    }
 
                 } else {
-                    successViewHolder.llPlayMusic.visibility = View.GONE
-                    successViewHolder.llItem.setBackgroundColor(Color.WHITE)
-                    successViewHolder.llItem.setPadding(0, 0, 0, 0)
+                    Log.d(TAG, "onBindViewHolder1 LoadingViewHolder ${newItem.getFilePath()} ")
+                    val loadingViewHolder = holder as LoadingViewHolder
 
-                    successViewHolder.sbMusic.clearAnimation()
-//                    sbAnimation?.cancel()
-                }
+                    val convertingItem = getItem(position)
 
-            } else {
-                Log.d(TAG, "onBindViewHolder1 LoadingViewHolder ${newItem.getFilePath()} ")
-                val loadingViewHolder = holder as LoadingViewHolder
+                    Log.d(TAG, "onBindViewHolder: convertingItem.percent : " + convertingItem.percent)
 
-                val convertingItem = getItem(position)
-
-                Log.d(TAG, "onBindViewHolder: convertingItem.percent : " + convertingItem.percent)
-
-                when (newItem.convertingState) {
-                    ConvertingState.WAITING -> {
-                        loadingViewHolder.tvWait.visibility = View.VISIBLE
-                        loadingViewHolder.pbLoading.visibility = View.INVISIBLE
-                        loadingViewHolder.tvLoading.visibility = View.INVISIBLE
-                    }
-                    ConvertingState.PROGRESSING -> {
-                        loadingViewHolder.tvWait.visibility = View.INVISIBLE
-                        loadingViewHolder.pbLoading.visibility = View.VISIBLE
-                        loadingViewHolder.tvLoading.visibility = View.VISIBLE
-                    }
-                    else -> {
-                        //TODO
+                    when (newItem.convertingState) {
+                        ConvertingState.WAITING -> {
+                            loadingViewHolder.tvWait.visibility = View.VISIBLE
+                            loadingViewHolder.pbLoading.visibility = View.INVISIBLE
+                            loadingViewHolder.tvLoading.visibility = View.INVISIBLE
+                        }
+                        ConvertingState.PROGRESSING -> {
+                            loadingViewHolder.tvWait.visibility = View.INVISIBLE
+                            loadingViewHolder.pbLoading.visibility = View.VISIBLE
+                            loadingViewHolder.tvLoading.visibility = View.VISIBLE
+                        }
+                        else -> {
+                            //TODO
+                        }
                     }
                 }
             }
+
         }
     }
 
@@ -244,7 +260,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
                     tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
                     sbMusic.clearAnimation()
-//                    sbAnimation?.cancel()
+                    sbAnimation?.cancel()
                     sbMusic.progress = 0
                     setSeekbarAnimate(sbMusic, 0, 1000)
                     sbMusic.clearAnimation()
@@ -303,11 +319,25 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
             timeFomat = Utils.chooseTimeFormat(audioFileView.audioFile.duration)
 
+
+            Log.d(TAG, "onBind: Utils.toTimeStr(audioFileView.audioFile.duration, timeFomat) " + Utils.toTimeStr(audioFileView.audioFile.duration, timeFomat))
+
+
+            tvTimeLife.width = tvTimeLife.paint.measureText(Utils.toTimeStr(audioFileView.audioFile.duration, timeFomat))
+                .toInt()
+            tvTotal.width = tvTotal.paint.measureText("/" + Utils.toTimeStr(audioFileView.audioFile.duration, timeFomat))
+                .toInt()
+
             tvTotal.text = "/" + Utils.toTimeStr(audioFileView.audioFile.duration, timeFomat)
-            tvTimeLife.width = Utils.getWidthText(Utils.toTimeStr(audioFileView.audioFile.duration, timeFomat)!!, itemView.context)
-                .toInt() + 35
-            tvTotal.width = Utils.getWidthText("/" + Utils.toTimeStr(audioFileView.audioFile.duration, timeFomat)!!, itemView.context)
-                .toInt() + 35
+
+            if (audioFileView.audioFile.bitmap != null) {
+                Glide.with(itemView).load(audioFileView.audioFile.bitmap)
+//                    .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
+                    .into(ivAvatar)
+
+            } else {
+                ivAvatar.setImageResource(R.drawable.my_studio_item_ic_avatar)
+            }
 
             if (audioFileView.isExpanded) {
                 llPlayMusic.visibility = View.VISIBLE
@@ -349,13 +379,12 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     if (playerState != PlayerState.IDLE) {
                         if (fromUser) {
                             sbMusic.clearAnimation()
-//                            sbAnimation?.cancel()
+                            sbAnimation?.cancel()
                             setSeekbarAnimate(sbMusic, progress / 100, 1000)
                         }
                     }
                     if (playerState == PlayerState.PAUSE) {
                         tvTimeLife.text = Utils.toTimeStr(progress.toLong() / 100, timeFomat)
-                        Log.d(TAG, "onProgressChanged: PlayerState.PAUSE")
                     }
                 }
 
@@ -365,7 +394,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                         PlayerState.PLAYING -> {
                             audioPlayer.pause()
                             sbMusic.clearAnimation()
-//                    sbAnimation?.cancel()
+                            sbAnimation?.cancel()
                             isSeekBarStatus = true
                         }
                     }
@@ -373,20 +402,23 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
 
                 override fun onStopTrackingTouch(sb: SeekBar?) {
-                    when (playerState) {
-                        PlayerState.IDLE -> {
-                            lifecycleScope.launch {
-                                audioPlayer.play(audioFileView.audioFile, sbMusic.progress / 100)
-                            }
-                        }
+//                    when (playerState) {
+//                        PlayerState.IDLE -> {
+//                            lifecycleScope.launch {
+//                                audioPlayer.play(audioFileView.audioFile, sbMusic.progress / 100)
+//                            }
+//                        }
 
-                        PlayerState.PAUSE -> {
-                            audioPlayer.seek(sbMusic.progress / 100)
-                            audioPlayer.resume()
-                            isSeekBarStatus = false
-                        }
-                    }
+//                        PlayerState.PAUSE -> {
+
+                    sbMusic.clearAnimation()
+                    sbAnimation?.cancel()
+                    audioPlayer.seek(sbMusic.progress / 100)
+                    audioPlayer.resume()
+                    isSeekBarStatus = false
+//                        }
                 }
+//                }
             })
         }
 
@@ -436,6 +468,10 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                                 lifecycleCoroutineScope.launch {
                                     audioPlayer.play(audioFileView.audioFile)
                                     Log.d(TAG, "onClick: audioFileView.audioFile uri : " + audioFileView.audioFile.uri)
+                                    sbMusic.clearAnimation()
+                                    sbAnimation?.cancel()
+                                    sbMusic.progress = 0
+                                    setSeekbarAnimate(sbMusic, 0, 1000)
                                 }
                             }
                             PlayerState.PAUSE -> {
@@ -582,16 +618,25 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
 class MusicDiffCallBack : DiffUtil.ItemCallback<AudioFileView>() {
 
-    override fun areItemsTheSame(oldItemView: AudioFileView, newItemView: AudioFileView): Boolean {
-//        return oldItemView.audioFile.file.absoluteFile == newItemView.audioFile.file.absoluteFile
+    override fun areItemsTheSame(oldItemView: AudioFileView, newItemView: AudioFileView): Boolean {     //true      :  item da dc khoi tao --> vao onbind summitlist
+//        return oldItemView.audioFile.file.absoluteFile == newItemView.audioFile.file.absoluteFile     // falase   :  item chua duoc khoi tao --> vao onBind cua supper
         return oldItemView.audioFile == newItemView.audioFile
     }
 
-    override fun areContentsTheSame(oldItemView: AudioFileView, newItemView: AudioFileView): Boolean {
-        return oldItemView == newItemView
+    override fun areContentsTheSame(oldItemView: AudioFileView, newItemView: AudioFileView): Boolean {      // true  : item giong nhau hoan toan khong co j can update
+        return oldItemView == newItemView                                                                   // false : item co su thay doi se vao ham onBind summitlist
     }
 
-    override fun getChangePayload(oldItem: AudioFileView, newItem: AudioFileView): Any? {
+    override fun getChangePayload(oldItem: AudioFileView, newItem: AudioFileView): Any? {       // chay duoi background
+        val diff = Bundle()                                                                     // xu ly logic o day
+        // olditem.item1 != newItem.item1
+        //diff.putString("item1", newItem.item1)
+        // olditem.item2 != newItem.item2
+        //diff.putString("item2", newItem.item2)
+        // olditem.item3 != newItem.item3
+        //diff.putString("item3", newItem.item3)
+
+//        return diff
         return newItem
     }
 }
