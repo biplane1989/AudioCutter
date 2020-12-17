@@ -111,7 +111,6 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
 
             when (playerInfo.playerState) {
                 PlayerState.PLAYING -> {
-                    Log.d("TAG", "onCutItemClicked:${playerInfo.posision.toLong()} - ${playerInfo.duration.toLong()}")
                     pgAudio.updatePG(playerInfo.posision.toLong(), playerInfo.duration.toLong())
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)
@@ -181,10 +180,6 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
         @SuppressLint("SetTextI18n")
         fun bind() {
             val itemAudioFile: AudioCutterView = getItem(adapterPosition)
-            Log.d(
-                "TAG",
-                "bind: ${itemAudioFile.audioFile.fileName}    state ${itemAudioFile.state}"
-            )
             var bitRate = itemAudioFile.audioFile.bitRate / 1000
             tvBitrateAudio.text = "${bitRate}${mContext.resources.getString(R.string.kbps)}"
 
@@ -203,7 +198,6 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
            if(itemAudioFile.currentPos>0){
                pgAudio.post {
                    pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration, false)
-                   Log.d("TAG", "manhnq: currentPos ${itemAudioFile.currentPos} -  duration ${itemAudioFile.duration}")
                }
 
            }

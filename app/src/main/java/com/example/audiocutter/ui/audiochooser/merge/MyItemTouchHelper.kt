@@ -41,6 +41,7 @@ class MyItemTouchHelper(private var mAdapter: OnItemTouchHelper, val context: Co
         }
     }
 
+
     override fun getMovementFlags(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder

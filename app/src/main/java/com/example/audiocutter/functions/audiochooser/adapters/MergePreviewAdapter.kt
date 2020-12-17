@@ -22,7 +22,12 @@ import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
 import kotlinx.coroutines.launch
 
-class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<AudioCutterView, MergePreviewAdapter.MergeChooseHolder>(MergerChooserAudioDiff()), OnItemTouchHelper {
+class MergePreviewAdapter(
+    val mContext: Context,
+    val audioPlayer: AudioPlayer,
+    val lifecycleCoroutineScope: LifecycleCoroutineScope
+) : ListAdapter<AudioCutterView, MergePreviewAdapter.MergeChooseHolder>(MergerChooserAudioDiff()),
+    OnItemTouchHelper {
 
     //var listAudios = mutableListOf<AudioCutterView>()
     lateinit var mCallback: AudioMergeChooseListener
@@ -40,6 +45,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
             super.submitList(ArrayList())
         }
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MergeChooseHolder {
         val itemView = LayoutInflater.from(mContext)
@@ -62,7 +68,11 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
 
     }
 
-    override fun onBindViewHolder(holder: MergeChooseHolder, position: Int, payloads: MutableList<Any>) {
+    override fun onBindViewHolder(
+        holder: MergeChooseHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
         super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
@@ -173,10 +183,14 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
             return lifecycleRegistry
         }
 
+
         private fun updatePlayInfo(playerInfo: PlayerInfo) {
             playerState = playerInfo.playerState
 
-            Log.d("giangtd123", "updatePlayInfor: pecent: " + playerInfo.posision.toLong() + "status: " + playerInfo.playerState)
+            Log.d(
+                "giangtd123",
+                "updatePlayInfor: pecent: " + playerInfo.posision.toLong() + "status: " + playerInfo.playerState
+            )
             val itemAudioFile = getItem(adapterPosition)
             val bitmap = itemAudioFile.audioFile.bitmap
             itemAudioFile.currentPos = playerInfo.posision.toLong()
@@ -413,6 +427,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
         }
 
         override fun onTouch(p0: View?, motionEvent: MotionEvent?): Boolean {
+            p0?.isHapticFeedbackEnabled = false
             mGestureDetector.onTouchEvent(motionEvent)
             return false
         }
