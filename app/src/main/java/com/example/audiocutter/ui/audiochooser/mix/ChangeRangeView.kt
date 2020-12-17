@@ -565,6 +565,7 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
     }
 
     fun setShortedLength() {
+
         position = 0
         durationTmp = getDurationMin()
         if (currentLengthSound1 > currentLengthSound2) {

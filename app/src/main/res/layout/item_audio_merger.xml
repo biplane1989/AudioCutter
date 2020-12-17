@@ -93,7 +93,7 @@
                         android:layout_marginRight="@dimen/d_5"
                         android:fontFamily="@font/opensans_regular"
                         android:gravity="bottom"
-                        android:text="2.1 MB"
+                        android:text="@string/default_size_audio"
                         android:textSize="@dimen/d_14" />
 
                     <View
@@ -109,7 +109,7 @@
                         android:layout_marginLeft="@dimen/d_5"
                         android:fontFamily="@font/opensans_regular"
                         android:gravity="bottom"
-                        android:text="128kb/s"
+                        android:text="@string/default_bitrate_audio"
                         android:textSize="@dimen/d_14" />
                 </TableRow>
 

@@ -52,6 +52,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     private var pendingRequestingPermission = 0
     private val CUT_CHOOSE_REQUESTING_PERMISSION = 1 shl 5
 
+
     private var stateObserver = Observer<Int> {
         when (it) {
             1 -> {
@@ -183,7 +184,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
     private fun searchAudioByName(yourTextSearch: String) {
 
-//        showList()
         if (yourTextSearch.isEmpty()) {
             audioCutterModel.searchAudio("")
         }
@@ -329,11 +329,15 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     private fun showDialogSetAsTypeAudio() {
         dialog.setOnCallBack(this)
         dialog.show(requireActivity().supportFragmentManager, "TAG")
+
     }
 
     override fun onCutItemClicked(itemAudio: AudioCutterView) {
         if (audioCutterModel.getAudioPlayer().getAudioIsPlaying()) {
+            Log.e(TAG, "onCutItemClicked: stop")
             audioCutterModel.stop()
+        } else {
+            Log.e(TAG, "onCutItemClicked: nonStop")
         }
         if (itemAudio.audioFile.duration < MIN_DURATION) {
             val dialogSnack =

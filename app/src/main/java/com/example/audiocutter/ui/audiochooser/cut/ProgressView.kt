@@ -58,9 +58,9 @@ class ProgressView : View {
     }
 
 
-    fun updatePG(percent: Long, duration: Long, useAnimation: Boolean = true) {
+    fun updatePG(currentPos: Long, duration: Long, useAnimation: Boolean = true) {
         this.duration = duration.toFloat()
-        moveProcess(percent.toFloat(), useAnimation)
+        moveProcess(currentPos.toFloat(), useAnimation)
 
     }
 

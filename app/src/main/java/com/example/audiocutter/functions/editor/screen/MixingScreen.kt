@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
@@ -229,9 +230,9 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     private fun changeBackgroundTextView(tv1: TextView, tv2: TextView) {
         tv1.setBackgroundResource(R.drawable.bg_next_audio_enabled)
-        tv1.setTextColor(resources.getColor(R.color.colorWhite))
+        tv1.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorWhite))
         tv2.setBackgroundResource(R.drawable.bg_next_audio_disabled)
-        tv2.setTextColor(resources.getColor(R.color.colorgray))
+        tv2.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorgray))
     }
 
     private fun checkCompareDurationMin(durAudio1: String, durAudio2: String) {
@@ -255,7 +256,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     override fun onLineChange(audioFile1: AudioFile, audioFile2: AudioFile, pos: Int) {
 
         runOnUI {
-            if (!mPlayer1.getAudioIsPlaying()) {
+            if (!chooseObjectObserver()?.getAudioIsPlaying()!!) {
                 mPlayer1.play(audioFile1, pos)
                 mPlayer2.play(audioFile2, pos)
             } else {

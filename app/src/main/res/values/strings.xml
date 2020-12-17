@@ -215,4 +215,6 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="suggestion_ask_text"><![CDATA[Go to: Phone Settings > Battery > Low power mode (Saving battery mode) > Cut Pro music > Choose switch off or unrestricted\n
     \nOr: Phone Settings > Application Management > Cut Pro music > Saving battery mode > Allow to run in the phone’s background.]]></string>
     <string name="dialog_advanced_cancel">CANCEL</string>
+    <string name="default_size_audio">2.1 MB</string>
+    <string name="default_bitrate_audio">128kb/s</string>
 </resources>

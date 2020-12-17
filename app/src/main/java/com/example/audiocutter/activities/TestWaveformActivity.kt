@@ -1,13 +1,12 @@
 package com.example.audiocutter.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.audiocutter.R
 import com.example.audiocutter.util.Utils
-import com.example.waveform.views.WaveformView
 import com.example.waveform.views.WaveformView1
 import kotlinx.coroutines.launch
 import java.io.File

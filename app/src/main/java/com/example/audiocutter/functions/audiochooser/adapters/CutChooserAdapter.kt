@@ -111,6 +111,7 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
 
             when (playerInfo.playerState) {
                 PlayerState.PLAYING -> {
+                    Log.d("TAG", "onCutItemClicked:${playerInfo.posision.toLong()} - ${playerInfo.duration.toLong()}")
                     pgAudio.updatePG(playerInfo.posision.toLong(), playerInfo.duration.toLong())
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap)

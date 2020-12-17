@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.audiochooser.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.util.Log
@@ -147,6 +148,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     inner class MergeChooseHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnTouchListener, GestureDetector.OnGestureListener, LifecycleOwner {
 
         var ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)

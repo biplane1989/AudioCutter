@@ -19,7 +19,7 @@
             android:layout_gravity="bottom"
             android:background="@color/colorWhite"
             android:orientation="vertical"
-            app:behavior_peekHeight="320dp"
+            app:behavior_peekHeight="@dimen/d_size_peek_height_bottomsheet"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
            >
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/common_size_item_height"
     android:background="@color/colorWhite">
@@ -33,7 +34,7 @@
         <RelativeLayout
             android:layout_width="@dimen/common_size_item_imagview"
             android:layout_height="@dimen/common_size_item_imagview"
-            android:layout_marginLeft="@dimen/common_padding_left">
+            android:layout_marginStart="@dimen/common_padding_left">
 
             <ImageView
                 android:id="@+id/iv_controller_audio"
@@ -59,7 +60,7 @@
             android:layout_weight="1"
             android:gravity="right"
             android:orientation="horizontal"
-            android:paddingLeft="@dimen/d_16">
+            android:paddingStart="@dimen/d_16">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -83,16 +84,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    tools:ignore="NestedWeights">
 
                     <TextView
                         android:id="@+id/tv_size_audio"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_marginRight="@dimen/d_5"
+                        android:layout_marginEnd="@dimen/d_5"
                         android:fontFamily="@font/opensans_regular"
                         android:gravity="bottom"
-                        android:text="2.1 MB"
+                        android:text="@string/default_size_audio"
                         android:textSize="@dimen/d_14" />
 
                     <View
@@ -108,7 +110,7 @@
                         android:layout_marginLeft="@dimen/d_5"
                         android:fontFamily="@font/opensans_regular"
                         android:gravity="bottom"
-                        android:text="128kb/s"
+                        android:text="@string/default_bitrate_audio"
                         android:textSize="@dimen/d_14" />
                 </TableRow>
             </LinearLayout>
