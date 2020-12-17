@@ -137,6 +137,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
                     binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
                     playerState = PlayerState.PLAYING
                     binding.waveEditView.updatePlaybackInMs(it.posision)
+                    cuttingViewModel.changeCurrPos(it.posision, false)
                 }
                 PlayerState.PAUSE -> {
                     binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
