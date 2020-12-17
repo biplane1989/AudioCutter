@@ -265,6 +265,13 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                                 playInfoData.playerState = PlayerState.PAUSE
                             }
                             changed = true
+                        } else {
+                            if (isStopped &&  playInfoData.playerState != PlayerState.IDLE) {
+                                playInfoData.playerState = PlayerState.IDLE
+                                currentPosition = 0
+                                playInfoData.posision = currentPosition
+                                changed = true
+                            }
                         }
                     }
 
