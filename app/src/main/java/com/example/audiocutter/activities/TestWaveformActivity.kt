@@ -21,7 +21,7 @@ class TestWaveformActivity : AppCompatActivity() {
         setContentView(R.layout.activity_test_waveform)
         waveformView = findViewById(R.id.waveform_view)
         val audioFilePath =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).absolutePath + File.separator + "test1.mp3"
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).absolutePath + File.separator + "test.m4a"
         lifecycleScope.launch {
             waveformView.setDataSource(
                 audioFilePath,

@@ -41,7 +41,7 @@ class CheapSoundFile implements AudioDecoder{
             throws java.io.IOException {
     }
 
-    public static CheapSoundFile create(String fileName, ProgressListener progressListener) throws FileNotFoundException, IOException {
+    public static CheapSoundFile create(String fileName, ProgressListener progressListener) throws FileNotFoundException {
 
         File f = new File(fileName);
         if (!f.exists()) {
@@ -58,7 +58,11 @@ class CheapSoundFile implements AudioDecoder{
         }
         CheapSoundFile soundFile = factory.create();
         soundFile.mProgressListener = progressListener;
-        soundFile.readFile(f);
+        try {
+            soundFile.readFile(f);
+        } catch (IOException e) {
+            return null;
+        }
         return soundFile;
     }
 
