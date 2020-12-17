@@ -136,6 +136,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
                 PlayerState.PLAYING -> {
                     binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
                     playerState = PlayerState.PLAYING
+                    binding.waveEditView.updatePlaybackInMs(it.posision)
                 }
                 PlayerState.PAUSE -> {
                     binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
@@ -157,8 +158,6 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
                     )
                 }
             }
-            //binding.waveEditView.setPlayPositionMs(it.posision, false)
-            binding.waveEditView.updatePlaybackInMs(it.posision)
         }
     }
 
@@ -230,8 +229,13 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
         }
     }
 
-    override fun onPlayPosOutOfRange() {
-        cuttingViewModel.pauseAudio()
+    override fun onPlayPosOutOfRange(isEnd:Boolean) {
+        if(isEnd){
+            cuttingViewModel.currPosReachToEnd()
+        }else{
+            cuttingViewModel.currPosReachToStart()
+        }
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

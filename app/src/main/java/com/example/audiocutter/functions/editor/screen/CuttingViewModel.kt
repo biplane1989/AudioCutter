@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.editor.screen
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.base.BaseViewModel
@@ -24,7 +25,14 @@ class CuttingViewModel : BaseViewModel() {
         ldAudioFile.postValue(audioFile)
         return ldAudioFile
     }
-
+    fun currPosReachToEnd(){
+        cuttingCurrPos = cuttingStartPos
+        pauseAudio()
+    }
+    fun currPosReachToStart(){
+        cuttingCurrPos = cuttingEndPos
+        pauseAudio()
+    }
     suspend fun clickedPlayButton() {
         audioFile?.let {
             val playerInfo = audioPlayer.getPlayerInfoData()
@@ -32,8 +40,17 @@ class CuttingViewModel : BaseViewModel() {
                 audioPlayer.pause()
             } else {
                 if (playerInfo.playerState == PlayerState.IDLE) {
-                    audioPlayer.play(it, cuttingStartPos)
+                    Log.d("taihhhhh", "clickedPlayButton: playerState play ${cuttingCurrPos} ${cuttingStartPos} ${cuttingEndPos}")
+                    audioPlayer.play(it, cuttingCurrPos)
                 } else {
+
+                    if(audioPlayer.getPlayerInfoData().posision != cuttingCurrPos){
+                        if(cuttingCurrPos == cuttingEndPos){
+                            cuttingCurrPos = cuttingStartPos;
+                        }
+                        audioPlayer.seek(cuttingCurrPos)
+                    }
+                    Log.d("taihhhhh", "clickedPlayButton: playerState resume ${cuttingCurrPos} ${cuttingStartPos} ${cuttingEndPos}")
                     audioPlayer.resume()
                 }
             }
@@ -66,8 +83,6 @@ class CuttingViewModel : BaseViewModel() {
                     if (allowSeekingAudio) {
                         audioPlayer.seek(newPos)
                     }
-                } else {
-                    audioPlayer.seek(newPos)
                 }
             }
             cuttingCurrPos = newPos
