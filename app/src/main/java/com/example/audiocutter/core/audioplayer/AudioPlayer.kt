@@ -53,10 +53,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     }
 
     private val listenerError = MediaPlayer.OnErrorListener { mp, what, extra ->
-        Log.d(
-            TAG,
-            "OnErrorListener: what $what isplaying ${mp.isPlaying} MediaPlayer.MEDIA_ERROR_IO ${MediaPlayer.MEDIA_ERROR_IO}"
-        )
+        Log.d(TAG, "OnErrorListener: what $what isplaying ${mp.isPlaying} MediaPlayer.MEDIA_ERROR_IO ${MediaPlayer.MEDIA_ERROR_IO}")
         stop()
         true
     }
@@ -64,17 +61,8 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
     private fun notifyPlayerDataChanged() {
 
-        Log.d(
-            "1111",
-            "startTimerIfReady: path${playInfoData.currentAudio!!.fileName}   state ${playInfoData.playerState}  duration ${playInfoData.duration}   position ${playInfoData.posision}"
-        )
-        val playInfoCopy = PlayerInfo(
-            playInfoData.currentAudio,
-            playInfoData.posision,
-            playInfoData.playerState,
-            playInfoData.duration,
-            playInfoData.volume
-        )
+        Log.d("1111", "startTimerIfReady: path${playInfoData.currentAudio!!.fileName}   state ${playInfoData.playerState}  duration ${playInfoData.duration}   position ${playInfoData.posision}")
+        val playInfoCopy = PlayerInfo(playInfoData.currentAudio, playInfoData.posision, playInfoData.playerState, playInfoData.duration, playInfoData.volume)
         if (Looper.myLooper() == Looper.getMainLooper()) {
             _mPlayInfo.value = playInfoCopy
         } else {
@@ -112,6 +100,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     }
 
     override suspend fun play(audioFile: AudioFile, currentPosition: Int): Boolean {
+        Log.d(TAG, "play: currentPosition : ${currentPosition}")
         mAudioFile = audioFile
         try {
             isSeekTo = currentPosition

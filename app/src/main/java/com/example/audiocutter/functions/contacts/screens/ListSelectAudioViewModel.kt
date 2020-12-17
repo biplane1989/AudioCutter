@@ -68,8 +68,6 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
                 mAudioMediatorLiveData.postValue(mListAudioFileView)
 
             }
-
-
         }
     }
 

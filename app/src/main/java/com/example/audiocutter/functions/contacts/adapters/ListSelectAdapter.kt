@@ -251,7 +251,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 ivAvatarSelect.setImageResource(R.drawable.my_studio_item_ic_avatar)
             }
 
-//
 //            tvTotal.text = "/" + simpleDateFormat.format(selectItemView.audioFile.duration.toInt())
 
             if (selectItemView.isExpanded) {
