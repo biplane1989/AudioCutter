@@ -32,7 +32,7 @@ class CuttingViewModel : BaseViewModel() {
                 audioPlayer.pause()
             } else {
                 if (playerInfo.playerState == PlayerState.IDLE) {
-                    audioPlayer.play(it, cuttingCurrPos)
+                    audioPlayer.play(it, cuttingStartPos)
                 } else {
                     audioPlayer.resume()
                 }
