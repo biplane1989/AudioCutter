@@ -44,6 +44,7 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
         }
     }
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AudiocutterHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_audio_cutter, parent, false)
