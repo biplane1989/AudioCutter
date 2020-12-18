@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-class CheapSoundFile implements AudioDecoder{
+class CheapSoundFile implements AudioDecoder {
     public interface Factory {
         CheapSoundFile create();
 
@@ -42,28 +42,33 @@ class CheapSoundFile implements AudioDecoder{
     }
 
     public static CheapSoundFile create(String fileName, ProgressListener progressListener) throws FileNotFoundException {
-
-        File f = new File(fileName);
-        if (!f.exists()) {
-            throw new FileNotFoundException(fileName);
-        }
-        String name = f.getName().toLowerCase();
-        String[] components = name.split("\\.");
-        if (components.length < 2) {
-            return null;
-        }
-        Factory factory = sExtensionMap.get(components[components.length - 1]);
-        if (factory == null) {
-            return null;
-        }
-        CheapSoundFile soundFile = factory.create();
-        soundFile.mProgressListener = progressListener;
         try {
+            File f = new File(fileName);
+            if (!f.exists()) {
+                throw new FileNotFoundException(fileName);
+            }
+            String name = f.getName().toLowerCase();
+            String[] components = name.split("\\.");
+            if (components.length < 2) {
+                return null;
+            }
+            Factory factory = sExtensionMap.get(components[components.length - 1]);
+            if (factory == null) {
+                return null;
+            }
+            CheapSoundFile soundFile = factory.create();
+            soundFile.mProgressListener = progressListener;
+
             soundFile.readFile(f);
+
+            return soundFile;
         } catch (IOException e) {
             return null;
         }
-        return soundFile;
+        catch (Exception e) {
+            return null;
+        }
+
     }
 
     public static boolean isFilenameSupported(String filename) {

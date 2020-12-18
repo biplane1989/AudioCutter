@@ -68,6 +68,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     private var pendingRequestingPermission = 0
     private val CONTACTS_ITEM_REQUESTING_PERMISSION = 1 shl 4
     private val WRITESETTING_ITEM_REQUESTING_PERMISSION = 1 shl 5
+    private val DURATION_ANIMATION = 500L
 
     private val contactPermissionRequest = object : ContactItemPermissionRequest {
         override fun getPermissionActivity(): BaseActivity? {
@@ -141,6 +142,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         binding.btnBack.visibility = View.GONE
         binding.ivHome.visibility = View.INVISIBLE
         binding.btnCancel.visibility = View.VISIBLE
+        binding.tvTitleResult.visibility = View.GONE
+        binding.tvTitleLoading.visibility = View.VISIBLE
 
     }
 
@@ -161,7 +164,10 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         binding.tvInfoMusic.text = it.bitRate.toString() + resources.getString(R.string.kbps_result)
         binding.ivNotificationError.visibility = View.GONE
 
-        setProgressAnimate(binding.pbLoading, it.percent, 1000)
+        binding.tvTitleResult.visibility = View.GONE
+        binding.tvTitleLoading.visibility = View.VISIBLE
+
+        setProgressAnimate(binding.pbLoading, it.percent, DURATION_ANIMATION)
 
         isLoadingDone = false
     }
@@ -184,6 +190,9 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         binding.btnBack.visibility = View.VISIBLE
         binding.ivHome.visibility = View.VISIBLE
         binding.btnCancel.visibility = View.INVISIBLE
+
+        binding.tvTitleResult.visibility = View.GONE
+        binding.tvTitleLoading.visibility = View.VISIBLE
 
         binding.ivNotificationError.visibility = View.VISIBLE
         isLoadingDone = false
@@ -225,7 +234,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                     binding.sbMusic.clearAnimation()
                     sbAnimation?.cancel()
                     binding.sbMusic.progress = 0
-                    setSeekbarAnimate(binding.sbMusic, 0, 1000)
+                    setSeekbarAnimate(binding.sbMusic, 0, DURATION_ANIMATION)
 //                    binding.sbMusic.clearAnimation()
                 }
                 PlayerState.PAUSE -> {
@@ -233,7 +242,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                 }
                 PlayerState.PLAYING -> {
                     binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_pause)
-                    setSeekbarAnimate(binding.sbMusic, playInfo.posision, 1000)
+                    setSeekbarAnimate(binding.sbMusic, playInfo.posision, DURATION_ANIMATION)
                 }
                 else -> {
                     //nothing
@@ -319,7 +328,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                     if (fromUser) {
                         binding.sbMusic.clearAnimation()
                         sbAnimation?.cancel()
-                        setSeekbarAnimate(binding.sbMusic, progress / 100, 1000)
+                        setSeekbarAnimate(binding.sbMusic, progress / 100, DURATION_ANIMATION)
                     }
                 }
                 if (playerState == PlayerState.PAUSE) {
@@ -343,7 +352,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                     lifecycleScope.launch {
                         binding.sbMusic.clearAnimation()
                         sbAnimation?.cancel()
-
+//                        lifecycleScope.launch {
                         val audioFile = ManagerFactory.getAudioEditorManager()
                             .getLatestConvertingItem()?.outputAudioFile
                         audioFile?.let {
@@ -353,6 +362,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                             mResultViewModel.playAudioByPositition(it, newValue)
                         }
                     }
+//                    }
                 } else {
 
 //                        Log.d(TAG, "onStopTrackingTouch: status 4: " + playerState)
@@ -388,7 +398,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                             binding.sbMusic.clearAnimation()
                             sbAnimation?.cancel()
                             binding.sbMusic.progress = 0
-                            setSeekbarAnimate(binding.sbMusic, 0, 1000)
+                            setSeekbarAnimate(binding.sbMusic, 0, DURATION_ANIMATION)
                         }
                     }
                     PlayerState.PAUSE -> {

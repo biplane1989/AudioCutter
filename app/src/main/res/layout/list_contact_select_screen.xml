@@ -69,7 +69,7 @@
             android:id="@+id/cl_search"
             android:layout_width="match_parent"
             android:layout_height="?android:actionBarSize"
-            android:layout_marginBottom="2dp"
+            android:layout_marginBottom="@dimen/common_line"
             android:paddingLeft="@dimen/common_padding_left"
             android:paddingRight="10dp"
             android:visibility="invisible"
@@ -116,7 +116,7 @@
         <View
             android:id="@+id/line"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="@dimen/common_line"
             android:background="#F6F6F6"
             app:layout_constraintTop_toBottomOf="@id/cl_default" />
 
@@ -140,6 +140,14 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/cl_bottom"
             app:layout_constraintTop_toBottomOf="@+id/line" />
+
+        <View
+            android:id="@+id/line2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/common_line"
+            android:background="#F6F6F6"
+            app:layout_constraintBottom_toTopOf="@id/cl_bottom"
+            app:layout_constraintTop_toBottomOf="@id/rv_list_select_audio" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_bottom"
@@ -174,13 +182,41 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <ImageView
+                android:id="@+id/btn_not_save"
+                android:layout_width="90dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="10dp"
+                android:background="#F6F6F6"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
+                android:id="@+id/tv_save"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/opensans_bold"
                 android:text="@string/list_contact_select_btn_save"
                 android:textColor="#FFFFFF"
                 android:textSize="14dp"
+                app:layout_constraintBottom_toBottomOf="@id/btn_save"
+                app:layout_constraintEnd_toEndOf="@id/btn_save"
+                app:layout_constraintStart_toStartOf="@id/btn_save"
+                app:layout_constraintTop_toTopOf="@id/btn_save" />
+
+            <TextView
+                android:id="@+id/tv_not_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:text="@string/list_contact_select_btn_save"
+                android:textColor="#9C9C9C"
+                android:textSize="14dp"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="@id/btn_save"
                 app:layout_constraintEnd_toEndOf="@id/btn_save"
                 app:layout_constraintStart_toStartOf="@id/btn_save"

@@ -113,7 +113,6 @@
 
 
     <ImageView
-        android:paddingRight="@dimen/common_padding_right"
         android:id="@+id/iv_select"
         android:layout_width="@dimen/common_size_item_imagview"
         android:layout_height="match_parent"

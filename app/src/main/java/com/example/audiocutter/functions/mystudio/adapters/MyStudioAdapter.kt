@@ -45,7 +45,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     private lateinit var recyclerView: RecyclerView
     private var sbAnimation: ObjectAnimator? = null
     private var progressbarAnimation: ObjectAnimator? = null
-    private val PADDING_TIME_PLAY = 10
+    private val DURATION_ANIMATION = 500L
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyStudioHolder {
         recyclerView = parent as RecyclerView
@@ -239,7 +239,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             when (playerInfo.playerState) {
                 PlayerState.PLAYING -> {
                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
-                    setSeekbarAnimate(sbMusic, playerInfo.posision, 1000)
+                    setSeekbarAnimate(sbMusic, playerInfo.posision, DURATION_ANIMATION)
 
                 }
                 PlayerState.PAUSE -> {
@@ -251,7 +251,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     sbMusic.clearAnimation()
                     sbAnimation?.cancel()
                     sbMusic.progress = 0
-                    setSeekbarAnimate(sbMusic, 0, 1000)
+                    setSeekbarAnimate(sbMusic, 0, DURATION_ANIMATION)
                 }
                 else -> {
                     //nothing
@@ -369,7 +369,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                         if (fromUser) {
                             sbMusic.clearAnimation()
                             sbAnimation?.cancel()
-                            setSeekbarAnimate(sbMusic, progress / 100, 1000)
+                            setSeekbarAnimate(sbMusic, progress / 100, DURATION_ANIMATION)
                         }
                     }
                     if (playerState == PlayerState.PAUSE) {
@@ -393,13 +393,13 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     Log.d(TAG, "onStopTrackingTouch: status 3: " + playerState)
                     Log.d(TAG, " progressbar : 2" + sbMusic.progress)
                     if (playerState == PlayerState.IDLE) {
-                        lifecycleScope.launch {
+//                        lifecycleScope.launch {
                             sbMusic.clearAnimation()
                             sbAnimation?.cancel()
                             val newValue = Utils.convertValue(0, sbMusic.max, 0, audioFileView.audioFile.duration.toInt(), sbMusic.progress)
                             Log.d(TAG, "checkNewValue: $newValue  - duration ${audioFileView.audioFile.duration.toInt()} ")
                             audioPlayer.play(audioFileView.audioFile, newValue)
-                        }
+//                        }
                     } else {
 
 //                        Log.d(TAG, "onStopTrackingTouch: status 4: " + playerState)
@@ -478,7 +478,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                                     sbMusic.clearAnimation()
                                     sbAnimation?.cancel()
                                     sbMusic.progress = 0
-                                    setSeekbarAnimate(sbMusic, 0, 1000)
+                                    setSeekbarAnimate(sbMusic, 0, DURATION_ANIMATION)
                                 }
                             }
                             PlayerState.PAUSE -> {
@@ -521,7 +521,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
                 ConvertingState.PROGRESSING -> {
 
-                    setProgressAnimate(pbLoading, convertingItem.percent, 1000)
+                    setProgressAnimate(pbLoading, convertingItem.percent, DURATION_ANIMATION)
 
                     tvLoading.text = convertingItem.percent.toString() + "%"
                 }

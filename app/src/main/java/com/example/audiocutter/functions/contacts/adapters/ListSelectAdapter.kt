@@ -35,6 +35,7 @@ import com.example.audiocutter.util.Utils
 import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 
@@ -49,8 +50,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
     private var sbAnimation: ObjectAnimator? = null
 
-    @SuppressLint("SimpleDateFormat")
-    private var simpleDateFormat = SimpleDateFormat("HH:mm:ss")
+    private val DURATION_ANIMATION = 500L
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         recyclerView = parent as RecyclerView
@@ -83,11 +83,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                             recyclerView.smoothScrollBy(0, (holder.itemView.bottom - recyclerView.height))
                         }
                     }
-
-                    holder.sbMusic.progress = 0
-                    holder.ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
-                    holder.tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
-
                     holder.sbMusic.clearAnimation()
                     sbAnimation?.cancel()
 
@@ -156,15 +151,13 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
         private fun updatePlayInfor(playerInfo: PlayerInfo) {
 
-//            sbMusic.max = playerInfo.duration * 100
-
             timeFomat = Utils.chooseTimeFormat(playerInfo.duration.toLong())
             tvTimeLife.text = Utils.toTimeStr(playerInfo.posision.toLong(), timeFomat)
 
             when (playerInfo.playerState) {
                 PlayerState.PLAYING -> {
                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
-                    setSeekbarAnimate(sbMusic, playerInfo.posision, 1000)
+                    setSeekbarAnimate(sbMusic, playerInfo.posision, DURATION_ANIMATION)
                 }
                 PlayerState.PAUSE -> {
                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
@@ -176,7 +169,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                     sbMusic.clearAnimation()
                     sbAnimation?.cancel()
                     sbMusic.progress = 0
-                    setSeekbarAnimate(sbMusic, 0, 1000)
+                    setSeekbarAnimate(sbMusic, 0, DURATION_ANIMATION)
 //                    sbMusic.clearAnimation()
 //                    sbAnimation?.cancel()
                 }
@@ -274,7 +267,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                         if (fromUser) {
                             sbMusic.clearAnimation()
                             sbAnimation?.cancel()
-                            setSeekbarAnimate(sbMusic, progress / 100, 1000)
+                            setSeekbarAnimate(sbMusic, progress / 100, DURATION_ANIMATION)
                         }
                     }
                     if (playerState == PlayerState.PAUSE) {
@@ -284,8 +277,8 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 }
 
                 override fun onStartTrackingTouch(p0: SeekBar?) {
+                    Log.d(TAG, "onStopTrackingTouch: hello 2: " + playerState)
                     if (playerState == PlayerState.PLAYING) {
-
                         audioPlayer.pause()
                         sbMusic.clearAnimation()
                         sbAnimation?.cancel()
@@ -294,14 +287,19 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 }
 
                 override fun onStopTrackingTouch(p0: SeekBar?) {
+
+                    Log.d(TAG, "onStopTrackingTouch: hello 3: " + playerState)
                     if (playerState == PlayerState.IDLE) {
-                        lifecycleScope.launch {
-                            sbMusic.clearAnimation()
-                            sbAnimation?.cancel()
-                            val newValue = Utils.convertValue(0, sbMusic.max, 0, selectItemView.audioFile.duration.toInt(), sbMusic.progress)
-                            Log.d(TAG, "checkNewValue: $newValue  - duration ${selectItemView.audioFile.duration.toInt()} ")
-                            audioPlayer.play(selectItemView.audioFile, newValue)
-                        }
+                        Log.d(TAG, "onStopTrackingTouch: hello 3a: " + playerState + "  ${lifecycleScope.isActive}   ${lifecycleRegistry.currentState}")
+//                    lifecycleScope.launch {
+                        Log.d(TAG, "onStopTrackingTouch: hello 3b: " + playerState)
+                        sbMusic.clearAnimation()
+                        sbAnimation?.cancel()
+                        val newValue = Utils.convertValue(0, sbMusic.max, 0, selectItemView.audioFile.duration.toInt(), sbMusic.progress)
+                        Log.d(TAG, "checkNewValue: $newValue  - duration ${selectItemView.audioFile.duration.toInt()} ")
+                        Log.d(TAG, "onStopTrackingTouch: hello value: " + newValue)
+                        audioPlayer.play(selectItemView.audioFile, newValue)
+//                    }
                     } else {
 
 //                        Log.d(TAG, "onStopTrackingTouch: status 4: " + playerState)
@@ -326,6 +324,14 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             val selectItemView = getItem(adapterPosition)
             when (view.id) {
                 R.id.ll_audio_item_header -> {
+
+                    sbMusic.progress = 0
+                    ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
+                    tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
+
+                    sbMusic.clearAnimation()
+                    sbAnimation?.cancel()
+
                     playerState = PlayerState.IDLE
                     audioPlayer.stop()
                     selectAudioScreenCallback.isShowPlayingAudio(adapterPosition)
@@ -335,11 +341,10 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                         PlayerState.IDLE -> {
                             lifecycleCoroutineScope.launch {
                                 audioPlayer.play(selectItemView.audioFile)
-
                                 sbMusic.clearAnimation()
                                 sbAnimation?.cancel()
                                 sbMusic.progress = 0
-                                setSeekbarAnimate(sbMusic, 0, 1000)
+                                setSeekbarAnimate(sbMusic, 0, DURATION_ANIMATION)
                             }
 
                         }

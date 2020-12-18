@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="@dimen/common_padding_left"
+        android:paddingRight="@dimen/common_padding_right"
         android:background="#FFFFFF">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -44,7 +45,7 @@
                 android:id="@+id/tv_title_loading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/common_size_item_padding_left"
+                android:layout_marginLeft="26dp"
                 android:fontFamily="@font/opensans_bold"
                 android:text="@string/result_screen_title_loading"
                 android:textColor="#2E3041"
@@ -58,7 +59,7 @@
                 android:id="@+id/tv_title_result"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="26dp"
                 android:fontFamily="@font/opensans_bold"
                 android:text="@string/result_screen_title_result"
                 android:textColor="#2E3041"
@@ -66,7 +67,6 @@
                 android:textStyle="bold"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/btn_cancel"
-                app:layout_constraintEnd_toStartOf="@id/iv_home"
                 app:layout_constraintStart_toEndOf="@id/btn_cancel"
                 app:layout_constraintTop_toTopOf="@id/btn_cancel" />
 
@@ -184,10 +184,10 @@
             android:id="@+id/ll_progressbar"
             android:layout_width="match_parent"
             android:layout_height="34dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginLeft="@dimen/common_padding_left"
+            android:layout_marginRight="@dimen/common_padding_right"
             android:gravity="center_vertical"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintTop_toBottomOf="@+id/ll_audio_item">
 
             <ProgressBar

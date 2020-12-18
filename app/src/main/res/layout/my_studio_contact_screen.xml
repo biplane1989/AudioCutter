@@ -12,9 +12,9 @@
             android:id="@+id/cl_default"
             android:layout_width="match_parent"
             android:layout_height="?android:actionBarSize"
-            android:layout_marginBottom="2dp"
-            android:paddingLeft="@dimen/common_padding_left"
-            android:paddingRight="@dimen/common_padding_right"
+            android:layout_marginBottom="@dimen/common_line"
+            android:paddingStart="@dimen/common_padding_left"
+            android:paddingEnd="@dimen/common_padding_right"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
@@ -32,7 +32,7 @@
                 android:id="@+id/tv_contacts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/common_size_item_padding_left"
+                android:layout_marginLeft="@dimen/common_padding_left_title"
                 android:fontFamily="@font/opensans_bold"
                 android:text="@string/list_contact_title"
                 android:textColor="#2E3041"
@@ -60,9 +60,9 @@
             android:id="@+id/cl_search"
             android:layout_width="match_parent"
             android:layout_height="?android:actionBarSize"
-            android:layout_marginLeft="@dimen/common_padding_left"
             android:layout_marginBottom="2dp"
-            android:paddingRight="@dimen/common_padding_right"
+            android:paddingStart="@dimen/common_padding_left"
+            android:paddingEnd="@dimen/common_padding_right"
             android:visibility="invisible"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -109,7 +109,7 @@
         <View
             android:id="@+id/view"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="@dimen/common_line"
             android:layout_marginTop="?android:actionBarSize"
             android:background="#F6F6F6"
             app:layout_constraintTop_toTopOf="parent" />
@@ -118,6 +118,8 @@
             android:id="@+id/cl_contact"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:paddingStart="@dimen/common_padding_left"
+            android:paddingEnd="@dimen/common_padding_right"
             app:layout_constraintBottom_toTopOf="@id/cl_bottom"
             app:layout_constraintTop_toBottomOf="@+id/view">
 
@@ -146,6 +148,8 @@
             android:id="@+id/cl_no_contact"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:paddingStart="@dimen/common_padding_left"
+            android:paddingEnd="@dimen/common_padding_right"
             android:visibility="invisible"
             app:layout_constraintBottom_toTopOf="@id/cl_bottom"
             app:layout_constraintTop_toBottomOf="@+id/view">
@@ -172,18 +176,28 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <View
+            android:id="@+id/line2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/common_line"
+            android:background="#F6F6F6"
+            app:layout_constraintBottom_toTopOf="@id/cl_bottom"
+            app:layout_constraintTop_toBottomOf="@+id/cl_contact" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/list_contact_select_bottom_bg"
+            android:background="#ffffff"
+            android:paddingStart="@dimen/common_padding_left"
+            android:paddingEnd="@dimen/common_padding_right"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView
                 android:id="@+id/tv_select_file"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
+                android:layout_marginLeft="@dimen/common_padding_left"
                 android:fontFamily="@font/opensans_bold"
                 android:text="Select Contacts"
                 android:textColor="#2E3041"
@@ -198,7 +212,7 @@
                 android:layout_width="90dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginRight="@dimen/common_padding_right"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/main_screen_item_selector_mp3_cutter"
                 android:visibility="gone"

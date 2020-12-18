@@ -65,7 +65,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                     convertingState = ConvertingState.SUCCESS
                 }
             }
-            Log.e(TAG, "init: ${audioMering.percent}" + " convertingState: " + audioMering.state + " listConvertingItemData size: " + listConvertingItemData.size)
+            Log.e(TAG, "init audioMering.state: ${audioMering.percent}" + " convertingState: " + audioMering.state + " listConvertingItemData size: " + listConvertingItemData.size)
             currentProcessingItem.value?.let {
 
                 it.percent = audioMering.percent

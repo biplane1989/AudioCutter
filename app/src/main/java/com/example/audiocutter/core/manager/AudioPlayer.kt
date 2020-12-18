@@ -21,8 +21,8 @@ class PlayerInfo(
 
 interface AudioPlayer {
     fun init(context: Context)
-    suspend fun play(audioFile: AudioFile): Boolean
-    suspend fun play(audioFile: AudioFile, currentPosition: Int): Boolean
+     fun play(audioFile: AudioFile): Boolean
+     fun play(audioFile: AudioFile, currentPosition: Int): Boolean
     fun pause()
     fun resume()
     fun stop()

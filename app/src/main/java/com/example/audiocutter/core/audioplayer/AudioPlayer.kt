@@ -70,7 +70,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         }
     }
 
-    override suspend fun play(audioFile: AudioFile): Boolean {
+    override  fun play(audioFile: AudioFile): Boolean {
         mAudioFile = audioFile
         try {
             mainScope.launch {
@@ -88,8 +88,8 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                 prepare(audioFile)
                 /*playInfoData.duration = audioFile.duration.toInt()*/
                 isStopped = false
+                startTimerIfReady()
             }
-            startTimerIfReady()
             return true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -99,7 +99,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
     }
 
-    override suspend fun play(audioFile: AudioFile, currentPosition: Int): Boolean {
+    override  fun play(audioFile: AudioFile, currentPosition: Int): Boolean {
         Log.d(TAG, "play: currentPosition : ${currentPosition}")
         mAudioFile = audioFile
         try {
@@ -118,8 +118,9 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                 prepare(audioFile)
                 /* playInfoData.duration = audioFile.duration.toInt()*/
                 isStopped = false
+                startTimerIfReady()
             }
-            startTimerIfReady()
+
             return true
         } catch (e: Exception) {
             e.printStackTrace()
