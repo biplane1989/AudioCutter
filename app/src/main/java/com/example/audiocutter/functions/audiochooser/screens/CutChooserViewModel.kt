@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Application
+import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.audiocutter.base.BaseAndroidViewModel
@@ -49,6 +50,8 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
 
     private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>?>()
 
+    private val listAudio = ArrayList<AudioCutterView>()
+
     init {
         audioPlayer.init(application.applicationContext)
 
@@ -70,6 +73,9 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
                 StateLoad.LOADFAIL -> {
                     _stateLoadProgress.postValue(-1)
                 }
+            }
+            listAudioFiles?.let {
+                listAudio.addAll(it)
             }
             _listAudioFiles.postValue(listAudioFiles)
 

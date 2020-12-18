@@ -158,6 +158,8 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                             val audioCutterView = getItem(adapterPosition)
                             if (audioCutterView.audioFile.getFilePath() == it.getFilePath()) {
                                 updatePlayInfo(playerInfo)
+                            } else {
+                                resetItem(audioCutterView)
                             }
                         }
                     }
@@ -165,7 +167,21 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
             })
         }
 
+        fun resetItem(audioCutterView: AudioCutterView) {
+
+            playerState = PlayerState.IDLE
+            pgAudio.visibility = View.GONE
+            waveView.visibility = View.INVISIBLE
+            if (audioCutterView.audioFile.bitmap != null) {
+                Glide.with(itemView).load(audioCutterView.audioFile.bitmap).into(ivController)
+            } else {
+                ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+            }
+            ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+        }
+
         fun onViewDetachedFromWindow() {
+
             lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         }
 
@@ -198,27 +214,27 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
             val bitmap = itemAudioFile.audioFile.bitmap
 
             when (itemAudioFile.state) {
-                PlayerState.PLAYING -> {
-                    if (bitmap != null) {
-                        Glide.with(itemView).load(bitmap).into(ivController)
-                    } else {
-                        ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
-                    }
-                    ivPausePlay.setImageResource(R.drawable.common_audio_item_play)
-                    pgAudio.visibility = View.VISIBLE
-                    waveView.visibility = View.VISIBLE
-
-                }
-                PlayerState.PAUSE -> {
-                    if (bitmap != null) {
-                        Glide.with(itemView).load(bitmap).into(ivController)
-                    } else {
-                        ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
-                    }
-                    ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
-                    waveView.visibility = View.INVISIBLE
-                    pgAudio.visibility = View.VISIBLE
-                }
+//                PlayerState.PLAYING -> {
+//                    if (bitmap != null) {
+//                        Glide.with(itemView).load(bitmap).into(ivController)
+//                    } else {
+//                        ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
+//                    }
+//                    ivPausePlay.setImageResource(R.drawable.common_audio_item_play)
+//                    pgAudio.visibility = View.VISIBLE
+//                    waveView.visibility = View.VISIBLE
+//
+//                }
+//                PlayerState.PAUSE -> {
+//                    if (bitmap != null) {
+//                        Glide.with(itemView).load(bitmap).into(ivController)
+//                    } else {
+//                        ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+//                    }
+//                    ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+//                    waveView.visibility = View.INVISIBLE
+//                    pgAudio.visibility = View.VISIBLE
+//                }
                 PlayerState.IDLE -> {
                     pgAudio.visibility = View.GONE
                     waveView.visibility = View.INVISIBLE
@@ -254,6 +270,7 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
             if (adapterPosition == -1) {
                 return
             }
+            
             when (playerState) {
                 PlayerState.IDLE -> {
 
@@ -303,7 +320,9 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
         fun resume(pos: Int)
         fun showDialogSetAs(itemAudio: AudioCutterView)
         fun onCutItemClicked(itemAudio: AudioCutterView)
-//        fun setRingtoneContact(filePath: String)
+
+        //        fun setRingtoneContact(filePath: String)
+//        fun onSelectItem(filePath: String)
     }
 }
 
