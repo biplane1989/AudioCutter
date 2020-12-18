@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
@@ -17,7 +16,6 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.MergePreviewScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergePreviewAdapter

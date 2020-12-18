@@ -427,11 +427,51 @@ class Utils {
             remainingTime = (remainingTime - minutes * 6e4).toLong()
             val seconds = (remainingTime / 1e3).toInt()
             when (timeFormat) {
-                TIME_FORMAT_INCLUDED_HOUR_TWO_ZERO -> return String.format("%02d:%02d:%02d", hours, minutes, seconds)
-                TIME_FORMAT_INCLUDED_MINUTE_TWO_ZERO -> return String.format("%02d:%02d", minutes, seconds)
+                TIME_FORMAT_INCLUDED_HOUR_TWO_ZERO -> return String.format(
+                    "%02d:%02d:%02d",
+                    hours,
+                    minutes,
+                    seconds
+                )
+                TIME_FORMAT_INCLUDED_MINUTE_TWO_ZERO -> return String.format(
+                    "%02d:%02d",
+                    minutes,
+                    seconds
+                )
                 TIME_FORMAT_INCLUDED_SECOND_TWO_ZERO -> return String.format("00:%02d", seconds)
             }
             return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        }
+
+        fun toTimeStrToMiliSecond(timeInMs: Long, timeFormat: Int): String {
+            val hours = (timeInMs / 36e5).toInt()
+            var remainingTime = (timeInMs - hours * 36e5).toLong()
+            val minutes = (remainingTime / 6e4).toInt()
+            remainingTime = (remainingTime - minutes * 6e4).toLong()
+            val seconds = (remainingTime / 1e3).toInt()
+            val milisecond = ((remainingTime - seconds * 1e3).toLong()) / 100
+
+            when (timeFormat) {
+                TIME_FORMAT_INCLUDED_HOUR_TWO_ZERO -> return String.format(
+                    "%02d:%02d:%02d.%d",
+                    hours,
+                    minutes,
+                    seconds,
+                    milisecond
+                )
+                TIME_FORMAT_INCLUDED_MINUTE_TWO_ZERO -> return String.format(
+                    "%02d:%02d.%d",
+                    minutes,
+                    seconds,
+                    milisecond
+                )
+                TIME_FORMAT_INCLUDED_SECOND_TWO_ZERO -> return String.format(
+                    "00:%02d.%d",
+                    seconds,
+                    milisecond
+                )
+            }
+            return String.format("%02d:%02d:%02d:%02d", hours, minutes, seconds, milisecond)
         }
 
         fun chooseTimeFormat(duration: Long): Int {
