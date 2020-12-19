@@ -242,11 +242,26 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                             val audioCutterView = getItem(adapterPosition)
                             if (audioCutterView.audioFile.getFilePath() == it.getFilePath()) {
                                 updatePlayInfor(playerInfo)
+                            }else {
+                                resetItem(audioCutterView)
                             }
                         }
                     }
                 }
             })
+        }
+
+        fun resetItem(audioCutterView: AudioCutterView) {
+
+            playerState = PlayerState.IDLE
+            pgAudio.visibility = View.GONE
+            waveView.visibility = View.INVISIBLE
+            if (audioCutterView.audioFile.bitmap != null) {
+                Glide.with(itemView).load(audioCutterView.audioFile.bitmap).into(ivController)
+            } else {
+                ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+            }
+            ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
         }
 
         fun onViewDetachedFromWindow() {
