@@ -231,8 +231,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             val audioFileView = getItem(adapterPosition)
             filePath = playerInfo.currentAudio?.getFilePath().toString()
 
-//            sbMusic.max = playerInfo.duration * 100
-
             timeFomat = Utils.chooseTimeFormat(playerInfo.duration.toLong())
             tvTimeLife.text = Utils.toTimeStr(playerInfo.posision.toLong(), timeFomat)
 

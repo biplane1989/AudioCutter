@@ -170,8 +170,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                     sbAnimation?.cancel()
                     sbMusic.progress = 0
                     setSeekbarAnimate(sbMusic, 0, DURATION_ANIMATION)
-//                    sbMusic.clearAnimation()
-//                    sbAnimation?.cancel()
                 }
                 else -> {
                     //nothing
