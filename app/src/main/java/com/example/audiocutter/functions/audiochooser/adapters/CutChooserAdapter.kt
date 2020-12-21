@@ -3,7 +3,6 @@ package com.example.audiocutter.functions.audiochooser.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.PlayerInfo
@@ -111,7 +109,6 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
 
             when (playerInfo.playerState) {
                 PlayerState.PLAYING -> {
-                    Log.d("TAG", "onCutItemClicked:${playerInfo.posision.toLong()} - ${playerInfo.duration.toLong()}")
                     pgAudio.updatePG(playerInfo.posision.toLong(), playerInfo.duration.toLong())
                     if (bitmap != null) {
                         Glide.with(itemView).load(bitmap).into(ivController)
@@ -188,7 +185,6 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
         @SuppressLint("SetTextI18n")
         fun bind() {
             val itemAudioFile: AudioCutterView = getItem(adapterPosition)
-            Log.d("TAG", "bind: ${itemAudioFile.audioFile.fileName}    state ${itemAudioFile.state}")
             var bitRate = itemAudioFile.audioFile.bitRate / 1000
             tvBitrateAudio.text = "${bitRate}${mContext.resources.getString(R.string.kbps)}"
 
@@ -207,7 +203,6 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
             if (itemAudioFile.currentPos > 0) {
                 pgAudio.post {
                     pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration, false)
-                    Log.d("TAG", "manhnq: currentPos ${itemAudioFile.currentPos} -  duration ${itemAudioFile.duration}")
                 }
 
             }
@@ -270,7 +265,7 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
             if (adapterPosition == -1) {
                 return
             }
-            
+
             when (playerState) {
                 PlayerState.IDLE -> {
 
@@ -320,9 +315,6 @@ class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
         fun resume(pos: Int)
         fun showDialogSetAs(itemAudio: AudioCutterView)
         fun onCutItemClicked(itemAudio: AudioCutterView)
-
-        //        fun setRingtoneContact(filePath: String)
-//        fun onSelectItem(filePath: String)
     }
 }
 

@@ -267,12 +267,12 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                             }
                             changed = true
                         } else {
-                            if (isStopped &&  playInfoData.playerState != PlayerState.IDLE) {
+                           /* if (isStopped &&  playInfoData.playerState != PlayerState.IDLE) {
                                 playInfoData.playerState = PlayerState.IDLE
                                 currentPosition = 0
                                 playInfoData.posision = currentPosition
                                 changed = true
-                            }
+                            }*/
                         }
                     }
 

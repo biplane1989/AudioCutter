@@ -54,7 +54,6 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
 
     init {
         audioPlayer.init(application.applicationContext)
-
         _listAudioFiles.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
             var listAudioFiles: List<AudioCutterView>? = null
 

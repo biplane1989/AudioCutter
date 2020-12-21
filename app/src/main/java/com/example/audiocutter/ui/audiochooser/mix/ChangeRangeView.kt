@@ -242,19 +242,27 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
             if (!rs) {
                 drawTextDurationMax(
                     canvas,
-                    convertTime(durationAudio2),
-                    (mWidth - RANGE * 2),
+//                    convertTime(durationAudio2),
+                    getTimeAudio(durationAudio2.toLong()),
+                    (mWidth - RANGE * 3),
                     mPaint6
                 )
-                drawTextDurationMin(canvas, convertTime(audioFile1.duration.toInt()))
+                drawTextDurationMin(
+                    canvas,
+//                    convertTime(audioFile1.duration.toInt()),
+                    getTimeAudio(audioFile1.duration)
+                )
             } else {
                 drawTextDurationMax(
                     canvas,
-                    convertTime(durationAudio1),
-                    (mWidth - RANGE * 2),
+//                    convertTime(durationAudio1),
+                    getTimeAudio(durationAudio1.toLong()),
+                    (mWidth - RANGE * 3),
                     mPaint6
                 )
-                drawTextDurationMin(canvas, convertTime(audioFile2.duration.toInt()))
+                drawTextDurationMin(
+                    canvas, getTimeAudio(audioFile2.duration)
+                )
 
             }
         } catch (e: NumberFormatException) {
@@ -265,7 +273,7 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
         drawTextPosition(
             canvas,
             numPos,
-            currentLineX.toFloat() - rect.width() / 2.5f + RADIUS,
+            currentLineX.toFloat() - rect.width() / 2.5f,
             mPaint
         )
 
@@ -275,6 +283,7 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     @SuppressLint("SimpleDateFormat")
     private fun convertTime(time: Int): String {
+        Log.d(TAG, "convertTime: time $time")
         if (time < 0) return "00:00.0"
         val df = SimpleDateFormat("mm:ss.S")
         return df.format(time)
@@ -285,8 +294,6 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
         val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_sound_mixing)
         rectImage = Rect(0, 0, imageSound.width, imageSound.height)
         rectImageDst1 = Rect((RADIUS * 2).toInt(), fl.toInt(), (RADIUS * 2 + RANGE).toInt(), (fl + RANGE).toInt())
-        Log.d(TAG, "checkRange: $RANGE")
-        Log.d(TAG, "drawBitmap1: $rectImageDst1")
         canvas.drawBitmap(imageSound, rectImage, rectImageDst1, null)
     }
 
@@ -294,8 +301,6 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
         val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_sound_mixing)
         rectImage = Rect(0, 0, imageSound.width, imageSound.height)
         rectImageDst2 = Rect((RADIUS * 2).toInt(), fl.toInt(), (RADIUS * 2 + RANGE).toInt(), (fl + RANGE).toInt())
-        Log.d(TAG, "drawBitmap: $rectImage")
-        Log.d(TAG, "drawBitmap1: $rectImageDst1")
         canvas.drawBitmap(imageSound, rectImage, rectImageDst2, null)
     }
 
@@ -443,12 +448,24 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
             if (currentLineX > maxDistance) {
                 currentLineX = maxDistance.toInt()
             }
-            numPos = Utils.longDurationMsToStringMs(Utils.convertValue(0.0, mWidth - RADIUS.toDouble(), 0.0, duration.toDouble(), currentLineX.toDouble())
-                .toLong())
+            val value = Utils.convertValue(
+                0.0,
+                mWidth - RADIUS.toDouble(),
+                0.0,
+                duration.toDouble(),
+                currentLineX.toDouble()
+            )
+            numPos = getTimeAudio(value = value.toLong())
             invalidate()
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    private fun getTimeAudio(value: Long): String {
+        return Utils.toTimeStrToMiliSecond(
+            value, Utils.chooseTimeFormat(value)
+        )
     }
 
 
@@ -458,7 +475,6 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
 
         durationAudio1 = audioFile1.duration.toInt()
         durationAudio2 = audioFile2.duration.toInt()
-        Log.d("manhnq", "duration:  $durationAudio1 - duration2 : $durationAudio2")
         val rs = durationAudio1 > durationAudio2
         duration = if (!rs) {
             audioFile2.duration.toInt()
@@ -477,8 +493,6 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
     fun setPosition(position: Int) {
         val pos = Utils.convertValue(0.0, duration.toDouble(), 0.0, mWidth - RADIUS.toDouble(), position.toDouble())
         this.position = position
-
-
         currentLineX = pos.toInt()
 
         if (currentLineX > maxDistance) {
@@ -491,7 +505,8 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
             currentLineX = mWidth - RADIUS.toInt()
             isChangeNumpos = false
         }
-        numPos = Utils.longDurationMsToStringMs(this.position.toLong())
+
+        numPos = getTimeAudio(this.position.toLong())
         if (isChangeNumpos) {
             invalidate()
         }
