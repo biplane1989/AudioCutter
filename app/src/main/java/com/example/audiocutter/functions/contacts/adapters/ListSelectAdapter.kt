@@ -268,7 +268,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                             setSeekbarAnimate(sbMusic, progress / 100, DURATION_ANIMATION)
                         }
                     }
-                    if (playerState == PlayerState.PAUSE) {
+                    if (playerState != PlayerState.PLAYING) {
                         tvTimeLife.text = Utils.toTimeStr(progress.toLong() / 100, timeFomat)
                         Log.d(TAG, "onProgressChanged: PlayerState.PAUSE")
                     }

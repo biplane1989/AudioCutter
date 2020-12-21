@@ -370,7 +370,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                             setSeekbarAnimate(sbMusic, progress / 100, DURATION_ANIMATION)
                         }
                     }
-                    if (playerState == PlayerState.PAUSE) {
+                    if (playerState != PlayerState.PLAYING) {
                         tvTimeLife.text = Utils.toTimeStr(progress.toLong() / 100, timeFomat)
                     }
                 }
@@ -425,9 +425,9 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 when (view.id) {
                     R.id.ll_audio_item_header -> {
 
-                        sbMusic.progress = 0
-                        ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
-                        tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
+//                        sbMusic.progress = 0
+//                        ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
+//                        tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
 
                         sbMusic.clearAnimation()
                         sbAnimation?.cancel()

@@ -331,7 +331,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                         setSeekbarAnimate(binding.sbMusic, progress / 100, DURATION_ANIMATION)
                     }
                 }
-                if (playerState == PlayerState.PAUSE) {
+                if (playerState != PlayerState.PLAYING) {
                     binding.tvTimeLife.text = Utils.toTimeStr(progress.toLong() / 100, timeFomat)
                 }
 
