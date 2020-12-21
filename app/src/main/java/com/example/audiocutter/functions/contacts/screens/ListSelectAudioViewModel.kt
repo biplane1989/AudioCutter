@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.contacts.screens
 
 import android.app.Application
 import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -203,6 +204,9 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
         mListSearch.clear()
         if (data.equals("")) {
+            if (mListAudioFileView.size > 0) {
+                mListSearch.add(mListAudioFileView.get(0))
+            }
             mAudioMediatorLiveData.postValue(mListAudioFileView)
         } else {
             for (item in mListAudioFileView) {
@@ -214,14 +218,14 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
             mAudioMediatorLiveData.postValue(mListSearch)
         }
 
-        if (mListSearch.size > 0) {
-            isEmptyStatus.postValue(false)
-        } else {
-            if (mListAudioFileView.size > 0) {
+        if (mListAudioFileView.size > 0) {
+            if (mListSearch.size > 0) {
                 isEmptyStatus.postValue(false)
             } else {
                 isEmptyStatus.postValue(true)
             }
+        } else {
+            isEmptyStatus.postValue(true)
         }
     }
 
