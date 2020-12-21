@@ -12,32 +12,22 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.Options
-import com.bumptech.glide.load.resource.bitmap.CenterInside
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.util.Util
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.ui.common.glide.RoundedCornersTransformation
 import com.example.audiocutter.util.Utils
 import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 
 interface SelectAudioScreenCallback {
     fun isShowPlayingAudio(positition: Int)
@@ -181,8 +171,8 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             // smooth animation
             sbAnimation?.cancel()
             sbAnimation = ObjectAnimator.ofInt(pb, "progress", pb.progress, progressTo * 100)
-            sbAnimation?.setDuration(duration)
-            sbAnimation?.setInterpolator(DecelerateInterpolator())
+            sbAnimation?.duration = duration
+            sbAnimation?.interpolator = DecelerateInterpolator()
             sbAnimation?.start()
         }
 
@@ -212,12 +202,12 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         fun bind() {
             val selectItemView = getItem(adapterPosition)
 
-            tvTitle.setText(selectItemView.audioFile.fileName)
+            tvTitle.text = selectItemView.audioFile.fileName
 
             if (selectItemView.audioFile.size / (1024 * 1024) > 0) {
-                tvInfo.setText(String.format("%.1f", (selectItemView.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s")
+                tvInfo.text = String.format("%.1f", (selectItemView.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s"
             } else {
-                tvInfo.setText(((selectItemView.audioFile.size) / (1024)).toString() + " KB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s")
+                tvInfo.text = ((selectItemView.audioFile.size) / (1024)).toString() + " KB" + " | " + (selectItemView.audioFile.bitRate / 1000).toString() + "kb/s"
             }
 
             sbMusic.max = selectItemView.audioFile.duration.toInt() * 100
@@ -288,13 +278,25 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
                     Log.d(TAG, "onStopTrackingTouch: hello 3: " + playerState)
                     if (playerState == PlayerState.IDLE) {
-                        Log.d(TAG, "onStopTrackingTouch: hello 3a: " + playerState + "  ${lifecycleScope.isActive}   ${lifecycleRegistry.currentState}")
+                        Log.d(
+                            TAG,
+                            "onStopTrackingTouch: hello 3a: " + playerState + "  ${lifecycleScope.isActive}   ${lifecycleRegistry.currentState}"
+                        )
 //                    lifecycleScope.launch {
                         Log.d(TAG, "onStopTrackingTouch: hello 3b: " + playerState)
                         sbMusic.clearAnimation()
                         sbAnimation?.cancel()
-                        val newValue = Utils.convertValue(0, sbMusic.max, 0, selectItemView.audioFile.duration.toInt(), sbMusic.progress)
-                        Log.d(TAG, "checkNewValue: $newValue  - duration ${selectItemView.audioFile.duration.toInt()} ")
+                        val newValue = Utils.convertValue(
+                            0,
+                            sbMusic.max,
+                            0,
+                            selectItemView.audioFile.duration.toInt(),
+                            sbMusic.progress
+                        )
+                        Log.d(
+                            TAG,
+                            "checkNewValue: $newValue  - duration ${selectItemView.audioFile.duration.toInt()} "
+                        )
                         Log.d(TAG, "onStopTrackingTouch: hello value: " + newValue)
                         audioPlayer.play(selectItemView.audioFile, newValue)
 //                    }

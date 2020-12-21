@@ -56,18 +56,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
                 showList()
                 showProgressBar(false)
             }
-//            var count = 0
-//            listMusic.forEach {
-//                if (it.isCheckChooseItem) {
-//                    count++
-//                    if (count >= 2) {
-//                        setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
-//                    } else {
-//                        setColorButtonNext(R.color.colorgray, R.drawable.bg_next_audio_disabled, false)
-//                    }
-//                }
-//            }
-//            binding.tvCountFile.text = "${count} file"
         }
     }
     private val emptyState = Observer<Boolean> {
@@ -100,10 +88,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
         binding.tvEmptyListMixer.visibility = View.INVISIBLE
     }
 
-//    private val playerInfoObserver = Observer<PlayerInfo> {
-//        audioMixModel.updateMediaInfo(it)
-//    }
-
 
     override fun onPause() {
         super.onPause()
@@ -115,8 +99,12 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         audioMixModel = ViewModelProvider(this).get(MixChooserModel::class.java)
-        audioMixAdapter = MixChooserAdapter(requireContext(), audioMixModel.getAudioPlayer(), lifecycleScope)
-//        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
+        audioMixAdapter = MixChooserAdapter(
+            requireContext(),
+            audioMixModel.getAudioPlayer(),
+            lifecycleScope,
+            requireActivity()
+        )
 
     }
 
@@ -154,7 +142,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
             }
-
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 audioMixModel.stop()
                 searchAudioByName(textChange.toString())
@@ -172,9 +159,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     }
 
     private fun searchAudioByName(yourTextSearch: String) {
-        setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_audio_disabled, false)
-        binding.tvCountFile.text = getString(R.string.countFile)
-//        showList()
+
         if (yourTextSearch.isEmpty()) {
             audioMixModel.searchAudio("")
         }

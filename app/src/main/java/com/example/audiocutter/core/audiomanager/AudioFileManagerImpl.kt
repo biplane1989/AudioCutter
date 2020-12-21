@@ -396,15 +396,10 @@ object AudioFileManagerImpl : AudioFileManager {
                         arrayOf(fileNew.absolutePath),
                         null
                     ) { s, uri ->
-
-
                         notifyDiskChanged()
                     }
                 }
             }
-
-
-
             return true
         } catch (e: Exception) {
             e.printStackTrace()

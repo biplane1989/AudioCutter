@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
@@ -46,7 +45,6 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
     private lateinit var listUris: ArrayList<Uri>
     private lateinit var newList: List<String>
     private lateinit var dialogSetAs: SetAsDialog
-    private val MIN_DURATION = 1000
     private lateinit var binding: MyStudioFragmentBinding
     private val TAG = "giangtd"
     private lateinit var myStudioViewModel: MyStudioViewModel
@@ -151,7 +149,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
     }
 
     private fun onReceivedAction(action: String, type: Int) {
-        if (action in arrayListOf(Constance.ACTION_CHECK_DELETE, Constance.ACTION_DELETE_ALL)) if (type != (typeAudio as Int)) {
+        if (action in arrayListOf(Constance.ACTION_CHECK_DELETE, Constance.ACTION_DELETE_ALL)) if (type != typeAudio) {
             return
         }
         when (action) {
@@ -306,10 +304,13 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
                     }
                     R.id.cut -> {
                         Log.d(TAG, "showMenu: duration ${audioFile.duration}")
-                        if (audioFile.duration < MIN_DURATION) {
+                        if (audioFile.duration < Constance.MIN_DURATION) {
                             dialogSnack.show()
                         } else {
-                            viewStateManager.myStudioCuttingItemClicked(this, audioFile.file.absolutePath)
+                            viewStateManager.myStudioCuttingItemClicked(
+                                this,
+                                audioFile.file.absolutePath
+                            )
                         }
                     }
                     R.id.open_with -> {
@@ -422,8 +423,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
 
     private fun showNotification(text: String) {
         view?.let {
-            val mySnackbar = Snackbar.make(it, text, Snackbar.LENGTH_LONG)
-            mySnackbar.show()
+            Snackbar.make(it, text, Snackbar.LENGTH_LONG).show()
         }
     }
 

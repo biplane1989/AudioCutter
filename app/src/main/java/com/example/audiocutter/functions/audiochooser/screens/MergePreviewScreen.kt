@@ -59,7 +59,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         super.onPostCreate(savedInstanceState)
         audioMerModel = ViewModelProvider(this).get(MergePreviewModel::class.java)
 
-        audioMerAdapter = MergePreviewAdapter(requireContext(), audioMerModel.getAudioPlayer(), lifecycleScope)
+        audioMerAdapter = MergePreviewAdapter(requireContext(), audioMerModel.getAudioPlayer(), lifecycleScope,requireActivity())
 //        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
 
         listPath = ArrayList()

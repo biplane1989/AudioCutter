@@ -249,6 +249,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
     override fun onClick(v: View?) {
         when (v) {
             binding.closeIv -> {
+//                cuttingViewModel.resetPlayerInfo()
                 activity?.onBackPressed()
             }
             binding.optionIv -> {

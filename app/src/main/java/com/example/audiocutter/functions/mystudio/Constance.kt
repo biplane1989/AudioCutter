@@ -1,7 +1,7 @@
 package com.example.audiocutter.functions.mystudio
 
 object Constance {
-
+    val MIN_DURATION = 1000
     val ACTION_DELETE_STATUS = "ACTION_UNCHECK"
     val ACTION_HIDE = "ACTION_HIDE"
     val ACTION_DELETE_ALL = "ACTION_DELETE_ALL"

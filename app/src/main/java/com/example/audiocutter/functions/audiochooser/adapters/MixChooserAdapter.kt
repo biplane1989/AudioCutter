@@ -2,8 +2,9 @@ package com.example.audiocutter.functions.audiochooser.adapters
 
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
-import android.graphics.BitmapFactory
+import android.graphics.Bitmap
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,19 +17,21 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.audiocutter.R
-import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
-import com.example.audiocutter.util.Utils
 import kotlinx.coroutines.launch
 
-class MixChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<AudioCutterView, MixChooserAdapter.RecentHolder>(MixChooserAudioDiff()) {
+class MixChooserAdapter(
+    val mContext: Context,
+    val audioPlayer: AudioPlayer,
+    val lifecycleCoroutineScope: LifecycleCoroutineScope,
+    val activity: Activity
+) : ListAdapter<AudioCutterView, MixChooserAdapter.RecentHolder>(MixChooserAudioDiff()) {
     lateinit var mCallBack: AudioMixerListener
     val SIZE_MB = 1024 * 1024
     var listAudios = mutableListOf<AudioCutterView>()
@@ -88,7 +91,7 @@ class MixChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                 PlayerState.IDLE -> {
 //                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
                     val bitmap = itemAudioFile.audioFile.bitmap
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(holder.itemView).load(bitmap)
                             .transform(
                                 RoundedCorners(
@@ -150,7 +153,7 @@ class MixChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
             itemAudioFile.duration = playerInfo.duration.toLong()
             when (playerInfo.playerState) {
                 PlayerState.PLAYING -> {
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
 //                                .toInt()))
@@ -163,7 +166,7 @@ class MixChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                     waveView.visibility = View.VISIBLE
                 }
                 PlayerState.PAUSE -> {
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
 //                                .toInt()))
@@ -176,7 +179,7 @@ class MixChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                     pgAudio.visibility = View.VISIBLE
                 }
                 PlayerState.IDLE -> {
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
 //                                .toInt()))
@@ -218,7 +221,7 @@ class MixChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
             playerState = PlayerState.IDLE
             pgAudio.visibility = View.GONE
             waveView.visibility = View.INVISIBLE
-            if (audioCutterView.audioFile.bitmap != null) {
+            if (checkValidGlide(audioCutterView.audioFile.bitmap)) {
                 Glide.with(itemView).load(audioCutterView.audioFile.bitmap).into(ivController)
             } else {
                 ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
@@ -303,7 +306,7 @@ class MixChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
 
             when (itemAudioFile.state) {
                 PlayerState.PLAYING -> {
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
 //                                .toInt()))
@@ -317,7 +320,7 @@ class MixChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
 
                 }
                 PlayerState.PAUSE -> {
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
 //                                .toInt()))
@@ -333,7 +336,7 @@ class MixChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                     pgAudio.visibility = View.GONE
                     waveView.visibility = View.INVISIBLE
 
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
 //                                .toInt()))
@@ -434,6 +437,10 @@ class MixChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val
                 }
             }
         }
+    }
+
+    private fun checkValidGlide(bm: Bitmap?): Boolean {
+        return (bm != null && !activity.isFinishing)
     }
 
     interface AudioMixerListener {

@@ -473,7 +473,6 @@
                         android:id="@+id/sb_number_of_lightning"
                         android:layout_below="@+id/tb_number_flash"
                         android:max="10"
-                        android:min="1"
                         android:progressDrawable="@drawable/seekbar_style"
                         android:thumb="@drawable/custom_thumb"
                         android:maxHeight="5dp"
