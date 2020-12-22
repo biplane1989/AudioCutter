@@ -380,15 +380,15 @@
                         android:textSize="@dimen/d_16" />
 
                     <SeekBar
-                        android:paddingVertical="@dimen/d_16"
                         android:id="@+id/sb_linghtning_speed_flcall"
+                        android:paddingVertical="@dimen/d_16"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/tv_lightning_speed_flcall"
                         android:max="27"
                         android:progressDrawable="@drawable/seekbar_style"
                         android:thumb="@drawable/custom_thumb"
-                        android:maxHeight="5dp" />
+                        android:maxHeight="@dimen/d_5" />
 
 
                     <TableRow

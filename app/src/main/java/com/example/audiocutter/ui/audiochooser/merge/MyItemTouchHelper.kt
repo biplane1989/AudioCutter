@@ -24,7 +24,7 @@ class MyItemTouchHelper(private var mAdapter: OnItemTouchHelper, val context: Co
         viewHolder.itemView.setBackgroundColor(
             ContextCompat.getColor(
                 viewHolder.itemView.context,
-                R.color.colorGray
+                R.color.colorWhiteAlpha
             )
         )
     }

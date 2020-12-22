@@ -60,6 +60,12 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
 
     private fun notifyPlayerDataChanged() {
+        Log.d(
+            TAG, "startTimerIfReady: ${playInfoData.currentAudio},\n" +
+                    "            ${playInfoData.posision},\n" +
+                    "            ${playInfoData.playerState},\n" +
+                    "            ${playInfoData.duration}"
+        )
         val playInfoCopy = PlayerInfo(
             playInfoData.currentAudio,
             playInfoData.posision,

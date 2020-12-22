@@ -442,11 +442,13 @@ class MergePreviewAdapter(
 
         override fun onTouch(p0: View?, motionEvent: MotionEvent?): Boolean {
             mGestureDetector.onTouchEvent(motionEvent)
+            Log.d("nqm", "onTouch: ")
             return false
         }
 
         override fun onDown(p0: MotionEvent?): Boolean {
             mTouchHelper.startDrag(this)
+            Log.d("nqm", "onDown: ")
             return true
         }
 
@@ -454,20 +456,24 @@ class MergePreviewAdapter(
         }
 
         override fun onSingleTapUp(motionEvent: MotionEvent?): Boolean {
+            Log.d("nqm", "onSingleTapUp: ")
             return false
         }
 
         override fun onScroll(motionEvent: MotionEvent?, p1: MotionEvent?, p2: Float, p3: Float): Boolean {
+            Log.d("nqm", "onScroll: ")
             return false
         }
 
 
         override fun onLongPress(p0: MotionEvent?) {
-            Log.d("TAG", "onLongPress: on longpress")
+ /*           mTouchHelper.startDrag(this)*/
+            Log.d("nqm", "onLongPress: on longpress")
 
         }
 
         override fun onFling(p0: MotionEvent?, p1: MotionEvent?, p2: Float, p3: Float): Boolean {
+            Log.d("nqm", "onFling: ")
             return false
         }
     }

@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.graphics.Color
 import android.os.Build
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.permissions.PermissionManager
@@ -14,6 +15,7 @@ class MyApplication : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         PreferencesHelper.start(applicationContext)
         PermissionManager.start(applicationContext)
         ManagerFactory.init(applicationContext)
@@ -28,6 +30,7 @@ class MyApplication : MultiDexApplication() {
 
     private fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
             val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
             channel.description = DESCRIPTION
             channel.enableLights(true)

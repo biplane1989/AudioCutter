@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ll_item"
@@ -116,9 +117,12 @@
         <androidx.appcompat.widget.AppCompatSeekBar
             android:id="@+id/sb_music"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:progressTint="#FDAA74"
+            android:maxHeight="@dimen/d_3"
+            android:progressDrawable="@drawable/seekbar_style"
+            android:thumb="@drawable/bg_thum_sb"
             android:thumbTint="#FDAA74" />
 
         <TextView
