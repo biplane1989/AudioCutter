@@ -1,14 +1,10 @@
 package com.example.audiocutter.ui.audiochooser.mix
 
-import android.animation.Animator
-import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.example.audiocutter.R
 import com.example.audiocutter.objects.AudioFile
@@ -64,7 +60,6 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
     private var currentLengthSound2 = RADIUS.toDouble()
     private var maxLength = RADIUS.toDouble()
     private var textGetX = 0f
-    private var animator: ValueAnimator? = ValueAnimator()
 
     /*    private var rangeCircleProgress1 = 0f
         private var rangeCircleProgress2 = 0f*/
@@ -80,9 +75,7 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
     private var ratioSound2 = "100%"
     private var maxDistance = 0.0
     private var position = 0
-    private var currPos: Float = -1f
-    private var destPos: Float = -1f
-    private var isPressedUser: Boolean = false
+
 
 
     init {
@@ -100,7 +93,7 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
     }
 
     private fun setPaint(paint: Paint, color: Int) {
-        paint.color = ContextCompat.getColor(context, color)
+        paint.color = context.resources.getColor(color)
         paint.style = Paint.Style.FILL
     }
 
@@ -241,7 +234,7 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
 
 
         mPaint.getTextBounds(numPos, 0, numPos.length, rect)
-        /***check currentPosision maxdistance**/
+        /***check currentPosision max distance**/
         currentLineTextPos = getCurrentLineTextPos()
         drawTextPosition(
             canvas,
@@ -266,7 +259,7 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
         rectText2 = Rect()
         mPaint4.textSize = Utils.convertDp2Px(20, context)
         mPaint4.getTextBounds(nameAudio, 0, nameAudio.length, rectText2)
-        mPaint4.color = ContextCompat.getColor(context, R.color.colorBlack)
+        mPaint4.color = context.resources.getColor(R.color.colorBlack)
         mPaint4.typeface = typeFace
         canvas.drawText(name, RADIUS * 2, rectDuration2.top + rectText2.height() + RADIUS, mPaint4)
     }
@@ -280,7 +273,7 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
         rectText1 = Rect()
         mPaint4.textSize = Utils.convertDp2Px(20, context)
         mPaint4.getTextBounds(nameAudio, 0, nameAudio.length, rectText1)
-        mPaint4.color = ContextCompat.getColor(context, R.color.colorBlack)
+        mPaint4.color = context.resources.getColor(R.color.colorBlack)
         mPaint4.typeface = typeFace
 
         canvas.drawText(name, RADIUS * 2, rectDuration1.top + rectText1.height() + RADIUS, mPaint4)
@@ -395,11 +388,9 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
     private fun drawLineTouch(x: Float) {
         try {
             currentLineX = x.toInt()
-//            moveProcess(x, true, duration = duration.toFloat())moveProcess
             if (currentLineX > maxDistance) {
                 currentLineX = maxDistance.toInt()
             }
-
             val value = Utils.convertValue(
                 0.0,
                 mWidth - RADIUS.toDouble(),
@@ -407,11 +398,6 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
                 duration.toDouble(),
                 currentLineX.toDouble()
             )
-            if (isPressedUser) {
-                currPos = value.toFloat()
-                Log.e(TAG, "drawLineTouch: $currPos")
-            }
-            /*currPos= value*/
             numPos = getTimeAudio(value = value.toLong())
             invalidate()
         } catch (e: Exception) {
@@ -426,15 +412,20 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
     }
 
 
-
+/*
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        val count = Utils.convertDp2Px(18, context)
+        setPadding(count.toInt(), 0, 20, 0)
+    }
+*/
 
     fun setPosition(position: Int) {
         val pos = Utils.convertValue(0.0, duration.toDouble(), 0.0, mWidth - RADIUS.toDouble(), position.toDouble())
         this.position = position
-
         currentLineX = pos.toInt()
-        moveProcess(position.toFloat(), true, duration.toFloat())
 
+        /**check pos>maxdistance ->pauseAudio*/
         if (currentLineX > maxDistance) {
             currentLineX = maxDistance.toInt()
             mCallback.endAudioAtMaxdistance()
@@ -451,71 +442,6 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
             invalidate()
         }
         isChangeNumpos = true
-    }
-
-    private fun moveProcess(
-        newPos: Float,
-        useAnimation: Boolean = true,
-        duration: Float
-    ) {
-
-        if (useAnimation && currPos != -1f && newPos != duration && newPos > currPos) {
-            if (animator != null && animator!!.isRunning) {
-                destPos = newPos
-            } else {
-                destPos = newPos
-                animator = ValueAnimator.ofFloat(currPos, destPos)
-                animator?.duration = (((destPos - currPos)).toLong()).coerceAtMost(500)
-
-                animator?.addUpdateListener {
-                    Log.e(TAG, "moveProcess: currPos ${currPos}")
-                    currPos = (it.animatedValue as Float)
-                    currentLineX = Utils.convertValue(
-                        0f,
-                        duration,
-                        0f,
-                        width.toFloat(),
-                        currPos
-                    ).toInt()
-                    invalidate()
-                }
-
-                animator?.addListener(object : Animator.AnimatorListener {
-                    override fun onAnimationEnd(p0: Animator?) {
-                        if (currPos < destPos) {
-                            animator = null
-                            moveProcess(destPos, true, duration)
-
-                        }
-                    }
-
-                    override fun onAnimationStart(p0: Animator?) {
-                    }
-
-                    override fun onAnimationCancel(p0: Animator?) {
-                    }
-
-                    override fun onAnimationRepeat(p0: Animator?) {
-                    }
-                })
-                animator?.start()
-            }
-
-        } else {
-            animator?.cancel()
-            currPos = newPos
-            currentLineX = Utils.convertValue(
-                0f,
-                duration,
-                0f,
-                width.toFloat(),
-                currPos
-            ).toInt()
-            if (!useAnimation) {
-
-            }
-            invalidate()
-        }
     }
 
     fun setFileAudio(audioFile1: AudioFile, audioFile2: AudioFile) {
@@ -718,7 +644,6 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
                 return true
             }
             MotionEvent.ACTION_UP -> {
-                isPressedUser = false
                 when (isTouch) {
                     TOUCHITEM.SEEKBAR -> {
                         isTouch = TOUCHITEM.NONTOUCH
@@ -744,7 +669,6 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
 
             }
             MotionEvent.ACTION_DOWN -> {
-                isPressedUser = true
                 return if (event.y >= mHeight - Utils.convertDp2Px(20, context) * 2) {
                     isTouch = TOUCHITEM.SEEKBAR
                     true

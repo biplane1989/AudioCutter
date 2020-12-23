@@ -13,7 +13,7 @@ class WaveAudio @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
     private var rowPain: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private lateinit var rowRect1: RectF
-
+    private val TIME_DELAY = 150L
     private lateinit var rowRect2: RectF
     private lateinit var rowRect3: RectF
     private var mWithView = 0
@@ -82,8 +82,8 @@ class WaveAudio @JvmOverloads constructor(
         createAnim1(0f, mHeightView.toFloat())
         handler.postDelayed({
             createAnim2(0f, mHeightView.toFloat())
-            postDelayed({ createAnim3(0f, mHeightView.toFloat()) }, 150)
-        }, 150)
+            postDelayed({ createAnim3(0f, mHeightView.toFloat()) }, TIME_DELAY)
+        }, TIME_DELAY)
 
     }
 
