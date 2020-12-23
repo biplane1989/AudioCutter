@@ -38,7 +38,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     private val TAG = "manhqn"
 
-    //    private val TAG = "giangtd"
     private lateinit var binding: MergePreviewScreenBinding
     private lateinit var audioMerAdapter: MergePreviewAdapter
     private lateinit var audioMerModel: MergePreviewModel
