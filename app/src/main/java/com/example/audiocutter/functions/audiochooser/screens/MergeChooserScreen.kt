@@ -300,6 +300,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
             arrayAudio[index] = item.audioFile.file.absolutePath
             index++
         }
+        previousStatus()
         viewStateManager.onMergingItemClicked(this, arrayAudio)
 
 

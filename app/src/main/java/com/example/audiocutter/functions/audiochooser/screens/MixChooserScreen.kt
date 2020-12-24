@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     private lateinit var audioMixModel: MixChooserModel
     private lateinit var binding: MixChooserScreenBinding
     private var currentPos = -1
+    private var isCanChoose = 0
     private var stateObserver = Observer<Int> {
         when (it) {
             1 -> {
@@ -66,13 +68,15 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
         }
     }
 
-    private val isChoseItemObserver = Observer<Boolean> {
-        if (it) {
+    private val isChoseItemObserver = Observer<Boolean?> {
+        if (it != null && it) {
             showToast(getString(R.string.ToastExceed))
         }
     }
 
     var stateChecked = Observer<Int> {
+        isCanChoose = it
+        Log.d(TAG, "chooseItemAudio Obser: iscanChoose $isCanChoose")
         if (it > 1) {
             setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
         } else {
@@ -159,7 +163,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     }
 
     private fun searchAudioByName(yourTextSearch: String) {
-
         if (yourTextSearch.isEmpty()) {
             audioMixModel.searchAudio("")
         }
@@ -238,12 +241,12 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     }
 
     @SuppressLint("SetTextI18n")
-    override fun chooseItemAudio(itemAudio: AudioCutterView, rs: Boolean) {
-        audioMixModel.chooseItemAudioFile(itemAudio, rs)
-
-//        if (audioMixModel.isChooseItem) {
-//            showToast(getString(R.string.ToastExceed))
-//        }
+    override fun chooseItemAudio(item: AudioCutterView, rs: Boolean) {
+        if (isCanChoose < 2) {
+            audioMixModel.chooseItemAudioFile(item, rs)
+        } else {
+            audioMixModel.chooseItemAudioFile(item, false)
+        }
     }
 
 
@@ -277,11 +280,14 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     }
 
     private fun handleAudiofile() {
+
         if (audioMixModel.getAudioPlayer().getAudioIsPlaying()) {
             audioMixModel.stop()
         }
+        audioMixModel.call()
         val listItemHandle = audioMixModel.getListItemChoose()
         if (listItemHandle.size == 2) {
+            previousStatus()
             viewStateManager.mixingOnSelected(
                 this,
                 listItemHandle[0].audioFile,
