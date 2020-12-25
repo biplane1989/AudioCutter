@@ -7,12 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.audiocutter.R
 import com.example.audiocutter.util.Utils
-import com.example.waveform.views.WaveformView1
+import com.example.waveform.views.WaveformView
 import kotlinx.coroutines.launch
 import java.io.File
 
 class TestWaveformActivity : AppCompatActivity() {
-    private lateinit var waveformView: WaveformView1
+    private lateinit var waveformView: WaveformView
     private lateinit var zoomInButton: Button
     private lateinit var zoomOutButton: Button
     override fun onCreate(savedInstanceState: Bundle?) {

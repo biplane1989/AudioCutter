@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.editor.screen
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,13 +13,14 @@ import com.example.audiocutter.objects.AudioFile
 
 class CuttingViewModel : BaseViewModel() {
     private var audioFile: AudioFile? = null
-    private val audioPlayer = ManagerFactory.getDefaultAudioPlayer()
+    private val audioPlayer = ManagerFactory.newAudioPlayer()
     private var cuttingCurrPos = 0
     private var cuttingStartPos = 0
     private var cuttingEndPos = 0
     private var ldAudioFile = MutableLiveData<AudioFile?>()
 
-    fun loading(pathAudio: String): LiveData<AudioFile?> {
+    fun loading(context: Context, pathAudio: String): LiveData<AudioFile?> {
+        audioPlayer.init(context)
         ManagerFactory.getAudioFileManager().findAudioFile(pathAudio)?.let {
             audioFile = it
         }

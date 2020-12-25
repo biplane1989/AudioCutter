@@ -3,7 +3,6 @@ package com.example.waveform.views;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -31,7 +30,7 @@ class WaveformTouchEventHandler {
     private int mPlaybackPos;
 
     private int mMinFrameDistance;
-    private WaveformView1 mWaveformView;
+    private WaveformView mWaveformView;
 
     protected int mTouchInitialStartPos;
     protected int mTouchInitialEndPos;
@@ -42,7 +41,7 @@ class WaveformTouchEventHandler {
     private ValueAnimator mAnimator = null;
     private boolean isAnimationUsed = true;
 
-    WaveformTouchEventHandler(WaveformView1 waveformView) {
+    WaveformTouchEventHandler(WaveformView waveformView) {
         mWaveformView = waveformView;
         mScaleGestureDetector = new ScaleGestureDetector(
                 mWaveformView.getContext(),
@@ -92,7 +91,7 @@ class WaveformTouchEventHandler {
         cancelPlayPosAnimation();
         mPlaybackPos = 0;
         mEndPos = mMaxPos;
-        mMinFrameDistance = WaveformView1.MIN_RANGE_SELECTION_IN_SECONDS * mWaveformView.fps();
+        mMinFrameDistance = WaveformView.MIN_RANGE_SELECTION_IN_SECONDS * mWaveformView.fps();
 
     }
 
@@ -173,6 +172,9 @@ class WaveformTouchEventHandler {
     }
 
     void changeStartPos(int newStartPos) {
+        if(newStartPos < 0 || newStartPos >= (mMaxPos-mMinFrameDistance)){
+            return;
+        }
         mStartPos = newStartPos;
         if ((mEndPos - mStartPos) < mMinFrameDistance) {
             mEndPos = mStartPos + mMinFrameDistance;
@@ -196,7 +198,9 @@ class WaveformTouchEventHandler {
     }
 
     void changeEndPos(int newEndPos) {
-
+        if(newEndPos > mMaxPos){
+            return;
+        }
         mEndPos = newEndPos;
         if ((mEndPos - mStartPos) < mMinFrameDistance) {
             mEndPos = mStartPos + mMinFrameDistance;
