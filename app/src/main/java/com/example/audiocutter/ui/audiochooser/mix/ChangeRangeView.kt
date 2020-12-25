@@ -291,14 +291,20 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
     }
 
     private fun getCurrentLineTextPos(): Int {
-        return when {
-            (currentLineX + rect.width() / 2) < mWidth -> {
-                currentLineX
-            }
-            else -> {
-                mWidth - rect.width() / 2
-            }
+        var index: Int = 0
+        if (
+            (currentLineX + rect.width() / 2) < mWidth) {
+            index = currentLineX
         }
+        if (
+            (currentLineX + rect.width() / 2) >= mWidth) {
+            index = mWidth - rect.width() / 2
+        }
+        if ((currentLineX - rect.left) < RADIUS * 2) {
+            index = (RADIUS * 2.2).toInt()
+        }
+
+        return index
     }
 
 

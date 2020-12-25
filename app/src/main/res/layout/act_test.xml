@@ -6,25 +6,15 @@
     android:id="@+id/ln_main"
     android:fitsSystemWindows="true">
 
-    <Button
+    <com.example.audiocutter.ui.audiochooser.cut.BarVisualizer
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:id="@+id/bt_test"
-        android:text="test"
+        android:layout_height="wrap_content"
+        android:id="@+id/barvisual"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btcheck"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="Check"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bt_test" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

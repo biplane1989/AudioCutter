@@ -16,7 +16,6 @@ class MergePreviewModel(application: Application) : BaseAndroidViewModel(applica
     private val TAG = MergePreviewModel::class.java.name
     private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
-
     private val audioPlayer = ManagerFactory.getDefaultAudioPlayer()
     fun getAudioPlayer(): AudioPlayer {
         return audioPlayer
@@ -25,6 +24,7 @@ class MergePreviewModel(application: Application) : BaseAndroidViewModel(applica
     init {
         audioPlayer.init(application.applicationContext)
     }
+/*
     fun updateMediaInfo(playerInfo: PlayerInfo): List<AudioCutterView> {
         Log.d(TAG, "updateMediaInfo: ${playerInfo.playerState}")
         if (playerInfo.currentAudio != null) {
@@ -77,6 +77,7 @@ class MergePreviewModel(application: Application) : BaseAndroidViewModel(applica
         }
         return -1
     }
+*/
 
     suspend fun play(pos: Int) {
         val audioItem = mListAudio[pos]

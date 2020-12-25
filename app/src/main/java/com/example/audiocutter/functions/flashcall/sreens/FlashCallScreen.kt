@@ -86,7 +86,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
         binding.swVibrateFlashcall.isChecked = it.flashMode.vibrateEnable
         binding.swSilentFlashCall.isChecked = it.flashMode.silentEnable
         binding.swSettimeFlash.isChecked = it.flashTimer.enable
-            binding.sbNumberOfLightning.progress = it.numberOfLightning
+        binding.sbNumberOfLightning.progress = it.numberOfLightning
         binding.sbLinghtningSpeedFlcall.progress = Utils.convertValue(
             MIN_VALUE,
             MAX_VALUE,
@@ -355,7 +355,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
                 flashTypeDialog = FlashTypeDialog.newInstance(num)
                 flashTypeDialog.setOnCallBack(this)
                 flashTypeDialog.show(childFragmentManager, FlashTypeDialog::class.java.name)
-                numCheckClick = 4
+                numCheckClick = 0
             }
             binding.tbEndTime -> {
                 numCheckClick = 2
