@@ -4,7 +4,6 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.audiocutter.base.BaseAndroidViewModel
-import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
@@ -19,7 +18,6 @@ class MixChooserModel(application: Application) : BaseAndroidViewModel(applicati
 
     private val audioPlayer = ManagerFactory.getDefaultAudioPlayer()
     private val TAG = MixChooserModel::class.java.name
-    private var currentAudioPlaying: File = File("")
 
     private var _stateLoadProgress = MutableLiveData<Int>()
     val stateLoadProgress: LiveData<Int>
@@ -27,13 +25,11 @@ class MixChooserModel(application: Application) : BaseAndroidViewModel(applicati
 
     private var filterText = ""
 
-    var isChooseItem = false
-
-    private var _isChooseItemState = MutableLiveData<Boolean>()
-    val isChooseItemState: LiveData<Boolean>
+    private var _isChooseItemState = MutableLiveData<Boolean?>()
+    val isChooseItemState: LiveData<Boolean?>
         get() = _isChooseItemState
 
-    fun getIsChooseItemState(): LiveData<Boolean> {
+    fun getIsChooseItemState(): LiveData<Boolean?> {
         return isChooseItemState
     }
 
@@ -49,6 +45,10 @@ class MixChooserModel(application: Application) : BaseAndroidViewModel(applicati
     @JvmName("getStateChecked1")
     fun getStateChecked(): LiveData<Int> {
         return stateChecked
+    }
+
+    fun call() {
+        _isChooseItemState.postValue(null)
     }
 
     private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>?>()
@@ -136,63 +136,6 @@ class MixChooserModel(application: Application) : BaseAndroidViewModel(applicati
     }
 
 
-    fun updateMediaInfo(playerInfo: PlayerInfo) {
-        Log.d(TAG, "updateMediaInfo: ${playerInfo.playerState}")
-        val listAudioViews = getListAllAudio()
-
-        if (playerInfo.currentAudio != null) {
-            if (currentAudioPlaying.absoluteFile != playerInfo.currentAudio!!.file.absoluteFile) {
-
-                val oldPos = getAudioFilePos(currentAudioPlaying)
-                val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
-                if (oldPos != -1) {
-                    val audioFile = listAudioViews[oldPos].copy()
-                    audioFile.state = PlayerState.IDLE
-                    audioFile.isCheckDistance = false
-                    audioFile.currentPos = playerInfo.posision.toLong()
-                    audioFile.duration = playerInfo.duration.toLong()
-                    listAudioViews[oldPos] = audioFile
-                }
-                if (newPos != -1) {
-                    val audioCutterView = listAudioViews[newPos].copy()
-                    updateState(audioCutterView, playerInfo, true)
-                    listAudioViews[newPos] = audioCutterView
-                }
-            } else {
-                val atPos = getAudioFilePos(currentAudioPlaying)
-                if (atPos != -1) {
-                    Log.d(TAG, "updateMediaInfo: atPOs   ${listAudioViews.get(atPos).state}")
-                    val audioCutterView = listAudioViews[atPos].copy()
-                    updateState(audioCutterView, playerInfo, true)
-                    listAudioViews[atPos] = audioCutterView
-                }
-            }
-            currentAudioPlaying = playerInfo.currentAudio!!.file
-        }
-        _listAudioFiles.postValue(listAudioViews)
-    }
-
-
-    private fun updateState(audioCutterView: AudioCutterView, playerInfo: PlayerInfo, rs: Boolean) {
-        audioCutterView.state = playerInfo.playerState
-        audioCutterView.isCheckDistance = rs
-        audioCutterView.currentPos = playerInfo.posision.toLong()
-        audioCutterView.duration = playerInfo.duration.toLong()
-
-    }
-
-    private fun getAudioFilePos(file: File): Int {
-        val listAudioViews = getListAllAudio()
-        var i = 0
-        while (i < listAudioViews.size) {
-            if (listAudioViews[i].audioFile.file == file) {
-                return i
-            }
-            i++
-        }
-        return -1
-    }
-
     fun searchAudio(yourTextSearch: String) {
         filterText = yourTextSearch
         _listAudioFiles.postValue(_listAudioFiles.value)
@@ -207,30 +150,7 @@ class MixChooserModel(application: Application) : BaseAndroidViewModel(applicati
             val itemAudio: AudioCutterView = mListAudios[pos].copy()
 
             mListAudios[pos].isCheckChooseItem = rs
-//            if (!rs) {
-//                itemAudio.isCheckChooseItem = true
-//                mListAudios[pos] = itemAudio
-//            } else {
-//                itemAudio.isCheckChooseItem = false
-//                mListAudios[pos] = itemAudio
-//            }
 
-            /*   var count = 0
-               for (item in mListAudios) {
-                   if (item.isCheckChooseItem) {
-                       count++
-                       Log.d(TAG, "changeItemAudioFile: $count")
-                       if (count > 2 && itemAudio.isCheckChooseItem) {
-                           itemAudio.isCheckChooseItem = false
-                           mListAudios[pos] = itemAudio
-   //                        isChooseItem = true
-                           _isChooseItemState.postValue(true)
-                       } else if (count < 2) {
-   //                        isChooseItem = false
-                           _isChooseItemState.postValue(false)
-                       }
-                   }
-               }*/
 
             var count = 0
             for (item in mListAudios) {
@@ -246,7 +166,6 @@ class MixChooserModel(application: Application) : BaseAndroidViewModel(applicati
             } else {
                 _isChooseItemState.postValue(false)
             }
-
 
             _stateChecked.postValue(count)
 

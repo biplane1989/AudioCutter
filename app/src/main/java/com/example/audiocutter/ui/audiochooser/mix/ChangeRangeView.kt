@@ -15,6 +15,7 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     private val RADIUS_RECT = 15f
 
+
     private val DEFAULT_TIME_POSITION: String = "00:00.0"
     private var ratio: Int = 0
     private lateinit var rectImageDst2: Rect
