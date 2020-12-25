@@ -27,7 +27,7 @@ import com.example.audiocutter.util.PreferencesHelper
 import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioCutConfig
 import com.example.core.core.Effect
-import com.example.waveform.views.WaveformView1
+import com.example.waveform.views.WaveformView
 import com.example.waveform.views.WaveformViewListener
 import kotlinx.coroutines.launch
 import java.io.File
@@ -48,7 +48,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
     private val mHandler: Handler = Handler(Looper.getMainLooper())
     private var runnable = Runnable {}
 
-    private lateinit var mWaveformView: WaveformView1
+    private lateinit var mWaveformView: WaveformView
 
     private lateinit var binding: CuttingEditorScreenBinding
     private lateinit var audioPath: String
@@ -105,7 +105,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
     private fun initView() {
         mWaveformView = binding.waveEditView
         cuttingViewModel.getAudioPlayerInfo().observe(viewLifecycleOwner, observerAudio())
-        cuttingViewModel.loading(audioPath)
+        cuttingViewModel.loading(requireContext(), audioPath)
             .observe(viewLifecycleOwner, Observer<AudioFile?> {
                 if (it == null) {
                     Toast.makeText(
@@ -129,6 +129,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
                     binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
                     playerState = PlayerState.IDLE
                     Log.e(TAG, "observerAudio: IDLE")
+                    cuttingViewModel.changeCurrPos(cuttingViewModel.getCuttingEndPos(), false)
                 }
                 PlayerState.PREPARING -> {
                     Log.e(TAG, "observerAudio: PREPARING")
@@ -230,10 +231,10 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
         }
     }
 
-    override fun onPlayPosOutOfRange(isEnd:Boolean) {
-        if(isEnd){
+    override fun onPlayPosOutOfRange(isEnd: Boolean) {
+        if (isEnd) {
             cuttingViewModel.currPosReachToEnd()
-        }else{
+        } else {
             cuttingViewModel.currPosReachToStart()
         }
 

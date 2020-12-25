@@ -59,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"/>
 
-        <com.example.waveform.views.WaveformView1
+        <com.example.waveform.views.WaveformView
             android:layout_above="@id/ads_view"
             android:id="@+id/wave_edit_view"
             android:layout_width="match_parent"

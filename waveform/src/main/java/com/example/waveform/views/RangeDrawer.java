@@ -24,7 +24,7 @@ public class RangeDrawer {
     protected RectF mCursorRightRect = new RectF();
     protected RectF mLeftSelectionRect = new RectF();
     protected RectF mRightSelectionRect = new RectF();
-    private WaveformView1 mWaveformView;
+    private WaveformView mWaveformView;
     private final Paint mRangeSelectionPaint;
     private final Paint mLineSelectionPaint;
     private final Paint mTimeRangePaint;
@@ -36,7 +36,7 @@ public class RangeDrawer {
 
     private final float cursorSize;
 
-    public RangeDrawer(WaveformView1 waveformView, int rangeSelectionColor, int lineSelectionColor, int timeRangeColor) {
+    public RangeDrawer(WaveformView waveformView, int rangeSelectionColor, int lineSelectionColor, int timeRangeColor) {
         mWaveformView = waveformView;
         if (mCursorLeftBitmap == null) {
             mCursorLeftBitmap = BitmapFactory.decodeResource(mWaveformView.getResources(), R.drawable.wave_view_left_ic);
@@ -44,7 +44,7 @@ public class RangeDrawer {
         if (mCursorRightBitmap == null) {
             mCursorRightBitmap = BitmapFactory.decodeResource(mWaveformView.getResources(), R.drawable.wave_view_right_ic);
         }
-        cursorSize = Utils.Companion.dpToPx(mWaveformView.getContext(), WaveformView1.DEFAULT_CURSOR_SIZE_DP);
+        cursorSize = Utils.Companion.dpToPx(mWaveformView.getContext(), WaveformView.DEFAULT_CURSOR_SIZE_DP);
 
         mRangeSelectionPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mRangeSelectionPaint.setColor(rangeSelectionColor);
@@ -59,11 +59,11 @@ public class RangeDrawer {
 
         mTimeRangePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTimeRangePaint.setColor(timeRangeColor);
-        mTimeRangePaint.setTextSize(Utils.Companion.dpToPx(mWaveformView.getContext(), WaveformView1.DEFAULT_RANGE_TIME_TEXT_SIZE));
+        mTimeRangePaint.setTextSize(Utils.Companion.dpToPx(mWaveformView.getContext(), WaveformView.DEFAULT_RANGE_TIME_TEXT_SIZE));
 
         mDurationPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mDurationPaint.setColor(timeRangeColor);
-        mDurationPaint.setTextSize(Utils.Companion.dpToPx(mWaveformView.getContext(), WaveformView1.DEFAULT_RANGE_DURATION_TEXT_SIZE));
+        mDurationPaint.setTextSize(Utils.Companion.dpToPx(mWaveformView.getContext(), WaveformView.DEFAULT_RANGE_DURATION_TEXT_SIZE));
     }
 
     private void splitTimeInterval() {
@@ -73,8 +73,8 @@ public class RangeDrawer {
         int timeFormat = chooseTimeFormat(maxTime);
 
 
-        int step = waveformWidth / WaveformView1.RANGE_SELECTION_TOTAL_INTERVAL;
-        for (int i = 0; i < WaveformView1.RANGE_SELECTION_TOTAL_INTERVAL; ++i) {
+        int step = waveformWidth / WaveformView.RANGE_SELECTION_TOTAL_INTERVAL;
+        for (int i = 0; i < WaveformView.RANGE_SELECTION_TOTAL_INTERVAL; ++i) {
             int startX = i * step;
             int endX = (i + 1) * step;
             float centerX = (startX + endX) / 2f;
@@ -86,8 +86,8 @@ public class RangeDrawer {
 
     public void init() {
         mTimeFormat = chooseTimeFormat(mWaveformView.duration());
-        listTimeStrSegments = new String[WaveformView1.RANGE_SELECTION_TOTAL_INTERVAL];
-        listTimePosXSegments = new float[WaveformView1.RANGE_SELECTION_TOTAL_INTERVAL];
+        listTimeStrSegments = new String[WaveformView.RANGE_SELECTION_TOTAL_INTERVAL];
+        listTimePosXSegments = new float[WaveformView.RANGE_SELECTION_TOTAL_INTERVAL];
         splitTimeInterval();
     }
 
@@ -147,7 +147,7 @@ public class RangeDrawer {
     }
 
     private void drawTimeInterval(final Canvas canvas) {
-        for (int i = 0; i < WaveformView1.RANGE_SELECTION_TOTAL_INTERVAL; ++i) {
+        for (int i = 0; i < WaveformView.RANGE_SELECTION_TOTAL_INTERVAL; ++i) {
             canvas.drawText(listTimeStrSegments[i], listTimePosXSegments[i], mCursorLeftRect.top - 60f, mTimeRangePaint);
         }
     }

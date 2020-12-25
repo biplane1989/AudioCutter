@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.Log;
 
 import com.example.waveform.R;
 import com.example.waveform.Utils;
@@ -14,7 +13,7 @@ class WaveformDrawer {
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private AudioDecoder mAudioDecoder;
-    private WaveformView1 mWaveformmView;
+    private WaveformView mWaveformmView;
 
     private float range;
     private float scaleFactor;
@@ -32,7 +31,7 @@ class WaveformDrawer {
     private final Rect textBounds = new Rect();
     private final Paint mLinePlayingPaint;
 
-    WaveformDrawer(WaveformView1 waveformView, int waveformColor, int linePlayingColor) {
+    WaveformDrawer(WaveformView waveformView, int waveformColor, int linePlayingColor) {
         mWaveformmView = waveformView;
         mOffset = 0;
         mPaint.setAntiAlias(false);
@@ -269,10 +268,10 @@ class WaveformDrawer {
         if (canZoomIn()) {
             mZoomLevel++;
             float factor = mLenByZoomLevel[mZoomLevel] / (float) mLenByZoomLevel[mZoomLevel - 1];
-
-            int offsetCenter = mOffset + (int) (mWaveformmView.getMeasuredWidth() / factor);
+            mOffset = (int) (mWaveformmView.getSelectionStart()*factor);
+          /*  int offsetCenter = mOffset + (int) (mWaveformmView.getMeasuredWidth() / factor);
             offsetCenter *= factor;
-            mOffset = offsetCenter - (int) (mWaveformmView.getMeasuredWidth() / factor);
+            mOffset = offsetCenter - (int) (mWaveformmView.getMeasuredWidth() / factor);*/
             if (mOffset < 0) {
                 mOffset = 0;
             }
@@ -287,8 +286,10 @@ class WaveformDrawer {
             mZoomLevel--;
             float factor = mLenByZoomLevel[mZoomLevel + 1] / (float) mLenByZoomLevel[mZoomLevel];
             int offsetCenter = (int) (mOffset + mWaveformmView.getMeasuredWidth() / factor);
-            offsetCenter /= factor;
-            mOffset = offsetCenter - (int) (mWaveformmView.getMeasuredWidth() / factor);
+            mOffset = (int) (mWaveformmView.getSelectionStart()/factor);
+            //mOffset /=factor;
+          /*  offsetCenter /= factor;
+            mOffset = offsetCenter - (int) (mWaveformmView.getMeasuredWidth() / factor);*/
             if (mOffset < 0)
                 mOffset = 0;
             mWaveformmView.invalidate();
