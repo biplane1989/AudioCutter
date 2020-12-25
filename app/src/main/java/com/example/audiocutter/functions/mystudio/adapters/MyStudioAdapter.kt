@@ -318,7 +318,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
             if (audioFileView.audioFile.bitmap != null) {
                 Glide.with(itemView).load(audioFileView.audioFile.bitmap)
-//                    .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
                     .into(ivAvatar)
 
             } else {
@@ -398,8 +397,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     sbAnimation?.cancel()
 
                     audioPlayer.seek(sbMusic.progress / 100, true)
-//                    audioPlayer.seek(sbMusic.progress / 100)
-//                    audioPlayer.resume()
 
                     isSeekBarStatus = false
                 }
@@ -412,10 +409,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 val audioFileView = getItem(adapterPosition)
                 when (view.id) {
                     R.id.ll_audio_item_header -> {
-
-//                        sbMusic.progress = 0
-//                        ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
-//                        tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
 
                         sbMusic.clearAnimation()
                         sbAnimation?.cancel()
