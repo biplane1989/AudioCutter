@@ -146,8 +146,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
             }
+
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                audioMixModel.stop()
+//                audioMixModel.stop()
                 searchAudioByName(textChange.toString())
                 if (textChange.toString() != "") {
                     binding.ivMixerScreenClose.visibility = View.VISIBLE
@@ -294,10 +295,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
                 listItemHandle[1].audioFile
             )
         }
-        /* listItemHandle.forEach {
-             Log.d(TAG, "handleAudiofile: ${it.audioFile.fileName}")
-         }*/
-
 
         /**place handle listItem choose*/
 
@@ -312,6 +309,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     private fun previousStatus() {
         binding.edtMixerSearch.setText("")
         binding.rvMixer.visibility = View.VISIBLE
+        binding.rvMixer.scrollToPosition(0)
         binding.rltNextMixerParent.visibility = View.VISIBLE
         binding.tvEmptyListMixer.visibility = View.INVISIBLE
         binding.ivEmptyListMixer.visibility = View.INVISIBLE
@@ -319,6 +317,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
         hideKeyboard()
         hideOrShowEditText(View.INVISIBLE)
         hideOrShowView(View.VISIBLE)
+
     }
 
     private fun searchAudiofile() {

@@ -424,6 +424,7 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
     }
 
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        Log.d(TAG, "onProgressChanged: $fromUser")
         when (seekBar) {
             binding.sbNumberOfLightning -> {
                 val value: Int = if (progress < 1) {

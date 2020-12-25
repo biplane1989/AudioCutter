@@ -43,14 +43,14 @@ class SettingScreens : BaseFragment(), SetLanguageDialog.DialogSettingsListener 
         when (item) {
             1 -> {
                 binding.tvLanguageSettings.text = resources.getString(R.string.english_text)
+            }
+            0 -> {
 
                 val res = requireContext().resources
                 val dm: DisplayMetrics = res.displayMetrics
                 val conf: Configuration = res.configuration
                 conf.setLocale(Locale("Vi")) // API 17+ only.
                 res.updateConfiguration(conf, dm)
-            }
-            0 -> {
                 binding.tvLanguageSettings.text = resources.getString(R.string.vietnam_text)
             }
         }

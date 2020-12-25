@@ -277,6 +277,7 @@ class CutChooserAdapter(
 
         private fun controllerAudio() {
             val itemAudio = getItem(adapterPosition)
+            mCallBack.onTickAudio(adapterPosition)
             if (adapterPosition == -1) {
                 return
             }
@@ -334,6 +335,7 @@ class CutChooserAdapter(
         fun resume(pos: Int)
         fun showDialogSetAs(itemAudio: AudioCutterView)
         fun onCutItemClicked(itemAudio: AudioCutterView)
+        fun onTickAudio(pos: Int)
     }
 }
 

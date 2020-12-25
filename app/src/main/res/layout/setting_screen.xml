@@ -86,7 +86,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_bold"
+                        android:fontFamily="@font/opensans_semibold"
                         android:text="@string/premium_settingscreen"
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/d_16"
@@ -115,7 +115,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/opensans_bold"
+                            android:fontFamily="@font/opensans_semibold"
                             android:paddingLeft="@dimen/d_14"
                             android:text="Get Premium"
                             android:textColor="@color/colorWhite"
@@ -146,7 +146,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_regular"
+                        android:fontFamily="@font/opensans_semibold"
                         android:text="@string/language_settingscreen"
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/d_18"
@@ -183,7 +183,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_regular"
+                        android:fontFamily="@font/opensans_semibold"
                         android:text="@string/feedback_settingscreen"
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/d_18"
@@ -219,7 +219,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_regular"
+                        android:fontFamily="@font/opensans_semibold"
                         android:text="@string/join_facebook_group_settingscreen"
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/d_18"
@@ -255,7 +255,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_regular"
+                        android:fontFamily="@font/opensans_semibold"
                         android:text="@string/share_settingscreen"
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/d_18"
@@ -291,7 +291,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_regular"
+                        android:fontFamily="@font/opensans_semibold"
                         android:text="@string/about_settingscreen"
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/d_18"
@@ -319,7 +319,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_regular"
+                        android:fontFamily="@font/opensans_semibold"
                         android:text="@string/privacy_policy_settingscreen"
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/d_18"
@@ -346,7 +346,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_regular"
+                        android:fontFamily="@font/opensans_semibold"
                         android:text="@string/version_settingscreen"
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/d_18"

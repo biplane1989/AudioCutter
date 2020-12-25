@@ -144,7 +144,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
             }
 
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                audioMerModel.stop()
+//                audioMerModel.stop()
                 searchAudioByName(textChange.toString())
                 if (textChange.toString() != "") {
                     binding.ivMerScreenClose.visibility = View.VISIBLE
@@ -310,6 +310,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     private fun previousStatus() {
         binding.edtMerSearch.setText("")
         binding.rvMerge.visibility = View.VISIBLE
+        binding.rvMerge.scrollToPosition(0)
         binding.rltNextMerParent.visibility = View.VISIBLE
         binding.tvEmptyListMer.visibility = View.INVISIBLE
         binding.ivEmptyListMerge.visibility = View.INVISIBLE

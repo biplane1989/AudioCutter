@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -52,6 +51,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     private lateinit var audioCutterItem: AudioCutterView
     private var pendingRequestingPermission = 0
     private val CUT_CHOOSE_REQUESTING_PERMISSION = 1 shl 5
+    private var indexChoose = 0
 
 
     private var stateObserver = Observer<Int> {
@@ -182,7 +182,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             }
 
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                audioCutterModel.stop()
+//                audioCutterModel.stop()
                 searchAudioByName(textChange.toString())
                 if (textChange.toString() != "") {
                     binding.ivCutterScreenClose.visibility = View.VISIBLE
@@ -347,12 +347,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     }
 
     override fun onCutItemClicked(itemAudio: AudioCutterView) {
-        if (audioCutterModel.getAudioPlayer().getAudioIsPlaying()) {
-            Log.e(TAG, "onCutItemClicked: stop")
-            audioCutterModel.stop()
-        } else {
-            Log.e(TAG, "onCutItemClicked: nonStop")
-        }
+
         if (itemAudio.audioFile.duration < Constance.MIN_DURATION) {
             val dialogSnack = Snackbar.make(
                 requireView(),
@@ -360,13 +355,17 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
                 Snackbar.LENGTH_SHORT
             )
             dialogSnack.show()
-        } else {
+        } else if (audioCutterModel.getAudioPlayer().getAudioIsPlaying()) {
+            audioCutterModel.stop()
             previousStatus()
             viewStateManager.onCuttingItemClicked(this, itemAudio)
         }
 
     }
 
+    override fun onTickAudio(pos: Int) {
+        indexChoose = pos
+    }
 
     private fun resetRequestingPermission() {
         pendingRequestingPermission = 0
@@ -384,7 +383,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
                 rs = ManagerFactory.getRingtonManager().setAlarmManager(audioCutterItem.audioFile)
             }
             TypeAudioSetAs.NOTIFICATION -> {
-
                 rs = ManagerFactory.getRingtonManager()
                     .setNotificationSound(audioCutterItem.audioFile)
             }
@@ -433,6 +431,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     private fun previousStatus() {
         hideKeyboard()
         binding.rvAudioCutter.visibility = View.VISIBLE
+        binding.rvAudioCutter.scrollToPosition(indexChoose)
         binding.tvEmptyListCutter.visibility = View.INVISIBLE
         binding.ivEmptyListCutter.visibility = View.INVISIBLE
         binding.edtCutterSearch.setText("")
