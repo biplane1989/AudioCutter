@@ -1,8 +1,9 @@
 package com.example.audiocutter.functions.audiochooser.adapters
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
-import android.graphics.BitmapFactory
+import android.graphics.Bitmap
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
@@ -13,9 +14,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.audiocutter.R
-import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
@@ -23,10 +22,15 @@ import com.example.audiocutter.functions.audiochooser.event.OnItemTouchHelper
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
-import com.example.audiocutter.util.Utils
 import kotlinx.coroutines.launch
 
-class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope) : ListAdapter<AudioCutterView, MergePreviewAdapter.MergeChooseHolder>(MergerChooserAudioDiff()), OnItemTouchHelper {
+class MergePreviewAdapter(
+    val mContext: Context,
+    val audioPlayer: AudioPlayer,
+    val lifecycleCoroutineScope: LifecycleCoroutineScope,
+    val activity: Activity
+) : ListAdapter<AudioCutterView, MergePreviewAdapter.MergeChooseHolder>(MergerChooserAudioDiff()),
+    OnItemTouchHelper {
 
     //var listAudios = mutableListOf<AudioCutterView>()
     lateinit var mCallback: AudioMergeChooseListener
@@ -82,7 +86,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 }
                 PlayerState.IDLE -> {
                     val bitmap = itemAudioFile.audioFile.bitmap
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(holder.itemView).load(bitmap)
                             .transform(
                                 RoundedCorners(
@@ -103,7 +107,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
             val bitmap = itemAudioFile.audioFile.bitmap
             when (itemAudioFile.state) {
                 PlayerState.PLAYING -> {
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(holder.itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, holder.itemView.context)
 //                                .toInt()))
@@ -117,7 +121,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
 
                 }
                 PlayerState.PAUSE -> {
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(holder.itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, holder.itemView.context)
 //                                .toInt()))
@@ -133,7 +137,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                     holder.waveView.visibility = View.INVISIBLE
                     holder.pgAudio.resetView()
 
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(holder.itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, holder.itemView.context)
 //                                .toInt()))
@@ -151,8 +155,14 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
         }
     }
 
+    private fun checkValidGlide(bitmap: Bitmap?): Boolean {
+        return (bitmap != null && !activity.isFinishing)
+    }
+
     @SuppressLint("ClickableViewAccessibility")
-    inner class MergeChooseHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnTouchListener, GestureDetector.OnGestureListener, LifecycleOwner {
+    inner class MergeChooseHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener, View.OnTouchListener, GestureDetector.OnGestureListener,
+        LifecycleOwner {
 
         var ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)
         var tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_merge_choose_audio)
@@ -188,7 +198,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
             itemAudioFile.duration = playerInfo.duration.toLong()
             when (playerInfo.playerState) {
                 PlayerState.PLAYING -> {
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
 //                                .toInt()))
@@ -201,7 +211,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                     waveView.visibility = View.VISIBLE
                 }
                 PlayerState.PAUSE -> {
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
 //                                .toInt()))
@@ -214,7 +224,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                     pgAudio.visibility = View.VISIBLE
                 }
                 PlayerState.IDLE -> {
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
 //                                .toInt()))
@@ -256,7 +266,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
             playerState = PlayerState.IDLE
             pgAudio.visibility = View.GONE
             waveView.visibility = View.INVISIBLE
-            if (audioCutterView.audioFile.bitmap != null) {
+            if (checkValidGlide(audioCutterView.audioFile.bitmap)) {
                 Glide.with(itemView).load(audioCutterView.audioFile.bitmap).into(ivController)
             } else {
                 ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
@@ -298,7 +308,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                     waveView.visibility = View.INVISIBLE
                     pgAudio.resetView()
                     val bitmap = itemAudioFile.audioFile.bitmap
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
                             .transform(
                                 RoundedCorners(
@@ -326,7 +336,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
 
             when (itemAudioFile.state) {
                 PlayerState.PLAYING -> {
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
 //                                .toInt()))
@@ -340,7 +350,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
 
                 }
                 PlayerState.PAUSE -> {
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
 //                                .toInt()))
@@ -357,7 +367,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                     waveView.visibility = View.INVISIBLE
 //                    pgAudio.resetView()
 
-                    if (bitmap != null) {
+                    if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
 //                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
 //                                .toInt()))
@@ -432,11 +442,13 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
 
         override fun onTouch(p0: View?, motionEvent: MotionEvent?): Boolean {
             mGestureDetector.onTouchEvent(motionEvent)
+            Log.d("nqm", "onTouch: ")
             return false
         }
 
         override fun onDown(p0: MotionEvent?): Boolean {
             mTouchHelper.startDrag(this)
+            Log.d("nqm", "onDown: ")
             return true
         }
 
@@ -444,20 +456,24 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
         }
 
         override fun onSingleTapUp(motionEvent: MotionEvent?): Boolean {
+            Log.d("nqm", "onSingleTapUp: ")
             return false
         }
 
         override fun onScroll(motionEvent: MotionEvent?, p1: MotionEvent?, p2: Float, p3: Float): Boolean {
+            Log.d("nqm", "onScroll: ")
             return false
         }
 
 
         override fun onLongPress(p0: MotionEvent?) {
-            Log.d("TAG", "onLongPress: on longpress")
+ /*           mTouchHelper.startDrag(this)*/
+            Log.d("nqm", "onLongPress: on longpress")
 
         }
 
         override fun onFling(p0: MotionEvent?, p1: MotionEvent?, p2: Float, p3: Float): Boolean {
+            Log.d("nqm", "onFling: ")
             return false
         }
     }

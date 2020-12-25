@@ -23,11 +23,15 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
 
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+
 final class Utils {
   static int darker(int color, float factor) {
     return Color.argb(Color.alpha(color), Math.max((int) (Color.red(color) * factor), 0),
-        Math.max((int) (Color.green(color) * factor), 0), Math.max((int) (Color.blue(color) * factor), 0));
+            Math.max((int) (Color.green(color) * factor), 0), Math.max((int) (Color.blue(color) * factor), 0));
   }
+
   static int lighter(int color, float factor) {
     int red = (int) ((Color.red(color) * (1 - factor) / 255 + factor) * 255);
     int green = (int) ((Color.green(color) * (1 - factor) / 255 + factor) * 255);
@@ -39,9 +43,8 @@ final class Utils {
         && context.getResources().getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
   }
   static Drawable getDrawable(Context context, int id) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return context.getDrawable(id);
-    }
-    return context.getResources().getDrawable(id);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+      return ContextCompat.getDrawable(context, id);
+    else return AppCompatResources.getDrawable(context, id);
   }
 }

@@ -9,7 +9,6 @@
 
     <LinearLayout
         android:id="@+id/rlt_actionbar_mer_choose"
-
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize">
 
@@ -42,9 +41,9 @@
                 android:textSize="@dimen/d_18" />
             <View
                 android:layout_width="match_parent"
-                android:layout_height="0.01dp"
+                android:layout_height="1dp"
                 android:layout_alignParentBottom="true"
-                android:background="@color/colorgray"/>
+                android:background="@color/colorgrayAlpha" />
         </RelativeLayout>
     </LinearLayout>
 

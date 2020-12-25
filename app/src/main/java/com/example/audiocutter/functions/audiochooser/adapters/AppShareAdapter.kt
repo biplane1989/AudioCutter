@@ -43,7 +43,6 @@ class AppShareAdapter(val mContext: Context) :
 
     }
 
-
     inner class AppShareHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
         View.OnClickListener {
         val ivApp = itemView.findViewById<ImageView>(R.id.iv_icon_app_flash)

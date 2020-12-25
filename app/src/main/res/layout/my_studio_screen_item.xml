@@ -112,10 +112,11 @@
         <androidx.appcompat.widget.AppCompatSeekBar
             android:id="@+id/sb_music"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:progressTint="#FDAA74"
-            android:thumbTint="#FDAA74" />
+            android:maxHeight="@dimen/d_3"
+            android:progressDrawable="@drawable/seekbar_style"
+            android:thumb="@drawable/bg_thum_sb" />
 
         <TextView
             android:id="@+id/tv_time_life"

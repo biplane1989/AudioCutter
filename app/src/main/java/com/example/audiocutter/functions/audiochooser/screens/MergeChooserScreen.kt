@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,6 +45,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     }
 
     var stateChecked = Observer<Int> {
+        Log.d("TAG", "stateChecked: $it")
         if (it > 1) {
             setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
         } else {
@@ -107,7 +109,12 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         super.onPostCreate(savedInstanceState)
         audioMerModel = ViewModelProvider(this).get(MergeChooserModel::class.java)
 
-        audioMerAdapter = MergeChooserAdapter(requireContext(), audioMerModel.getAudioPlayer(), lifecycleScope)
+        audioMerAdapter = MergeChooserAdapter(
+            requireContext(),
+            audioMerModel.getAudioPlayer(),
+            lifecycleScope,
+            requireActivity()
+        )
 //        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
@@ -152,8 +159,8 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     }
 
     private fun searchAudioByName(yourTextSearch: String) {
-        setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_audio_disabled, false)
-        binding.tvCountFileMer.text = getString(R.string.countFile)
+//        setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_audio_disabled, false)
+//        binding.tvCountFileMer.text = getString(R.string.countFile)
 //        showList()
         if (yourTextSearch.isEmpty()) {
             audioMerModel.searchAudio("")
@@ -293,6 +300,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
             arrayAudio[index] = item.audioFile.file.absolutePath
             index++
         }
+        previousStatus()
         viewStateManager.onMergingItemClicked(this, arrayAudio)
 
 

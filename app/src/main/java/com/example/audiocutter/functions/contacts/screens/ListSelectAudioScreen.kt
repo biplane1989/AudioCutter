@@ -1,7 +1,5 @@
 package com.example.audiocutter.functions.contacts.screens
 
-import android.animation.Animator
-import android.animation.AnimatorInflater
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -9,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +15,6 @@ import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
@@ -31,11 +27,9 @@ import com.example.audiocutter.functions.contacts.adapters.ListSelectAdapter
 import com.example.audiocutter.functions.contacts.adapters.SelectAudioScreenCallback
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.util.FileUtils
-import kotlinx.android.synthetic.main.my_studio_contact_screen.view.*
-import kotlinx.coroutines.delay
 
 
-class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.OnClickListener {
+class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.OnClickListener {
     private val TAG = "giangtd"
     private val safeArg: ListSelectAudioScreenArgs by navArgs()
     private lateinit var mListSelectAudioViewModel: ListSelectAudioViewModel
@@ -46,7 +40,6 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
 
     // observer data
     private val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
-
         if (listAudio != null) {
             mListSelectAdapter.submitList(ArrayList(listAudio))
         }
@@ -226,7 +219,7 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
                 }
                 intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                 intent.type = "audio/*"
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.addCategory(Intent.CATEGORY_OPENABLE)
                 startActivityForResult(Intent.createChooser(intent, getString(R.string.list_select_audio_screen_open_file_title)), REQ_CODE_PICK_SOUNDFILE)
             }
             binding.backButton -> {

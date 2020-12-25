@@ -1,11 +1,9 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Application
-import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.audiocutter.base.BaseAndroidViewModel
-import com.example.audiocutter.base.BaseViewModel
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
@@ -33,6 +31,8 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
         get() = _stateLoadProgress
 
 
+
+
     private var _isEmptyState = MutableLiveData<Boolean>()
     val isEmptyState: LiveData<Boolean>
         get() = _isEmptyState
@@ -54,7 +54,7 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
 
     init {
         audioPlayer.init(application.applicationContext)
-        _listAudioFiles.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
+        _listAudioFiles.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) { it ->
             var listAudioFiles: List<AudioCutterView>? = null
 
             when (it.state) {
@@ -103,7 +103,7 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
                         _isEmptyState.postValue(true)
                     }
                 }
-                Log.d(TAG, "listAudioObserver: listSize ${listResult.size} ")
+
                 listResult
             }
         })

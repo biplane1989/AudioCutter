@@ -31,6 +31,7 @@ import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.functions.audiochooser.objects.TypeAudioSetAs
 import com.example.audiocutter.functions.common.ContactPermissionDialog
+import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.permissions.AppPermission
 import com.example.audiocutter.permissions.ContactItemPermissionRequest
 import com.example.audiocutter.permissions.PermissionManager
@@ -39,7 +40,6 @@ import com.example.audiocutter.util.FileUtils
 import com.google.android.material.snackbar.Snackbar
 
 class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, SetAsDialog.setAsListener, View.OnClickListener, OnActionCallback {
-    private val MIN_DURATION = 1000
     private var filePathAudio: String? = ""
     val TAG = CutChooserScreen::class.java.name
     private lateinit var binding: CutChooserScreenBinding
@@ -69,8 +69,11 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
 
     var currentPos = -1
-
     private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
+        listMusic?.forEach {
+
+            Log.d(TAG, "checkListMusic:${it.audioFile.fileName} ")
+        }
         if (listMusic == null) {
             binding.rvAudioCutter.visibility = View.INVISIBLE
         } else {
@@ -121,7 +124,12 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         audioCutterModel =
             ViewModelProvider(this).get(CutChooserViewModel::class.java)
         audioCutterAdapter =
-            CutChooserAdapter(requireContext(), audioCutterModel.getAudioPlayer(), lifecycleScope)
+            CutChooserAdapter(
+                requireContext(),
+                audioCutterModel.getAudioPlayer(),
+                lifecycleScope,
+                requireActivity()
+            )
 //        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
@@ -344,8 +352,12 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         } else {
             Log.e(TAG, "onCutItemClicked: nonStop")
         }
-        if (itemAudio.audioFile.duration < MIN_DURATION) {
-            val dialogSnack = Snackbar.make(requireView(), getString(R.string.notification_file_was_short_mystudio_screen), Snackbar.LENGTH_SHORT)
+        if (itemAudio.audioFile.duration < Constance.MIN_DURATION) {
+            val dialogSnack = Snackbar.make(
+                requireView(),
+                getString(R.string.notification_file_was_short_mystudio_screen),
+                Snackbar.LENGTH_SHORT
+            )
             dialogSnack.show()
         } else {
             viewStateManager.onCuttingItemClicked(this, itemAudio)
@@ -458,7 +470,15 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             path?.let {
                 val audio = ManagerFactory.getAudioFileManager().findAudioFile(it)
                 audio?.let {
-                    viewStateManager.onCuttingItemClicked(this, AudioCutterView(audio))
+                    if (audio.duration > Constance.MIN_DURATION) {
+                        viewStateManager.onCuttingItemClicked(this, AudioCutterView(audio))
+                    } else {
+                        Snackbar.make(
+                            requireView(),
+                            getString(R.string.notification_file_was_short_mystudio_screen),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
                 }
 
             }

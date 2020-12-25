@@ -102,6 +102,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     override fun onBindViewHolder(holder: MyStudioHolder, position: Int, payloads: MutableList<Any>) {
 //        super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
+
             Log.d(TAG, "onBindViewHolder: orange 1")
             super.onBindViewHolder(holder, position, payloads)
         } else {
@@ -122,7 +123,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 //                if(diff.containsKey("item3")){
 //
 //                }
-                    val successViewHolder = holder as SuccessViewHolder
+                    val successViewHolder = holder
                     when (newItem.itemLoadStatus.deleteState) {
                         DeleteState.HIDE -> {
                             successViewHolder.ivItemDelete.visibility = View.INVISIBLE
@@ -190,7 +191,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         }
     }
 
-    inner abstract class MyStudioHolder(itemView: View) : RecyclerView.ViewHolder(itemView), LifecycleOwner {
+    abstract inner class MyStudioHolder(itemView: View) : RecyclerView.ViewHolder(itemView), LifecycleOwner {
         private var lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)      // tao 1 lifecycleRegistry
 
         override fun getLifecycle(): Lifecycle {                                                // gan lifecycleRegistry tu dinh nghia cho class
@@ -263,8 +264,8 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             Log.d(TAG, "setSeekbarAnimate: pb.progress : "  + progressTo *100 + " max ${pb.max}")
             sbAnimation?.cancel()
             sbAnimation = ObjectAnimator.ofInt(pb, "progress", pb.progress, progressTo * 100)
-            sbAnimation?.setDuration(duration)
-            sbAnimation?.setInterpolator(DecelerateInterpolator())
+            sbAnimation?.duration = duration
+            sbAnimation?.interpolator = DecelerateInterpolator()
             sbAnimation?.start()
         }
 
@@ -300,11 +301,11 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
             sbMusic.max = audioFileView.audioFile.duration.toInt() * 100
 
-            tvTitle.setText(audioFileView.audioFile.fileName)
+            tvTitle.text = audioFileView.audioFile.fileName
             if (audioFileView.audioFile.size / (1024 * 1024) > 0) {
-                tvInfo.setText(String.format("%.1f", (audioFileView.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + bitrate + "kb/s")
+                tvInfo.text = String.format("%.1f", (audioFileView.audioFile.size) / (1024 * 1024).toDouble()) + " MB" + " | " + bitrate + "kb/s"
             } else {
-                tvInfo.setText(((audioFileView.audioFile.size) / (1024)).toString() + " KB" + " | " + bitrate + "kb/s")
+                tvInfo.text = ((audioFileView.audioFile.size) / (1024)).toString() + " KB" + " | " + bitrate + "kb/s"
             }
 
             timeFomat = Utils.chooseTimeFormat(audioFileView.audioFile.duration)
@@ -534,10 +535,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 })
         }
 
-        override fun onViewDetachedFromWindow() {
-            super.onViewDetachedFromWindow()
-        }
-
         @SuppressLint("SetTextI18n")
         fun onBind() {
             val loadingItem = getItem(adapterPosition)
@@ -558,7 +555,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
             }
 
-            tvTitle.setText(loadingItem.audioFile.fileName)
+            tvTitle.text = loadingItem.audioFile.fileName
             ivCancel.setOnClickListener(this)
         }
 
@@ -577,8 +574,8 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             // smooth animation
             progressbarAnimation?.cancel()
             progressbarAnimation = ObjectAnimator.ofInt(pb, "progress", pb.progress, progressTo * 100)
-            progressbarAnimation?.setDuration(duration)
-            progressbarAnimation?.setInterpolator(DecelerateInterpolator())
+            progressbarAnimation?.duration = duration
+            progressbarAnimation?.interpolator = DecelerateInterpolator()
             progressbarAnimation?.start()
         }
 

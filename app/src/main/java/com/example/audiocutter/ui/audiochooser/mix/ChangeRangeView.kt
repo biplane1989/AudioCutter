@@ -1,22 +1,20 @@
 package com.example.audiocutter.ui.audiochooser.mix
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import com.example.audiocutter.R
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.util.Utils
-import java.text.SimpleDateFormat
 
 
 class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
 
     private val RADIUS_RECT = 15f
+
 
     private val DEFAULT_TIME_POSITION: String = "00:00.0"
     private var ratio: Int = 0
@@ -48,6 +46,7 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
     private lateinit var rectProgressSeekbar1: RectF
     private lateinit var rectProgressSeekbar2: RectF
     private var currentLineX = 0
+    private var currentLineTextPos = 0
     private lateinit var audioFile1: AudioFile
     private lateinit var audioFile2: AudioFile
     lateinit var mCallback: OnPlayLineChange
@@ -105,7 +104,6 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
         mHeight = h
         mWidth = w - 32
         maxDistance = mWidth.toDouble()
-        Log.d(TAG, "nmcode: $mWidth")
         currentXCircleVolume1 = mWidth / 1.3f + RANGE
         currentXCircleVolume2 = mWidth / 1.3f + RANGE
     }
@@ -183,6 +181,72 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
         drawTextSound(ratioSound2, canvas, rectSeekbarSound2.right + RANGE, rectSeekbarSound2)
     }
 
+    private fun initLine(canvas: Canvas) {
+        /** draw line seekbar file audio custom
+         *          draw circle change folow event touchmove
+         *          draw text duration audio
+         *          draw text change position
+         **/
+        canvas.drawLine(
+            currentLineX.toFloat() + RADIUS,
+            0f,
+            currentLineX.toFloat() + RADIUS,
+            mHeight * 1f - (RANGE + RADIUS),
+            mPaint
+        )
+        canvas.drawCircle(
+            currentLineX.toFloat() + RADIUS,
+            (mHeight * 1f) - (RANGE + RADIUS),
+            RADIUS,
+            mPaint
+        )
+
+        drawTextDurationMax(canvas, DEFAULT_TIME_POSITION, 0f + RADIUS, mPaint6)
+        try {
+            rs = durationAudio1 > durationAudio2
+            if (!rs) {
+                drawTextDurationMax(
+                    canvas,
+                    getTimeAudio(durationAudio2.toLong()),
+                    getRightTextDurationMax(durationAudio2.toLong()),
+                    mPaint6
+                )
+                drawTextDurationMin(
+                    canvas,
+                    getTimeAudio(audioFile1.duration)
+                )
+            } else {
+                drawTextDurationMax(
+                    canvas,
+                    getTimeAudio(durationAudio1.toLong()),
+                    getRightTextDurationMax(durationAudio1.toLong()),
+                    mPaint6
+                )
+                drawTextDurationMin(
+                    canvas, getTimeAudio(audioFile2.duration)
+                )
+
+            }
+        } catch (e: NumberFormatException) {
+            e.printStackTrace()
+        }
+
+        /**text number position*/
+
+
+        mPaint.getTextBounds(numPos, 0, numPos.length, rect)
+        /***check currentPosision max distance**/
+        currentLineTextPos = getCurrentLineTextPos()
+        drawTextPosition(
+            canvas,
+            numPos,
+            currentLineTextPos.toFloat() - rect.width() / 2.5f,
+            mPaint
+        )
+
+    }
+
+
     private fun drawTextSound(ratioSound1: String, canvas: Canvas, x: Float, y: RectF) {
         canvas.drawText(ratioSound1, x, y.top + RADIUS / 2.1f, mPaint6)
     }
@@ -216,91 +280,57 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
         canvas.drawText(name, RADIUS * 2, rectDuration1.top + rectText1.height() + RADIUS, mPaint4)
     }
 
-    private fun initLine(canvas: Canvas) {
-        /** draw line seekbar file audio custom
-         *          draw circle change folow event touchmove
-         *          draw text duration audio
-         *          draw text change position
-         **/
-        canvas.drawLine(
-            currentLineX.toFloat() + RADIUS,
-            0f,
-            currentLineX.toFloat() + RADIUS,
-            mHeight * 1f - (RANGE + RADIUS),
-            mPaint
-        )
-        canvas.drawCircle(
-            currentLineX.toFloat() + RADIUS,
-            (mHeight * 1f) - (RANGE + RADIUS),
-            RADIUS,
-            mPaint
-        )
 
-        drawTextDurationMax(canvas, DEFAULT_TIME_POSITION, 0f + RADIUS, mPaint6)
-        try {
-            rs = durationAudio1 > durationAudio2
-            if (!rs) {
-                drawTextDurationMax(
-                    canvas,
-//                    convertTime(durationAudio2),
-                    getTimeAudio(durationAudio2.toLong()),
-                    (mWidth - RANGE * 3),
-                    mPaint6
-                )
-                drawTextDurationMin(
-                    canvas,
-//                    convertTime(audioFile1.duration.toInt()),
-                    getTimeAudio(audioFile1.duration)
-                )
-            } else {
-                drawTextDurationMax(
-                    canvas,
-//                    convertTime(durationAudio1),
-                    getTimeAudio(durationAudio1.toLong()),
-                    (mWidth - RANGE * 3),
-                    mPaint6
-                )
-                drawTextDurationMin(
-                    canvas, getTimeAudio(audioFile2.duration)
-                )
-
-            }
-        } catch (e: NumberFormatException) {
-            e.printStackTrace()
+    private fun getRightTextDurationMax(duration: Long): Float {
+        return if (Utils.chooseTimeFormat(duration) == Utils.TIME_FORMAT_INCLUDED_HOUR_TWO_ZERO) {
+            mWidth - RANGE * 3
+        } else {
+            mWidth - RANGE * 2
         }
 
-        /**text number position*/
-        drawTextPosition(
-            canvas,
-            numPos,
-            currentLineX.toFloat() - rect.width() / 2.5f,
-            mPaint
-        )
+    }
 
-
+    private fun getCurrentLineTextPos(): Int {
+        return when {
+            (currentLineX + rect.width() / 2) < mWidth -> {
+                currentLineX
+            }
+            else -> {
+                mWidth - rect.width() / 2
+            }
+        }
     }
 
 
-    @SuppressLint("SimpleDateFormat")
-    private fun convertTime(time: Int): String {
-        Log.d(TAG, "convertTime: time $time")
-        if (time < 0) return "00:00.0"
-        val df = SimpleDateFormat("mm:ss.S")
-        return df.format(time)
-    }
+    /* @SuppressLint("SimpleDateFormat")
+     private fun convertTime(time: Int): String {
+         if (time < 0) return "00:00.0"
+         val df = SimpleDateFormat("mm:ss.S")
+         return df.format(time)
+     }*/
 
 
     private fun drawBitmap(canvas: Canvas, fl: Float) {
         val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_sound_mixing)
         rectImage = Rect(0, 0, imageSound.width, imageSound.height)
-        rectImageDst1 = Rect((RADIUS * 2).toInt(), fl.toInt(), (RADIUS * 2 + RANGE).toInt(), (fl + RANGE).toInt())
+        rectImageDst1 = Rect(
+            (RADIUS * 2).toInt(),
+            fl.toInt(),
+            (RADIUS * 2 + RANGE).toInt(),
+            (fl + RANGE).toInt()
+        )
         canvas.drawBitmap(imageSound, rectImage, rectImageDst1, null)
     }
 
     private fun drawBitmap2(canvas: Canvas, fl: Float) {
         val imageSound = BitmapFactory.decodeResource(resources, R.drawable.ic_sound_mixing)
         rectImage = Rect(0, 0, imageSound.width, imageSound.height)
-        rectImageDst2 = Rect((RADIUS * 2).toInt(), fl.toInt(), (RADIUS * 2 + RANGE).toInt(), (fl + RANGE).toInt())
+        rectImageDst2 = Rect(
+            (RADIUS * 2).toInt(),
+            fl.toInt(),
+            (RADIUS * 2 + RANGE).toInt(),
+            (fl + RANGE).toInt()
+        )
         canvas.drawBitmap(imageSound, rectImage, rectImageDst2, null)
     }
 
@@ -310,14 +340,13 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     }
 
-    private fun drawTextPosition(canvas: Canvas, text: String, fl: Float, mPaint: Paint) {
-        mPaint.getTextBounds(text, 0, text.length, rect)
-        canvas.drawText(text, fl, mHeight * 1f - 3, mPaint)
+    private fun drawTextPosition(canvas: Canvas, text: String, pos: Float, mPaint: Paint) {
+//        mPaint.getTextBounds(text, 0, text.length, rect)
+        canvas.drawText(text, pos, mHeight * 1f - 3, mPaint)
 
     }
 
     private fun drawTextDurationMin(canvas: Canvas, text: String) {
-        Log.d(TAG, "drawTextDurationMin: $text")
         mPaint.getTextBounds(text, 0, text.length, rect)
         val rs = rectDuration1.width() > rectDuration2.width()
         textGetX = if (rs) {
@@ -336,95 +365,10 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
         canvas.drawText(text, textGetX, rect.height().toFloat(), mPaint6)
     }
 
-    private fun getW(): Int {
+    fun getW(): Int {
         return mWidth
     }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        /**check touch event**/
-        val x = event.x
-
-        when (event.action) {
-            MotionEvent.ACTION_MOVE -> {
-                when (isTouch) {
-                    TOUCHITEM.SEEKBAR -> {
-                        if (x >= 0 && x <= mWidth - RADIUS) {
-                            mCallback.pauseInvalid()
-                            drawLineTouch(x)
-                        }
-                    }
-                    TOUCHITEM.SEEKBARSOUND1 -> {
-                        currentXCircleVolume1 = x
-                        if (x < (rectImageDst1.width() + RANGE * 2)) {
-                            currentXCircleVolume1 = (rectImageDst1.width() + RANGE * 2)
-                        } else if (x > (mWidth / 1.3f + RANGE)) {
-                            currentXCircleVolume1 = (mWidth / 1.3f + RANGE)
-                        }
-                        mCallback.setVolumeAudio1(x, (rectImageDst1.width() + RANGE * 2), (mWidth / 1.3f + RANGE))
-                        val newValueSound = Utils.convertValue((rectImageDst1.width() + RANGE * 2).toDouble(), (mWidth / 1.3f + RANGE).toDouble(), 0.0, 1.0, x.toDouble())
-                        ratio = ((newValueSound / 1.0) * 100).toInt()
-                        checkRangeRatio(ratio)
-                        ratioSound1 = "${ratio}%"
-                        invalidate()
-                    }
-                    TOUCHITEM.SEEKBARSOUND2 -> {
-                        currentXCircleVolume2 = x
-                        if (x < (rectImageDst2.width() + RANGE * 2)) {
-                            currentXCircleVolume2 = (rectImageDst2.width() + RANGE * 2)
-                        } else if (x > (mWidth / 1.3f + RANGE)) {
-                            currentXCircleVolume2 = (mWidth / 1.3f + RANGE)
-                        }
-                        mCallback.setVolumeAudio2(x, (rectImageDst2.width() + RANGE * 2), (mWidth / 1.3f + RANGE))
-                        val newValueSound = Utils.convertValue((rectImageDst2.width() + RANGE * 2).toDouble(), (mWidth / 1.3f + RANGE).toDouble(), 0.0, 1.0, x.toDouble())
-                        ratio = ((newValueSound / 1.0) * 100).toInt()
-                        checkRangeRatio(ratio)
-                        ratioSound2 = "${ratio}%"
-
-                        invalidate()
-                    }
-                    else -> {
-                        //do nothing
-                    }
-                }
-                return true
-            }
-            MotionEvent.ACTION_UP -> {
-                when (isTouch) {
-                    TOUCHITEM.SEEKBAR -> {
-                        isTouch = TOUCHITEM.NONTOUCH
-                        val pos = Utils.convertValue(0.0, mWidth - RADIUS.toDouble(), 0.0, duration.toDouble(), x.toDouble())
-                        mCallback.onLineChange(audioFile1, audioFile2, pos.toInt())
-
-                    }
-                    TOUCHITEM.SEEKBARSOUND1 -> {
-                        isTouch = TOUCHITEM.NONTOUCH
-                    }
-                    TOUCHITEM.SEEKBARSOUND2 -> {
-                        isTouch = TOUCHITEM.NONTOUCH
-
-                    }
-
-                }
-
-            }
-            MotionEvent.ACTION_DOWN -> {
-                return if (event.y >= mHeight - Utils.convertDp2Px(20, context) * 2) {
-                    isTouch = TOUCHITEM.SEEKBAR
-                    true
-                } else if (event.y < circleProgressY1 + RANGE && event.y > circleProgressY1 - RANGE) {
-                    isTouch = TOUCHITEM.SEEKBARSOUND1
-                    true
-                } else if (event.y < circleProgressY2 + RANGE && event.y > circleProgressY2 - RANGE) {
-                    isTouch = TOUCHITEM.SEEKBARSOUND2
-                    true
-                } else {
-                    isTouch = TOUCHITEM.NONTOUCH
-                    false
-                }
-            }
-        }
-        return false
-    }
 
     private fun checkRangeRatio(ratio: Int) {
         if (ratio > 100) {
@@ -434,7 +378,7 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
         }
     }
 
-    fun getDurationMin(): Int {
+    private fun getDurationMin(): Int {
         return if (durationAudio1 > durationAudio2) {
             audioFile2.duration.toInt()
         } else {
@@ -469,32 +413,20 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
     }
 
 
-    fun setFileAudio(audioFile1: AudioFile, audioFile2: AudioFile) {
-        this.audioFile1 = audioFile1
-        this.audioFile2 = audioFile2
-
-        durationAudio1 = audioFile1.duration.toInt()
-        durationAudio2 = audioFile2.duration.toInt()
-        val rs = durationAudio1 > durationAudio2
-        duration = if (!rs) {
-            audioFile2.duration.toInt()
-        } else {
-            audioFile1.duration.toInt()
-        }
-        durationTmp = duration
-    }
-
+/*
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         val count = Utils.convertDp2Px(18, context)
         setPadding(count.toInt(), 0, 20, 0)
     }
+*/
 
     fun setPosition(position: Int) {
         val pos = Utils.convertValue(0.0, duration.toDouble(), 0.0, mWidth - RADIUS.toDouble(), position.toDouble())
         this.position = position
         currentLineX = pos.toInt()
 
+        /**check pos>maxdistance ->pauseAudio*/
         if (currentLineX > maxDistance) {
             currentLineX = maxDistance.toInt()
             mCallback.endAudioAtMaxdistance()
@@ -513,42 +445,33 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
         isChangeNumpos = true
     }
 
+    fun setFileAudio(audioFile1: AudioFile, audioFile2: AudioFile) {
+        this.audioFile1 = audioFile1
+        this.audioFile2 = audioFile2
+
+        durationAudio1 = audioFile1.duration.toInt()
+        durationAudio2 = audioFile2.duration.toInt()
+        val rs = durationAudio1 > durationAudio2
+        duration = if (!rs) {
+            audioFile2.duration.toInt()
+        } else {
+            audioFile1.duration.toInt()
+        }
+        durationTmp = duration
+    }
+
     fun setLengthAudio(durAudio1: String?, durAudio2: String?) {
 
         val isCompare = durAudio1!!.toInt() > durAudio2!!.toInt()
         if (isCompare) {
-            currentLengthSound1 = Utils.convertValue(
-                0.0,
-                durAudio1.toDouble(),
-                0.0,
-                mWidth.toDouble(),
-                durAudio1.toDouble()
-            )
-
+            currentLengthSound1 = convertValueDuration(durAudio1)
             currentLengthSound2 =
                 (durAudio2.toDouble() / durAudio1.toDouble()) * currentLengthSound1
 
         } else {
-            currentLengthSound2 = Utils.convertValue(
-                0.0,
-                durAudio2.toDouble(),
-                0.0,
-                mWidth.toDouble(),
-                durAudio2.toDouble()
-            )
+            currentLengthSound2 = convertValueDuration(durAudio2)
             currentLengthSound1 =
                 (durAudio1.toDouble() / durAudio2.toDouble()) * currentLengthSound2
-
-        }
-        if (durAudio1.toInt() == durAudio2.toInt()) {
-            currentLengthSound1 = Utils.convertValue(
-                0.0,
-                durAudio1.toDouble(),
-                0.0,
-                mWidth.toDouble(),
-                durAudio1.toDouble()
-            )
-            currentLengthSound2 = currentLengthSound1
         }
         if (currentLengthSound1 + RADIUS > mWidth) {
             currentLengthSound1 = mWidth - RADIUS.toDouble()
@@ -560,8 +483,18 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
         invalidate()
     }
 
+    private fun convertValueDuration(duration: String): Double {
+        return Utils.convertValue(
+            0.0,
+            duration.toDouble(),
+            0.0,
+            mWidth.toDouble(),
+            duration.toDouble()
+        )
+    }
+
+
     fun setDuration(duration: String) {
-        Log.d(TAG, "222: $duration")
         /**
         setjust the parameters
          */
@@ -612,7 +545,6 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
         }
     }
 
-
     fun seekNext5S(moreDuration: Int) {
 
         if (currentLineX > maxDistance) {
@@ -644,6 +576,117 @@ class ChangeRangeView @JvmOverloads constructor(context: Context, attrs: Attribu
         invalidate()
     }
 
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        /**check touch event**/
+        val x = event.x
+
+        when (event.action) {
+            MotionEvent.ACTION_MOVE -> {
+                when (isTouch) {
+                    TOUCHITEM.SEEKBAR -> {
+                        if (x >= 0 && x <= mWidth - RADIUS) {
+                            mCallback.pauseInvalid()
+                            drawLineTouch(x)
+                        }
+                    }
+                    TOUCHITEM.SEEKBARSOUND1 -> {
+                        currentXCircleVolume1 = x
+                        if (x < (rectImageDst1.width() + RANGE * 2)) {
+                            currentXCircleVolume1 = (rectImageDst1.width() + RANGE * 2)
+                        } else if (x > (mWidth / 1.3f + RANGE)) {
+                            currentXCircleVolume1 = (mWidth / 1.3f + RANGE)
+                        }
+                        mCallback.setVolumeAudio1(
+                            x,
+                            (rectImageDst1.width() + RANGE * 2),
+                            (mWidth / 1.3f + RANGE)
+                        )
+                        val newValueSound = Utils.convertValue(
+                            (rectImageDst1.width() + RANGE * 2).toDouble(),
+                            (mWidth / 1.3f + RANGE).toDouble(),
+                            0.0,
+                            1.0,
+                            x.toDouble()
+                        )
+                        ratio = ((newValueSound / 1.0) * 100).toInt()
+                        checkRangeRatio(ratio)
+                        ratioSound1 = "${ratio}%"
+                        invalidate()
+                    }
+                    TOUCHITEM.SEEKBARSOUND2 -> {
+                        currentXCircleVolume2 = x
+                        if (x < (rectImageDst2.width() + RANGE * 2)) {
+                            currentXCircleVolume2 = (rectImageDst2.width() + RANGE * 2)
+                        } else if (x > (mWidth / 1.3f + RANGE)) {
+                            currentXCircleVolume2 = (mWidth / 1.3f + RANGE)
+                        }
+                        mCallback.setVolumeAudio2(
+                            x,
+                            (rectImageDst2.width() + RANGE * 2),
+                            (mWidth / 1.3f + RANGE)
+                        )
+                        val newValueSound = Utils.convertValue(
+                            (rectImageDst2.width() + RANGE * 2).toDouble(),
+                            (mWidth / 1.3f + RANGE).toDouble(),
+                            0.0,
+                            1.0,
+                            x.toDouble()
+                        )
+                        ratio = ((newValueSound / 1.0) * 100).toInt()
+                        checkRangeRatio(ratio)
+                        ratioSound2 = "${ratio}%"
+
+                        invalidate()
+                    }
+                    else -> {
+                        //do nothing
+                    }
+                }
+                return true
+            }
+            MotionEvent.ACTION_UP -> {
+                when (isTouch) {
+                    TOUCHITEM.SEEKBAR -> {
+                        isTouch = TOUCHITEM.NONTOUCH
+                        val pos = Utils.convertValue(
+                            0.0,
+                            mWidth - RADIUS.toDouble(),
+                            0.0,
+                            duration.toDouble(),
+                            x.toDouble()
+                        )
+                        mCallback.onLineChange(audioFile1, audioFile2, pos.toInt())
+
+                    }
+                    TOUCHITEM.SEEKBARSOUND1 -> {
+                        isTouch = TOUCHITEM.NONTOUCH
+                    }
+                    TOUCHITEM.SEEKBARSOUND2 -> {
+                        isTouch = TOUCHITEM.NONTOUCH
+
+                    }
+
+                }
+
+            }
+            MotionEvent.ACTION_DOWN -> {
+                return if (event.y >= mHeight - Utils.convertDp2Px(20, context) * 2) {
+                    isTouch = TOUCHITEM.SEEKBAR
+                    true
+                } else if (event.y < circleProgressY1 + RANGE && event.y > circleProgressY1 - RANGE) {
+                    isTouch = TOUCHITEM.SEEKBARSOUND1
+                    true
+                } else if (event.y < circleProgressY2 + RANGE && event.y > circleProgressY2 - RANGE) {
+                    isTouch = TOUCHITEM.SEEKBARSOUND2
+                    true
+                } else {
+                    isTouch = TOUCHITEM.NONTOUCH
+                    false
+                }
+            }
+        }
+        return false
+    }
 
 
     interface OnPlayLineChange {

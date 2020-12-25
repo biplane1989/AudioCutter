@@ -53,7 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.1dp"
             android:layout_below="@+id/rlt_actionbar_mixing"
-            android:background="@color/colorAlphaGray" />
+            android:background="@color/colorgrayAlpha" />
 
 
         <LinearLayout

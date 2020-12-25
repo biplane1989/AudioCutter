@@ -58,12 +58,24 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
 
     private fun notifyPlayerDataChanged() {
-
-        Log.d("1111", "startTimerIfReady: path${playInfoData.currentAudio!!.fileName}   state ${playInfoData.playerState}  duration ${playInfoData.duration}   position ${playInfoData.posision}")
-        val playInfoCopy = PlayerInfo(playInfoData.currentAudio, playInfoData.posision, playInfoData.playerState, playInfoData.duration, playInfoData.volume)
+        Log.d(
+            TAG, "startTimerIfReady: ${playInfoData.currentAudio},\n" +
+                    "            ${playInfoData.posision},\n" +
+                    "            ${playInfoData.playerState},\n" +
+                    "            ${playInfoData.duration}"
+        )
+        val playInfoCopy = PlayerInfo(
+            playInfoData.currentAudio,
+            playInfoData.posision,
+            playInfoData.playerState,
+            playInfoData.duration,
+            playInfoData.volume
+        )
         if (Looper.myLooper() == Looper.getMainLooper()) {
+            Log.d(TAG, "onChanged   getMainLooper: ")
             _mPlayInfo.value = playInfoCopy
         } else {
+            Log.d(TAG, "onChanged   mainScope: ")
             mainScope.launch { _mPlayInfo.value = playInfoCopy }
         }
     }

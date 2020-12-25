@@ -352,10 +352,10 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener,
                     FlashType.CONTINUITY -> 1
                     FlashType.BEAT -> 0
                 }
-
                 flashTypeDialog = FlashTypeDialog.newInstance(num)
                 flashTypeDialog.setOnCallBack(this)
                 flashTypeDialog.show(childFragmentManager, FlashTypeDialog::class.java.name)
+                numCheckClick = 4
             }
             binding.tbEndTime -> {
                 numCheckClick = 2
