@@ -114,9 +114,6 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
     fun searchContact(data: String) {
         mListSearch.clear()
         if (data.equals("")) {
-            if (mListContact.size > 0){
-                mListSearch.add(mListContact.get(0))
-            }
             mContactMediatorLivedata.postValue(mListContact)
         } else {
             for (item in mListContact) {
@@ -125,13 +122,14 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
                     mListSearch.add(item)
                 }
             }
-            mContactMediatorLivedata.postValue(mListSearch)
+            val newListSearch = getHeaderListLatter(mListSearch)
+            mContactMediatorLivedata.postValue(newListSearch)
+//            mContactMediatorLivedata.postValue(mListSearch)
         }
 
         if (mListContact.size > 0) {
-            if (mListSearch.size > 0) {
-                isEmptyStatus.postValue(false)
-            } else {
+            isEmptyStatus.postValue(false)
+            if (mListSearch.size == 0 && !data.equals("")) {
                 isEmptyStatus.postValue(true)
             }
         } else {

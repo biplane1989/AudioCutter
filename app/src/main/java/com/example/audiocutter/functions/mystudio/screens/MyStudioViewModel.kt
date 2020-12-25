@@ -191,8 +191,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 if (!isActive) {              // khi nguoi dung cancel
                     return@lst
                 }
-//                if (it.convertingState in arrayListOf(ConvertingState.WAITING, ConvertingState.PROGRESSING) && filePathMapConvertingItem.containsKey(it.getFilePath()) && filePathMapItemView.containsKey(it.getFilePath())) {
-                if (filePathMapItemView.containsKey(it.getFilePath())) {
+                if (it.convertingState in arrayListOf(ConvertingState.WAITING, ConvertingState.PROGRESSING) && filePathMapConvertingItem.containsKey(it.getFilePath()) && filePathMapItemView.containsKey(it.getFilePath())) {
+//                if (filePathMapItemView.containsKey(it.getFilePath())) {
                     filePathMapItemView.get(it.getFilePath())?.let {
                         if (it.convertingState == ConvertingState.SUCCESS) {
                             val audioViewItem = filePathMapItemView.get(it.getFilePath())

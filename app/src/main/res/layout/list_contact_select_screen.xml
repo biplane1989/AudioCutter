@@ -171,6 +171,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
+                android:visibility="invisible"
                 android:id="@+id/btn_save"
                 android:layout_width="90dp"
                 android:layout_height="40dp"
@@ -190,12 +191,12 @@
                 android:layout_marginRight="16dp"
                 android:layout_marginBottom="10dp"
                 android:background="#F6F6F6"
-                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:visibility="invisible"
                 android:id="@+id/tv_save"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -216,7 +217,7 @@
                 android:text="@string/list_contact_select_btn_save"
                 android:textColor="#9C9C9C"
                 android:textSize="14dp"
-                android:visibility="invisible"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@id/btn_save"
                 app:layout_constraintEnd_toEndOf="@id/btn_save"
                 app:layout_constraintStart_toStartOf="@id/btn_save"

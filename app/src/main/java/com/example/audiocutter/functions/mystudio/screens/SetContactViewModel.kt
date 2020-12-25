@@ -145,9 +145,13 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
         }
 
         if (mListContact.size > 0) {
-            isEmptyStatus.postValue(false)
-            if (mListSearch.size > 0 && !data.equals("")) {
+            Log.d("TAG", "searchContact: mlistSearch: " + mListSearch.size + " data :" + data + " mListContact : "+  mListContact.size)
+            if (mListSearch.size == 0 && !data.equals("")) {
+                Log.d("TAG", "searchContact: true")
                 isEmptyStatus.postValue(true)
+            } else {
+                isEmptyStatus.postValue(false)
+                Log.d("TAG", "searchContact: false")
             }
         } else {
             isEmptyStatus.postValue(true)

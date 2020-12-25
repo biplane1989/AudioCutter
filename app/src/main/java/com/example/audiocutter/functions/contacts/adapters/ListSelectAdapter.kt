@@ -316,6 +316,8 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
 
                     sbMusic.clearAnimation()
                     sbAnimation?.cancel()
+                    sbMusic.progress = 0
+                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
 
                     playerState = PlayerState.IDLE
                     audioPlayer.stop()
