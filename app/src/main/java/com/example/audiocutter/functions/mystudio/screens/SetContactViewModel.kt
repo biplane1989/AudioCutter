@@ -133,9 +133,6 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
         }
         mListSearch.clear()
         if (data.equals("")) {
-            if (mListContact.size > 0) {
-                mListSearch.add(mListContact.get(0))
-            }
             mContactMediatorLivedata.postValue(mListContact)
         } else {
             for (item in mListContact) {
@@ -148,9 +145,8 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
         }
 
         if (mListContact.size > 0) {
-            if (mListSearch.size > 0) {
-                isEmptyStatus.postValue(false)
-            } else {
+            isEmptyStatus.postValue(false)
+            if (mListSearch.size > 0 && !data.equals("")) {
                 isEmptyStatus.postValue(true)
             }
         } else {
@@ -162,11 +158,6 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
         var newContactList = ArrayList<SetContactItemView>()
         if (mListSearch.size > 0) {
             newContactList = mListSearch
-
-            for (item in mListContact) {    // khi la listSearch thi reset lai cho mListContact
-                item.isSelect = false
-            }
-
         } else {
             newContactList = mListContact
         }
@@ -186,6 +177,25 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
             }
             index++
         }
+
+        var index1 = 0
+        for (item in mListContact) {
+            if (TextUtils.equals(item.contactItem.phoneNumber, phoneNumber)) {
+                val newContact = item.copy()
+                newContact.isSelect = true
+                mListContact.set(index1, newContact)
+//                isSelectItem.postValue(true)
+
+            } else {
+                val newContact = item.copy()
+                newContact.isSelect = false
+                mListContact.set(index1, newContact)
+            }
+            index1++
+        }
+
+
+
 
         mContactMediatorLivedata.postValue(newContactList)
     }

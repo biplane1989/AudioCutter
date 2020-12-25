@@ -26,7 +26,7 @@ interface AudioPlayer {
     fun pause()
     fun resume()
     fun stop()
-    fun seek(position: Int)
+    fun seek(position: Int, autoResume:Boolean=false)
     fun setVolume(volume: Float)
     fun getMaxVolume(): Int
     fun getAudioIsPlaying(): Boolean

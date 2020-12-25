@@ -376,6 +376,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                 Log.d(TAG, "onStopTrackingTouch: status 4: " + playerState)
                 binding.sbMusic.clearAnimation()
                 sbAnimation?.cancel()
+//                mResultViewModel.seekToAudio(binding.sbMusic.progress / 100, true)
                 mResultViewModel.seekToAudio(binding.sbMusic.progress / 100)
                 mResultViewModel.resumeAudio()
                 isSeekBarStatus = false

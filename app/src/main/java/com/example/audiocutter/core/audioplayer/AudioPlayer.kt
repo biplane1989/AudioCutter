@@ -9,10 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.core.manager.*
 import com.example.audiocutter.objects.AudioFile
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.util.*
 
 class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
@@ -23,10 +20,11 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     private lateinit var appContext: Context
     private lateinit var mPlayer: MediaPlayer
     private val mainScope = MainScope()
+    private var updateTimeJob: Job? = null
     private var isStopped = false
     private var isSeekTo = 0
     private lateinit var mAudioFile: AudioFile
-
+    private var isSeeking = false;
 
     private var _mPlayInfo = MutableLiveData<PlayerInfo>()
     private val playInfoData = PlayerInfo(null, 0, PlayerState.IDLE, 0, 0f)
@@ -70,7 +68,8 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         }
     }
 
-    override  fun play(audioFile: AudioFile): Boolean {
+    override fun play(audioFile: AudioFile): Boolean {
+        reset()
         mAudioFile = audioFile
         try {
             mainScope.launch {
@@ -98,10 +97,13 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         }
 
     }
-
-    override  fun play(audioFile: AudioFile, currentPosition: Int): Boolean {
+    private fun reset(){
+        isSeeking = false
+    }
+    override fun play(audioFile: AudioFile, currentPosition: Int): Boolean {
         Log.d(TAG, "play: currentPosition : ${currentPosition}")
         mAudioFile = audioFile
+        reset()
         try {
             isSeekTo = currentPosition
             mainScope.launch {
@@ -198,17 +200,36 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         }
     }
 
-    override fun seek(position: Int) {
-        try {
-            if (position >= mPlayer.duration) {
-                mPlayer.stop()
-            }
-            mPlayer.seekTo(position)
-            playInfoData.posision = position
-            Log.d(TAG, "PlayToPosition seekto: $position duration " + getTotalPos())
-        } catch (e: Exception) {
-            e.printStackTrace()
+    override fun seek(position: Int,autoResume:Boolean) {
+        if (isSeeking) {
+            return
         }
+        mainScope.launch {
+            stopUpdateTime()
+            try {
+                if (position >= mPlayer.duration) {
+                    mPlayer.stop()
+                }
+                mPlayer.seekTo(position)
+                playInfoData.posision = position
+                if(autoResume){
+                    resume()
+                    delay(100)
+                }
+                isSeeking = true
+                while (isSeeking && mPlayer.currentPosition < position) {
+                    delay(100)
+                }
+                Log.d("taihhhhhh", "seek3: $position isSeeking $isSeeking ${mPlayer} currentPosition ${mPlayer.currentPosition}")
+                isSeeking = false
+
+                startTimerIfReady()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+        }
+
 
     }
 
@@ -231,10 +252,16 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         return mPlayer.isPlaying
     }
 
+    private suspend fun stopUpdateTime() {
+        updateTimeJob?.cancelAndJoin()
+        updateTimeJob = null
+    }
 
     private suspend fun startTimerIfReady() {
-        mainScope.launch {
-            while (mainScope.isActive) {
+        stopUpdateTime()
+
+        updateTimeJob = mainScope.launch {
+            while (!isUpdateTimeJobCancelled()) {
                 var changed = false
                 delay(500)
 
@@ -267,27 +294,30 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                             }
                             changed = true
                         } else {
-                           /* if (isStopped &&  playInfoData.playerState != PlayerState.IDLE) {
-                                playInfoData.playerState = PlayerState.IDLE
-                                currentPosition = 0
-                                playInfoData.posision = currentPosition
-                                changed = true
-                            }*/
+                            /* if (isStopped &&  playInfoData.playerState != PlayerState.IDLE) {
+                                 playInfoData.playerState = PlayerState.IDLE
+                                 currentPosition = 0
+                                 playInfoData.posision = currentPosition
+                                 changed = true
+                             }*/
                         }
                     }
 
-                    if (playInfoData.posision != currentPosition && playInfoData.playerState == PlayerState.PLAYING) {
+                    if (playInfoData.posision != mPlayer.currentPosition) {
                         changed = true
-                        playInfoData.posision = currentPosition
+                        playInfoData.posision = mPlayer.currentPosition
                     }
-                    if (changed) {
+                    if (changed && !isUpdateTimeJobCancelled()) {
+                        Log.d("taihhhhhh", "update: ${playInfoData.posision}  ${mPlayer} currentPosition ${mPlayer.currentPosition}")
                         notifyPlayerDataChanged()
                     }
                 }
             }
         }
     }
-
+    private fun isUpdateTimeJobCancelled():Boolean{
+        return updateTimeJob?.isCancelled ?: true
+    }
 
     override fun getPlayerInfoData(): PlayerInfo {
         return playInfoData

@@ -182,9 +182,9 @@ class ListSelectAudioScreen() : BaseFragment(), SelectAudioScreenCallback, View.
     }
 
 
-    override fun isShowPlayingAudio(positition: Int) {
-        positionSelect = positition
-        mListSelectAudioViewModel.showPlayingAudio(positition)
+    override fun isShowPlayingAudio(filePath: String) {
+        positionSelect = 1
+        mListSelectAudioViewModel.showPlayingAudio(filePath)
     }
 
     override fun onClick(view: View?) {

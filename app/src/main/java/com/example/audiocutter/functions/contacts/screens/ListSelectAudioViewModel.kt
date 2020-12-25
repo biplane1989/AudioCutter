@@ -127,7 +127,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         return false
     }
 
-    fun showPlayingAudio(position: Int) {
+    fun showPlayingAudio(filePath: String) {
         // khi play nhac reset lai trang thai cac item khac
 
         var newAudioList = ArrayList<SelectItemView>()
@@ -137,21 +137,38 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
             newAudioList = mListAudioFileView
         }
 
-        var index = 0
+        var index1 = 0
         for (item in newAudioList) {
-            if (index != position) {
+            if (!TextUtils.equals(item.getFilePath(), filePath)) {
                 val newItem = item.copy()
                 newItem.isSelect = false
                 newItem.isExpanded = false
-                newAudioList[index] = newItem
+                newAudioList[index1] = newItem
+            } else {
+                val newItem = item.copy()
+                newItem.isSelect = true
+                newItem.isExpanded = !item.isExpanded
+                newAudioList[index1] = newItem
+            }
+            index1++
+        }
+
+        var index = 0
+        for (item in mListAudioFileView) {
+            if (!TextUtils.equals(item.getFilePath(), filePath)) {
+                val newItem = item.copy()
+                newItem.isSelect = false
+                newItem.isExpanded = false
+                mListAudioFileView[index] = newItem
+            } else {
+                val newItem = item.copy()
+                newItem.isSelect = true
+//                newItem.isExpanded = !item.isExpanded
+                mListAudioFileView[index] = newItem
             }
             index++
         }
 
-        val selectItemView = newAudioList.get(position).copy()
-        selectItemView.isSelect = true
-        selectItemView.isExpanded = !newAudioList.get(position).isExpanded
-        newAudioList.set(position, selectItemView)
         mAudioMediatorLiveData.postValue(newAudioList)
         checkIsChoseRingTone()
     }
@@ -189,6 +206,8 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     }
 
     fun searchAudioFile(data: String) {
+
+        Log.d("TAG", "searchAudioFile: data search:  " + data)
         var index = 0                   // dong bo hoa mListSearch va mListAudioFileView
         if (mListSearch.size > 0) {
             for (item in mListAudioFileView) {
@@ -204,9 +223,6 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 
         mListSearch.clear()
         if (data.equals("")) {
-            if (mListAudioFileView.size > 0) {
-                mListSearch.add(mListAudioFileView.get(0))
-            }
             mAudioMediatorLiveData.postValue(mListAudioFileView)
         } else {
             for (item in mListAudioFileView) {
@@ -219,9 +235,8 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         }
 
         if (mListAudioFileView.size > 0) {
-            if (mListSearch.size > 0) {
-                isEmptyStatus.postValue(false)
-            } else {
+            isEmptyStatus.postValue(false)
+            if (mListSearch.size == 0 && !data.equals("")) {
                 isEmptyStatus.postValue(true)
             }
         } else {
