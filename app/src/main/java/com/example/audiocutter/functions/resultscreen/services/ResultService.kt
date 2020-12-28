@@ -42,6 +42,7 @@ class ResultService : LifecycleService() {
                 }
                 ConvertingState.SUCCESS -> {
                     sendNotificationComplte(it.id)
+                    Log.d(TAG, "cancelNotidication : create ID : " + it.id)
                 }
                 ConvertingState.ERROR -> {
                     sendNotificationFail(it.id)
@@ -84,6 +85,7 @@ class ResultService : LifecycleService() {
 
     fun cancelNotidication(id: Int) {       // cancel 1 notification
         manager.cancel(id)
+        Log.d(TAG, "cancelNotidication: cancel ID : " + id)
     }
 
     override fun onDestroy() {

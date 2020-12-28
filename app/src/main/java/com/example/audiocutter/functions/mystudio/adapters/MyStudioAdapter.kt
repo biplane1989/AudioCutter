@@ -261,7 +261,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         fun setSeekbarAnimate(pb: SeekBar, progressTo: Int, duration: Long) {
             // smooth animation
 
-            Log.d(TAG, "setSeekbarAnimate: pb.progress : " + pb.progress + " progressTo : " + progressTo + "max ${pb.max}")
+            Log.d(TAG, "setSeekbarAnimate: pb.progress : "  + progressTo *100 + " max ${pb.max}")
             sbAnimation?.cancel()
             sbAnimation = ObjectAnimator.ofInt(pb, "progress", pb.progress, progressTo * 100)
             sbAnimation?.duration = duration
@@ -319,7 +319,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
             if (audioFileView.audioFile.bitmap != null) {
                 Glide.with(itemView).load(audioFileView.audioFile.bitmap)
-//                    .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
                     .into(ivAvatar)
 
             } else {
@@ -362,8 +361,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
 
-                    Log.d(TAG, "onProgressChanged: aloha progress : " + progress)
-                    Log.d(TAG, "onProgressChanged: PlayerState.PAUSE ${playerState}")
                     if (playerState != PlayerState.IDLE) {
                         if (fromUser) {
                             sbMusic.clearAnimation()
@@ -371,14 +368,12 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                             setSeekbarAnimate(sbMusic, progress / 100, DURATION_ANIMATION)
                         }
                     }
-                    if (playerState == PlayerState.PAUSE) {
+                    if (playerState != PlayerState.PLAYING) {
                         tvTimeLife.text = Utils.toTimeStr(progress.toLong() / 100, timeFomat)
                     }
                 }
 
                 override fun onStartTrackingTouch(sb: SeekBar?) {
-                    Log.d(TAG, "onStartTrackingTouch: status 2" + playerState)
-                    Log.d(TAG, "setSeekbarAnimate: pb.progress : " + sbMusic.progress + " max : " + sbMusic.max)
                     if (playerState == PlayerState.PLAYING) {
 
                         audioPlayer.pause()
@@ -389,31 +384,21 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 }
 
                 override fun onStopTrackingTouch(sb: SeekBar?) {
-                    Log.d(TAG, "onStopTrackingTouch: status 3: " + playerState)
-                    Log.d(TAG, " progressbar : 2" + sbMusic.progress)
                     if (playerState == PlayerState.IDLE) {
 //                        lifecycleScope.launch {
                             sbMusic.clearAnimation()
                             sbAnimation?.cancel()
                             val newValue = Utils.convertValue(0, sbMusic.max, 0, audioFileView.audioFile.duration.toInt(), sbMusic.progress)
-                            Log.d(TAG, "checkNewValue: $newValue  - duration ${audioFileView.audioFile.duration.toInt()} ")
                             audioPlayer.play(audioFileView.audioFile, newValue)
 //                        }
                     } else {
-
-//                        Log.d(TAG, "onStopTrackingTouch: status 4: " + playerState)
-//                        sbMusic.clearAnimation()
-//                        sbAnimation?.cancel()
-//                        audioPlayer.seek(sbMusic.progress / 100)
-//                        audioPlayer.resume()
-//                        isSeekBarStatus = false
                     }
 
-                    Log.d(TAG, "onStopTrackingTouch: status 4: " + playerState)
                     sbMusic.clearAnimation()
                     sbAnimation?.cancel()
-                    audioPlayer.seek(sbMusic.progress / 100)
-                    audioPlayer.resume()
+
+                    audioPlayer.seek(sbMusic.progress / 100, true)
+
                     isSeekBarStatus = false
                 }
 
@@ -425,10 +410,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 val audioFileView = getItem(adapterPosition)
                 when (view.id) {
                     R.id.ll_audio_item_header -> {
-
-                        sbMusic.progress = 0
-                        ivPausePlay.setImageResource(R.drawable.my_studio_item_icon_play)
-                        tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
 
                         sbMusic.clearAnimation()
                         sbAnimation?.cancel()

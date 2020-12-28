@@ -121,15 +121,8 @@ class SetContactAdapter(var contactCallback: SetContactCallback) : ListAdapter<S
 
             tvName.text = contentItem.contactItem.name
 
-//            contentItem.contactItem.thumb?.let {
-//                Glide.with(itemView.context).load(it)
-//                    .transition(DrawableTransitionOptions.withCrossFade()).dontAnimate()
-//                    .into(ivAvatar)
-//            }
-
             contentItem.contactItem.thumb?.let {
                 Glide.with(itemView.context).load(it)
-//                    .transform(RoundedCorners(Utils.convertDp2Px(4, itemView.context).toInt()))
                     .into(ivAvatar)
             }
 

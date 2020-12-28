@@ -18,6 +18,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
@@ -175,9 +176,9 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
     }
 
 
-    override fun isShowPlayingAudio(positition: Int) {
-        positionSelect = positition
-        mListSelectAudioViewModel.showPlayingAudio(positition)
+    override fun isShowPlayingAudio(filePath: String) {
+        positionSelect = 1
+        mListSelectAudioViewModel.showPlayingAudio(filePath)
     }
 
     override fun onClick(view: View?) {
@@ -238,6 +239,9 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
                     if (mListSelectAudioViewModel.setRingtoneWithUri(safeArg.phoneNumber, path)) {
                         Toast.makeText(context, getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
                             .show()
+                        lifecycleScope.launchWhenResumed {
+                            requireActivity().onBackPressed()
+                        }
                     } else {
                         Toast.makeText(context, getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
                             .show()
