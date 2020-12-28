@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -57,7 +58,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         audioMerModel = ViewModelProvider(this).get(MergePreviewModel::class.java)
-
         audioMerAdapter = MergePreviewAdapter(requireContext(), audioMerModel.getAudioPlayer(), lifecycleScope,requireActivity())
 //        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
 
@@ -71,17 +71,14 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
             val audioFile = ManagerFactory.getAudioFileManager().findAudioFile(item)
             audioFile?.let {
                 listPath.add(item)
-                newListAudio.add(
-                    AudioCutterView(
-                        audioFile,
-                        PlayerState.IDLE,
-                        false,
-                        0L,
-                        0L,
-                        false
-                    )
-                )
+                newListAudio.add(AudioCutterView(audioFile))
             }
+        }
+
+        val listData = audioMerModel.getListAudioTmp()
+        listData.forEach {
+
+            Log.d(TAG, "onPostCreate: ${it.audioFile.fileName}")
         }
         receiveData(newListAudio)
 
@@ -195,7 +192,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     override fun onDestroyView() {
         super.onDestroyView()
-        ManagerFactory.getDefaultAudioPlayer().stop()
+        audioMerModel.stop()
     }
 
     fun receiveData(listData: List<AudioCutterView>) {

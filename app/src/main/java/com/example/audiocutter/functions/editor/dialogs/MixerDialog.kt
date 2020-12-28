@@ -41,12 +41,6 @@ class MixerDialog : BaseDialog() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         edt_file_name.setText(Utils.genAudioFileName(Folder.TYPE_MIXER, prefixName = arguments?.getString(SUGGESTION_NAME_KEY)?: ""))
-        val name = Utils
-            .genAudioFileName(
-                Folder.TYPE_MIXER,
-                edt_file_name.text.toString().trim()
-            )
-
         tv_cancel_dialog_filename.setOnClickListener {
             dialog?.dismiss()
             dialogListener.onCancel()
@@ -63,12 +57,10 @@ class MixerDialog : BaseDialog() {
                 if (checkValid(edt_file_name.text.toString())) {
                     dialogListener.onMixClick(edt_file_name.text.toString())
                     dismiss()
-                } else {
-                    edt_file_name.setText(name)
                 }
             }
         }
-        edt_file_name.setSelection(name.length)
+        edt_file_name.setSelection(edt_file_name.text.toString().length)
         edt_file_name.post {
             Utils.showKeyboard(requireContext(), edt_file_name)
         }

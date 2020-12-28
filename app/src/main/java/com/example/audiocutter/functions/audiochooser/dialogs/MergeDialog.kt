@@ -12,7 +12,7 @@ import com.example.audiocutter.util.Utils
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.merge_audio_dialog.*
 
-class MergeDialog() : BaseDialog(), View.OnClickListener {
+class MergeDialog : BaseDialog(), View.OnClickListener {
 
     private var countFile = 0
 //    private lateinit var mCallback: MergeDialogListener
@@ -88,15 +88,9 @@ class MergeDialog() : BaseDialog(), View.OnClickListener {
                 dismiss()
             }
             R.id.tv_ok_dialog_merge -> {
-                val name = Utils.genAudioFileName(
-                    Folder.TYPE_MERGER,
-                    edt_filename_dialog.text.toString().trim()
-                )
                 if (checkValid(edt_filename_dialog.text.toString())) {
-                    mCallback.mergeAudioFile(name)
+                    mCallback.mergeAudioFile(edt_filename_dialog.text.toString())
                     dismiss()
-                } else {
-                    edt_filename_dialog.setText(name)
                 }
             }
         }

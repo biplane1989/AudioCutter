@@ -148,8 +148,6 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
                         addDataSharePre()
                     }
                     dismiss()
-                } else {
-                    edtNameFile.setText(name)
                 }
 
             }
