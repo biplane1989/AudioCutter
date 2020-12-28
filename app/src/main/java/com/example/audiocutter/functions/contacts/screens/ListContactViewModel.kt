@@ -122,17 +122,18 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
                     mListSearch.add(item)
                 }
             }
-            mContactMediatorLivedata.postValue(mListSearch)
+            val newListSearch = getHeaderListLatter(mListSearch)
+            mContactMediatorLivedata.postValue(newListSearch)
+//            mContactMediatorLivedata.postValue(mListSearch)
         }
 
-        if (mListSearch.size > 0) {
+        if (mListContact.size > 0) {
             isEmptyStatus.postValue(false)
-        } else {
-            if (mListContact.size > 0) {
-                isEmptyStatus.postValue(false)
-            } else {
+            if (mListSearch.size == 0 && !data.equals("")) {
                 isEmptyStatus.postValue(true)
             }
+        } else {
+            isEmptyStatus.postValue(true)
         }
     }
 

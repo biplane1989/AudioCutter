@@ -100,7 +100,7 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
 
             val firstContact = newListContact.get(0).contactHeader  // neu co cac ky tu dac biet thi them 1 header = "#"
             if (!firstContact[0].isLetter()) {
-                listContact.add(SetContactItemView("#", "", ContactItem("","", "", null, null, false, ""), true))
+                listContact.add(SetContactItemView("#", "", ContactItem("", "", "", null, null, false, ""), true))
             }
             var lastHeader: String? = ""
             for (contact in newListContact) {           // gom cac contact vao chung 1 header
@@ -144,14 +144,17 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
             mContactMediatorLivedata.postValue(mListSearch)
         }
 
-        if (mListSearch.size > 0) {
-            isEmptyStatus.postValue(false)
-        } else {
-            if (mListContact.size > 0) {
-                isEmptyStatus.postValue(false)
-            } else {
+        if (mListContact.size > 0) {
+            Log.d("TAG", "searchContact: mlistSearch: " + mListSearch.size + " data :" + data + " mListContact : "+  mListContact.size)
+            if (mListSearch.size == 0 && !data.equals("")) {
+                Log.d("TAG", "searchContact: true")
                 isEmptyStatus.postValue(true)
+            } else {
+                isEmptyStatus.postValue(false)
+                Log.d("TAG", "searchContact: false")
             }
+        } else {
+            isEmptyStatus.postValue(true)
         }
     }
 
@@ -159,11 +162,6 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
         var newContactList = ArrayList<SetContactItemView>()
         if (mListSearch.size > 0) {
             newContactList = mListSearch
-
-            for (item in mListContact) {    // khi la listSearch thi reset lai cho mListContact
-                item.isSelect = false
-            }
-
         } else {
             newContactList = mListContact
         }
@@ -183,6 +181,25 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
             }
             index++
         }
+
+        var index1 = 0
+        for (item in mListContact) {
+            if (TextUtils.equals(item.contactItem.phoneNumber, phoneNumber)) {
+                val newContact = item.copy()
+                newContact.isSelect = true
+                mListContact.set(index1, newContact)
+//                isSelectItem.postValue(true)
+
+            } else {
+                val newContact = item.copy()
+                newContact.isSelect = false
+                mListContact.set(index1, newContact)
+            }
+            index1++
+        }
+
+
+
 
         mContactMediatorLivedata.postValue(newContactList)
     }

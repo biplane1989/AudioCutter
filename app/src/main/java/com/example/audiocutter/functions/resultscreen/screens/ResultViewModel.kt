@@ -163,7 +163,7 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
     }
 
     fun seekToAudio(cusorPos: Int) {
-        audioPlayer.seek(cusorPos)
+        audioPlayer.seek(cusorPos, true)
     }
 
     fun getPlayerInfo(): LiveData<PlayerInfo> {

@@ -74,7 +74,6 @@
                 android:id="@+id/iv_home"
                 android:layout_width="@dimen/common_size_item_imagview"
                 android:layout_height="match_parent"
-                android:layout_marginRight="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/result_ic_home"
