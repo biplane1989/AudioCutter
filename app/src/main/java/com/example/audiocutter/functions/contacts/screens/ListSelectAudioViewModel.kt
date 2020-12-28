@@ -52,25 +52,27 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     fun init(fileUri: String) {
         mAudioMediatorLiveData.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
             runOnBackground {
+                loadingStatus.postValue(true)
                 if (it.state == StateLoad.LOADING) {
                     //isEmptyStatus.postValue(false)
                     loadingStatus.postValue(true)
                 }
                 if (it.state == StateLoad.LOADDONE) {
-                    loadingStatus.postValue(true)
+//                    loadingStatus.postValue(true)
                     // khi loading xong thi check co data hay khong de show man hinh empty data
                     if (!it.listAudioFiles.isEmpty()) {
                         it.listAudioFiles.forEach { audioFile ->
                             mListAudioFileView.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false))
                         }
                         mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
+                        loadingStatus.postValue(false)
 
                     } else {
+                        loadingStatus.postValue(false)
                         isEmptyStatus.postValue(true)
                     }
                 }
                 selectRingtone(fileUri)
-                loadingStatus.postValue(false)
                 mAudioMediatorLiveData.postValue(mListAudioFileView)
 
             }

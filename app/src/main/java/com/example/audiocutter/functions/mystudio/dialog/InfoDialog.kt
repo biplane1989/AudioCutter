@@ -13,6 +13,7 @@ import com.example.core.utils.FileUtil
 import kotlinx.android.synthetic.main.my_studio_dialog_info.*
 import java.io.File
 import java.text.SimpleDateFormat
+import java.util.*
 
 class InfoDialog : BaseDialog() {
 
@@ -55,7 +56,7 @@ class InfoDialog : BaseDialog() {
 
     @SuppressLint("SetTextI18n", "SimpleDateFormat")
     fun getData() {
-        val simpleDateFormat = SimpleDateFormat("HH:mm:ss")
+        val simpleDateFormat = SimpleDateFormat("HH:mm:ss dd/MM/yyyy")
 
         if (requireArguments().getString(BUNDLE_FILE_PATH) != null) {
             val size = File(requireArguments().getString(BUNDLE_FILE_PATH).toString()).length()
@@ -114,5 +115,17 @@ class InfoDialog : BaseDialog() {
             tv_location.text = UNKNOWN
             tv_format.text = UNKNOWN
         }
+    }
+
+    fun convertDateString(date: Long): String {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = date
+        return twoDrigits(calendar[Calendar.DAY_OF_MONTH]).toString() + "/" + twoDrigits(calendar[Calendar.MONTH] + 1) + "/" + calendar[Calendar.YEAR]
+    }
+
+    fun twoDrigits(number: Int): String {
+        return if (number <= 9 && number > 0) {
+            "0$number"
+        } else number.toString() + ""
     }
 }

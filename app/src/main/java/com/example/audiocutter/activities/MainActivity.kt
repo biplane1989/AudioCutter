@@ -48,8 +48,9 @@ class MainActivity : BaseActivity() {
 
                 val typeAudio = intent.getIntExtra(Constance.TYPE_RESULT, -1)
                 if (typeAudio != -1) {
-                    Log.d("TAG", "handleNotificationIntent: ")
+
                     lifecycleScope.launchWhenResumed {
+                        Log.d("TAG", "handleNotificationIntent: ")
                         viewStateManager.goToMyStudioScreen(
                             findNavController(R.id.app_nav_host_fragment),
                             typeAudio

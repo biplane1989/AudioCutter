@@ -184,7 +184,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             Log.d(TAG, "setSeekbarAnimate: pb.progress : "  + progressTo *100 + " max ${pb.max} current ${pb.progress}")
             sbAnimation?.cancel()
             sbAnimation = ObjectAnimator.ofInt(pb, "progress", pb.progress, progressTo * 100)
-//            sbAnimation = ObjectAnimator.ofInt(pb, "progress", pb.progress, progressTo )
             sbAnimation?.setDuration(duration)
             sbAnimation?.setInterpolator(DecelerateInterpolator())
             sbAnimation?.start()

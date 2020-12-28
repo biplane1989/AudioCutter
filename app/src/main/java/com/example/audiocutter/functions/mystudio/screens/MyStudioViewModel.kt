@@ -112,7 +112,10 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         mAudioMediatorLiveData.addSource(listScaners) { // khi data co su thay doi thi se goi vao ham nay
 
             listScansIsEmptyStatus = it.listAudioFiles.size <= 0
-            Log.d(TAG, "init: update data: listScaners ${this@MyStudioViewModel} :" + it.listAudioFiles.size + " status: " + listScansIsEmptyStatus)
+            Log.d(
+                TAG,
+                "init: update data: listScaners ${this@MyStudioViewModel} :" + it.listAudioFiles.size + " status: " + listScansIsEmptyStatus
+            )
 
             mListScannedAudioFile.clear()
 
@@ -125,7 +128,16 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 loadingStatus.postValue(false)
                 loadingDone.postValue(true)
                 for (item in it.listAudioFiles) {
-                    mListScannedAudioFile.add(AudioFileView(item, false, ItemLoadStatus(), ConvertingState.SUCCESS, -1, -1))
+                    mListScannedAudioFile.add(
+                        AudioFileView(
+                            item,
+                            false,
+                            ItemLoadStatus(),
+                            ConvertingState.SUCCESS,
+                            -1,
+                            -1
+                        )
+                    )
                 }
                 notifyMergingListAudio()
             }
@@ -140,19 +152,49 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             if (!it.isEmpty()) {
                 for (item in it) {
                     if (item is CuttingConvertingItem) {
-                        val fileCutting = File(item.cuttingConfig.pathFolder + "/" + item.cuttingConfig.fileName + "." + item.cuttingConfig.format.toString()
-                            .toLowerCase(Locale.ROOT))
-                        mListConvertingItems.add(AudioFileView(AudioFile(fileCutting, item.cuttingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
+                        val fileCutting = File(
+                            item.cuttingConfig.pathFolder + "/" + item.cuttingConfig.fileName + "." + item.cuttingConfig.format.toString()
+                                .toLowerCase(Locale.ROOT)
+                        )
+                        mListConvertingItems.add(
+                            AudioFileView(
+                                AudioFile(
+                                    fileCutting,
+                                    item.cuttingConfig.fileName,
+                                    100
+                                ), false, ItemLoadStatus(), item.state, item.percent, item.id
+                            )
+                        )
                     }
                     if (item is MergingConvertingItem) {
-                        val fileConverting = File(item.mergingConfig.pathFolder + "/" + item.mergingConfig.fileName + "." + item.mergingConfig.audioFormat.toString()
-                            .toLowerCase(Locale.ROOT))
-                        mListConvertingItems.add(AudioFileView(AudioFile(fileConverting, item.mergingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
+                        val fileConverting = File(
+                            item.mergingConfig.pathFolder + "/" + item.mergingConfig.fileName + "." + item.mergingConfig.audioFormat.toString()
+                                .toLowerCase(Locale.ROOT)
+                        )
+                        mListConvertingItems.add(
+                            AudioFileView(
+                                AudioFile(
+                                    fileConverting,
+                                    item.mergingConfig.fileName,
+                                    100
+                                ), false, ItemLoadStatus(), item.state, item.percent, item.id
+                            )
+                        )
                     }
                     if (item is MixingConvertingItem) {
-                        val fileMixing = File(item.mixingConfig.pathFolder + "/" + item.mixingConfig.fileName + "." + item.mixingConfig.format.toString()
-                            .toLowerCase(Locale.ROOT))
-                        mListConvertingItems.add(AudioFileView(AudioFile(fileMixing, item.mixingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
+                        val fileMixing = File(
+                            item.mixingConfig.pathFolder + "/" + item.mixingConfig.fileName + "." + item.mixingConfig.format.toString()
+                                .toLowerCase(Locale.ROOT)
+                        )
+                        mListConvertingItems.add(
+                            AudioFileView(
+                                AudioFile(
+                                    fileMixing,
+                                    item.mixingConfig.fileName,
+                                    100
+                                ), false, ItemLoadStatus(), item.state, item.percent, item.id
+                            )
+                        )
                     }
                 }
             }
@@ -177,14 +219,21 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         val newListAudio = ArrayList<AudioFileView>()
         newListAudio.addAll(mListConvertingItems)
 
-        val listAudioFileExcludedConvertingItems = mListScannedAudioFile.filter { !filePathMapConvertingItem.containsKey(it.getFilePath()) }
+        val listAudioFileExcludedConvertingItems =
+            mListScannedAudioFile.filter { !filePathMapConvertingItem.containsKey(it.getFilePath()) }
 
         Log.d(TAG, "bug tiem an: list converting : " + filePathMapConvertingItem.size)
         Log.d(TAG, "bug tiem an: list scanner: " + listAudioFileExcludedConvertingItems.size)
         for (item in listAudioFileExcludedConvertingItems) {
-            Log.d(TAG, "bug tiem an: status : " + item.convertingState + " filePath: " + item.getFilePath() + " id: " + item.id)
+            Log.d(
+                TAG,
+                "bug tiem an: status : " + item.convertingState + " filePath: " + item.getFilePath() + " id: " + item.id
+            )
         }
-        Log.d(TAG, "mergeList: convertingItems size ${mListConvertingItems.size} mListScannedAudioFile size ${mListScannedAudioFile.size}")
+        Log.d(
+            TAG,
+            "mergeList: convertingItems size ${mListConvertingItems.size} mListScannedAudioFile size ${mListScannedAudioFile.size}"
+        )
 
         run lst@{
             listAudioFileExcludedConvertingItems.forEach {
@@ -244,7 +293,10 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 Log.d(TAG, "isDoubleDisplay: trueeeeee")
                 return true
             }
-            Log.d(TAG, "isDoubleDisplay: item.getFilePath() : \n" + item.getFilePath() + "\n :  filePath " + filePath)
+            Log.d(
+                TAG,
+                "isDoubleDisplay: item.getFilePath() : \n" + item.getFilePath() + "\n :  filePath " + filePath
+            )
 
         }
         return false
@@ -353,7 +405,8 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     fun isAllChecked(): Boolean {
         mListAudio.forEach {
             if (it.itemLoadStatus.deleteState == DeleteState.UNCHECK) {
-                isCheckAllStatus = false                          // dang o trang thai all select ma du lieu loading xong
+                isCheckAllStatus =
+                    false                          // dang o trang thai all select ma du lieu loading xong
                 return false
             }
         }
@@ -369,7 +422,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     // check xem đã có ít nhất 1 item nào được check delete hay chưa
     fun isChecked(): Boolean {
         mListAudio.forEach {
-            if (it.itemLoadStatus.deleteState == DeleteState.CHECKED) {
+            if (it.itemLoadStatus.deleteState == DeleteState.CHECKED && it.convertingState == ConvertingState.SUCCESS) {
                 return true
             }
         }
@@ -428,8 +481,9 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     suspend fun deleteAllItemSelected(typeAudio: Int): Boolean {
 //        TODO()
         return runAndWaitOnBackground {
-            val listAudioItems: List<AudioFile> = mListAudio.filter { it.itemLoadStatus.deleteState == DeleteState.CHECKED }        // list<AudioFile> da duoc viet dang exstent funtion
-                .toListAudioFiles()
+            val listAudioItems: List<AudioFile> =
+                mListAudio.filter { it.itemLoadStatus.deleteState == DeleteState.CHECKED }        // list<AudioFile> da duoc viet dang exstent funtion
+                    .toListAudioFiles()
             var folder = Folder.TYPE_MIXER
             when (typeAudio) {
                 0 -> {
@@ -451,8 +505,9 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     fun shareAllFile(typeAudio: Int) {
-        val listAudioItems: List<AudioFile> = mListAudio.filter { it.itemLoadStatus.deleteState == DeleteState.CHECKED }        // list<AudioFile> da duoc viet dang exstent funtion
-            .toListAudioFiles()
+        val listAudioItems: List<AudioFile> =
+            mListAudio.filter { it.itemLoadStatus.deleteState == DeleteState.CHECKED }        // list<AudioFile> da duoc viet dang exstent funtion
+                .toListAudioFiles()
 
 
     }
