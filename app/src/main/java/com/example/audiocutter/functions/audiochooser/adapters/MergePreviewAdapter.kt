@@ -77,40 +77,12 @@ class MergePreviewAdapter(
         } else {
             val itemAudioFile = getItem(position)
 
-            /*when (itemAudioFile.state) {
-                PlayerState.PLAYING -> {
-                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_pause)
-                }
-                PlayerState.PAUSE -> {
-                    holder.ivController.setImageResource(R.drawable.ic_audiocutter_play)
-                }
-                PlayerState.IDLE -> {
-                    val bitmap = itemAudioFile.audioFile.bitmap
-                    if (checkValidGlide(bitmap)) {
-                        Glide.with(holder.itemView).load(bitmap)
-                            .transform(
-                                RoundedCorners(
-                                    Utils.convertDp2Px(4, holder.itemView.context).toInt()
-                                )
-                            )
-                            .into(holder.ivController)
-                    } else {
-                        val bm = BitmapFactory.decodeResource(
-                            AudioFileManagerImpl.mContext.resources,
-                            R.drawable.ic_audiocutter_play
-                        )
-                        holder.ivController.setImageBitmap(bm)
-                    }
-                }
-            }*/
 
             val bitmap = itemAudioFile.audioFile.bitmap
             when (itemAudioFile.state) {
                 PlayerState.PLAYING -> {
                     if (checkValidGlide(bitmap)) {
                         Glide.with(holder.itemView).load(bitmap)
-//                            .transform(RoundedCorners(Utils.convertDp2Px(12, holder.itemView.context)
-//                                .toInt()))
                             .into(holder.ivController)
                     } else {
                         holder.ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
@@ -123,8 +95,7 @@ class MergePreviewAdapter(
                 PlayerState.PAUSE -> {
                     if (checkValidGlide(bitmap)) {
                         Glide.with(holder.itemView).load(bitmap)
-//                            .transform(RoundedCorners(Utils.convertDp2Px(12, holder.itemView.context)
-//                                .toInt()))
+
                             .into(holder.ivController)
                     } else {
                         holder.ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
@@ -139,8 +110,6 @@ class MergePreviewAdapter(
 
                     if (checkValidGlide(bitmap)) {
                         Glide.with(holder.itemView).load(bitmap)
-//                            .transform(RoundedCorners(Utils.convertDp2Px(12, holder.itemView.context)
-//                                .toInt()))
                             .into(holder.ivController)
                     } else {
                         holder.ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
@@ -291,41 +260,6 @@ class MergePreviewAdapter(
                     pgAudio.resetView()
                 }
             }
-
-            /*when (itemAudioFile.state) {
-
-                PlayerState.PLAYING -> {
-                    pgAudio.visibility = View.VISIBLE
-                    waveView.visibility = View.VISIBLE
-                    ivController.setImageResource(R.drawable.ic_audiocutter_pause)
-                }
-                PlayerState.PAUSE -> {
-                    waveView.visibility = View.INVISIBLE
-                    ivController.setImageResource(R.drawable.ic_audiocutter_play)
-                }
-                PlayerState.IDLE -> {
-                    pgAudio.visibility = View.GONE
-                    waveView.visibility = View.INVISIBLE
-                    pgAudio.resetView()
-                    val bitmap = itemAudioFile.audioFile.bitmap
-                    if (checkValidGlide(bitmap)) {
-                        Glide.with(itemView).load(bitmap)
-                            .transform(
-                                RoundedCorners(
-                                    Utils.convertDp2Px(4, itemView.context).toInt()
-                                )
-                            )
-                            .into(ivController)
-                    } else {
-                        val bm = BitmapFactory.decodeResource(
-                            AudioFileManagerImpl.mContext.resources,
-                            R.drawable.ic_audiocutter_play
-                        )
-                        ivController.setImageBitmap(bm)
-                    }
-
-                }
-            }*/
             if(itemAudioFile.currentPos>0){
                 pgAudio.post {
                     pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration, false)
@@ -338,8 +272,6 @@ class MergePreviewAdapter(
                 PlayerState.PLAYING -> {
                     if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
-//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-//                                .toInt()))
                             .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
@@ -352,8 +284,6 @@ class MergePreviewAdapter(
                 PlayerState.PAUSE -> {
                     if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
-//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-//                                .toInt()))
                             .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
@@ -365,12 +295,10 @@ class MergePreviewAdapter(
                 PlayerState.IDLE -> {
                     pgAudio.visibility = View.GONE
                     waveView.visibility = View.INVISIBLE
-//                    pgAudio.resetView()
 
                     if (checkValidGlide(bitmap)) {
                         Glide.with(itemView).load(bitmap)
-//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-//                                .toInt()))
+
                             .into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)

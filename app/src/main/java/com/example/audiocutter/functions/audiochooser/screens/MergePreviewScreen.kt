@@ -2,7 +2,6 @@ package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +16,6 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.MergePreviewScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergePreviewAdapter
 import com.example.audiocutter.functions.audiochooser.dialogs.MergeDialog
@@ -59,7 +57,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         super.onPostCreate(savedInstanceState)
         audioMerModel = ViewModelProvider(this).get(MergePreviewModel::class.java)
         audioMerAdapter = MergePreviewAdapter(requireContext(), audioMerModel.getAudioPlayer(), lifecycleScope,requireActivity())
-//        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
 
         listPath = ArrayList()
         listAudioPath = safeArg.listaudio
@@ -75,11 +72,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
             }
         }
 
-        val listData = audioMerModel.getListAudioTmp()
-        listData.forEach {
-
-            Log.d(TAG, "onPostCreate: ${it.audioFile.fileName}")
-        }
         receiveData(newListAudio)
 
     }
@@ -103,7 +95,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     private fun initViews() {
 //        mergeDialog = MergeDialog(requireContext())
 //        mergeDialog.setOnCallBack(this)
-
         binding.btMergeAudio.setOnClickListener(this)
         binding.ivMerScreenBack.setOnClickListener(this)
         audioMerAdapter.setOnCallBack(this)
@@ -145,7 +136,13 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         try {
             sendFragmentAction(MergeChooserScreen::class.java.name, "ACTION_DELETE", audioFile)
             ManagerFactory.getDefaultAudioPlayer().stop()
-            audioMerAdapter.submitList(audioMerModel.removeItemAudio(audioFile))
+            val listAudio = audioMerModel.removeItemAudio(audioFile)
+            if (listAudio.isNotEmpty()) {
+                audioMerAdapter.submitList(listAudio)
+            } else {
+                binding.rvMergeChoose.visibility = View.INVISIBLE
+                binding.rltEmpty.visibility = View.VISIBLE
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -163,6 +160,11 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
                 activity?.onBackPressed()
             }
             R.id.iv_addfile_merge -> {
+                sendFragmentAction(
+                    MergeChooserScreen::class.java.name,
+                    "ACTION_SEND_LISTPATH", audioMerModel.getListPath()
+                )
+                ManagerFactory.getDefaultAudioPlayer().stop()
                 activity?.onBackPressed()
             }
             R.id.bt_merge_audio -> mergeAudioFile()
@@ -195,7 +197,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         audioMerModel.stop()
     }
 
-    fun receiveData(listData: List<AudioCutterView>) {
+    private fun receiveData(listData: List<AudioCutterView>) {
         audioMerModel.initListFileAudio(listData)
         audioMerAdapter.submitList(audioMerModel.getListAudio())
     }

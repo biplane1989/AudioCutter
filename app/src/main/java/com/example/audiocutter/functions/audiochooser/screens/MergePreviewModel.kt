@@ -6,13 +6,11 @@ import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
-import java.io.File
 
 class MergePreviewModel(application: Application) : BaseAndroidViewModel(application) {
     private val TAG = MergePreviewModel::class.java.name
-    private var currentAudioPlaying: File = File("")
     private var mListAudio = ArrayList<AudioCutterView>()
-    private var mlistTmp = ArrayList<AudioCutterView>()
+    private var mlistPath = ArrayList<String>()
     private val audioPlayer = ManagerFactory.newAudioPlayer()
     fun getAudioPlayer(): AudioPlayer {
         return audioPlayer
@@ -42,6 +40,10 @@ class MergePreviewModel(application: Application) : BaseAndroidViewModel(applica
     fun initListFileAudio(listData: List<AudioCutterView>) {
         mListAudio.clear()
         mListAudio.addAll(listData)
+        mlistPath.clear()
+        mListAudio.forEach {
+            mlistPath.add(it.audioFile.getFilePath())
+        }
     }
 
     fun removeItemAudio(item: AudioCutterView): List<AudioCutterView> {
@@ -53,6 +55,10 @@ class MergePreviewModel(application: Application) : BaseAndroidViewModel(applica
         val preItem = mListAudio[prePos].copy()
         mListAudio.remove(preItem)
         mListAudio.add(nextPos, preItem)
+        mlistPath.clear()
+        mListAudio.forEach {
+            mlistPath.add(it.audioFile.getFilePath())
+        }
         return mListAudio
     }
 
@@ -60,8 +66,9 @@ class MergePreviewModel(application: Application) : BaseAndroidViewModel(applica
         audioPlayer.stop()
     }
 
-    fun getListAudioTmp(): List<AudioCutterView> {
-        return mlistTmp
+    fun getListPath(): List<String> {
+        return mlistPath
     }
+
 
 }

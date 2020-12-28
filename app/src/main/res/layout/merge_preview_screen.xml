@@ -7,6 +7,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <RelativeLayout
+        android:id="@+id/rlt_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:visibility="invisible">
+
+        <ImageView
+            android:id="@+id/iv_empty_list_cutter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_item_empty_list" />
+
+        <TextView
+            android:id="@+id/tv_empty_list_cutter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_empty_list_cutter"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:fontFamily="@font/opensans_regular"
+            android:text="@string/no_result_empty"
+            android:textColor="@color/colorgray"
+            android:textSize="@dimen/d_18" />
+    </RelativeLayout>
+
+
     <LinearLayout
         android:id="@+id/rlt_actionbar_mer_choose"
         android:layout_width="match_parent"

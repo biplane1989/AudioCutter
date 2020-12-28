@@ -30,13 +30,13 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     val stateChecked: LiveData<Int>
         get() = _stateChecked
 
+    private var mListPath = ArrayList<String>()
 
     private var filterText = ""
 
     private var _isEmptyState = MutableLiveData<Boolean>()
     val isEmptyState: LiveData<Boolean>
         get() = _isEmptyState
-
     private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>?>()
 
     fun getAudioPlayer(): AudioPlayer {
@@ -193,13 +193,15 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
 
     }
 
-    fun chooseItemAudioFile(audioCutterView: AudioCutterView, rs: Boolean) {
+    fun chooseItemAudioFile(audioCutterView: AudioCutterView, rs: Boolean, count: Int) {
         try {
             val mListAudios = getListAllAudio()
             val pos = mListAudios.indexOf(audioCutterView)
             val itemAudio: AudioCutterView = mListAudios[pos].copy()
 
             mListAudios[pos].isCheckChooseItem = rs
+            mListAudios[pos].no = count
+
 
             var index = 0
             mListAudios.forEach {
@@ -252,9 +254,17 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
         if (fragmentMeta.action.equals("ACTION_DELETE")) {
             val audio = fragmentMeta.data as AudioCutterView
             getlistAfterReceive(audio)
-            Log.d("TAG", "onReceivedAction: ${audio.audioFile.fileName}")
-            super.onReceivedAction(fragmentMeta)
+
         }
+        if (fragmentMeta.action.equals("ACTION_SEND_LISTPATH")) {
+            val listPath = fragmentMeta.data as ArrayList<String>
+            mListPath.addAll(listPath)
+        }
+        super.onReceivedAction(fragmentMeta)
+    }
+
+    fun getListPathReceiver(): ArrayList<String> {
+        return mListPath
     }
 
     private fun getlistAfterReceive(item: AudioCutterView) {

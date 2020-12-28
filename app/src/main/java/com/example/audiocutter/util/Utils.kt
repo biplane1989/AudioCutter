@@ -14,8 +14,12 @@ import android.os.Build
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.TypedValue
+import android.view.View
+import android.view.WindowInsets
+import android.view.WindowInsetsAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.annotation.RequiresApi
 import androidx.core.content.res.ResourcesCompat
 import com.example.audiocutter.R
 import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
@@ -403,18 +407,35 @@ class Utils {
 
         fun convertToAudioFile(audioInfor: AudioInfor, modified: Long, uri: Uri): AudioFile {
             val file = File(audioInfor.filePath)
-            return AudioFile(file, getName(file), audioInfor.size, audioInfor.bitRate, audioInfor.duration, uri, getBitmapByPath(file.absolutePath), audioInfor.title, audioInfor.alBum, audioInfor.artist, modified, audioInfor.genre, audioInfor.format)
+            return AudioFile(
+                file,
+                getName(file),
+                audioInfor.size,
+                audioInfor.bitRate,
+                audioInfor.duration,
+                uri,
+                getBitmapByPath(file.absolutePath),
+                audioInfor.title,
+                audioInfor.alBum,
+                audioInfor.artist,
+                modified,
+                audioInfor.genre,
+                audioInfor.format
+            )
         }
 
         fun hideKeyboard(context: Context, editText: EditText) {
-            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val inputMethodManager =
+                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(editText.windowToken, 0)
         }
 
         fun showKeyboard(context: Context, editText: EditText) {
-            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val inputMethodManager =
+                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
         }
+
 
         fun checkFlashOnDeviceAvailable(context: Context): Boolean? {
             return context.packageManager?.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)

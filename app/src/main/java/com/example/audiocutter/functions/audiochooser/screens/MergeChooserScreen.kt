@@ -15,6 +15,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
@@ -27,8 +28,9 @@ import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAdapter.AudioMergeListener {
     private lateinit var binding: MergeChooserScreenBinding
     private lateinit var audioMerAdapter: MergeChooserAdapter
-    private lateinit var audioMerModel: MergeChooserModel
+    private val audioMerModel: MergeChooserModel by navGraphViewModels(R.id.mer_navigation)
     var currentPos = -1
+    var count = 0
 
     var stateObserver = Observer<Int> {
         when (it) {
@@ -100,14 +102,9 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         audioMerModel.pause()
     }
 
-//    private val playerInfoObserver = Observer<PlayerInfo> {
-//    audioMerModel.updateMediaInfo(it)
-//    }
-
-
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioMerModel = ViewModelProvider(this).get(MergeChooserModel::class.java)
+//        audioMerModel = ViewModelProvider(this).get(MergeChooserModel::class.java)
 
         audioMerAdapter = MergeChooserAdapter(
             requireContext(),
@@ -235,9 +232,13 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
 
     @SuppressLint("SetTextI18n")
     override fun chooseItemAudio(audioCutterView: AudioCutterView, rs: Boolean) {
-        var count = 0
+        if (rs && audioMerModel.getListPathReceiver()
+                .indexOf(audioCutterView.audioFile.getFilePath()) == -1
+        ) {
+            count++
+        }
+        audioMerModel.chooseItemAudioFile(audioCutterView, rs, count)
 
-        audioMerModel.chooseItemAudioFile(audioCutterView, rs)
     }
 
     private fun showEmptyList() {
@@ -274,7 +275,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
             binding.ivMerScreenClose -> {
                 if (!binding.edtMerSearch.text.toString().isEmpty()) {
                     binding.edtMerSearch.setText("")
-
                 }
             }
             binding.rltNextMer -> {
@@ -289,10 +289,13 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
 
     private fun handleAudiofile() {
 
-      if(audioMerModel.getAudioPlayer().getAudioIsPlaying()){
-          audioMerModel.stop()
-      }
+        if (audioMerModel.getAudioPlayer().getAudioIsPlaying()) {
+            audioMerModel.stop()
+        }
+
+        /**list NumberOder**/
         val listItemHandle = audioMerModel.getListItemChoose()
+
 
         val arrayAudio: Array<String> = Array(listItemHandle.size) { "" }
         var index = 0
