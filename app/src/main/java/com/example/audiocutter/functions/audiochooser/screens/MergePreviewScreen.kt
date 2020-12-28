@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
@@ -39,14 +39,13 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     private lateinit var binding: MergePreviewScreenBinding
     private lateinit var audioMerAdapter: MergePreviewAdapter
-    private lateinit var audioMerModel: MergePreviewModel
+
+    //    private lateinit var audioMerModel: MergePreviewModel
+    private val audioMerModel: MergeChooserModel by navGraphViewModels(R.id.mer_navigation)
     var currentPos = -1
 
     private lateinit var mergeDialog: MergeDialog
 
-//    private val playerInfoObserver = Observer<PlayerInfo> {
-//        audioMerAdapter.submitList(audioMerModel.updateMediaInfo(it))
-//    }
 
     override fun onPause() {
         super.onPause()
@@ -55,7 +54,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioMerModel = ViewModelProvider(this).get(MergePreviewModel::class.java)
+//        audioMerModel = ViewModelProvider(this).get(MergePreviewModel::class.java)
         audioMerAdapter = MergePreviewAdapter(requireContext(), audioMerModel.getAudioPlayer(), lifecycleScope,requireActivity())
 
         listPath = ArrayList()
@@ -160,10 +159,10 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
                 activity?.onBackPressed()
             }
             R.id.iv_addfile_merge -> {
-                sendFragmentAction(
-                    MergeChooserScreen::class.java.name,
-                    "ACTION_SEND_LISTPATH", audioMerModel.getListPath()
-                )
+                /*  sendFragmentAction(
+                      MergeChooserScreen::class.java.name,
+                      "ACTION_SEND_LISTPATH", audioMerModel.getListPath()
+                  )*/
                 ManagerFactory.getDefaultAudioPlayer().stop()
                 activity?.onBackPressed()
             }
@@ -172,13 +171,11 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     }
 
     private fun mergeAudioFile() {
-        if (audioMerModel.getListAudio().size >= 2) {
+        if (audioMerModel.getListAudioChoose().size >= 2) {
 
-//            mergeDialog.sendData(audioMerModel.getListAudio().size)
-//            mergeDialog.show()
 
             val dialog = MergeDialog.newInstance(
-                this, audioMerModel.getListAudio().size, Utils.getBaseName(
+                this, audioMerModel.getListAudioChoose().size, Utils.getBaseName(
                     File(listPath[0])
                 )
             )
@@ -198,8 +195,8 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     }
 
     private fun receiveData(listData: List<AudioCutterView>) {
-        audioMerModel.initListFileAudio(listData)
-        audioMerAdapter.submitList(audioMerModel.getListAudio())
+//        audioMerModel.initListFileAudio(listData)
+        audioMerAdapter.submitList(audioMerModel.getListAudioChoose())
     }
 
     override fun mergeAudioFile(filename: String) {
@@ -208,7 +205,11 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
             filename,
             ManagerFactory.getAudioFileManager().getFolderPath(Folder.TYPE_MERGER)
         )
-        viewStateManager.editorSaveMergingAudio(this, audioMerModel.getListAudio(), mergingConfig)
+        viewStateManager.editorSaveMergingAudio(
+            this,
+            audioMerModel.getListAudioChoose(),
+            mergingConfig
+        )
     }
 
     override fun cancalKeybroad() {

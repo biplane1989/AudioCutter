@@ -34,8 +34,8 @@
 
         <action
             android:id="@+id/go_to_merge_chooser_screen"
-            app:destination="@id/navigation"
-            app:enterAnim="@anim/slide_in_right"
+            app:destination="@id/mer_navigation"
+            app:enterAnim ="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
@@ -285,11 +285,22 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@id/introduction_info_screen"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="true"/>
     </fragment>
-    <navigation
-        android:id="@+id/mer_navigation"
+    <navigation android:id="@+id/mer_navigation"
         app:startDestination="@id/merge_chooser_screen">
+        <fragment
+            android:id="@+id/merge_chooser_screen"
+            android:name="com.example.audiocutter.functions.audiochooser.screens.MergeChooserScreen"
+            tools:layout="@layout/merge_chooser_screen">
+            <action
+                android:id="@+id/go_to_preview_screen"
+                app:destination="@id/merge_preview_screen"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+        </fragment>
         <fragment
             android:id="@+id/merge_preview_screen"
             android:name="com.example.audiocutter.functions.audiochooser.screens.MergePreviewScreen"
@@ -306,18 +317,6 @@
                 app:popEnterAnim="@anim/slide_in_left"
                 app:popExitAnim="@anim/slide_out_right" />
 
-        </fragment>
-        <fragment
-            android:id="@+id/merge_chooser_screen"
-            android:name="com.example.audiocutter.functions.audiochooser.screens.MergeChooserScreen"
-            tools:layout="@layout/merge_chooser_screen">
-            <action
-                android:id="@+id/go_to_preview_screen"
-                app:destination="@id/merge_preview_screen"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right" />
         </fragment>
     </navigation>
 

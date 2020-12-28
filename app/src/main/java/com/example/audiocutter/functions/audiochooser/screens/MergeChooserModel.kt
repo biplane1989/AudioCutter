@@ -1,15 +1,11 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.*
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.core.manager.PlayerInfo
-import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
-import com.example.audiocutter.functions.mystudio.screens.FragmentMeta
 import com.example.audiocutter.objects.StateLoad
 import java.io.File
 import java.util.*
@@ -17,6 +13,8 @@ import kotlin.collections.ArrayList
 
 class MergeChooserModel(application: Application) : BaseAndroidViewModel(application) {
 
+    private var indexChoose: Int = 0
+    private lateinit var listAudioChooser: MutableList<AudioCutterView>
     private val audioPlayer = ManagerFactory.newAudioPlayer()
     private val TAG = MergeChooserModel::class.java.name
     private var currentAudioPlaying: File = File("")
@@ -24,7 +22,6 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     private var _stateLoadProgress = MutableLiveData<Int>()
     val stateLoadProgress: LiveData<Int>
         get() = _stateLoadProgress
-
 
     private var _stateChecked = MutableLiveData<Int>()
     val stateChecked: LiveData<Int>
@@ -120,7 +117,6 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
 
 
     private fun getListFilteredAudio(): ArrayList<AudioCutterView> {
-//        Log.d(TAG, "getListPreviewAudio: ${_listAudioFiles.value!!.size}")
         return ArrayList(_listFilteredAudioFiles.value ?: ArrayList())
     }
 
@@ -128,64 +124,6 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
         return ArrayList(_listAudioFiles.value ?: ArrayList())
     }
 
-    fun updateMediaInfo(playerInfo: PlayerInfo) {
-        Log.d(TAG, "updateMediaInfo: ${playerInfo.playerState}")
-        val listAudioViews = getListAllAudio()
-//        val listAudioViews = getListFilteredAudio()
-
-        if (playerInfo.currentAudio != null) {
-            if (currentAudioPlaying.absoluteFile != playerInfo.currentAudio!!.file.absoluteFile) {
-
-                val oldPos = getAudioFilePos(currentAudioPlaying)
-                val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
-                if (oldPos != -1) {
-                    val audioFile = listAudioViews[oldPos].copy()
-                    audioFile.state = PlayerState.IDLE
-                    audioFile.isCheckDistance = false
-                    audioFile.currentPos = playerInfo.posision.toLong()
-                    audioFile.duration = playerInfo.duration.toLong()
-                    listAudioViews[oldPos] = audioFile
-                }
-                if (newPos != -1) {
-                    val audioCutterView = listAudioViews[newPos].copy()
-                    updateState(audioCutterView, playerInfo, true)
-                    listAudioViews[newPos] = audioCutterView
-                }
-            } else {
-                val atPos = getAudioFilePos(currentAudioPlaying)
-                if (atPos != -1) {
-                    Log.d(TAG, "updateMediaInfo: atPOs   ${listAudioViews.get(atPos).state}")
-                    val audioCutterView = listAudioViews[atPos].copy()
-                    updateState(audioCutterView, playerInfo, true)
-                    listAudioViews[atPos] = audioCutterView
-                }
-            }
-            currentAudioPlaying = playerInfo.currentAudio!!.file
-        }
-        _listAudioFiles.postValue(listAudioViews)
-    }
-
-
-    private fun updateState(audioCutterView: AudioCutterView, playerInfo: PlayerInfo, rs: Boolean) {
-        audioCutterView.state = playerInfo.playerState
-        audioCutterView.isCheckDistance = rs
-        audioCutterView.currentPos = playerInfo.posision.toLong()
-        audioCutterView.duration = playerInfo.duration.toLong()
-
-    }
-
-
-    private fun getAudioFilePos(file: File): Int {
-        val listAudioViews = getListAllAudio()
-        var i = 0
-        while (i < listAudioViews.size) {
-            if (listAudioViews[i].audioFile.file == file) {
-                return i
-            }
-            i++
-        }
-        return -1
-    }
 
     fun searchAudio(yourTextSearch: String) {
         filterText = yourTextSearch
@@ -203,13 +141,13 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
             mListAudios[pos].no = count
 
 
-            var index = 0
+            indexChoose = 0
             mListAudios.forEach {
                 if (it.isCheckChooseItem) {
-                    index++
+                    indexChoose++
                 }
             }
-            _stateChecked.postValue(index)
+            _stateChecked.postValue(indexChoose)
             _listAudioFiles.postValue(mListAudios)
 
         } catch (e: ArrayIndexOutOfBoundsException) {
@@ -220,13 +158,17 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
 
     fun getListItemChoose(): List<AudioCutterView> {
         val mListAudios = getListAllAudio()
-        var listAudio = mutableListOf<AudioCutterView>()
+        listAudioChooser = mutableListOf<AudioCutterView>()
         for (item in mListAudios) {
             if (item.isCheckChooseItem) {
-                listAudio.add(item)
+                listAudioChooser.add(item)
             }
         }
-        return listAudio
+        return listAudioChooser
+    }
+
+    fun getListAudioChoose(): MutableList<AudioCutterView> {
+        return listAudioChooser
     }
 
     suspend fun play(pos: Int) {
@@ -249,7 +191,7 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     }
 
 
-    override fun onReceivedAction(fragmentMeta: FragmentMeta) {
+    /*override fun onReceivedAction(fragmentMeta: FragmentMeta) {
         Log.d("TAG", "onReceivedAction: receive data")
         if (fragmentMeta.action.equals("ACTION_DELETE")) {
             val audio = fragmentMeta.data as AudioCutterView
@@ -261,7 +203,7 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
             mListPath.addAll(listPath)
         }
         super.onReceivedAction(fragmentMeta)
-    }
+    }*/
 
     fun getListPathReceiver(): ArrayList<String> {
         return mListPath
@@ -276,15 +218,29 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
                 mListAudios.add(index, AudioCutterView(item.audioFile, isCheckChooseItem = false))
             }
         }
-
-        var count = 0           // xu ly khi delete: dong bo hoa item mergerChose screen & preview sreen
-        for (item in mListAudios) {
-            if (item.isCheckChooseItem) {
-                count++
-            }
-        }
-        _stateChecked.postValue(count)
+        /* var count = 0
+         for (item in mListAudios) {
+             if (item.isCheckChooseItem) {
+                 count++
+             }
+         }
+         _stateChecked.postValue(count)*/
         _listAudioFiles.postValue(mListAudios)
+    }
+
+    fun moveItemAudio(prePos: Int, nextPos: Int): List<AudioCutterView> {
+        val preItem = listAudioChooser[prePos].copy()
+        listAudioChooser.remove(preItem)
+        listAudioChooser.add(nextPos, preItem)
+        return listAudioChooser
+    }
+
+    fun removeItemAudio(item: AudioCutterView): List<AudioCutterView> {
+        listAudioChooser.remove(item)
+        getlistAfterReceive(item)
+        indexChoose--
+        _stateChecked.postValue(indexChoose)
+        return listAudioChooser
     }
 
 

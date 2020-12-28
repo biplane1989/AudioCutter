@@ -71,17 +71,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
                 showProgressBar(false)
 
             }
-//            var count = 0
-//            listMusic.forEach {
-//                if (it.isCheckChooseItem) {
-//                    count++
-//                        if (count >= 2) {
-//                            setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
-//                        } else {
-//                            setColorButtonNext(R.color.colorgray, R.drawable.bg_next_audio_disabled, false)
-//                    }
-//                }
-//            }
 
         }
 
@@ -102,9 +91,10 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         audioMerModel.pause()
     }
 
+
+
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-//        audioMerModel = ViewModelProvider(this).get(MergeChooserModel::class.java)
 
         audioMerAdapter = MergeChooserAdapter(
             requireContext(),
@@ -112,7 +102,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
             lifecycleScope,
             requireActivity()
         )
-//        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -156,9 +145,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     }
 
     private fun searchAudioByName(yourTextSearch: String) {
-//        setColorButtonNext(R.color.colorBlack, R.drawable.bg_next_audio_disabled, false)
-//        binding.tvCountFileMer.text = getString(R.string.countFile)
-//        showList()
+
         if (yourTextSearch.isEmpty()) {
             audioMerModel.searchAudio("")
         }
@@ -176,7 +163,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         binding.ivMerScreenBack.setOnClickListener(this)
         audioMerAdapter.setAudioListener(this)
 
-//        searchAudioByName(binding.edtMerSearch.text.toString())
 
     }
 
@@ -194,7 +180,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
 
     private fun hideOrShowEditText(status: Int) {
         binding.ivMerScreenBackEdt.visibility = status
-//        binding.ivMerScreenClose.visibility = status
         binding.edtMerSearch.visibility = status
     }
 
@@ -317,7 +302,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         binding.rltNextMerParent.visibility = View.VISIBLE
         binding.tvEmptyListMer.visibility = View.INVISIBLE
         binding.ivEmptyListMerge.visibility = View.INVISIBLE
-        //audioMerAdapter.submitList(audioMerModel.getListAudio())
         hideKeyboard()
         hideOrShowEditText(View.INVISIBLE)
         hideOrShowView(View.VISIBLE)
