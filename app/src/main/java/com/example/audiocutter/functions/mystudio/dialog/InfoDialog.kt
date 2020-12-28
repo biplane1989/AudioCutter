@@ -66,8 +66,6 @@ class InfoDialog : BaseDialog() {
                 tv_format.text = "$format($format)"
             }
 
-
-
             tv_file.text = requireArguments().getString(BUNDLE_FILE_NAME)
             tv_size.text = (size.toInt() / 1024).toString() + " kb" + " (" + size + " bytes)"
             tv_location.text = requireArguments().getString(BUNDLE_FILE_PATH).toString()
@@ -96,7 +94,11 @@ class InfoDialog : BaseDialog() {
                         tv_title.text = UNKNOWN
                     }
 
-                    tv_length.text = simpleDateFormat.format(audioFile.duration.toInt())
+
+                    val timeFomat = Utils.chooseTimeFormat(audioFile.duration.toLong())
+                    tv_length.text = Utils.toTimeStr(audioFile.duration.toLong(), timeFomat)
+
+//                    tv_length.text = simpleDateFormat.format(audioFile.duration.toInt())
 
                     if (audioFile.genre != null) {
                         tv_genre.text = audioFile.genre
