@@ -564,8 +564,12 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mResultViewModel.stopAudio()
         progressbarAnimation?.cancel()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mResultViewModel.stopAudio()
     }
 
     private fun resetRequestingPermission() {
