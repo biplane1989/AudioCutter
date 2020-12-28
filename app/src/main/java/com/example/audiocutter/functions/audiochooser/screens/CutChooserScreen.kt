@@ -182,7 +182,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             }
 
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                audioCutterModel.stop()
+                audioCutterModel.stop()
                 searchAudioByName(textChange.toString())
                 if (textChange.toString() != "") {
                     binding.ivCutterScreenClose.visibility = View.VISIBLE
@@ -347,9 +347,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     }
 
     override fun onCutItemClicked(itemAudio: AudioCutterView) {
-        if (audioCutterModel.getAudioPlayer().getAudioIsPlaying()) {
             audioCutterModel.stop()
-        }
         if (itemAudio.audioFile.duration < Constance.MIN_DURATION) {
             val dialogSnack = Snackbar.make(
                 requireView(),
@@ -390,6 +388,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             else -> {
                 filePathAudio?.let {
                     dialog.dismiss()
+                    audioCutterModel.stop()
                     viewStateManager.onCutScreenSetRingtoneContact(this, filePathAudio!!)
                 }
             }

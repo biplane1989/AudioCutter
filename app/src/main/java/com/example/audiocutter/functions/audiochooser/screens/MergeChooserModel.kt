@@ -17,7 +17,7 @@ import kotlin.collections.ArrayList
 
 class MergeChooserModel(application: Application) : BaseAndroidViewModel(application) {
 
-    private val audioPlayer = ManagerFactory.getDefaultAudioPlayer()
+    private val audioPlayer = ManagerFactory.newAudioPlayer()
     private val TAG = MergeChooserModel::class.java.name
     private var currentAudioPlaying: File = File("")
 

@@ -24,7 +24,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     private var isStopped = false
     private var isSeekTo = 0
     private lateinit var mAudioFile: AudioFile
-    private var isSeeking = false;
+    private var isSeeking = false
 
     private var _mPlayInfo = MutableLiveData<PlayerInfo>()
     private val playInfoData = PlayerInfo(null, 0, PlayerState.IDLE, 0, 0f)
@@ -59,7 +59,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
 
     private fun notifyPlayerDataChanged() {
         Log.d(
-            TAG, "startTimerIfReady: ${playInfoData.currentAudio},\n" +
+            TAG, "startTimerIfReady: ${playInfoData.currentAudio?.fileName},\n" +
                     "            ${playInfoData.posision},\n" +
                     "            ${playInfoData.playerState},\n" +
                     "            ${playInfoData.duration}"
@@ -298,20 +298,23 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                     } else {
                         if (playInfoData.playerState == PlayerState.PLAYING) {
                             if (isStopped) {
+                                Log.d(TAG, "startTimerIfReady: isstopped $isStopped")
                                 playInfoData.playerState = PlayerState.IDLE
                                 currentPosition = 0
                                 playInfoData.posision = currentPosition
                             } else {
+                                Log.d(TAG, "startTimerIfReady: isstopped $isStopped --PAUSE")
                                 playInfoData.playerState = PlayerState.PAUSE
                             }
                             changed = true
-                        } else {
-                            /* if (isStopped &&  playInfoData.playerState != PlayerState.IDLE) {
+                        }
+                        else {
+                             if (isStopped &&  playInfoData.playerState != PlayerState.IDLE) {
                                  playInfoData.playerState = PlayerState.IDLE
                                  currentPosition = 0
                                  playInfoData.posision = currentPosition
                                  changed = true
-                             }*/
+                             }
                         }
                     }
 

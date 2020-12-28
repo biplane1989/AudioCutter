@@ -144,7 +144,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
             }
 
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                audioMerModel.stop()
+                audioMerModel.stop()
                 searchAudioByName(textChange.toString())
                 if (textChange.toString() != "") {
                     binding.ivMerScreenClose.visibility = View.VISIBLE

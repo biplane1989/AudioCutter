@@ -16,7 +16,7 @@ import kotlin.collections.ArrayList
 
 class MixChooserModel(application: Application) : BaseAndroidViewModel(application) {
 
-    private val audioPlayer = ManagerFactory.getDefaultAudioPlayer()
+    private val audioPlayer = ManagerFactory.newAudioPlayer()
     private val TAG = MixChooserModel::class.java.name
 
     private var _stateLoadProgress = MutableLiveData<Int>()

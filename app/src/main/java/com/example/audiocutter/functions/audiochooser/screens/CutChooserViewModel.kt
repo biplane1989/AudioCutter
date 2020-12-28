@@ -23,7 +23,7 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
 
     var duration: Long? = 0L
 
-    private var audioPlayer = ManagerFactory.getDefaultAudioPlayer()
+    private var audioPlayer = ManagerFactory.newAudioPlayer()
     private lateinit var mcallBack: OnActionCallback
 
     private var _stateLoadProgress = MutableLiveData<Int>()

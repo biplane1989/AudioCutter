@@ -108,6 +108,7 @@ class CutChooserAdapter(
         }
 
         private fun updatePlayInfo(playerInfo: PlayerInfo) {
+            Log.d("TAG", "updatePlayInfo: ${playerInfo.currentAudio?.fileName} - ${playerInfo.playerState}")
             playerState = playerInfo.playerState
             val itemAudioFile = getItem(adapterPosition)
             val bitmap = itemAudioFile.audioFile.bitmap

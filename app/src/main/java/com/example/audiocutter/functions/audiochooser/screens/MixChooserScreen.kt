@@ -148,7 +148,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
             }
 
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                audioMixModel.stop()
+                audioMixModel.stop()
                 searchAudioByName(textChange.toString())
                 if (textChange.toString() != "") {
                     binding.ivMixerScreenClose.visibility = View.VISIBLE
