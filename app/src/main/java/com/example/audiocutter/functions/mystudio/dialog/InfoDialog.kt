@@ -56,7 +56,7 @@ class InfoDialog : BaseDialog() {
 
     @SuppressLint("SetTextI18n", "SimpleDateFormat")
     fun getData() {
-        val simpleDateFormat = SimpleDateFormat("HH:mm:ss dd/MM/yyyy")
+        val simpleDateFormat = SimpleDateFormat("HH:mm dd/MM/yyyy")
 
         if (requireArguments().getString(BUNDLE_FILE_PATH) != null) {
             val size = File(requireArguments().getString(BUNDLE_FILE_PATH).toString()).length()

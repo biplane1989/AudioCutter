@@ -307,10 +307,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
                         if (audioFile.duration < Constance.MIN_DURATION) {
                             dialogSnack.show()
                         } else {
-                            viewStateManager.myStudioCuttingItemClicked(
-                                this,
-                                audioFile.file.absolutePath
-                            )
+                            viewStateManager.myStudioCuttingItemClicked(this, audioFile.file.absolutePath)
                         }
                     }
                     R.id.open_with -> {

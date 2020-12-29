@@ -245,11 +245,8 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
                 }
                 PlayerState.IDLE -> {
-                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
                     tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
-                    sbMusic.clearAnimation()
-                    sbAnimation?.cancel()
-                    sbMusic.progress = 0
+                    resetItemView()
                     setSeekbarAnimate(sbMusic, 0, DURATION_ANIMATION)
                 }
                 else -> {
@@ -261,7 +258,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         fun setSeekbarAnimate(pb: SeekBar, progressTo: Int, duration: Long) {
             // smooth animation
 
-            Log.d(TAG, "setSeekbarAnimate: pb.progress : "  + progressTo *100 + " max ${pb.max}")
+            Log.d(TAG, "setSeekbarAnimate: pb.progress : " + progressTo * 100 + " max ${pb.max}")
             sbAnimation?.cancel()
             sbAnimation = ObjectAnimator.ofInt(pb, "progress", pb.progress, progressTo * 100)
             sbAnimation?.duration = duration
@@ -318,8 +315,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             tvTotal.text = "/" + Utils.toTimeStr(audioFileView.audioFile.duration, timeFomat)
 
             if (audioFileView.audioFile.bitmap != null) {
-                Glide.with(itemView).load(audioFileView.audioFile.bitmap)
-                    .into(ivAvatar)
+                Glide.with(itemView).load(audioFileView.audioFile.bitmap).into(ivAvatar)
 
             } else {
                 ivAvatar.setImageResource(R.drawable.my_studio_item_ic_avatar)
@@ -363,22 +359,24 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
                     if (playerState != PlayerState.IDLE) {
                         if (fromUser) {
-                            sbMusic.clearAnimation()
-                            sbAnimation?.cancel()
+                            resetAnimation()
                             setSeekbarAnimate(sbMusic, progress / 100, DURATION_ANIMATION)
                         }
                     }
                     if (playerState != PlayerState.PLAYING) {
                         tvTimeLife.text = Utils.toTimeStr(progress.toLong() / 100, timeFomat)
                     }
+                    if (progress == sbMusic.max) {
+                        Log.d(TAG, "onProgressChanged: progress == max ")
+                        resetItemView()
+                        playerState = PlayerState.IDLE
+                    }
                 }
 
                 override fun onStartTrackingTouch(sb: SeekBar?) {
                     if (playerState == PlayerState.PLAYING) {
-
                         audioPlayer.pause()
-                        sbMusic.clearAnimation()
-                        sbAnimation?.cancel()
+                        resetAnimation()
                         isSeekBarStatus = true
                     }
                 }
@@ -386,23 +384,29 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 override fun onStopTrackingTouch(sb: SeekBar?) {
                     if (playerState == PlayerState.IDLE) {
 //                        lifecycleScope.launch {
-                            sbMusic.clearAnimation()
-                            sbAnimation?.cancel()
-                            val newValue = Utils.convertValue(0, sbMusic.max, 0, audioFileView.audioFile.duration.toInt(), sbMusic.progress)
-                            audioPlayer.play(audioFileView.audioFile, newValue)
+                        resetAnimation()
+                        val newValue = Utils.convertValue(0, sbMusic.max, 0, audioFileView.audioFile.duration.toInt(), sbMusic.progress)
+                        audioPlayer.play(audioFileView.audioFile, newValue)
 //                        }
-                    } else {
                     }
 
-                    sbMusic.clearAnimation()
-                    sbAnimation?.cancel()
-
+                    resetAnimation()
                     audioPlayer.seek(sbMusic.progress / 100, true)
-
                     isSeekBarStatus = false
                 }
 
             })  // sb
+        }
+
+        private fun resetAnimation() {
+            sbMusic.clearAnimation()
+            sbAnimation?.cancel()
+        }
+
+        private fun resetItemView() {
+            resetAnimation()
+            sbMusic.progress = 0
+            itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
         }
 
         override fun onClick(view: View) {
@@ -411,8 +415,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 when (view.id) {
                     R.id.ll_audio_item_header -> {
 
-                        sbMusic.clearAnimation()
-                        sbAnimation?.cancel()
+                        resetAnimation()
 
                         when (audioFileView.itemLoadStatus.deleteState) {
                             DeleteState.CHECKED -> {
@@ -455,8 +458,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                                 lifecycleCoroutineScope.launch {
                                     audioPlayer.play(audioFileView.audioFile)
                                     Log.d(TAG, "onClick: audioFileView.audioFile uri : " + audioFileView.audioFile.uri)
-                                    sbMusic.clearAnimation()
-                                    sbAnimation?.cancel()
+                                    resetAnimation()
                                     sbMusic.progress = 0
                                     setSeekbarAnimate(sbMusic, 0, DURATION_ANIMATION)
                                 }
@@ -500,9 +502,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             when (convertingItem.state) {
 
                 ConvertingState.PROGRESSING -> {
-
                     setProgressAnimate(pbLoading, convertingItem.percent, DURATION_ANIMATION)
-
                     tvLoading.text = convertingItem.percent.toString() + "%"
                 }
 
