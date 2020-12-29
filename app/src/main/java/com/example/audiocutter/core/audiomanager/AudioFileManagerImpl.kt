@@ -147,7 +147,7 @@ object AudioFileManagerImpl : AudioFileManager {
                         val filePath = it.getString(clData)
                         Log.d(TAG, "queryMediaStore: $filePath")
                         val id = it.getString(clID)
-                        filterFunc(id, filePath, it.getLong(clDateAdded))
+                        filterFunc(id, filePath, it.getLong(clDateAdded)*1000)
                         hasRow = it.moveToNext()
                     }
                 }
@@ -217,9 +217,6 @@ object AudioFileManagerImpl : AudioFileManager {
                 val audioInfo = FileUtil.getAudioInfo(filePath)
 
                 audioInfo?.let {
-                    if ("music_500k" in it.fileName) {
-                        Log.d("taiiihhh", " bitrate " + it.bitRate)
-                    }
                     filePathMapAudioFile.put(
                         filePath,
                         Utils.convertToAudioFile(
