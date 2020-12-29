@@ -1,7 +1,5 @@
 package com.example.audiocutter.functions.audiochooser.objects
 
-import android.os.Parcel
-import android.os.Parcelable
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.objects.AudioFile
 
@@ -12,4 +10,13 @@ data class AudioCutterView(
     var duration: Long = 0L, var currentPos: Long = 0L,
     var isCheckDistance: Boolean? = null,
     var isplaying: Boolean = false, var no: Int = -1
-)
+) {
+    fun swapNo(audioCutterView: AudioCutterView?) {
+        audioCutterView?.let {
+            val tmp = no
+            no = it.no
+            it.no = tmp
+        }
+
+    }
+}

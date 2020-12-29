@@ -26,13 +26,13 @@ import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioFormat
 import com.example.core.core.AudioMergingConfig
 import java.io.File
+import kotlin.collections.ArrayList
 
 
 class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseListener,
     View.OnClickListener, MergeDialog.MergeDialogListener {
 
     private val safeArg: MergePreviewScreenArgs by navArgs()
-    private lateinit var listAudioPath: Array<String>
     private lateinit var listPath: ArrayList<String>
 
     private val TAG = "manhqn"
@@ -47,6 +47,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     private lateinit var mergeDialog: MergeDialog
 
 
+
     override fun onPause() {
         super.onPause()
         audioMerModel.pause()
@@ -54,24 +55,18 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-//        audioMerModel = ViewModelProvider(this).get(MergePreviewModel::class.java)
         audioMerAdapter = MergePreviewAdapter(requireContext(), audioMerModel.getAudioPlayer(), lifecycleScope,requireActivity())
 
         listPath = ArrayList()
-        listAudioPath = safeArg.listaudio
-        val newListAudio = ArrayList<AudioCutterView>()
 
-
-        for (item in listAudioPath) {
+        for (item in audioMerModel.getListPathReceiver()) {
             listPath.add(item)
             val audioFile = ManagerFactory.getAudioFileManager().findAudioFile(item)
             audioFile?.let {
                 listPath.add(item)
-                newListAudio.add(AudioCutterView(audioFile))
             }
         }
-
-        receiveData(newListAudio)
+        receiveData()
 
     }
 
@@ -149,7 +144,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     }
 
     override fun moveItemAudio(prePos: Int, nextPos: Int) {
-        audioMerAdapter.submitList(audioMerModel.moveItemAudio(prePos, nextPos))
+        audioMerAdapter.submitList(audioMerModel.swapItemAudio(prePos, nextPos))
     }
 
 
@@ -173,7 +168,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     private fun mergeAudioFile() {
         if (audioMerModel.getListAudioChoose().size >= 2) {
 
-
             val dialog = MergeDialog.newInstance(
                 this, audioMerModel.getListAudioChoose().size, Utils.getBaseName(
                     File(listPath[0])
@@ -194,8 +188,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         audioMerModel.stop()
     }
 
-    private fun receiveData(listData: List<AudioCutterView>) {
-//        audioMerModel.initListFileAudio(listData)
+    private fun receiveData() {
         audioMerAdapter.submitList(audioMerModel.getListAudioChoose())
     }
 

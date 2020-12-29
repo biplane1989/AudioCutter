@@ -1,6 +1,5 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -13,7 +12,6 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -47,7 +45,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     }
 
     var stateChecked = Observer<Int> {
-        Log.d("TAG", "stateChecked: $it")
         if (it > 1) {
             setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
         } else {
@@ -56,7 +53,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         binding.tvCountFileMer.text = "$it file"
     }
 
-    @SuppressLint("SetTextI18n")
     private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
         if (listMusic == null) {
             binding.rvMerge.visibility = View.INVISIBLE
@@ -215,13 +211,23 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         audioMerModel.resume()
     }
 
-    @SuppressLint("SetTextI18n")
     override fun chooseItemAudio(audioCutterView: AudioCutterView, rs: Boolean) {
-        if (rs && audioMerModel.getListPathReceiver()
-                .indexOf(audioCutterView.audioFile.getFilePath()) == -1
-        ) {
-            count++
+
+        audioMerModel.getListPathReceiver().forEach {
+            Log.d("TAG", "chooseItemAudio: $it")
         }
+
+
+        if (audioMerModel.getListPathReceiver().size > 0) {
+            if (rs && audioMerModel.getListPathReceiver()
+                    .indexOf(audioCutterView.audioFile.getFilePath()) == -1
+            ) {
+                count++
+            }
+        } /*else {
+            count++
+        }*/
+
         audioMerModel.chooseItemAudioFile(audioCutterView, rs, count)
 
     }

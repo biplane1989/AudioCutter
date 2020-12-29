@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.AudioPlayer
@@ -10,6 +11,15 @@ import com.example.audiocutter.objects.StateLoad
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
+
+fun List<AudioCutterView>.findAudioCutterView(filePath: String): AudioCutterView? {
+    this.forEach {
+        if (it.audioFile.getFilePath() == filePath) {
+            return it
+        }
+    }
+    return null
+}
 
 class MergeChooserModel(application: Application) : BaseAndroidViewModel(application) {
 
@@ -35,10 +45,11 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     val isEmptyState: LiveData<Boolean>
         get() = _isEmptyState
     private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>?>()
-
     fun getAudioPlayer(): AudioPlayer {
         return audioPlayer
     }
+
+    private var sortByNo: Comparator<AudioCutterView> = Comparator { o1, o2 -> o1.no - o2.no }
 
     init {
         audioPlayer.init(application.applicationContext)
@@ -65,6 +76,7 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
             }
             _listAudioFiles.postValue(listAudioFiles)
         }
+
     }
 
     private val _listFilteredAudioFiles = liveData<List<AudioCutterView>?> {
@@ -133,14 +145,11 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
 
     fun chooseItemAudioFile(audioCutterView: AudioCutterView, rs: Boolean, count: Int) {
         try {
+
             val mListAudios = getListAllAudio()
             val pos = mListAudios.indexOf(audioCutterView)
-            val itemAudio: AudioCutterView = mListAudios[pos].copy()
-
             mListAudios[pos].isCheckChooseItem = rs
-            mListAudios[pos].no = count
-
-
+                mListAudios[pos].no = count
             indexChoose = 0
             mListAudios.forEach {
                 if (it.isCheckChooseItem) {
@@ -150,26 +159,13 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
             _stateChecked.postValue(indexChoose)
             _listAudioFiles.postValue(mListAudios)
 
+
         } catch (e: ArrayIndexOutOfBoundsException) {
             e.printStackTrace()
         }
     }
 
 
-    fun getListItemChoose(): List<AudioCutterView> {
-        val mListAudios = getListAllAudio()
-        listAudioChooser = mutableListOf<AudioCutterView>()
-        for (item in mListAudios) {
-            if (item.isCheckChooseItem) {
-                listAudioChooser.add(item)
-            }
-        }
-        return listAudioChooser
-    }
-
-    fun getListAudioChoose(): MutableList<AudioCutterView> {
-        return listAudioChooser
-    }
 
     suspend fun play(pos: Int) {
         val listAudios = getListFilteredAudio()
@@ -209,38 +205,78 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
         return mListPath
     }
 
+
+    fun getListItemChoose(): List<AudioCutterView> {
+        mListPath.clear()
+        val mListAudios = getListAllAudio()
+        listAudioChooser = mutableListOf()
+        for (item in mListAudios) {
+            if (item.isCheckChooseItem) {
+                mListPath.add(item.audioFile.getFilePath())
+                listAudioChooser.add(item)
+            }
+            if (!item.isCheckChooseItem) {
+                item.no = -1
+            }
+        }
+        _listAudioFiles.postValue(mListAudios)
+        return listAudioChooser
+    }
+
+    fun getListAudioChoose(): MutableList<AudioCutterView> {
+        Collections.sort(listAudioChooser, sortByNo)
+        return listAudioChooser
+    }
+
+    private fun swapNo(filePath1: String, filePath2: String) {
+        //sync list AudioItems are selected and all AudioFile
+
+        val audioCutterView1 = getListAllAudio().findAudioCutterView(filePath1)
+        val audioCutterView2 = getListAllAudio().findAudioCutterView(filePath2)
+        audioCutterView1?.swapNo(audioCutterView2)
+
+        val selectedAudioFile1 = listAudioChooser.findAudioCutterView(filePath1)
+        val selectedAudioFile2 = listAudioChooser.findAudioCutterView(filePath2)
+        selectedAudioFile1?.swapNo(selectedAudioFile2)
+
+        //Log.d("taihhhhh", "audioCutterView1 ${audioCutterView1.hashCode()} audioCutterView1 ${audioCutterView2.hashCode()}\n selectedAudioFile1 ${selectedAudioFile1.hashCode()} selectedAudioFile2 ${selectedAudioFile2.hashCode()}")
+
+    }
+
+
+    fun swapItemAudio(index1: Int, index2: Int): List<AudioCutterView> {
+        listAudioChooser[index1] = listAudioChooser[index1].copy()
+        listAudioChooser[index2] = listAudioChooser[index2].copy()
+        swapNo(
+            listAudioChooser[index1].audioFile.getFilePath(),
+            listAudioChooser[index2].audioFile.getFilePath()
+        )
+        Collections.sort(listAudioChooser, sortByNo)
+        listAudioChooser.forEach {
+            Log.d(TAG, "swapItemAudio:name : ${it.audioFile.fileName} ${it.no}")
+        }
+        return listAudioChooser
+    }
+
+    fun removeItemAudio(item: AudioCutterView): List<AudioCutterView> {
+        indexChoose--
+        listAudioChooser.remove(item)
+        getlistAfterReceive(item)
+        _stateChecked.postValue(indexChoose)
+        return listAudioChooser
+    }
+
     private fun getlistAfterReceive(item: AudioCutterView) {
         val mListAudios = ArrayList(_listAudioFiles.value)
 
         for (index in mListAudios.indices) {
             if (mListAudios[index].audioFile.file.absolutePath.equals(item.audioFile.file.absolutePath)) {
                 mListAudios.remove(mListAudios[index])
+                mListPath.remove(mListAudios[index].audioFile.getFilePath())
                 mListAudios.add(index, AudioCutterView(item.audioFile, isCheckChooseItem = false))
             }
         }
-        /* var count = 0
-         for (item in mListAudios) {
-             if (item.isCheckChooseItem) {
-                 count++
-             }
-         }
-         _stateChecked.postValue(count)*/
         _listAudioFiles.postValue(mListAudios)
-    }
-
-    fun moveItemAudio(prePos: Int, nextPos: Int): List<AudioCutterView> {
-        val preItem = listAudioChooser[prePos].copy()
-        listAudioChooser.remove(preItem)
-        listAudioChooser.add(nextPos, preItem)
-        return listAudioChooser
-    }
-
-    fun removeItemAudio(item: AudioCutterView): List<AudioCutterView> {
-        listAudioChooser.remove(item)
-        getlistAfterReceive(item)
-        indexChoose--
-        _stateChecked.postValue(indexChoose)
-        return listAudioChooser
     }
 
 
