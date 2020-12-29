@@ -147,9 +147,10 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
         try {
 
             val mListAudios = getListAllAudio()
+
             val pos = mListAudios.indexOf(audioCutterView)
             mListAudios[pos].isCheckChooseItem = rs
-                mListAudios[pos].no = count
+            mListAudios[pos].no = count
             indexChoose = 0
             mListAudios.forEach {
                 if (it.isCheckChooseItem) {
@@ -225,6 +226,9 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
 
     fun getListAudioChoose(): MutableList<AudioCutterView> {
         Collections.sort(listAudioChooser, sortByNo)
+        listAudioChooser.forEach {
+            Log.d(TAG, "getListAudioChoose: ${it.audioFile.fileName} - no : ${it.no}")
+        }
         return listAudioChooser
     }
 
@@ -273,7 +277,10 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
             if (mListAudios[index].audioFile.file.absolutePath.equals(item.audioFile.file.absolutePath)) {
                 mListAudios.remove(mListAudios[index])
                 mListPath.remove(mListAudios[index].audioFile.getFilePath())
-                mListAudios.add(index, AudioCutterView(item.audioFile, isCheckChooseItem = false))
+                mListAudios.add(
+                    index,
+                    AudioCutterView(item.audioFile, isCheckChooseItem = false, no = -1)
+                )
             }
         }
         _listAudioFiles.postValue(mListAudios)

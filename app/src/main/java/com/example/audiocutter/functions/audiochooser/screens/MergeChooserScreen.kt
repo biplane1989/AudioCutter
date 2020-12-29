@@ -216,19 +216,19 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         audioMerModel.getListPathReceiver().forEach {
             Log.d("TAG", "chooseItemAudio: $it")
         }
-
-
-        if (audioMerModel.getListPathReceiver().size > 0) {
+//        if (audioMerModel.getListPathReceiver().size > 0) {
             if (rs && audioMerModel.getListPathReceiver()
                     .indexOf(audioCutterView.audioFile.getFilePath()) == -1
             ) {
                 count++
+                audioMerModel.chooseItemAudioFile(audioCutterView, rs, count)
             }
-        } /*else {
+//        }
+
+        /*else {
             count++
         }*/
 
-        audioMerModel.chooseItemAudioFile(audioCutterView, rs, count)
 
     }
 
