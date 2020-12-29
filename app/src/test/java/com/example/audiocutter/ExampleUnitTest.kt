@@ -35,38 +35,6 @@ class ExampleUnitTest {
 
     @Test
     fun addition_isCorrect() = runBlocking{
-        /*launch {  }
-        println("My job is: ${coroutineContext[Job]?.children?.count()}")
-        val number = produceNumbers()
-        square(produceSquares())
 
-        println("My job is: ${coroutineContext[Job]?.children?.count()}")
-       coroutineContext.cancelChildren()
-        delay(2000)
-        println("Done!")*/
-        val a = CoroutineName("SDSD")
-
-        val coroutineScope1 = CoroutineScope(Dispatchers.Default)
-        val coroutineScope2 = CoroutineScope(Dispatchers.Default)
-        coroutineScope1.launch(a) {
-            println("My context is $coroutineContext}")
-            while (true){
-                delay(1000)
-                println("coroutineScope1")
-            }
-        }
-        coroutineScope2.launch(a) {
-            println("My context is $coroutineContext}")
-            while (true){
-                delay(1000)
-                println("coroutineScope2")
-            }
-        }
-
-        delay(3000)
-        coroutineScope1.cancel()
-        coroutineScope2.cancel()
-        delay(3000)
-        println("Done!")
     }
 }

@@ -91,8 +91,7 @@ class WaveformTouchEventHandler {
         cancelPlayPosAnimation();
         mPlaybackPos = 0;
         mEndPos = mMaxPos;
-        mMinFrameDistance = WaveformView.MIN_RANGE_SELECTION_IN_SECONDS * mWaveformView.fps();
-
+        mMinFrameDistance = mWaveformView.millisecsToPixels(WaveformView.MIN_RANGE_SELECTION_IN_SECONDS*1000);
     }
 
     void onWaveformDraw() {
@@ -105,12 +104,15 @@ class WaveformTouchEventHandler {
         if (!mWaveformView.isInitialized()) {
             return false;
         }
-        if (mWaveformView.getCursorLeftRect().contains(event.getX(), event.getY())) {
-            mRangeButtonSelected = LEFT_RANGE_BUTTON_SELECTED;
+        if(event.getAction() == MotionEvent.ACTION_DOWN){
+            if (mWaveformView.getCursorLeftRect().contains(event.getX(), event.getY())) {
+                mRangeButtonSelected = LEFT_RANGE_BUTTON_SELECTED;
+            }
+            if (mWaveformView.getCursorRightRect().contains(event.getX(), event.getY())) {
+                mRangeButtonSelected = RIGHT_RANGE_BUTTON_SELECTED;
+            }
         }
-        if (mWaveformView.getCursorRightRect().contains(event.getX(), event.getY())) {
-            mRangeButtonSelected = RIGHT_RANGE_BUTTON_SELECTED;
-        }
+
         if (mRangeButtonSelected == NONE_RANGE_BUTTON_SELECTED) {
             mScaleGestureDetector.onTouchEvent(event);
             if (mGestureDetector.onTouchEvent(event)) {
@@ -360,11 +362,7 @@ class WaveformTouchEventHandler {
                 onPlayPosOutOfRange(newPlayPos > mEndPos);
                 return;
             }
-            if (mIsPlayingLineSliding) {
-                pendingPlaybackPos = newPlayPos;
-            } else {
-                movePlaybackPos(newPlayPos);
-            }
+            movePlaybackPos(newPlayPos);
         }
 
     }

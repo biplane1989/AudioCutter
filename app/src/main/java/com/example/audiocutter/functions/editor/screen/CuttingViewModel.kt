@@ -66,10 +66,16 @@ class CuttingViewModel : BaseViewModel() {
 
     fun changeStartPos(pos: Int) {
         cuttingStartPos = pos
+        if(cuttingStartPos >= cuttingCurrPos){
+            changeCurrPos(cuttingStartPos)
+        }
     }
 
     fun changeEndPos(pos: Int) {
         cuttingEndPos = pos
+        if(cuttingEndPos <= cuttingCurrPos){
+            changeCurrPos(cuttingEndPos)
+        }
     }
 
     fun changeCurrPos(newPos: Int, allowSeekingAudio: Boolean = true) {
@@ -81,7 +87,7 @@ class CuttingViewModel : BaseViewModel() {
             cuttingCurrPos = cuttingStartPos
         } else {
             if (newPos in cuttingStartPos..cuttingEndPos) {
-                if (audioPlayer.getPlayerInfoData().playerState == PlayerState.PLAYING) {
+                if (audioPlayer.getPlayerInfoData().playerState != PlayerState.IDLE) {
                     if (allowSeekingAudio) {
                         audioPlayer.seek(newPos)
                     }

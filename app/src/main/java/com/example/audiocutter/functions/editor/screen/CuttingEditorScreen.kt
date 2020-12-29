@@ -195,6 +195,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
             binding.startTimeTv.layoutParams = layoutParams
         }
         binding.startTimeTv.text = startTimeStr
+        Log.d("taihhhhh", "onStartTimeChanged: startTimeMs ${startTimeMs} CuttingCurrPos ${cuttingViewModel.getCuttingCurrPos()}")
         cuttingViewModel.changeStartPos(startTimeMs.toInt())
     }
 
