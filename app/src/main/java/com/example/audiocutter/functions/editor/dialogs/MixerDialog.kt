@@ -49,6 +49,7 @@ class MixerDialog : BaseDialog() {
         tv_mix_dialog_filename.run {
 
             tv_cancel_dialog_filename.setOnClickListener {
+                Utils.hideKeyboard(requireContext(), edt_file_name)
                 dialog?.dismiss()
                 dialogListener.onCancel()
             }
@@ -56,6 +57,7 @@ class MixerDialog : BaseDialog() {
             tv_mix_dialog_filename.setOnClickListener {
                 if (checkValid(edt_file_name.text.toString())) {
                     dialogListener.onMixClick(edt_file_name.text.toString())
+                    Utils.hideKeyboard(requireContext(), edt_file_name)
                     dismiss()
                 }
             }

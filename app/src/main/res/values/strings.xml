@@ -111,7 +111,6 @@
     <string name="result_screen_btn_background_convert">BACKGROUND CONVERT</string>
     <string name="cancel_dialog_title">Warning</string>
     <string name="cancel_dialog_notification">Do you want to cancel the conversion?</string>
-    <string name="choose_a_sharing_app">Choose a sharing app</string>
     <string name="please_wait_a_moment">Please wait a moment.....</string>
     <string name="set_successfully">Set Successfully</string>
     <string name="setting_text">Settings</string>
@@ -217,4 +216,5 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="dialog_advanced_cancel">CANCEL</string>
     <string name="default_size_audio">2.1 MB</string>
     <string name="default_bitrate_audio">128kb/s</string>
+    <string name="share_with_dialog_appshare">Share with</string>
 </resources>

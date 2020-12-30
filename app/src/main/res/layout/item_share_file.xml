@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingHorizontal="@dimen/d_16"
+    android:gravity="center"
     android:paddingVertical="@dimen/d_8"
     android:background="?attr/selectableItemBackground"
     android:orientation="horizontal">
@@ -10,17 +11,18 @@
 <!--    android:background="?attr/selectableItemBackgroundBorderless"-->
 
     <ImageView
+      android:layout_marginRight="@dimen/d_8"
         android:id="@+id/iv_icon_app_flash"
-        android:layout_width="?actionBarSize"
-        android:layout_height="@dimen/d_56"
+        android:layout_width="@dimen/d_40"
+        android:layout_height="@dimen/d_40"
         android:scaleType="centerInside"
          />
     <TextView
         android:id="@+id/tv_app_share"
         android:layout_width="match_parent"
-        android:paddingHorizontal="@dimen/d_16"
+        android:paddingHorizontal="@dimen/d_10"
         android:layout_height="@dimen/d_56"
-        android:textSize="@dimen/text_size_button"
+        android:textSize="@dimen/d_16"
         android:fontFamily="@font/opensans_regular"
         android:textColor="@color/colorBlack"
         android:gravity="center_vertical"/>

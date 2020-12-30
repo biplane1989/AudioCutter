@@ -317,7 +317,7 @@ class Utils {
         }
 
         @SuppressLint("QueryPermissionsNeeded")
-        fun getListAppQueryReceiveData(context: Context): List<ItemAppShare> {
+        fun getListAppQueryReceiveOnlyData(context: Context): List<ItemAppShare> {
             val listAppShares = ArrayList<ItemAppShare>()
             val intent = Intent()
             intent.action = Intent.ACTION_SEND

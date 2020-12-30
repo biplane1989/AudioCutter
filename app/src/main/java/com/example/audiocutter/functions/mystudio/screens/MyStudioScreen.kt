@@ -408,7 +408,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
     }
 
     private fun showDialogShareFile() {
-        dialogShare = DialogAppShare(requireContext(), Utils.getListAppQueryReceiveData(requireContext()), TypeShare.ONLYFILE, false)
+        dialogShare = DialogAppShare(requireContext(), Utils.getListAppQueryReceiveOnlyData(requireContext()), TypeShare.ONLYFILE, false)
         dialogShare.setOnCallBack(this)
         dialogShare.show(requireActivity().supportFragmentManager, "TAG_DIALOG")
     }
@@ -584,7 +584,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
             dialogShare = DialogAppShare(requireContext(), listApps, TypeShare.MULTIFILE, true)
 
         } else {
-            listApps = Utils.getListAppQueryReceiveData(requireContext())
+            listApps = Utils.getListAppQueryReceiveOnlyData(requireContext())
             dialogShare = DialogAppShare(requireContext(), listApps, TypeShare.ONLYFILE, true)
         }
         dialogShare.setOnCallBack(this)

@@ -51,7 +51,10 @@
                 android:singleLine="true"
                 android:textColor="@color/dialog_advanced_text_sniper_color"
                 android:textSize="@dimen/text_size_edt"
-                android:theme="@style/editTextTheme" />
+                android:focusable="true"
+                android:theme="@style/editTextTheme" >
+                <requestFocus/>
+            </EditText>
 
             <LinearLayout
                 android:layout_width="match_parent"

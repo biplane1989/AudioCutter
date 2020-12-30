@@ -147,11 +147,13 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
                         )
                         addDataSharePre()
                     }
+                    Utils.hideKeyboard(requireContext(), edtNameFile)
                     dismiss()
                 }
 
             }
             R.id.dialog_convert_cancel_tv -> {
+                Utils.hideKeyboard(requireContext(), edtNameFile)
                 dismiss()
             }
         }

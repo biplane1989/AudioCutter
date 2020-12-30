@@ -24,7 +24,6 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.core.result.AudioEditorManagerlmpl
 import com.example.audiocutter.databinding.ResultScreenBinding
 import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
 import com.example.audiocutter.functions.audiochooser.dialogs.TypeShare
@@ -39,9 +38,7 @@ import com.example.audiocutter.permissions.ContactItemPermissionRequest
 import com.example.audiocutter.permissions.PermissionManager
 import com.example.audiocutter.permissions.WriteSettingPermissionRequest
 import com.example.audiocutter.util.Utils
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 
 
 class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener, DialogAppShare.DialogAppListener {
@@ -255,8 +252,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         // smooth animation
         sbAnimation?.cancel()
         sbAnimation = ObjectAnimator.ofInt(pb, "progress", pb.progress, progressTo * 100)
-        sbAnimation?.setDuration(duration)
-        sbAnimation?.setInterpolator(DecelerateInterpolator())
+        sbAnimation?.duration = duration
+        sbAnimation?.interpolator = DecelerateInterpolator()
         sbAnimation?.start()
     }
 
@@ -531,7 +528,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
 
     private fun ShowDialogShareFile() {
-        dialogAppShare = DialogAppShare(requireContext(), Utils.getListAppQueryReceiveData(requireContext()), TypeShare.ONLYFILE)
+        dialogAppShare = DialogAppShare(requireContext(), Utils.getListAppQueryReceiveOnlyData(requireContext()), TypeShare.ONLYFILE)
         dialogAppShare.setOnCallBack(this)
         dialogAppShare.show(requireActivity().supportFragmentManager, "TAG_DIALOG")
     }
@@ -597,8 +594,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         // smooth animation
         progressbarAnimation?.cancel()
         progressbarAnimation = ObjectAnimator.ofInt(pb, "progress", pb.progress, progressTo * 100)
-        progressbarAnimation?.setDuration(duration)
-        progressbarAnimation?.setInterpolator(DecelerateInterpolator())
+        progressbarAnimation?.duration = duration
+        progressbarAnimation?.interpolator = DecelerateInterpolator()
         progressbarAnimation?.start()
     }
 }
