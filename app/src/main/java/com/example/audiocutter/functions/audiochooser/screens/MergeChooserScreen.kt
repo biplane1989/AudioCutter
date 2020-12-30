@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,7 +27,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     private lateinit var audioMerAdapter: MergeChooserAdapter
     private val audioMerModel: MergeChooserModel by navGraphViewModels(R.id.mer_navigation)
     var currentPos = -1
-    var count = 0
 
     var stateObserver = Observer<Int> {
         when (it) {
@@ -212,24 +210,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     }
 
     override fun chooseItemAudio(audioCutterView: AudioCutterView, rs: Boolean) {
-
-        audioMerModel.getListPathReceiver().forEach {
-            Log.d("TAG", "chooseItemAudio: $it")
-        }
-//        if (audioMerModel.getListPathReceiver().size > 0) {
-            if (rs && audioMerModel.getListPathReceiver()
-                    .indexOf(audioCutterView.audioFile.getFilePath()) == -1
-            ) {
-                count++
-                audioMerModel.chooseItemAudioFile(audioCutterView, rs, count)
-            }
-//        }
-
-        /*else {
-            count++
-        }*/
-
-
+                audioMerModel.chooseItemAudioFile(audioCutterView, rs)
     }
 
     private fun showEmptyList() {

@@ -26,7 +26,7 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     private var indexChoose: Int = 0
     private lateinit var listAudioChooser: MutableList<AudioCutterView>
     private val audioPlayer = ManagerFactory.newAudioPlayer()
-    private val TAG = MergeChooserModel::class.java.name
+    private val TAG = "NmcheckScrMer"
     private var currentAudioPlaying: File = File("")
 
     private var _stateLoadProgress = MutableLiveData<Int>()
@@ -40,6 +40,7 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     private var mListPath = ArrayList<String>()
 
     private var filterText = ""
+    private var count = 0
 
     private var _isEmptyState = MutableLiveData<Boolean>()
     val isEmptyState: LiveData<Boolean>
@@ -143,14 +144,18 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
 
     }
 
-    fun chooseItemAudioFile(audioCutterView: AudioCutterView, rs: Boolean, count: Int) {
+    fun chooseItemAudioFile(audioCutterView: AudioCutterView, rs: Boolean) {
         try {
+            if (rs && mListPath.indexOf(audioCutterView.audioFile.getFilePath()) == -1) {
+                count++
+            }
 
             val mListAudios = getListAllAudio()
-
             val pos = mListAudios.indexOf(audioCutterView)
             mListAudios[pos].isCheckChooseItem = rs
-            mListAudios[pos].no = count
+            if (mListAudios[pos].no == -1) {
+                mListAudios[pos].no = count
+            }
             indexChoose = 0
             mListAudios.forEach {
                 if (it.isCheckChooseItem) {
@@ -220,6 +225,9 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
                 item.no = -1
             }
         }
+        mListPath.forEach {
+            Log.d(TAG, "getListItemChoose: path $it")
+        }
         _listAudioFiles.postValue(mListAudios)
         return listAudioChooser
     }
@@ -243,7 +251,6 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
         val selectedAudioFile2 = listAudioChooser.findAudioCutterView(filePath2)
         selectedAudioFile1?.swapNo(selectedAudioFile2)
 
-        //Log.d("taihhhhh", "audioCutterView1 ${audioCutterView1.hashCode()} audioCutterView1 ${audioCutterView2.hashCode()}\n selectedAudioFile1 ${selectedAudioFile1.hashCode()} selectedAudioFile2 ${selectedAudioFile2.hashCode()}")
 
     }
 
@@ -256,9 +263,6 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
             listAudioChooser[index2].audioFile.getFilePath()
         )
         Collections.sort(listAudioChooser, sortByNo)
-        listAudioChooser.forEach {
-            Log.d(TAG, "swapItemAudio:name : ${it.audioFile.fileName} ${it.no}")
-        }
         return listAudioChooser
     }
 
