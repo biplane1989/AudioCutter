@@ -163,16 +163,22 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 listConvertingItemData.remove(item)
             }
 
+            // audioResult tra ve null
             if (audioResult != null) {      // thanh cong
                 // converting progress co thanh cong hay khong
                 ManagerFactory.getAudioFileManager().buildAudioFile(audioResult.file.absolutePath) {
                     if (it != null) {
+                        Log.d(TAG, "processItem: convertingState "+convertingState)
                         if (convertingState != ConvertingState.ERROR) {
                             item.outputAudioFile = it
                             item.state = ConvertingState.SUCCESS
                             onConvertingItemDetached(item)
                             Log.d(TAG, "processItem: item ID : " + item.id)
                             notifyConvertingItemChanged(item)
+                        } else {
+                            item.state = ConvertingState.ERROR
+                            notifyConvertingItemChanged(item)
+//                            latestConvertingItem = null
                         }
                     } else {
                         item.outputAudioFile = it
@@ -202,7 +208,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 processNextItem()
 
             }
-
         }
     }
 

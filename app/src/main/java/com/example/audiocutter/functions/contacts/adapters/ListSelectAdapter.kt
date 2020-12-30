@@ -148,36 +148,44 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         }
 
         private fun updatePlayInfor(playerInfo: PlayerInfo) {
+            val audioFileView = getItem(adapterPosition)
+            if (playerInfo.currentAudio?.getFilePath()
+                    .equals(audioFileView.audioFile.getFilePath())) {
 
-            timeFomat = Utils.chooseTimeFormat(playerInfo.duration.toLong())
-            tvTimeLife.text = Utils.toTimeStr(playerInfo.posision.toLong(), timeFomat)
+                if (!audioFileView.isExpanded) {
+                    audioPlayer.stop()
+                }
 
-            when (playerInfo.playerState) {
+                timeFomat = Utils.chooseTimeFormat(playerInfo.duration.toLong())
+                tvTimeLife.text = Utils.toTimeStr(playerInfo.posision.toLong(), timeFomat)
 
-                PlayerState.PLAYING -> {
-                    Log.d(TAG, "onProgressChanged: aloha progress pecent : " + playerInfo.posision)
-                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
-                    if (isFirstPlayMusic) {
-                        sbMusic.progress = playerInfo.posision * 100
-                    } else {
-                        setSeekbarAnimate(sbMusic, playerInfo.posision, DURATION_ANIMATION)
+                when (playerInfo.playerState) {
+
+                    PlayerState.PLAYING -> {
+                        Log.d(TAG, "onProgressChanged: aloha progress pecent : " + playerInfo.posision)
+                        itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
+                        if (isFirstPlayMusic) {
+                            sbMusic.progress = playerInfo.posision * 100
+                        } else {
+                            setSeekbarAnimate(sbMusic, playerInfo.posision, DURATION_ANIMATION)
+                        }
+
                     }
+                    PlayerState.PAUSE -> {
+                        itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
 
+                    }
+                    PlayerState.IDLE -> {
+                        tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
+                        resetItemView()
+                        setSeekbarAnimate(sbMusic, 0, DURATION_ANIMATION)
+                    }
+                    else -> {
+                        //nothing
+                    }
                 }
-                PlayerState.PAUSE -> {
-                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
-
-                }
-                PlayerState.IDLE -> {
-                    tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
-                    resetItemView()
-                    setSeekbarAnimate(sbMusic, 0, DURATION_ANIMATION)
-                }
-                else -> {
-                    //nothing
-                }
+                isFirstPlayMusic = false
             }
-            isFirstPlayMusic = false
         }
 
         private fun setSeekbarAnimate(pb: SeekBar, progressTo: Int, duration: Long) {
