@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -31,6 +32,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     private lateinit var binding: MixChooserScreenBinding
     private var currentPos = -1
     private var isCanChoose = 0
+    private var toast: Toast? = null
     private var stateObserver = Observer<Int> {
         when (it) {
             1 -> {
@@ -70,7 +72,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
 
     private val isChoseItemObserver = Observer<Boolean?> {
         if (it != null && it) {
-            showToast(getString(R.string.ToastExceed))
+            generateToast(getString(R.string.ToastExceed))
         }
     }
 
@@ -172,13 +174,26 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
 
 
     private fun initViews() {
-
         binding.ivMixerScreenSearch.setOnClickListener(this)
         binding.ivMixerScreenBackEdt.setOnClickListener(this)
         binding.ivMixerScreenClose.setOnClickListener(this)
         binding.rltNextMixer.setOnClickListener(this)
         binding.ivMixerScreenBack.setOnClickListener(this)
         audioMixAdapter.setAudioCutterListtener(this)
+
+
+    }
+
+    private fun generateToast(text: String) {
+        if (toast != null) {
+            toast!!.cancel()
+            toast = null
+            toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
+        } else
+            if (toast == null) {
+                toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
+            }
+        toast!!.show()
 
 
     }
@@ -329,7 +344,11 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     override fun onDestroyView() {
         super.onDestroyView()
         ManagerFactory.getDefaultAudioPlayer().stop()
+        toast?.let {
+            toast!!.cancel()
+        }
     }
+
 
 }
 

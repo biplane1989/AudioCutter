@@ -61,6 +61,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     private var progressbarAnimation: ObjectAnimator? = null
     private var playerState: PlayerState = PlayerState.IDLE
     private var timeFomat = 0
+    private var toast: Toast? = null
 
     private var pendingRequestingPermission = 0
     private val CONTACTS_ITEM_REQUESTING_PERMISSION = 1 shl 4
@@ -173,7 +174,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 //        if (it) {
 //            view?.let {
 //                val mySnackbar = Snackbar.make(it, getString(R.string.result_screen_converting_error), Snackbar.LENGTH_LONG)
-//                mySnackbar.show()
+//                mySnackbar
 //            }
 //        }
 
@@ -273,7 +274,10 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                 if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CONTACTS_ITEM_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
                     audioFile?.let {
-                        viewStateManager.resultScreenSetContactItemClicked(this, it.file.absolutePath)
+                        viewStateManager.resultScreenSetContactItemClicked(
+                            this,
+                            it.file.absolutePath
+                        )
                     }
                 }
                 if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
@@ -483,31 +487,40 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
     private fun setNotifiCation() {
         if (mResultViewModel.setNotification()) {
-            Toast.makeText(requireContext(), getString(R.string.result_screen_set_notification_successful), Toast.LENGTH_SHORT)
-                .show()
+            generateToast(getString(R.string.result_screen_set_notification_successful))
         } else {
-            Toast.makeText(requireContext(), getString(R.string.result_screen_set_notification_fail), Toast.LENGTH_SHORT)
-                .show()
+            generateToast(getString(R.string.result_screen_set_notification_fail))
         }
+    }
+
+    @SuppressLint("ShowToast")
+    private fun generateToast(text: String) {
+        if (toast != null) {
+            toast!!.cancel()
+            toast = null
+            toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
+        } else
+            if (toast == null) {
+                toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
+            }
+        toast!!.show()
+
+
     }
 
     private fun setAlarm() {
         if (mResultViewModel.setAlarm()) {
-            Toast.makeText(requireContext(), getString(R.string.result_screen_set_alarm_successful), Toast.LENGTH_SHORT)
-                .show()
+            generateToast(getString(R.string.result_screen_set_alarm_successful))
         } else {
-            Toast.makeText(requireContext(), getString(R.string.result_screen_set_alarm_fail), Toast.LENGTH_SHORT)
-                .show()
+            generateToast(getString(R.string.result_screen_set_alarm_fail))
         }
     }
 
     private fun setRingtone() {
         if (mResultViewModel.setRingTone()) {
-            Toast.makeText(requireContext(), getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
-                .show()
+            generateToast(getString(R.string.result_screen_set_ringtone_successful))
         } else {
-            Toast.makeText(requireContext(), getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
-                .show()
+            generateToast(getString(R.string.result_screen_set_ringtone_fail))
         }
     }
 
@@ -561,6 +574,9 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
     override fun onDestroyView() {
         super.onDestroyView()
+        toast?.let {
+            toast!!.cancel()
+        }
         progressbarAnimation?.cancel()
     }
 

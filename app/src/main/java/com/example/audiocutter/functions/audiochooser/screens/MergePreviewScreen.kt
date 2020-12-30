@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
@@ -26,7 +27,6 @@ import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioFormat
 import com.example.core.core.AudioMergingConfig
 import java.io.File
-import kotlin.collections.ArrayList
 
 
 class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseListener,
@@ -43,7 +43,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     //    private lateinit var audioMerModel: MergePreviewModel
     private val audioMerModel: MergeChooserModel by navGraphViewModels(R.id.mer_navigation)
     var currentPos = -1
-
+    private var toast: Toast? = null
     private lateinit var mergeDialog: MergeDialog
 
 
@@ -178,7 +178,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
             showKeybroad()
 
         } else {
-            showToast("You need to select 2 or more files")
+            generateToast(getString(R.string.rule_amout_item_mer))
         }
     }
 
@@ -186,6 +186,9 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     override fun onDestroyView() {
         super.onDestroyView()
         audioMerModel.stop()
+        toast?.let {
+            toast!!.cancel()
+        }
     }
 
     private fun receiveData() {
@@ -207,6 +210,20 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     override fun cancalKeybroad() {
         hideKeyBroad()
+    }
+
+    private fun generateToast(text: String) {
+        if (toast != null) {
+            toast!!.cancel()
+            toast = null
+            toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
+        } else
+            if (toast == null) {
+                toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
+            }
+        toast!!.show()
+
+
     }
 
     private fun hideKeyBroad() {

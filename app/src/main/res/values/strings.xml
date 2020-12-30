@@ -217,4 +217,5 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="default_size_audio">2.1 MB</string>
     <string name="default_bitrate_audio">128kb/s</string>
     <string name="share_with_dialog_appshare">Share with</string>
+    <string name="rule_amout_item_mer">You need to select 2 or more files</string>
 </resources>
