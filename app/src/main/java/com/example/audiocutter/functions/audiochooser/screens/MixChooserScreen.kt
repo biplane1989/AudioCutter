@@ -47,6 +47,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
         }
     }
 
+
     private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
 
         if (listMusic == null) {
