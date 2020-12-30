@@ -9,17 +9,24 @@ import com.example.audiocutter.functions.mystudio.objects.ActionData
 
 class MyAudioManagerViewModel : BaseViewModel() {
 
-    private val actionLiveData: MutableLiveData<ActionData> = MutableLiveData()
+    private val actionLiveData: MutableLiveData<ActionData?> = MutableLiveData()
 
-    fun getAction(): LiveData<ActionData> {
+    fun getAction(): LiveData<ActionData?> {
         return actionLiveData
+    }
+
+    fun clearAction() {
+        actionLiveData.value = null
     }
 
     override fun onReceivedAction(fragmentMeta: FragmentMeta) {
         super.onReceivedAction(fragmentMeta)
 
+        var data = -1
         fragmentMeta.data?.let {
-            val data = fragmentMeta.data as Int
+            data = fragmentMeta.data as Int
+            Log.d("giangtd001", "onReceivedAction1 data: " + data)
+
             when (fragmentMeta.action) {
                 Constance.ACTION_DELETE -> {
                     actionLiveData.postValue(ActionData(Constance.ACTION_DELETE, data))

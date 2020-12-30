@@ -329,6 +329,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
                         dialog.show(childFragmentManager, InfoDialog.TAG)
                     }
                     R.id.delete -> {
+                        Log.d(TAG, "showMenu: DeleteDialog")
                         if (childFragmentManager.findFragmentByTag(DeleteDialog.TAG) == null) {
                             val dialog = DeleteDialog.newInstance(this, audioFile.file.absolutePath)
                             dialog.show(childFragmentManager, DeleteDialog.TAG)

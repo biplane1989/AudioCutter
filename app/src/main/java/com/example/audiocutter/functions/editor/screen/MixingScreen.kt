@@ -31,8 +31,7 @@ import com.example.core.core.AudioFormat
 import com.example.core.core.AudioMixConfig
 import com.example.core.core.MixSelector
 
-class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPlayLineChange,
-    FileNameDialogListener {
+class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPlayLineChange, FileNameDialogListener {
     private var isLongestAudioChecked = true
     private val mPlayer1 = ManagerFactory.newAudioPlayer()
     private val mPlayer2 = ManagerFactory.newAudioPlayer()
@@ -46,6 +45,9 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     private var isCompare = false
     private var dialog: MixerDialog? = null
     private var isDeleteClicked = true
+    private var volume1 = 100
+    private var volume2 = 100
+    private var mixselect: MixSelector = MixSelector.LONGEST
 
     private val safeArg: MixingScreenArgs by navArgs()
 
@@ -57,11 +59,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         super.onPostCreate(savedInstanceState)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.mixing_screen, container, false)
         initViews()
         return binding.root
@@ -80,8 +78,8 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
             Log.d(TAG, "observerAudio: ${it.playerState}")
             when (it.playerState) {
                 PlayerState.IDLE -> {
-                        binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
-                        playerState = PlayerState.IDLE
+                    binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
+                    playerState = PlayerState.IDLE
                 }
                 PlayerState.PREPARING -> {
                     binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
@@ -113,7 +111,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 listData.add(audio2)
                 binding.crChangeViewMixing.setFileAudio(audio1, audio2)
                 isCompare = durAudio1.toInt() > durAudio2.toInt()
-                binding.crChangeViewMixing.post{
+                binding.crChangeViewMixing.post {
                     binding.crChangeViewMixing.setLengthAudio(durAudio1, durAudio2)
                 }
                 binding.crChangeViewMixing.mCallback = this
@@ -172,6 +170,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                     checkCompareDurationMin(durAudio1, durAudio2)
                     binding.crChangeViewMixing.setShortedLength()
                     stopAudio()
+                    mixselect = MixSelector.SHORTEST
                     isLongestAudioChecked = false
                 }
             }
@@ -181,6 +180,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                     checkCompareDurationMax(durAudio1, durAudio2)
                     binding.crChangeViewMixing.setLonggestLenght()
                     stopAudio()
+                    mixselect = MixSelector.LONGEST
                     isLongestAudioChecked = true
                 }
             }
@@ -212,10 +212,8 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         if (audioFile1 == null || audioFile2 == null) {
             return null
         }
-        val longestAudioPlayer =
-            if (audioFile1.duration >= audioFile2.duration) mPlayer1 else mPlayer2
-        val shortestAudioPlayer =
-            if (audioFile1.duration < audioFile2.duration) mPlayer1 else mPlayer2
+        val longestAudioPlayer = if (audioFile1.duration >= audioFile2.duration) mPlayer1 else mPlayer2
+        val shortestAudioPlayer = if (audioFile1.duration < audioFile2.duration) mPlayer1 else mPlayer2
         return if (isLongestAudioChecked) {
             longestAudioPlayer
         } else {
@@ -277,26 +275,26 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     }
 
     override fun setVolumeAudio1(value: Float, min: Float, max: Float) {
-        var newValueSound =
-            Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
+        var newValueSound = Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
         if (newValueSound > 1) {
             newValueSound = 1.0
         }
         if (newValueSound < 0) {
             newValueSound = 0.0
         }
+        volume1 = newValueSound.toInt()
         mPlayer1.setVolume(newValueSound.toFloat())
     }
 
     override fun setVolumeAudio2(value: Float, min: Float, max: Float) {
-        var newValueSound =
-            Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
+        var newValueSound = Utils.convertValue(min.toDouble(), max.toDouble(), 0.0, 1.0, value.toDouble())
         if (newValueSound > 1) {
             newValueSound = 1.0
         }
         if (newValueSound < 0) {
             newValueSound = 0.0
         }
+        volume2 = newValueSound.toInt()
         mPlayer2.setVolume(newValueSound.toFloat())
     }
 
@@ -306,13 +304,13 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
 
     override fun onMixClick(fileName: String) {
-        val mixingConfig = AudioMixConfig(
-            fileName, ManagerFactory.getAudioFileManager()
-                .getFolderPath(Folder.TYPE_MIXER), MixSelector.LONGEST, 100, 100, AudioFormat.MP3
-        )
+
+        val mixingConfig = AudioMixConfig(fileName, ManagerFactory.getAudioFileManager()
+            .getFolderPath(Folder.TYPE_MIXER), mixselect, volume1, volume2, AudioFormat.MP3)
         if (audioFile1 != null && audioFile2 != null) {
             viewStateManager.editorSaveMixingAudio(this, audioFile1!!, audioFile2!!, mixingConfig)
         }
+
 
         isDeleteClicked = true
     }

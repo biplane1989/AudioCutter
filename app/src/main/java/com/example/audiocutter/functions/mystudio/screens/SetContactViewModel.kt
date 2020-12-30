@@ -88,14 +88,14 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
         if (contactList.size > 0) {
             for (item in contactList) {     // add them 1 truong headerContact -> conver contactItem.name co dau thanh khong dau
                 newListContact.add(SetContactItemView(Utils.covertToString(item.contactItem.name)
-                    .toString(), Utils.covertToString(item.contactItem.name)
-                    .toString(), item.contactItem, false))
+                    .toString(), item.contactItem.name   // fix search
+                    .toString(), item.contactItem, false, item.isSelect))
             }
 
             Collections.sort(newListContact, Comparator<SetContactItemView> { user1, user2 ->  // sap xep list theo headerContact
                 java.lang.String.valueOf(user1.contactHeader.get(0)).toUpperCase(Locale.ROOT)
                     .compareTo(java.lang.String.valueOf(user2.contactHeader.get(0))
-                        .toUpperCase(Locale.UK))
+                        .toUpperCase(Locale.ROOT))
             })
 
             val firstContact = newListContact.get(0).contactHeader  // neu co cac ky tu dac biet thi them 1 header = "#"
@@ -141,17 +141,18 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
                     mListSearch.add(item)
                 }
             }
+
+            val newListSearch = getHeaderListLatter(mListSearch)
+            mListSearch.clear()
+            mListSearch = newListSearch
             mContactMediatorLivedata.postValue(mListSearch)
         }
 
         if (mListContact.size > 0) {
-            Log.d("TAG", "searchContact: mlistSearch: " + mListSearch.size + " data :" + data + " mListContact : "+  mListContact.size)
             if (mListSearch.size == 0 && !data.equals("")) {
-                Log.d("TAG", "searchContact: true")
                 isEmptyStatus.postValue(true)
             } else {
                 isEmptyStatus.postValue(false)
-                Log.d("TAG", "searchContact: false")
             }
         } else {
             isEmptyStatus.postValue(true)
@@ -197,9 +198,6 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
             }
             index1++
         }
-
-
-
 
         mContactMediatorLivedata.postValue(newContactList)
     }

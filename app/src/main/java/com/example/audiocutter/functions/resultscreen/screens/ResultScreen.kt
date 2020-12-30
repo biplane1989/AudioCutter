@@ -132,6 +132,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         if (cancelDialog is CancelDialog) {
             cancelDialog.dismiss()
         }
+
+        Log.d(TAG, "status process done : ")
     }
     private val pendingProcessObserver = Observer<String> {     // observer trang thai pending
         binding.tvWait.visibility = View.VISIBLE
@@ -204,6 +206,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         isLoadingDone = false
 
         progressbarAnimation?.cancel()
+        Log.d(TAG, "status process : ")
     }
 
     private fun convertAudioSizeToString(audioFile: AudioFile): String {
