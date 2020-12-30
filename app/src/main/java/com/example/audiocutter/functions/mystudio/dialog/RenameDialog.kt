@@ -73,11 +73,7 @@ class RenameDialog : BaseDialog() {
         edtNewName.post {
             Utils.showKeyboard(requireContext(), edtNewName)
         }
-
-
     }
-
-
     private fun checkValid(name: String): Boolean {
         val typeFolder: Folder = when (requireArguments().getInt(BUNDLE_TYPE_KEY)) {
             0 -> Folder.TYPE_CUTTER
@@ -91,9 +87,13 @@ class RenameDialog : BaseDialog() {
             edt_new_name.requestFocus()
             return false
         }
+        if (name.startsWith(".")) {
+            edt_new_name.error = context?.resources?.getString(R.string.my_studio_screen_rename_error)
+            edt_new_name.requestFocus()
+            return false
+        }
         if (ManagerFactory.getAudioFileManager()
-                .checkFileNameDuplicate(edt_new_name.text.toString(), typeFolder)
-        ) {
+                .checkFileNameDuplicate(edt_new_name.text.toString(), typeFolder)) {
             edt_new_name.error = context?.resources?.getString(R.string.filename_exist)
             edt_new_name.requestFocus()
             return false
@@ -103,8 +103,5 @@ class RenameDialog : BaseDialog() {
 }
 
 interface RenameDialogListener {
-    fun onRenameClick(
-        name: String, type: Int,
-        filePath: String
-    )
+    fun onRenameClick(name: String, type: Int, filePath: String)
 }

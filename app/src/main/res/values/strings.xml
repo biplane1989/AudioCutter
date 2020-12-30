@@ -194,6 +194,7 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="my_studio_dialog_rename_cancel">CANCEL</string>
     <string name="my_studio_dialog_delete_cancel">CANCEL</string>
     <string name="my_studio_screen_converting_error">\" Converting Error \"</string>
+    <string name="my_studio_screen_rename_error">Please rename without characters [.]</string>
     <string name="audio_cutter_screen_dialog_convert_cancel">CANCEL</string>
     <string name="introduction_info_screen_start">START</string>
     <string name="introduction_info_screen_next">NEXT</string>

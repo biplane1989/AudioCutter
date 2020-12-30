@@ -158,6 +158,10 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
         audioPlayer.pause()
     }
 
+    fun stopAudio() {
+        audioPlayer.stop()
+    }
+
     fun resumeAudio() {
         audioPlayer.resume()
     }

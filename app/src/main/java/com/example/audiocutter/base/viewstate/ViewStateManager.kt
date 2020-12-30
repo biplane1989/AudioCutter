@@ -1,5 +1,6 @@
 package com.example.a0025antivirusapplockclean.base.viewstate
 
+import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import com.example.audiocutter.R
@@ -8,7 +9,8 @@ import com.example.audiocutter.functions.mystudio.Constance
 
 interface ViewStateManager : MainScreenViewStateManager, ContactScreenViewStateManager, ChooserScreenViewStateManager, AudioEditorViewStateManager, MyStudioScreenViewStateManager, ResultScreenViewStatusManager, IntroductionViewStatusManager {
     fun goToMyStudioScreen(navController: NavController, typeAudio: Int) {
-        if (getViewStateMutable().getLastState() == ViewStateScreen.HOME_SCREEN) {
+        if (getViewStateMutable().getLastState() == ViewStateScreen.HOME_SCREEN || getViewStateMutable().getLastState() == ViewStateScreen.RESULT_SCREEN) {
+            Log.d("TAG", "goToMyStudioScreen: typeAudio : " + typeAudio)
             getViewStateMutable().pushViewState(ViewStateScreen.MY_STUDIO_SCREEN)
 //            val bundle = MyStudioScreen.buildArgs(typeAudio)
             val bundle = bundleOf(Constance.TYPE_AUDIO_TO_NOTIFICATION to typeAudio)

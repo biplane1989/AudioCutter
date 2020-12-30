@@ -225,7 +225,7 @@
                 android:layout_width="90dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginRight="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="#F6F6F6"
                 app:layout_constraintBottom_toBottomOf="parent"

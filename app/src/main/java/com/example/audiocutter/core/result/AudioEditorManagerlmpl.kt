@@ -180,20 +180,16 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                         Log.d(TAG, "processItem: item ID : " + item.id)
                         notifyConvertingItemChanged(item)
                     }
-//                    it?.let {                       // thanh cong
-//                        item.outputAudioFile = it
-//                        item.state = ConvertingState.SUCCESS
-//                        onConvertingItemDetached(item)
-//                        Log.d(TAG, "processItem: item ID : " + item.id)
-//                        notifyConvertingItemChanged(item)
-//                    }
+
+//                    item.outputAudioFile?.file?.delete()      // test truong hop error
+//                    item.state = ConvertingState.ERROR
+//                    notifyConvertingItemChanged(item)
+//                    latestConvertingItem = null
+
                     listConvertingItems.postValue(listConvertingItemData)
                     processNextItem()
                 }
-//                item.outputAudioFile?.file?.delete()      // test truong hop error
-//                item.state = ConvertingState.ERROR
-//                notifyConvertingItemChanged(item)
-//                latestConvertingItem = null
+
             } else {            // error
                 item.state = ConvertingState.ERROR
                 notifyConvertingItemChanged(item)
