@@ -234,9 +234,6 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
 
     fun getListAudioChoose(): MutableList<AudioCutterView> {
         Collections.sort(listAudioChooser, sortByNo)
-        listAudioChooser.forEach {
-            Log.d(TAG, "getListAudioChoose: ${it.audioFile.fileName} - no : ${it.no}")
-        }
         return listAudioChooser
     }
 

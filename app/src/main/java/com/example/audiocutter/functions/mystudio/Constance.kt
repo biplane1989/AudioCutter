@@ -33,4 +33,7 @@ object Constance {
     val TYPE_RESULT = "TYPE_RESULT"
     val TYPE_AUDIO = "TYPE_AUDIO"
     val NOTIFICATION_ACTION_EDITOR = "NOTIFICATION_ACTION_EDITOR"
+    val MP3 = ".mp3"
+    val M4A = ".m4a"
+    val AAC = ".aac"
 }

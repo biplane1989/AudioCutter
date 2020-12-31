@@ -23,6 +23,7 @@ import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.databinding.MixingScreenBinding
 import com.example.audiocutter.functions.editor.dialogs.FileNameDialogListener
 import com.example.audiocutter.functions.editor.dialogs.MixerDialog
+import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.dialog.CancelDialog
 import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.ui.audiochooser.mix.ChangeRangeView
@@ -46,6 +47,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     private var isCompare = false
     private var dialog: MixerDialog? = null
     private var isDeleteClicked = true
+    private var audioFormat: AudioFormat = AudioFormat.MP3
 
     private val safeArg: MixingScreenArgs by navArgs()
 
@@ -77,7 +79,6 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     private fun observerAudio(): Observer<PlayerInfo> {
         return Observer {
-            Log.d(TAG, "observerAudio: ${it.playerState}")
             when (it.playerState) {
                 PlayerState.IDLE -> {
                         binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
@@ -126,6 +127,51 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 binding.ivDoneMixing.setOnClickListener(this)
             }
         }
+        Log.e(
+            TAG,
+            "checkFormat: ${getMimeTypeAudio(audioFile1!!.getFilePath())} - ${
+                getMimeTypeAudio(audioFile2!!.getFilePath())
+            }}"
+        )
+        if (audioFile1 != null && audioFile2 != null) {
+            if (getMimeTypeAudio(audioFile1!!.getFilePath()) == getMimeTypeAudio(audioFile2!!.getFilePath())) {
+                audioFormat = if (getMimeTypeAudio(audioFile1!!.getFilePath()) == Constance.MP3) {
+                    AudioFormat.MP3
+                } else
+                    if (getMimeTypeAudio(audioFile1!!.getFilePath()) == Constance.M4A || getMimeTypeAudio(audioFile1!!.getFilePath()) == Constance.AAC) {
+                        AudioFormat.AAC
+                    } else {
+                        AudioFormat.MP3
+                    }
+            }
+        } else {
+            audioFormat = if (audioFile1!!.duration > audioFile2!!.duration) {
+                getFormatFile(getMimeTypeAudio(audioFile1!!.getFilePath()))
+            } else {
+                getFormatFile(getMimeTypeAudio(audioFile2!!.getFilePath()))
+            }
+        }
+    }
+
+    private fun getMimeTypeAudio(path: String): String {
+        if (path.indexOf(".") != -1) {
+            return path.substring(path.lastIndexOf("."), path.length)
+        }
+        return ""
+    }
+
+    private fun getFormatFile(mimeType: String?): AudioFormat {
+        val result: AudioFormat = AudioFormat.MP3
+        mimeType?.let {
+            return if (mimeType == Constance.MP3) {
+                AudioFormat.MP3
+            } else if (mimeType == Constance.AAC || mimeType == Constance.M4A) {
+                AudioFormat.AAC
+            } else {
+                AudioFormat.MP3
+            }
+        }
+        return result
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -154,7 +200,6 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                     } else {
                         if (playerState == PlayerState.IDLE) {
                             if (audioFile1 != null && audioFile2 != null) {
-//                                val result = audioFile1!!.duration > audioFile2!!.duration
                                 mPlayer1.play(audioFile1!!)
                                 mPlayer2.play(audioFile2!!)
                             }
@@ -195,6 +240,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 activity?.onBackPressed()
             }
             binding.ivDoneMixing -> {
+                Log.e(TAG, "checkFormat: ${audioFormat.name}")
                 if (isDeleteClicked) {
                     audioFile1?.let {
                         val dialog = MixerDialog.newInstance(this, Utils.getBaseName(it.file))
@@ -308,7 +354,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     override fun onMixClick(fileName: String) {
         val mixingConfig = AudioMixConfig(
             fileName, ManagerFactory.getAudioFileManager()
-                .getFolderPath(Folder.TYPE_MIXER), MixSelector.LONGEST, 100, 100, AudioFormat.MP3
+                .getFolderPath(Folder.TYPE_MIXER), MixSelector.LONGEST, 100, 100, audioFormat
         )
         if (audioFile1 != null && audioFile2 != null) {
             viewStateManager.editorSaveMixingAudio(this, audioFile1!!, audioFile2!!, mixingConfig)

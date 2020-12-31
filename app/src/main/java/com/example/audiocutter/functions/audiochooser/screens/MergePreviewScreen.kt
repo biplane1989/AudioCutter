@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,7 @@ import com.example.audiocutter.databinding.MergePreviewScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergePreviewAdapter
 import com.example.audiocutter.functions.audiochooser.dialogs.MergeDialog
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.ui.audiochooser.merge.MyItemTouchHelper
 import com.example.audiocutter.ui.audiochooser.merge.WrapContentLinearLayoutManager
 import com.example.audiocutter.util.Utils
@@ -32,6 +34,8 @@ import java.io.File
 class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseListener,
     View.OnClickListener, MergeDialog.MergeDialogListener {
 
+    private var audioFormat: AudioFormat = AudioFormat.MP3
+    private var indexMax: Int = -1
     private val safeArg: MergePreviewScreenArgs by navArgs()
     private lateinit var listPath: ArrayList<String>
 
@@ -166,8 +170,10 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     }
 
     private fun mergeAudioFile() {
+        val listItem = audioMerModel.getListAudioChoose()
+        indexMax = getIndexMax(listItem)
+        audioFormat = getFormatFile(getMimeTypeAudio(listItem[indexMax].audioFile.getFilePath()))
         if (audioMerModel.getListAudioChoose().size >= 2) {
-
             val dialog = MergeDialog.newInstance(
                 this, audioMerModel.getListAudioChoose().size, Utils.getBaseName(
                     File(listPath[0])
@@ -180,6 +186,39 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         } else {
             generateToast(getString(R.string.rule_amout_item_mer))
         }
+    }
+
+    private fun getFormatFile(mimeType: String?): AudioFormat {
+        val result: AudioFormat = AudioFormat.MP3
+        mimeType?.let {
+            return if (mimeType == Constance.MP3) {
+                AudioFormat.MP3
+            } else if (mimeType == Constance.AAC || mimeType == Constance.M4A) {
+                AudioFormat.AAC
+            } else {
+                AudioFormat.MP3
+            }
+        }
+        return result
+    }
+
+    private fun getMimeTypeAudio(path: String): String {
+        if (path.indexOf(".") != -1) {
+            return path.substring(path.lastIndexOf("."), path.length)
+        }
+        return ""
+    }
+
+    private fun getIndexMax(listItem: MutableList<AudioCutterView>): Int {
+        var indexMax = 0
+        var itemMax = audioMerModel.getListAudioChoose()[0].audioFile.duration
+        for (index in listItem.indices) {
+            if (listItem[index].audioFile.duration > itemMax) {
+                itemMax = listItem[index].audioFile.duration
+                indexMax = index
+            }
+        }
+        return indexMax
     }
 
 
@@ -196,8 +235,10 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     }
 
     override fun mergeAudioFile(filename: String) {
+
+        Log.d(TAG, "mergeAudioFile: audioFormat ${audioFormat.name}")
         val mergingConfig = AudioMergingConfig(
-            AudioFormat.MP3,
+            audioFormat,
             filename,
             ManagerFactory.getAudioFileManager().getFolderPath(Folder.TYPE_MERGER)
         )
