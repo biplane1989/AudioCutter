@@ -358,13 +358,17 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         if (audioFile1 != null && audioFile2 != null) {
             viewStateManager.editorSaveMixingAudio(this, audioFile1!!, audioFile2!!, mixingConfig)
         }
+        resetChangeRangeView()
+        isDeleteClicked = true
 
+    }
+
+    private fun resetChangeRangeView() {
         isLongestAudioChecked = true
         volume1 = 100
         volume2 = 100
         mixselect = MixSelector.LONGEST
-        isDeleteClicked = true
-
+        stopAudio()
     }
 
     override fun onCancel() {
