@@ -351,14 +351,20 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     override fun onMixClick(fileName: String) {
 
-        val mixingConfig = AudioMixConfig(fileName, ManagerFactory.getAudioFileManager()
-            .getFolderPath(Folder.TYPE_MIXER), mixselect, volume1, volume2, audioFormat)
+        val mixingConfig = AudioMixConfig(
+            fileName, ManagerFactory.getAudioFileManager()
+                .getFolderPath(Folder.TYPE_MIXER), mixselect, volume1, volume2, audioFormat
+        )
         if (audioFile1 != null && audioFile2 != null) {
             viewStateManager.editorSaveMixingAudio(this, audioFile1!!, audioFile2!!, mixingConfig)
         }
 
-
+        isLongestAudioChecked = true
+        volume1 = 100
+        volume2 = 100
+        mixselect = MixSelector.LONGEST
         isDeleteClicked = true
+
     }
 
     override fun onCancel() {
