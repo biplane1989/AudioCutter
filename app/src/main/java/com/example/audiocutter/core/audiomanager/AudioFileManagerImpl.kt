@@ -443,6 +443,11 @@ object AudioFileManagerImpl : AudioFileManager {
         listCuttingAudios.postValue(AudioFileScans(ArrayList(listCuttingAudio), StateLoad.LOADDONE))
         listMeringAudios.postValue(AudioFileScans(ArrayList(listMergingAudio), StateLoad.LOADDONE))
         listMixingAudios.postValue(AudioFileScans(ArrayList(listMixingAudio), StateLoad.LOADDONE))
+
+//        listAllAudios.postValue(AudioFileScans(ArrayList(), StateLoad.LOADDONE))
+//        listCuttingAudios.postValue(AudioFileScans(ArrayList(listCuttingAudio), StateLoad.LOADDONE))
+//        listMeringAudios.postValue(AudioFileScans(ArrayList(), StateLoad.LOADDONE))
+//        listMixingAudios.postValue(AudioFileScans(ArrayList(), StateLoad.LOADDONE))
     }
 
     private fun changeStateLoadDone(listAllAudioData: ArrayList<AudioFile>) {

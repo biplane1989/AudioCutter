@@ -77,7 +77,7 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
         if (contactList.size > 0) {
             for (item in contactList) {     // add them 1 truong headerContact -> conver contactItem.name co dau thanh khong dau
                 newListContact.add(ContactItemView(Utils.covertToString(item.contactItem.name)
-                    .toString(), Utils.covertToString(item.contactItem.name)
+                    .toString(), item.contactItem.name          // fix search
                     .toString(), item.contactItem, false))
             }
 

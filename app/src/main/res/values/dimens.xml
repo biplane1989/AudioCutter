@@ -60,4 +60,6 @@
     <dimen name="common_card_cornerradius">5dp</dimen>
     <dimen name="d_size_peek_height_bottomsheet">320dp</dimen>
     <dimen name="common_line">1dp</dimen>
+    <dimen name="common_padding_left_right_dialog">16dp</dimen>
+
 </resources>

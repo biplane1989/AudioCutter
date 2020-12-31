@@ -46,6 +46,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
     private var sbAnimation: ObjectAnimator? = null
     private var progressbarAnimation: ObjectAnimator? = null
     private val DURATION_ANIMATION = 500L
+    var playMusicStatus = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyStudioHolder {
         recyclerView = parent as RecyclerView
@@ -227,31 +228,46 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         private var isSeekBarStatus = false      // trang thai seekbar co dang duoc keo hay khong
         var filePath: String = ""
         var timeFomat = 0
+
+        var isFirstPlayMusic = true
+
         private fun updatePlayInfor(playerInfo: PlayerInfo) {
-
             val audioFileView = getItem(adapterPosition)
-            filePath = playerInfo.currentAudio?.getFilePath().toString()
 
-            timeFomat = Utils.chooseTimeFormat(playerInfo.duration.toLong())
-            tvTimeLife.text = Utils.toTimeStr(playerInfo.posision.toLong(), timeFomat)
+            if (playerInfo.currentAudio?.getFilePath()
+                    .equals(audioFileView.audioFile.getFilePath())) {
 
-            when (playerInfo.playerState) {
-                PlayerState.PLAYING -> {
-                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
-                    setSeekbarAnimate(sbMusic, playerInfo.posision, DURATION_ANIMATION)
+                if (!audioFileView.isExpanded) {
+                    audioPlayer.stop()
+                }
+                filePath = playerInfo.currentAudio?.getFilePath().toString()
 
+                timeFomat = Utils.chooseTimeFormat(playerInfo.duration.toLong())
+                tvTimeLife.text = Utils.toTimeStr(playerInfo.posision.toLong(), timeFomat)
+
+                when (playerInfo.playerState) {
+                    PlayerState.PLAYING -> {
+                        itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_pause)
+//                    setSeekbarAnimate(sbMusic, playerInfo.posision, DURATION_ANIMATION)
+                        if (isFirstPlayMusic) {
+                            sbMusic.progress = playerInfo.posision * 100
+                        } else {
+                            setSeekbarAnimate(sbMusic, playerInfo.posision, DURATION_ANIMATION)
+                        }
+                    }
+                    PlayerState.PAUSE -> {
+                        itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
+                    }
+                    PlayerState.IDLE -> {
+                        tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
+                        resetItemView()
+                        setSeekbarAnimate(sbMusic, 0, DURATION_ANIMATION)
+                    }
+                    else -> {
+                        //nothing
+                    }
                 }
-                PlayerState.PAUSE -> {
-                    itemView.iv_pause_play_music.setImageResource(R.drawable.my_studio_item_icon_play)
-                }
-                PlayerState.IDLE -> {
-                    tvTimeLife.text = Constance.TIME_LIFE_DEFAULT
-                    resetItemView()
-                    setSeekbarAnimate(sbMusic, 0, DURATION_ANIMATION)
-                }
-                else -> {
-                    //nothing
-                }
+                isFirstPlayMusic = false
             }
         }
 
@@ -268,6 +284,8 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
         override fun onViewAttachedToWindow() {
             super.onViewAttachedToWindow()
+            resetAnimation()
+            isFirstPlayMusic = true
             val audioFileView = getItem(adapterPosition)
             audioPlayer.getPlayerInfo().observe(this, object : Observer<PlayerInfo> {
                 override fun onChanged(playerInfo: PlayerInfo) {
@@ -414,7 +432,9 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 val audioFileView = getItem(adapterPosition)
                 when (view.id) {
                     R.id.ll_audio_item_header -> {
-
+                        playMusicStatus = !playMusicStatus
+//                        audioPlayer.stop()
+                        Log.d(TAG, "onClick1: ll_audio_item_header  ")
                         resetAnimation()
 
                         when (audioFileView.itemLoadStatus.deleteState) {
@@ -426,6 +446,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                             }
                             DeleteState.HIDE -> {
                                 audioCutterScreenCallback.isShowPlayingAudio(adapterPosition)
+
                             }
                         }
                         when (playerState) {
@@ -448,19 +469,20 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                                 //nothing
                             }
                         }
-
                     }
                     R.id.iv_pause_play_music -> {
-
-                        Log.d(TAG, "onClick: status : " + playerState)
+//                        audioPlayer.stop()
+                        Log.d(TAG, "onClick1: iv_pause_play_music  isExpanded" + audioFileView.isExpanded)
                         when (playerState) {
                             PlayerState.IDLE -> {
-                                lifecycleCoroutineScope.launch {
-                                    audioPlayer.play(audioFileView.audioFile)
-                                    Log.d(TAG, "onClick: audioFileView.audioFile uri : " + audioFileView.audioFile.uri)
-                                    resetAnimation()
-                                    sbMusic.progress = 0
-                                    setSeekbarAnimate(sbMusic, 0, DURATION_ANIMATION)
+                                if (audioFileView.isExpanded) {
+                                    lifecycleCoroutineScope.launch {
+                                        audioPlayer.play(audioFileView.audioFile)
+                                        Log.d(TAG, "onClick: audioFileView.audioFile uri : " + audioFileView.audioFile.uri)
+                                        resetAnimation()
+                                        sbMusic.progress = 0
+                                        setSeekbarAnimate(sbMusic, 0, DURATION_ANIMATION)
+                                    }
                                 }
                             }
                             PlayerState.PAUSE -> {

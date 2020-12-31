@@ -40,14 +40,14 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     private var latestConvertingItem: ConvertingItem? = null   //phan tu cuoi cung
 
     private var lastItem = MutableLiveData<ConvertingItem>()
-
+    var convertingState: ConvertingState = ConvertingState.WAITING
     fun init(context: Context) {
         mContext = context
 
         ManagerFactory.getAudioCutter().getAudioMergingInfo().observeForever { audioMering ->
 
             Log.d(TAG, "init: percent: " + audioMering.percent + " status : " + audioMering.state)
-            var convertingState: ConvertingState = ConvertingState.WAITING
+//            var convertingState: ConvertingState = ConvertingState.WAITING
             when (audioMering.state) {
                 FFMpegState.IDE -> {
                     convertingState = ConvertingState.WAITING
@@ -131,7 +131,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
         mainScope.launch {
             notifyConvertingItemChanged(null)
-
             item.state = ConvertingState.PROGRESSING
             notifyConvertingItemChanged(item)
             var audioResult: AudioCore? = null
@@ -164,15 +163,23 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 listConvertingItemData.remove(item)
             }
 
+            // audioResult tra ve null
             if (audioResult != null) {      // thanh cong
                 // converting progress co thanh cong hay khong
                 ManagerFactory.getAudioFileManager().buildAudioFile(audioResult.file.absolutePath) {
                     if (it != null) {
-                        item.outputAudioFile = it
-                        item.state = ConvertingState.SUCCESS
-                        onConvertingItemDetached(item)
-                        Log.d(TAG, "processItem: item ID : " + item.id)
-                        notifyConvertingItemChanged(item)
+                        Log.d(TAG, "processItem: convertingState "+convertingState)
+                        if (convertingState != ConvertingState.ERROR) {
+                            item.outputAudioFile = it
+                            item.state = ConvertingState.SUCCESS
+                            onConvertingItemDetached(item)
+                            Log.d(TAG, "processItem: item ID : " + item.id)
+                            notifyConvertingItemChanged(item)
+                        } else {
+                            item.state = ConvertingState.ERROR
+                            notifyConvertingItemChanged(item)
+//                            latestConvertingItem = null
+                        }
                     } else {
                         item.outputAudioFile = it
                         item.state = ConvertingState.ERROR

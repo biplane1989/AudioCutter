@@ -67,11 +67,11 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
     // observer is empty status
     private val isEmptyStatusObserver = Observer<Boolean> {
         if (it) {
-            binding.clContact.visibility = View.GONE
+            binding.clContact.visibility = View.INVISIBLE
             binding.clNoContact.visibility = View.VISIBLE
         } else {
             binding.clContact.visibility = View.VISIBLE
-            binding.clNoContact.visibility = View.GONE
+            binding.clNoContact.visibility = View.INVISIBLE
         }
     }
 

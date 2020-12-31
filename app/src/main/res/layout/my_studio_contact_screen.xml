@@ -81,7 +81,7 @@
                 android:id="@+id/edt_search"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/common_size_item_padding_left"
+                android:layout_marginLeft="@dimen/common_padding_left_title"
                 android:backgroundTint="#FFFFFF"
                 android:hint="Search..."
                 android:maxLines="1"
@@ -227,7 +227,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginBottom="10dp"
-                android:background="#F6F6F6"
+                android:background="@drawable/my_studio_set_contact_btn_ok_bg"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
