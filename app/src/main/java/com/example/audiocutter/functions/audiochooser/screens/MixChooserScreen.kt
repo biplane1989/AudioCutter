@@ -77,7 +77,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
         }
     }
 
-    var stateChecked = Observer<Int> {
+    var countItemSelected = Observer<Int> {
         isCanChoose = it
         Log.d(TAG, "chooseItemAudio Obser: iscanChoose $isCanChoose")
         if (it > 1) {
@@ -130,7 +130,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
             listAudioViewLiveData.observe(viewLifecycleOwner, listAudioObserver)
             audioMixModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
             audioMixModel.getStateEmpty().observe(viewLifecycleOwner, emptyState)
-            audioMixModel.getStateChecked().observe(viewLifecycleOwner, stateChecked)
+            audioMixModel.countItemSelected.observe(viewLifecycleOwner, countItemSelected)
             audioMixModel.getIsChooseItemState().observe(viewLifecycleOwner, isChoseItemObserver)
 
         }
