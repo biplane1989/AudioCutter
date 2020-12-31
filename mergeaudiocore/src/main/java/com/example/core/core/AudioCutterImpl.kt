@@ -18,34 +18,32 @@ class AudioCutterImpl : AudioCutter {
     private val itemMergeInfo = AudioMergingInfo(null, 0, FFMpegState.IDE)
     private var timeVideo: Long = 0
     private var audioFileCore = AudioCore()
-    private val CODEC_MP3 = "libmp3lame"
-    private val CODEC_AAC = "aac"
 
     private val mainScope = MainScope()
     private val CMD_CUT_AUDIO_TIME =
-        "-y -ss %f -i \'%s\' -c copy -t %f -b:a %dk -af \"volume='(between(t,0,%f)*(t/%d)+between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d)))*%f'\":eval=frame -c:a %s \"%s\""
+        "-y -ss %f -i \'%s\' -map a -c copy -t %f -b:a %dk -af \"volume='(between(t,0,%f)*(t/%d)+between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d)))*%f'\":eval=frame \"%s\""
     private val CMD_CUT_AUDIO_TIME_NOT_COPY =
-        "-y -ss %f -i \'%s\' -t %f -b:a %dk -af \"volume='(between(t,0,%f)*(t/%d)+between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d)))*%f'\":eval=frame -c:a %s \"%s\""
+        "-y -ss %f -i \'%s\' -map a -t %f -b:a %dk -af \"volume='(between(t,0,%f)*(t/%d)+between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d)))*%f'\":eval=frame \"%s\""
 
     private val CMD_CUT_AUDIO_FADE_IN_OFF =
-        "-y -ss %f -i \'%s\' -c copy -t %f -b:a %dk -af \"volume='(between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d)))*%f'\":eval=frame -c:a %s \"%s\""
+        "-y -ss %f -i \'%s\' -map a -c copy -t %f -b:a %dk -af \"volume='(between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d)))*%f'\":eval=frame \"%s\""
     private val CMD_CUT_AUDIO_FADE_IN_OFF_NOT_COPY =
-        "-y -ss %f -i \'%s\' -t %f -b:a %dk -af \"volume='(between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d)))*%f'\":eval=frame -c:a %s \"%s\""
+        "-y -ss %f -i \'%s\' -map a -t %f -b:a %dk -af \"volume='(between(t,%d,%f)+between(t,%d,%d)*((%d-t)/(%d-%d)))*%f'\":eval=frame \"%s\""
 
     private val CMD_CUT_AUDIO_TIME_FADE_OUT_OFF =
-        "-y -ss %f -i \'%s\' -c copy -t %f -b:a %dk -af \"volume='(between(t,0,%f)*(t/%d)+between(t,%d,%f))*%f'\":eval=frame -c:a %s \"%s\""
+        "-y -ss %f -i \'%s\' -map a -c copy -t %f -b:a %dk -af \"volume='(between(t,0,%f)*(t/%d)+between(t,%d,%f))*%f'\":eval=frame \"%s\""
     private val CMD_CUT_AUDIO_TIME_FADE_OUT_OFF_NOT_COPY =
-        "-y -ss %f -i \'%s\' -t %f -b:a %dk -af \"volume='(between(t,0,%f)*(t/%d)+between(t,%d,%f))*%f'\":eval=frame -c:a %s \"%s\""
+        "-y -ss %f -i \'%s\' -map a -t %f -b:a %dk -af \"volume='(between(t,0,%f)*(t/%d)+between(t,%d,%f))*%f'\":eval=frame \"%s\""
 
     private val CMD_CUT_AUDIO_TIME_FADE_OFF =
-        "-y -ss %f -i \'%s\' -c copy -t %f -b:a %dk -af \"volume='(1*%f)'\":eval=frame -c:a %s \"%s\""
+        "-y -ss %f -i \'%s\' -map a -c copy -t %f -b:a %dk -af \"volume='(1*%f)'\":eval=frame \"%s\""
     private val CMD_CUT_AUDIO_TIME_FADE_OFF_NOT_COPY =
-        "-y -ss %f -i \'%s\' -t %f -b:a %dk -af \"volume='(1*%f)'\":eval=frame -c:a %s \"%s\""
+        "-y -ss %f -i \'%s\' -map a -t %f -b:a %dk -af \"volume='(1*%f)'\":eval=frame \"%s\""
 
     private val CMD_CONCAT_AUDIO =
-        "-y %s -filter_complex \"concat=n=%d:v=0:a=1[a]\" -map \"[a]\" -c:a %s -b:a %dk \"%s\""
+        "-y %s -filter_complex \"concat=n=%d:v=0:a=1[a]\" -map \"[a]\" -b:a %dk \"%s\""
     private val CMD_MIX_AUDIO =
-        "-y -i \'%s\' -i \'%s\' -filter_complex \"[0:0]volume=%f[a];[1:0]volume=%f[b];[a][b]amix=inputs=2:duration=%s:dropout_transition=0[a]\" -map \"[a]\" -c:a %s -q:a 0 \"%s\""
+        "-y -i \'%s\' -i \'%s\' -filter_complex \"[0:0]volume=%f[a];[1:0]volume=%f[b];[a][b]amix=inputs=2:duration=%s:dropout_transition=0[a]\" -map \"[a]\" -q:a 0 \"%s\""
 
     private var lastTime = 0        // dung de luu lai tri tri time cua lan editor truoc
 
@@ -92,12 +90,12 @@ class AudioCutterImpl : AudioCutter {
             timeVideo = (audioCutConfig.endPosition * 1000).toLong()
             val mimeType =
                 if (audioCutConfig.format == AudioFormat.MP3) AudioFormat.MP3.type else AudioFormat.AAC.type
-            val codec = if (audioCutConfig.format == AudioFormat.MP3) CODEC_MP3 else CODEC_AAC
+
             val fileCutPath =
                 audioCutConfig.pathFolder.plus("/${audioCutConfig.fileName.plus(mimeType)}")
 
 
-            val format = getStringFormat(audioCutConfig, audioFile, codec, fileCutPath)
+            val format = getStringFormat(audioCutConfig, audioFile, fileCutPath)
             Log.e(TAG, format)
             val returnCode = FFmpeg.execute(format)
             when (returnCode) {
@@ -133,7 +131,6 @@ class AudioCutterImpl : AudioCutter {
     private fun getStringFormat(
         audioCutConfig: AudioCutConfig,
         audioFile: AudioCore,
-        codec: String,
         fileCutPath: String
     ): String {
 
@@ -155,7 +152,6 @@ class AudioCutterImpl : AudioCutter {
                 audioCutConfig.endPosition.toInt(),
                 (audioCutConfig.endPosition.toInt() - audioCutConfig.outEffect.time),
                 audioCutConfig.volumePercent / 100f,
-                codec,
                 fileCutPath
             )
         } else if (audioCutConfig.inEffect == Effect.OFF && audioCutConfig.outEffect == Effect.OFF) {
@@ -167,7 +163,6 @@ class AudioCutterImpl : AudioCutter {
                 audioCutConfig.endPosition,
                 audioCutConfig.bitRate.value,
                 audioCutConfig.volumePercent / 100f,
-                codec,
                 fileCutPath
             )
         } else if (audioCutConfig.inEffect == Effect.OFF) {
@@ -186,7 +181,6 @@ class AudioCutterImpl : AudioCutter {
                 audioCutConfig.endPosition.toInt(),
                 (audioCutConfig.endPosition.toInt() - audioCutConfig.outEffect.time),
                 audioCutConfig.volumePercent / 100f,
-                codec,
                 fileCutPath
             )
         } else {
@@ -202,7 +196,6 @@ class AudioCutterImpl : AudioCutter {
                 audioCutConfig.inEffect.time,
                 audioCutConfig.endPosition,
                 audioCutConfig.volumePercent / 100f,
-                codec,
                 fileCutPath
             )
         }
@@ -219,7 +212,6 @@ class AudioCutterImpl : AudioCutter {
             val fileName = audioMixConfig.fileName
             val mimeType =
                 if (audioMixConfig.format == AudioFormat.MP3) AudioFormat.MP3.type else AudioFormat.AAC.type
-            val codec = if (audioMixConfig.format == AudioFormat.MP3) CODEC_MP3 else CODEC_AAC
             val filePath = audioMixConfig.pathFolder.plus("/${fileName.plus(mimeType)}")
             timeVideo = if (audioMixConfig.selector == MixSelector.LONGEST) {
                 if (audioFile1.time - audioFile2.time >= 0) audioFile1.time else audioFile2.time
@@ -236,7 +228,6 @@ class AudioCutterImpl : AudioCutter {
                     (audioMixConfig.volumePercent1 / 100).toFloat(),
                     (audioMixConfig.volumePercent2 / 100).toFloat(),
                     audioMixConfig.selector.type,
-                    codec,
                     filePath
                 )
             )
@@ -285,7 +276,6 @@ class AudioCutterImpl : AudioCutter {
 
             val mimeType =
                 if (audioFormat == AudioFormat.MP3) AudioFormat.MP3.type else AudioFormat.AAC.type
-            val codec = if (audioFormat == AudioFormat.MP3) CODEC_MP3 else CODEC_AAC
             val sizeAudioFile = listAudioFile.size
             val pathFileMerge = pathFolder.plus("/${fileName.plus(mimeType)}")
             val bitRateFile = 256
@@ -301,7 +291,6 @@ class AudioCutterImpl : AudioCutter {
                     CMD_CONCAT_AUDIO,
                     cmd_input,
                     sizeAudioFile,
-                    codec,
                     bitRateFile,
                     pathFileMerge
                 )
