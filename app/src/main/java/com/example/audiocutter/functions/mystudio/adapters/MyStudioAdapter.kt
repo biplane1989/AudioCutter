@@ -387,6 +387,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                     if (progress == sbMusic.max) {
                         Log.d(TAG, "onProgressChanged: progress == max ")
                         resetItemView()
+                        sbMusic.progress = 0
                         playerState = PlayerState.IDLE
                     }
                 }
