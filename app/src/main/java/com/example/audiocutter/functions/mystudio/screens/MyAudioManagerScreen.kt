@@ -41,21 +41,26 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     private val safeArg: MyAudioManagerScreenArgs by navArgs()
     private lateinit var dialogShare: DialogAppShare
 
-    private val actionObserver = Observer<ActionData> { it ->
-        when (it.action) {
-            Constance.ACTION_DELETE -> {  // nếu ko có item nào được chọn thì sẽ không hiển thị dialog delete
-                if ((it.data == Constance.TRUE)) {
-                    if (isDeleteClicked) {
-                        val dialog = DeleteDialog.newInstance(this)
-                        dialog.show(childFragmentManager, DeleteDialog.TAG)
-                        isDeleteClicked = false
+    private val actionObserver = Observer<ActionData?> { actionData ->
+        actionData?.let {
+            when (it.action) {
+                Constance.ACTION_DELETE -> {  // nếu ko có item nào được chọn thì sẽ không hiển thị dialog delete
+                    Log.d("giangtd001", "Constance.ACTION_DELETE: ")
+                    if ((it.data == Constance.TRUE)) {
+                        if (isDeleteClicked) {
+                            val dialog = DeleteDialog.newInstance(this)
+                            dialog.show(childFragmentManager, DeleteDialog.TAG)
+                            isDeleteClicked = false
+                        }
+                    } else {
+                        Toast.makeText(context, getString(R.string.my_studio_notification_chose_item_delete), Toast.LENGTH_SHORT)
+                            .show()
                     }
-                } else {
-                    Toast.makeText(context, getString(R.string.my_studio_notification_chose_item_delete), Toast.LENGTH_SHORT)
-                        .show()
+                    myAudioManagerViewModel.clearAction()
                 }
             }
         }
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

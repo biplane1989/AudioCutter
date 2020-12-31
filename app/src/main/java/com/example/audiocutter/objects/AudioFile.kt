@@ -14,7 +14,7 @@ class AudioFile(var file: File, var fileName: String, var size: Long, var bitRat
         if (modified == -1L) {
             modifiedStr = ""
         }
-        val time = Date(modified * 1000)
+        val time = Date(modified)
         val cal = Calendar.getInstance()
         cal.time = time
         val day = cal.get(Calendar.DAY_OF_MONTH)

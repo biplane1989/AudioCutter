@@ -147,7 +147,7 @@ object AudioFileManagerImpl : AudioFileManager {
                         val filePath = it.getString(clData)
                         Log.d(TAG, "queryMediaStore: $filePath")
                         val id = it.getString(clID)
-                        filterFunc(id, filePath, it.getLong(clDateAdded))
+                        filterFunc(id, filePath, it.getLong(clDateAdded)*1000)
                         hasRow = it.moveToNext()
                     }
                 }
@@ -217,9 +217,6 @@ object AudioFileManagerImpl : AudioFileManager {
                 val audioInfo = FileUtil.getAudioInfo(filePath)
 
                 audioInfo?.let {
-                    if ("music_500k" in it.fileName) {
-                        Log.d("taiiihhh", " bitrate " + it.bitRate)
-                    }
                     filePathMapAudioFile.put(
                         filePath,
                         Utils.convertToAudioFile(
@@ -443,9 +440,14 @@ object AudioFileManagerImpl : AudioFileManager {
         listMixingAudio: ArrayList<AudioFile>
     ) {
         listAllAudios.postValue(AudioFileScans(ArrayList(listAllAudioData), StateLoad.LOADDONE))
-        listCuttingAudios.postValue(AudioFileScans(listCuttingAudio, StateLoad.LOADDONE))
-        listMeringAudios.postValue(AudioFileScans(listMergingAudio, StateLoad.LOADDONE))
-        listMixingAudios.postValue(AudioFileScans(listMixingAudio, StateLoad.LOADDONE))
+        listCuttingAudios.postValue(AudioFileScans(ArrayList(listCuttingAudio), StateLoad.LOADDONE))
+        listMeringAudios.postValue(AudioFileScans(ArrayList(listMergingAudio), StateLoad.LOADDONE))
+        listMixingAudios.postValue(AudioFileScans(ArrayList(listMixingAudio), StateLoad.LOADDONE))
+
+//        listAllAudios.postValue(AudioFileScans(ArrayList(), StateLoad.LOADDONE))
+//        listCuttingAudios.postValue(AudioFileScans(ArrayList(listCuttingAudio), StateLoad.LOADDONE))
+//        listMeringAudios.postValue(AudioFileScans(ArrayList(), StateLoad.LOADDONE))
+//        listMixingAudios.postValue(AudioFileScans(ArrayList(), StateLoad.LOADDONE))
     }
 
     private fun changeStateLoadDone(listAllAudioData: ArrayList<AudioFile>) {

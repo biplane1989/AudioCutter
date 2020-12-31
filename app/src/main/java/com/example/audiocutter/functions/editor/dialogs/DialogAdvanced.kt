@@ -95,10 +95,6 @@ class DialogAdvanced : Dialog, View.OnClickListener {
         }
     }
 
-    override fun dismiss() {
-        super.dismiss()
-    }
-
     companion object {
         fun showDialogAdvanced(
             context: Context,

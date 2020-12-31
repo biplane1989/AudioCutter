@@ -307,10 +307,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
                         if (audioFile.duration < Constance.MIN_DURATION) {
                             dialogSnack.show()
                         } else {
-                            viewStateManager.myStudioCuttingItemClicked(
-                                this,
-                                audioFile.file.absolutePath
-                            )
+                            viewStateManager.myStudioCuttingItemClicked(this, audioFile.file.absolutePath)
                         }
                     }
                     R.id.open_with -> {
@@ -332,6 +329,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
                         dialog.show(childFragmentManager, InfoDialog.TAG)
                     }
                     R.id.delete -> {
+                        Log.d(TAG, "showMenu: DeleteDialog")
                         if (childFragmentManager.findFragmentByTag(DeleteDialog.TAG) == null) {
                             val dialog = DeleteDialog.newInstance(this, audioFile.file.absolutePath)
                             dialog.show(childFragmentManager, DeleteDialog.TAG)

@@ -296,26 +296,18 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                             changed = true
                         }
                     } else {
-                        if (playInfoData.playerState == PlayerState.PLAYING) {
-                            if (isStopped) {
-                                Log.d(TAG, "startTimerIfReady: isstopped $isStopped")
-                                playInfoData.playerState = PlayerState.IDLE
-                                currentPosition = 0
-                                playInfoData.posision = currentPosition
-                            } else {
-                                Log.d(TAG, "startTimerIfReady: isstopped $isStopped --PAUSE")
-                                playInfoData.playerState = PlayerState.PAUSE
-                            }
+                        if (isStopped) {
+                            playInfoData.playerState = PlayerState.IDLE
+                            currentPosition = 0
+                            playInfoData.posision = currentPosition
                             changed = true
+                        } else {
+                            if (playInfoData.playerState == PlayerState.PLAYING) {
+                                playInfoData.playerState = PlayerState.PAUSE
+                                changed = true
+                            }
                         }
-                        else {
-                             if (isStopped &&  playInfoData.playerState != PlayerState.IDLE) {
-                                 playInfoData.playerState = PlayerState.IDLE
-                                 currentPosition = 0
-                                 playInfoData.posision = currentPosition
-                                 changed = true
-                             }
-                        }
+
                     }
 
                     if (playInfoData.posision != mPlayer.currentPosition) {

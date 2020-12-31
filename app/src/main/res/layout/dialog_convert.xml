@@ -10,8 +10,8 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginStart="@dimen/common_padding_left_right_dialog"
+        android:layout_marginEnd="@dimen/common_padding_left_right_dialog"
         app:cardCornerRadius="@dimen/common_card_cornerradius">
 
         <LinearLayout

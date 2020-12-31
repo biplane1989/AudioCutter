@@ -166,6 +166,16 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         return ManagerFactory.getAudioEditorManager()
     }
 
+    private fun getStatusToFilePathItem(filePath: String): ConvertingState {
+        for (item in mListAudio) {
+            if (item.getFilePath().equals(filePath)) {
+                return item.convertingState
+                break
+            }
+        }
+        return ConvertingState.ERROR
+    }
+
     private suspend fun mergeList() = coroutineScope {
 
         for (item in mListConvertingItems) {
@@ -191,24 +201,14 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 if (!isActive) {              // khi nguoi dung cancel
                     return@lst
                 }
-                if (it.convertingState in arrayListOf(ConvertingState.WAITING, ConvertingState.PROGRESSING) && filePathMapConvertingItem.containsKey(it.getFilePath()) && filePathMapItemView.containsKey(it.getFilePath())) {
-//                if (filePathMapItemView.containsKey(it.getFilePath())) {
+//                if (it.convertingState in arrayListOf(ConvertingState.WAITING, ConvertingState.PROGRESSING) && filePathMapConvertingItem.containsKey(it.getFilePath()) && filePathMapItemView.containsKey(it.getFilePath())) {
+                if (filePathMapItemView.containsKey(it.getFilePath()) && getStatusToFilePathItem(it.getFilePath()) == ConvertingState.SUCCESS) {
                     filePathMapItemView.get(it.getFilePath())?.let {
-                        if (it.convertingState == ConvertingState.SUCCESS) {
-                            val audioViewItem = filePathMapItemView.get(it.getFilePath())
-                            audioViewItem?.let {
-                                newListAudio.add(audioViewItem.copy())
-                            }
-                            Log.d(TAG, "mergeList: aloha 1")
-                        } else {
-                            if (isDeleteStatus) {                           // khi dang o trang thai delete
-                                it.itemLoadStatus.deleteState = DeleteState.UNCHECK
-                            }
-                            newListAudio.add(it.copy())
-                            Log.d(TAG, "mergeList: aloha 2")
+                        val audioViewItem = filePathMapItemView.get(it.getFilePath())
+                        audioViewItem?.let {
+                            newListAudio.add(audioViewItem.copy())
                         }
                     }
-
                 } else {
                     if (isDeleteStatus) {                           // khi dang o trang thai delete
                         it.itemLoadStatus.deleteState = DeleteState.UNCHECK
@@ -216,7 +216,6 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                     newListAudio.add(it.copy())
                     Log.d(TAG, "mergeList: aloha 3")
                 }
-
             }
         }
 
@@ -369,7 +368,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     // check xem đã có ít nhất 1 item nào được check delete hay chưa
     fun isChecked(): Boolean {
         mListAudio.forEach {
-            if (it.itemLoadStatus.deleteState == DeleteState.CHECKED) {
+            if (it.itemLoadStatus.deleteState == DeleteState.CHECKED && it.convertingState == ConvertingState.SUCCESS) {
                 return true
             }
         }
