@@ -38,7 +38,7 @@
                     android:paddingHorizontal="@dimen/margin_item_dialog"
                     android:fontFamily="@font/opensans_bold"
                     android:gravity="center"
-                    android:text="@string/my_studio_dialog_set_as_title"
+                    android:text= "@string/my_studio_dialog_set_as_title"
                     android:textColor="#2E3041"
                     android:textSize="@dimen/text_size_header"
                     android:textStyle="bold" />
