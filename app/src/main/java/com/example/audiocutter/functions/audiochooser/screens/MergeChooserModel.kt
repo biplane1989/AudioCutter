@@ -122,10 +122,6 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
         return stateLoadProgress
     }
 
-    fun getStateEmpty(): LiveData<Boolean> {
-        return isEmptyState
-    }
-
     /* @JvmName("getStateChecked1")
      fun getStateChecked(): LiveData<Int> {
          return stateChecked

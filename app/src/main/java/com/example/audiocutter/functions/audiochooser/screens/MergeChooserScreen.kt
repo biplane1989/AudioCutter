@@ -109,9 +109,9 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         super.onViewCreated(view, savedInstanceState)
         initLists()
         runOnUI {
-            audioMerModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
+            audioMerModel.stateLoadProgress.observe(viewLifecycleOwner, stateObserver)
             audioMerModel.getAllAudioFile().observe(viewLifecycleOwner, listAudioObserver)
-            audioMerModel.getStateEmpty().observe(viewLifecycleOwner, emptyState)
+            audioMerModel.isEmptyState.observe(viewLifecycleOwner, emptyState)
             audioMerModel.countItemSelected.observe(viewLifecycleOwner, countItemSelected)
 
         }
