@@ -225,8 +225,8 @@ class AudioCutterImpl : AudioCutter {
                     CMD_MIX_AUDIO,
                     audioFile1.file.absolutePath,
                     audioFile2.file.absolutePath,
-                    (audioMixConfig.volumePercent1 / 100).toFloat(),
-                    (audioMixConfig.volumePercent2 / 100).toFloat(),
+                    (audioMixConfig.volumePercent1 / 100f).toFloat(),
+                    (audioMixConfig.volumePercent2 / 100f).toFloat(),
                     audioMixConfig.selector.type,
                     filePath
                 )
