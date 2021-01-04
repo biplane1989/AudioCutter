@@ -70,6 +70,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     private val WRITESETTING_ITEM_REQUESTING_PERMISSION = 1 shl 5
     private val DURATION_ANIMATION = 500L
 
+    private var isFirstPlayMusic = true
+
     private val contactPermissionRequest = object : ContactItemPermissionRequest {
         override fun getPermissionActivity(): BaseActivity? {
             return getBaseActivity()
@@ -174,7 +176,15 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
 //        binding.pbLoading.progress = it.percent
 
-        setProgressAnimate(binding.pbLoading, it.percent, DURATION_ANIMATION)
+        if (isFirstPlayMusic) {
+            binding.pbLoading.clearAnimation()      // reset progressbar
+            progressbarAnimation?.cancel()
+            binding.pbLoading.progress = it.percent * 100
+        } else {
+            setProgressAnimate(binding.pbLoading, it.percent, DURATION_ANIMATION)
+            isFirstPlayMusic = false
+        }
+
 
         isLoadingDone = false
     }
@@ -513,10 +523,9 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
             toast!!.cancel()
             toast = null
             toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
-        } else
-            if (toast == null) {
-                toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
-            }
+        } else if (toast == null) {
+            toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
+        }
         toast!!.show()
 
 

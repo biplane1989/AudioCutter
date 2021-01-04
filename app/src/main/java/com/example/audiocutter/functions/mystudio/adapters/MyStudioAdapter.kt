@@ -516,7 +516,7 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
         val tvLoading: TextView = itemView.findViewById(R.id.tv_loading)
         val ivCancel: ImageView = itemView.findViewById(R.id.iv_cancel)
         val tvWait: TextView = itemView.findViewById(R.id.tv_wait)
-
+        var isFirstPlayMusic = true
 
         @SuppressLint("SetTextI18n")
         private fun updateItem(convertingItem: ConvertingItem) {
@@ -525,7 +525,13 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
             when (convertingItem.state) {
 
                 ConvertingState.PROGRESSING -> {
-                    setProgressAnimate(pbLoading, convertingItem.percent, DURATION_ANIMATION)
+                    if (isFirstPlayMusic) {
+                        pbLoading.progress = convertingItem.percent * 100
+                    } else {
+
+                        setProgressAnimate(pbLoading, convertingItem.percent, DURATION_ANIMATION)
+                        isFirstPlayMusic = false
+                    }
                     tvLoading.text = convertingItem.percent.toString() + "%"
                 }
 

@@ -2,8 +2,10 @@ package com.example.audiocutter.core.result
 
 import android.app.ActivityManager
 import android.content.*
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -28,6 +30,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     private val CUT_AUDIO = 0
     private val MER_AUDIO = 1
     private val MIX_AUDIO = 2
+    private var TYPE_AUDIO = -1
 
     private var mService: ResultService? = null
     private var mIsBound: Boolean = false
@@ -70,6 +73,8 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
                 it.percent = audioMering.percent
                 it.state = convertingState
+                it.typeAudio = TYPE_AUDIO
+                Log.d(TAG, "init: TYPE_AUDIO : " + it.typeAudio)
                 notifyConvertingItemChanged(it)
                 Log.d(TAG, "currentProcessingItem init: percent: processItem " + it.percent + " status: " + it.state + " ID : " + it.id + " file name: " + it.getFileName())
             }
@@ -130,6 +135,12 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     private suspend fun processItem(item: ConvertingItem) = withContext(Dispatchers.Default) {      // thuc hien mix or mer or cut
 
         mainScope.launch {
+            item.typeAudio?.let {
+                TYPE_AUDIO = it
+                Log.d(TAG, "processItem: TYPE_AUDIO : " + it)
+                mService?.builderForegroundService(it)
+
+            }
             notifyConvertingItemChanged(null)
             item.state = ConvertingState.PROGRESSING
             notifyConvertingItemChanged(item)
@@ -168,7 +179,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 // converting progress co thanh cong hay khong
                 ManagerFactory.getAudioFileManager().buildAudioFile(audioResult.file.absolutePath) {
                     if (it != null) {
-                        Log.d(TAG, "processItem: convertingState "+convertingState)
+                        Log.d(TAG, "processItem: convertingState " + convertingState)
                         if (convertingState != ConvertingState.ERROR) {
                             item.outputAudioFile = it
                             item.state = ConvertingState.SUCCESS
@@ -222,7 +233,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             }
         }
         currConvertingId++
-        val item = CuttingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile, cuttingConfig)
+        val item = CuttingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile, cuttingConfig, audioFile, CUT_AUDIO)
         synchronized(listConvertingItemData) {
             listConvertingItemData.add(item)
             Utils.addGeneratedName(Folder.TYPE_CUTTER, File(cuttingConfig.pathFolder + File.separator + cuttingConfig.fileName))
@@ -235,7 +246,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             processNextItem()
         }
         listConvertingItems.postValue(listConvertingItemData)
-
     }
 
     override fun mixAudio(audioFile1: AudioFile, audioFile2: AudioFile, mixingConfig: AudioMixConfig) {
@@ -249,7 +259,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             }
         }
         currConvertingId++
-        val item = MixingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile1, audioFile2, mixingConfig)
+        val item = MixingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile1, audioFile2, mixingConfig, null, MIX_AUDIO)
         synchronized(listConvertingItemData) {
             listConvertingItemData.add(item)
             Utils.addGeneratedName(Folder.TYPE_MIXER, File(mixingConfig.pathFolder + File.separator + mixingConfig.fileName))
@@ -276,7 +286,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             }
         }
         currConvertingId++
-        val item = MergingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, listAudioFiles, mergingConfig)
+        val item = MergingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, listAudioFiles, mergingConfig, null, MER_AUDIO)
         synchronized(listConvertingItemData) {
             listConvertingItemData.add(item)
             Utils.addGeneratedName(Folder.TYPE_MERGER, File(mergingConfig.pathFolder + File.separator + mergingConfig.fileName))
@@ -287,6 +297,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         if (processingItem == null) {
             processNextItem()
         }
+        Log.d(TAG, "mergeAudio: ")
         listConvertingItems.postValue(listConvertingItemData)
     }
 

@@ -136,8 +136,8 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         val llItem: LinearLayout = itemView.findViewById(R.id.ll_item)
         val ivSelect: ImageView = itemView.findViewById(R.id.iv_select)
 
-        var timeFomat = 0
-        var isFirstPlayMusic = true
+        private var timeFomat = 0
+        private var isFirstPlayMusic = true
         private var isSeekBarStatus = false         // trang thai seekbar co dang duoc keo hay khong
 
         private var lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)      // tao 1 lifecycleRegistry

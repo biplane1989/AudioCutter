@@ -8,9 +8,9 @@
         paddingTopSystemWindowInsets="@{true}"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="@dimen/common_padding_left"
-        android:paddingRight="@dimen/common_padding_right"
-        android:background="#FFFFFF">
+        android:background="#FFFFFF"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_converting"
@@ -20,7 +20,7 @@
 
             <ImageView
                 android:id="@+id/btn_cancel"
-                android:layout_width="@dimen/common_size_item_imagview"
+                android:layout_width="30dp"
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
@@ -101,7 +101,7 @@
                     android:id="@+id/iv_avatar"
                     android:layout_width="@dimen/common_size_item_imagview"
                     android:layout_height="@dimen/common_size_item_imagview"
-                    android:layout_marginLeft="@dimen/common_padding_left"
+
                     app:cardBackgroundColor="#C4C6D2"
                     app:cardCornerRadius="4dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -171,22 +171,19 @@
             android:id="@+id/tv_wait"
             android:layout_width="match_parent"
             android:layout_height="34dp"
-            android:layout_marginLeft="@dimen/common_padding_left"
-            android:layout_marginRight="16dp"
             android:gravity="center_vertical"
             android:text="@string/result_scren_wait_task"
             android:textColor="#2E3041"
             android:textSize="16dp"
+            android:visibility="invisible"
             app:layout_constraintTop_toBottomOf="@+id/ll_audio_item" />
 
         <LinearLayout
             android:id="@+id/ll_progressbar"
             android:layout_width="match_parent"
             android:layout_height="34dp"
-            android:layout_marginLeft="@dimen/common_padding_left"
-            android:layout_marginRight="@dimen/common_padding_right"
             android:gravity="center_vertical"
-            android:visibility="visible"
+            android:visibility="invisible"
             app:layout_constraintTop_toBottomOf="@+id/ll_audio_item">
 
             <ProgressBar
@@ -224,7 +221,7 @@
             android:layout_height="34dp"
             android:gravity="center"
             android:orientation="horizontal"
-            android:visibility="visible"
+            android:visibility="invisible"
             app:layout_constraintTop_toBottomOf="@+id/ll_audio_item">
 
             <ImageView
@@ -244,23 +241,22 @@
                 android:thumbTint="#FDAA74" />
 
             <TextView
-                android:maxLines="1"
                 android:id="@+id/tv_time_life"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/opensans_regular"
                 android:gravity="end"
+                android:maxLines="1"
                 android:text="@string/result_screen_timelife_default"
                 android:textColor="#9C9C9C"
                 android:textSize="12dp" />
 
             <TextView
-                android:maxLines="1"
                 android:id="@+id/tv_time_total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/common_padding_right"
                 android:fontFamily="@font/opensans_regular"
+                android:maxLines="1"
                 android:text="@string/result_screen_timetotal_default"
                 android:textColor="#9C9C9C"
                 android:textSize="12dp" />
@@ -280,14 +276,12 @@
                 android:id="@+id/ll_ringtone"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="13dp"
                 android:background="@drawable/result_btn_ringtone_selector"
                 android:gravity="center"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toTopOf="@id/ll_share"
                 app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintEnd_toStartOf="@id/ll_alarm"
+
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -302,6 +296,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/opensans_regular"
                     android:gravity="center"
+                    android:maxLines="1"
                     android:text="@string/result_screen_title_ringtone"
                     android:textColor="#2E3041"
                     android:textSize="14dp" />
@@ -312,8 +307,8 @@
                 android:id="@+id/ll_alarm"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginLeft="13dp"
-                android:layout_marginRight="13dp"
+                android:layout_marginLeft="26dp"
+                android:layout_marginRight="26dp"
                 android:background="@drawable/result_btn_ringtone_selector"
                 android:gravity="center"
                 android:orientation="vertical"
@@ -334,6 +329,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/opensans_regular"
                     android:gravity="center"
+                    android:maxLines="1"
                     android:text="@string/result_screen_title_alarm"
                     android:textColor="#2E3041"
                     android:textSize="14dp" />
@@ -344,15 +340,12 @@
                 android:id="@+id/ll_notification"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginLeft="13dp"
-                android:layout_marginRight="16dp"
                 android:background="@drawable/result_btn_ringtone_selector"
                 android:gravity="center"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toTopOf="@id/ll_openwith"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/ll_alarm"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
@@ -366,18 +359,17 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/opensans_regular"
                     android:gravity="center"
+                    android:maxLines="1"
                     android:text="@string/result_screen_title_notification"
                     android:textColor="#2E3041"
                     android:textSize="14dp" />
 
             </LinearLayout>
 
-
             <LinearLayout
                 android:id="@+id/ll_share"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginLeft="16dp"
                 android:layout_marginTop="26dp"
                 android:layout_marginRight="16dp"
                 android:background="@drawable/result_btn_ringtone_selector"
@@ -385,7 +377,6 @@
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintEnd_toStartOf="@id/ll_contact"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/ll_ringtone">
 
@@ -401,6 +392,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/opensans_regular"
                     android:gravity="center"
+                    android:maxLines="1"
                     android:text="@string/result_screen_title_share"
                     android:textColor="#2E3041"
                     android:textSize="14dp" />
@@ -410,9 +402,9 @@
                 android:id="@+id/ll_contact"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginLeft="13dp"
+                android:layout_marginLeft="26dp"
                 android:layout_marginTop="26dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginRight="26dp"
                 android:background="@drawable/result_btn_ringtone_selector"
                 android:gravity="center"
                 android:orientation="vertical"
@@ -433,6 +425,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/opensans_regular"
                     android:gravity="center"
+                    android:maxLines="1"
                     android:text="@string/result_screen_title_contacts"
                     android:textColor="#2E3041"
                     android:textSize="14dp" />
@@ -443,16 +436,13 @@
                 android:id="@+id/ll_openwith"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginLeft="13dp"
                 android:layout_marginTop="26dp"
-                android:layout_marginRight="16dp"
                 android:background="@drawable/result_btn_ringtone_selector"
                 android:gravity="center"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/ll_contact"
                 app:layout_constraintTop_toBottomOf="@id/ll_notification">
 
                 <ImageView
@@ -466,21 +456,17 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/opensans_regular"
                     android:gravity="center"
+                    android:maxLines="1"
                     android:text="@string/result_screen_title_open_with"
                     android:textColor="#2E3041"
                     android:textSize="14dp" />
 
             </LinearLayout>
-
-
         </androidx.constraintlayout.widget.ConstraintLayout>
-
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
             android:layout_marginBottom="15dp"
             app:layout_constraintBottom_toBottomOf="parent">
 

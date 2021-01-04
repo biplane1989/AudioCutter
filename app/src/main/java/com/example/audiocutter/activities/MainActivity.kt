@@ -48,20 +48,15 @@ class MainActivity : BaseActivity() {
             if (it.action == Constance.NOTIFICATION_ACTION_EDITOR) {
 
                 val typeAudio = intent.getIntExtra(Constance.TYPE_RESULT, -1)
+                Log.d("TAG", "handleNotificationIntent  typeAudio: " + typeAudio)
                 if (typeAudio != -1) {
-                    val navigationHostFragment:NavHostFragment? = supportFragmentManager.findFragmentById(R.id.app_nav_host_fragment) as NavHostFragment?
+                    val navigationHostFragment: NavHostFragment? = supportFragmentManager.findFragmentById(R.id.app_nav_host_fragment) as NavHostFragment?
 
-                    navigationHostFragment?.childFragmentManager?.findFragmentById(R.id.my_studio_screen)?.let {
-                        Log.d("taihhhhhh", "found my_studio_screen")
-                    }
                     lifecycleScope.launchWhenResumed {
-                        Log.d("TAG", "handleNotificationIntent: ")
-                        viewStateManager.goToMyStudioScreen(
-                            findNavController(R.id.app_nav_host_fragment),
-                            typeAudio
-                        )
+                        navigationHostFragment?.childFragmentManager?.primaryNavigationFragment?.let {
+                            viewStateManager.goToMyStudioScreen(findNavController(R.id.app_nav_host_fragment), typeAudio, it)
+                        }
                     }
-
                 }
             }
         }

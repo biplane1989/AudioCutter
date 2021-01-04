@@ -102,6 +102,9 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
         return null
     }
 
+    fun setTabLayoutPosition(typeAudio: Int) {
+        binding.tabLayout.getTabAt(typeAudio)?.select()
+    }
 
     fun setUp() {
         myAudioManagerViewModel.getAction().observe(viewLifecycleOwner, actionObserver)
