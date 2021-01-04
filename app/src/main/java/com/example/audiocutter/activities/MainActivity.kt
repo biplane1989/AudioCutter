@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateScreen
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
@@ -48,7 +49,11 @@ class MainActivity : BaseActivity() {
 
                 val typeAudio = intent.getIntExtra(Constance.TYPE_RESULT, -1)
                 if (typeAudio != -1) {
+                    val navigationHostFragment:NavHostFragment? = supportFragmentManager.findFragmentById(R.id.app_nav_host_fragment) as NavHostFragment?
 
+                    navigationHostFragment?.childFragmentManager?.findFragmentById(R.id.my_studio_screen)?.let {
+                        Log.d("taihhhhhh", "found my_studio_screen")
+                    }
                     lifecycleScope.launchWhenResumed {
                         Log.d("TAG", "handleNotificationIntent: ")
                         viewStateManager.goToMyStudioScreen(

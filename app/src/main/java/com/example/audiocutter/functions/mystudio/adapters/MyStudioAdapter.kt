@@ -541,7 +541,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
 
         override fun onViewAttachedToWindow() {
             super.onViewAttachedToWindow()
-            val audioFileView = getItem(adapterPosition)
             audioEditorManager.getCurrentProcessingItem()
                 .observe(this, object : Observer<ConvertingItem?> {
                     override fun onChanged(convertingItem: ConvertingItem?) {
