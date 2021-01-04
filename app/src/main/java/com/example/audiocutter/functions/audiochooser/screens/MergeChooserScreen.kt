@@ -42,7 +42,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         }
     }
 
-    var stateChecked = Observer<Int> {
+    var countItemSelected = Observer<Int> {
         if (it > 1) {
             setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
         } else {
@@ -109,10 +109,10 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         super.onViewCreated(view, savedInstanceState)
         initLists()
         runOnUI {
-            audioMerModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
+            audioMerModel.stateLoadProgress.observe(viewLifecycleOwner, stateObserver)
             audioMerModel.getAllAudioFile().observe(viewLifecycleOwner, listAudioObserver)
-            audioMerModel.getStateEmpty().observe(viewLifecycleOwner, emptyState)
-            audioMerModel.getStateChecked().observe(viewLifecycleOwner, stateChecked)
+            audioMerModel.isEmptyState.observe(viewLifecycleOwner, emptyState)
+            audioMerModel.countItemSelected.observe(viewLifecycleOwner, countItemSelected)
 
         }
     }

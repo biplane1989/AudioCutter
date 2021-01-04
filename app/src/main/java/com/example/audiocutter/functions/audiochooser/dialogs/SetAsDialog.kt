@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.audiochooser.dialogs
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +14,7 @@ import com.example.audiocutter.functions.audiochooser.objects.TypeAudioSetAs
 
 class SetAsDialog(val mContext: Context) : DialogFragment(), View.OnClickListener {
     private lateinit var rootView: View
-    var typeSet: TypeAudioSetAs? = null
+    var typeSet: TypeAudioSetAs = TypeAudioSetAs.NOTIFICATION
 
 
     lateinit var mCallback: setAsListener
@@ -68,7 +69,8 @@ class SetAsDialog(val mContext: Context) : DialogFragment(), View.OnClickListene
         if (typeSet == null) {
             Toast.makeText(context, "please enter choose", Toast.LENGTH_SHORT).show()
         } else {
-            mCallback.setAsTypeAudio(typeSet!!)
+            Log.d("TAG", "setAsAudioFile: ${typeSet.name}")
+            mCallback.setAsTypeAudio(typeSet)
         }
     }
 

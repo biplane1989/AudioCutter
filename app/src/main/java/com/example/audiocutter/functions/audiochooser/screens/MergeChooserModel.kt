@@ -33,9 +33,11 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     val stateLoadProgress: LiveData<Int>
         get() = _stateLoadProgress
 
+/*
     private var _stateChecked = MutableLiveData<Int>()
     val stateChecked: LiveData<Int>
         get() = _stateChecked
+*/
 
     private var mListPath = ArrayList<String>()
 
@@ -48,6 +50,12 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>?>()
     fun getAudioPlayer(): AudioPlayer {
         return audioPlayer
+    }
+
+    val countItemSelected = liveData<Int> {
+        emitSource(_listAudioFiles.map {
+            it?.sumBy { if (it.isCheckChooseItem) 1 else 0 } ?: 0
+        })
     }
 
     private var sortByNo: Comparator<AudioCutterView> = Comparator { o1, o2 -> o1.no - o2.no }
@@ -114,14 +122,10 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
         return stateLoadProgress
     }
 
-    fun getStateEmpty(): LiveData<Boolean> {
-        return isEmptyState
-    }
-
-    @JvmName("getStateChecked1")
-    fun getStateChecked(): LiveData<Int> {
-        return stateChecked
-    }
+    /* @JvmName("getStateChecked1")
+     fun getStateChecked(): LiveData<Int> {
+         return stateChecked
+     }*/
 
 
     fun getAllAudioFile(): LiveData<List<AudioCutterView>?> {
@@ -162,7 +166,7 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
                     indexChoose++
                 }
             }
-            _stateChecked.postValue(indexChoose)
+            /*         _stateChecked.postValue(indexChoose)*/
             _listAudioFiles.postValue(mListAudios)
 
 
@@ -267,7 +271,7 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
         indexChoose--
         listAudioChooser.remove(item)
         getlistAfterReceive(item)
-        _stateChecked.postValue(indexChoose)
+        /* _stateChecked.postValue(indexChoose)*/
         return listAudioChooser
     }
 

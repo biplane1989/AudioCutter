@@ -34,7 +34,7 @@
                     android:gravity="center"
                     android:text="@string/_2_file_to_be_merged"
                     android:textColor="#2E3041"
-                    android:textSize="@dimen/text_size_button"
+                    android:textSize="@dimen/text_size_header"
                     android:textStyle="bold" />
 
             <TextView
@@ -81,7 +81,7 @@
                     android:gravity="center"
                     android:text="@string/common_cancel"
                     android:textColor="#BDBDBD"
-                    android:textSize="18dp"
+                    android:textSize="@dimen/text_size_button"
                     android:visibility="visible" />
 
                 <TextView
@@ -94,7 +94,7 @@
                     android:gravity="center"
                     android:text="@string/merger"
                     android:textColor="#FDAA74"
-                    android:textSize="18dp" />
+                    android:textSize="@dimen/text_size_button" />
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

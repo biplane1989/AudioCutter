@@ -1,16 +1,12 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.*
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.core.manager.PlayerInfo
-import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.objects.StateLoad
-import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -38,6 +34,7 @@ class MixChooserModel(application: Application) : BaseAndroidViewModel(applicati
         get() = _isEmptyState
 
 
+/*
     private var _stateChecked = MutableLiveData<Int>()
     val stateChecked: LiveData<Int>
         get() = _stateChecked
@@ -46,6 +43,8 @@ class MixChooserModel(application: Application) : BaseAndroidViewModel(applicati
     fun getStateChecked(): LiveData<Int> {
         return stateChecked
     }
+*/
+
 
     fun call() {
         _isChooseItemState.postValue(null)
@@ -53,9 +52,16 @@ class MixChooserModel(application: Application) : BaseAndroidViewModel(applicati
 
     private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>?>()
 
+    val countItemSelected = liveData<Int> {
+        emitSource(_listAudioFiles.map { it ->
+            it?.sumBy { if (it.isCheckChooseItem) 1 else 0 } ?: 0
+        })
+    }
+
     fun getAudioPlayer(): AudioPlayer {
         return audioPlayer
     }
+
 
     init {
         audioPlayer.init(application.applicationContext)
@@ -167,7 +173,7 @@ class MixChooserModel(application: Application) : BaseAndroidViewModel(applicati
                 _isChooseItemState.postValue(false)
             }
 
-            _stateChecked.postValue(count)
+//            _stateChecked.postValue(count)
 
             _listAudioFiles.postValue(mListAudios)
         } catch (e: Exception) {

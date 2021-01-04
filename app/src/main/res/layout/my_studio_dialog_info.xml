@@ -37,7 +37,7 @@
                 android:fontFamily="@font/opensans_bold"
                 android:text="@string/my_studio_dialog_info"
                 android:textColor="#2E3041"
-                android:textSize="@dimen/text_size_header"
+                android:textSize="@dimen/d_20"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

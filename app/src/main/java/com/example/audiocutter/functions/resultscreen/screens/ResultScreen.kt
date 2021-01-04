@@ -347,6 +347,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                 if (progress == binding.sbMusic.max) {
                     Log.d(TAG, "onProgressChanged: progress == max ")
                     resetAnimation()
+                    binding.sbMusic.progress = 0
                     playerState = PlayerState.IDLE
                     binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
                 }

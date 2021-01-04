@@ -36,8 +36,8 @@
     <dimen name="d_72">72dp</dimen>
     <dimen name="header_size">25dp</dimen>
     <dimen name="margin_item">10dp</dimen>
-    <dimen name="text_size_header">24dp</dimen>
-    <dimen name="text_size_button">18dp</dimen>
+    <dimen name="text_size_header">20dp</dimen>
+    <dimen name="text_size_button">14dp</dimen>
     <dimen name="text_size_edt">16dp</dimen>
     <dimen name="text_size_info">14dp</dimen>
     <dimen name="d_80">80dp</dimen>

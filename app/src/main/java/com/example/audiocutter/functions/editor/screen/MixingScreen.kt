@@ -328,7 +328,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         if (newValueSound < 0) {
             newValueSound = 0.0
         }
-        volume1 = newValueSound.toInt()
+        volume1 = (newValueSound*100).toInt()
         mPlayer1.setVolume(newValueSound.toFloat())
     }
 
@@ -340,7 +340,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         if (newValueSound < 0) {
             newValueSound = 0.0
         }
-        volume2 = newValueSound.toInt()
+        volume2 = (newValueSound*100).toInt()
         mPlayer2.setVolume(newValueSound.toFloat())
     }
 
@@ -350,15 +350,27 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
 
     override fun onMixClick(fileName: String) {
-
-        val mixingConfig = AudioMixConfig(fileName, ManagerFactory.getAudioFileManager()
-            .getFolderPath(Folder.TYPE_MIXER), mixselect, volume1, volume2, audioFormat)
+        Log.d(TAG, "onMixClick: volume1 $volume1 - volume2 $volume2 - mixSelect $mixselect  - audioFormat $audioFormat")
+        val mixingConfig = AudioMixConfig(
+            fileName, ManagerFactory.getAudioFileManager()
+                .getFolderPath(Folder.TYPE_MIXER), mixselect, volume1, volume2, audioFormat
+        )
         if (audioFile1 != null && audioFile2 != null) {
             viewStateManager.editorSaveMixingAudio(this, audioFile1!!, audioFile2!!, mixingConfig)
         }
-
-
+        resetChangeRangeView()
         isDeleteClicked = true
+
+    }
+
+    private fun resetChangeRangeView() {
+        isLongestAudioChecked = true
+        volume1 = 100
+        volume2 = 100
+        mPlayer1.setVolume(volume1.toFloat())
+        mPlayer2.setVolume(volume2.toFloat())
+        mixselect = MixSelector.LONGEST
+        stopAudio()
     }
 
     override fun onCancel() {
