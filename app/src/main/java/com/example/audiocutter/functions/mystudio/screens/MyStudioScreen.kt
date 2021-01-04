@@ -149,7 +149,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
     }
 
     private fun onReceivedAction(action: String, type: Int) {
-        if (action in arrayListOf(Constance.ACTION_CHECK_DELETE, Constance.ACTION_DELETE_ALL)) if (type != typeAudio) {
+        if (action in arrayListOf(Constance.ACTION_CHECK_DELETE, Constance.ACTION_DELETE_ALL, Constance.ACTION_DELETE_STATUS)) if (type != typeAudio) {
             return
         }
         when (action) {
@@ -182,6 +182,9 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
 
                         showNotification(getString(R.string.my_studio_delete_fail))
                     }
+                    myStudioViewModel.changeAutoItemToMore()
+                    binding.clDeleteAll.visibility = View.GONE
+
                 }
             }
             Constance.ACTION_STOP_MUSIC -> {

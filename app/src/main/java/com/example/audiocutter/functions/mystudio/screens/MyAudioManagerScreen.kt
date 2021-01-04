@@ -177,7 +177,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 binding.viewPager.setPagingEnabled(true)
                 setEnabledTablayout(false)
 
-                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_HIDE, Constance.NO_TYPE_AUDIO)      // do action extends va close khong can quan tam toi data nen truyen vao -1
+                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_HIDE, tabPosition)      // do action extends va close khong can quan tam toi data nen truyen vao -1
             }
             binding.ivExtends -> {
                 binding.clDefault.visibility = View.GONE
@@ -187,7 +187,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 binding.viewPager.setPagingEnabled(false)
                 setEnabledTablayout(true)
 
-                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_DELETE_STATUS, Constance.NO_TYPE_AUDIO)
+                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_DELETE_STATUS, tabPosition)
             }
             binding.backButton -> {
                 requireActivity().onBackPressed()
@@ -204,8 +204,16 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
         }
     }
 
-    override fun onDeleteClick(pathFolder: String) {
+    override fun onDeleteClick(pathFolder: String) {    // delete dialog event
+        binding.clDefault.visibility = View.VISIBLE
+        binding.clDelete.visibility = View.GONE
+
+        // enable viewpayger swip
+        binding.viewPager.setPagingEnabled(true)
+        setEnabledTablayout(false)
+
         isDeleteClicked = true
+//        sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_HIDE, tabPosition)
         sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_DELETE_ALL, tabPosition)
     }
 
