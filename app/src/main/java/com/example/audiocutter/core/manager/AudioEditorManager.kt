@@ -19,4 +19,6 @@ interface AudioEditorManager {
     fun getListMixingItems(): LiveData<List<ConvertingItem>>
     fun getLatestConvertingItem(): ConvertingItem?
     fun getLastItem(): LiveData<ConvertingItem>
+
+    fun refeshNotification()
 }

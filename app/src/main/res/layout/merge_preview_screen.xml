@@ -1,139 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout  xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-<RelativeLayout
-    paddingTopSystemWindowInsets="@{true}"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
     <RelativeLayout
-        android:id="@+id/rlt_empty"
+        paddingTopSystemWindowInsets="@{true}"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:visibility="invisible">
-
-        <ImageView
-            android:id="@+id/iv_empty_list_cutter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:src="@drawable/ic_item_empty_list" />
-
-        <TextView
-            android:id="@+id/tv_empty_list_cutter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/iv_empty_list_cutter"
-            android:layout_centerInParent="true"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center"
-            android:fontFamily="@font/opensans_regular"
-            android:text="@string/no_result_empty"
-            android:textColor="@color/colorgray"
-            android:textSize="@dimen/d_18" />
-    </RelativeLayout>
-
-
-    <LinearLayout
-        android:id="@+id/rlt_actionbar_mer_choose"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize">
+        android:layout_height="match_parent">
 
         <RelativeLayout
-
+            android:id="@+id/rlt_empty"
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:background="?attr/selectableItemBackground">
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:visibility="invisible">
 
             <ImageView
-                android:id="@+id/iv_mer_screen_back"
-                android:layout_marginStart="@dimen/common_padding_left"
-                android:layout_width="@dimen/common_size_item_imagview"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_audiocutter_back" />
-
-            <TextView
-                android:id="@+id/tv_mer_screen"
+                android:id="@+id/iv_empty_list_cutter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_item_empty_list" />
+
+            <TextView
+                android:id="@+id/tv_empty_list_cutter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/iv_empty_list_cutter"
+                android:layout_centerInParent="true"
                 android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/iv_mer_screen_back"
-                android:fontFamily="@font/opensans_bold"
-                android:text="File to be Merged"
-                android:textColor="@color/colorBlack"
-                android:paddingLeft="26dp"
+                android:layout_gravity="center"
+                android:fontFamily="@font/opensans_regular"
+                android:text="@string/no_result_empty"
+                android:textColor="@color/colorgray"
                 android:textSize="@dimen/d_18" />
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:id="@+id/rlt_actionbar_mer_choose"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize">
+
+            <RelativeLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:background="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:id="@+id/iv_mer_screen_back"
+                    android:layout_width="@dimen/common_size_item_imagview"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/common_padding_left"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_audiocutter_back" />
+
+                <TextView
+                    android:id="@+id/tv_mer_screen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/iv_mer_screen_back"
+                    android:fontFamily="@font/opensans_bold"
+                    android:paddingLeft="26dp"
+                    android:text="File to be Merged"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/d_18" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/colorgrayAlpha" />
+            </RelativeLayout>
+        </LinearLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_merge_choose"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/rlt_actionbar_mer_choose"
+            android:layout_marginBottom="?actionBarSize"
+            android:overScrollMode="never"
+            tools:listitem="@layout/item_audio_choose_merge" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorWhite">
+
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_alignParentBottom="true"
-                android:background="@color/colorgrayAlpha" />
-        </RelativeLayout>
-    </LinearLayout>
+                android:layout_height="0.01dp"
+                android:background="@color/colorgray"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/iv_addfile_merge"
+                android:layout_width="@dimen/common_size_item_imagview"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/common_padding_left"
+                android:background="?attr/selectableItemBackground"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_added_audio"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/opensans_bold"
+                android:gravity="center"
+                android:paddingLeft="26dp"
+                android:text="Add File"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/d_18"
+                app:layout_constraintStart_toEndOf="@+id/iv_addfile_merge" />
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_merge_choose"
-        android:layout_width="match_parent"
-        android:overScrollMode="never"
-        android:layout_marginBottom="?actionBarSize"
-        android:layout_height="match_parent"
-        android:layout_below="@id/rlt_actionbar_mer_choose"
-        tools:listitem="@layout/item_audio_choose_merge" />
+            <ImageView
+                android:id="@+id/bt_merge_audio"
+                android:layout_width="90dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/main_screen_item_selector_mp3_cutter"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/d_56"
-        android:layout_alignParentBottom="true"
-        android:background="@color/colorWhite">
-<View
-    android:layout_width="match_parent"
-    android:layout_height="0.01dp"
-    android:layout_alignParentTop="true"
-    android:background="@color/colorgray"/>
-        <ImageView
-            android:id="@+id/iv_addfile_merge"
-            android:layout_marginStart="@dimen/common_padding_left"
-            android:layout_width="@dimen/common_size_item_imagview"
-            android:layout_height="?actionBarSize"
-            android:scaleType="centerInside"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center_vertical"
-            android:background="?attr/selectableItemBackground"
-            android:src="@drawable/ic_added_audio" />
+            <TextView
+                android:id="@+id/tv_merger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:text="Merger"
+                android:textColor="#FFFFFF"
+                android:textSize="14dp"
+                app:layout_constraintBottom_toBottomOf="@id/bt_merge_audio"
+                app:layout_constraintEnd_toEndOf="@id/bt_merge_audio"
+                app:layout_constraintStart_toStartOf="@id/bt_merge_audio"
+                app:layout_constraintTop_toTopOf="@id/bt_merge_audio" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center_vertical"
-            android:layout_toRightOf="@id/iv_addfile_merge"
-            android:fontFamily="@font/opensans_bold"
-            android:paddingLeft="26dp"
-            android:text="Add File"
-            android:textColor="@color/colorBlack"
-
-            android:textSize="@dimen/d_18" />
-
-        <Button
-            android:id="@+id/bt_merge_audio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="16dp"
-            android:background="@drawable/bg_next_audio_enabled"
-            android:fontFamily="@font/opensans_bold"
-            android:text="Merger"
-            android:textColor="@color/colorWhite" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </RelativeLayout>
-
-</RelativeLayout>
 </layout>

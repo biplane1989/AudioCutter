@@ -63,12 +63,8 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
                 audioMerAdapter.submitList(ArrayList(listMusic))
                 showList()
                 showProgressBar(false)
-
             }
-
         }
-
-
     }
     private val emptyState = Observer<Boolean> {
         if (it) {

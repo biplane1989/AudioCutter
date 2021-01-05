@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <RelativeLayout
         paddingTopSystemWindowInsets="@{true}"
@@ -27,58 +27,59 @@
                     android:background="@color/colorgrayAlpha" />
 
                 <EditText
-                    android:layout_marginBottom="1dp"
-                    android:theme="@style/editTextTheme"
                     android:id="@+id/edt_mixer_search"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
                     android:background="@color/colorWhite"
                     android:focusableInTouchMode="true"
                     android:hint="@string/search_hint_text"
                     android:paddingStart="76dp"
                     android:singleLine="true"
+                    android:theme="@style/editTextTheme"
                     android:visibility="invisible">
+
                     <requestFocus />
                 </EditText>
 
                 <ImageView
-                    android:layout_marginStart="@dimen/common_padding_left"
                     android:id="@+id/iv_mixer_screen_back"
                     android:layout_width="@dimen/common_size_item_imagview"
                     android:layout_height="?actionBarSize"
                     android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/common_padding_left"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_audiocutter_back" />
 
 
                 <ImageView
-                    android:layout_marginStart="@dimen/common_padding_left"
                     android:id="@+id/iv_mixer_screen_back_edt"
                     android:layout_width="@dimen/common_size_item_imagview"
                     android:layout_height="?actionBarSize"
                     android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/common_padding_left"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_audiocutter_back"
                     android:visibility="gone" />
 
                 <TableRow
-                    android:paddingLeft="@dimen/common_padding_left"
                     android:id="@+id/tb_name_mixer"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@+id/iv_mixer_screen_back"
                     android:background="?attr/selectableItemBackground"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/common_padding_left">
 
                     <TextView
-                        android:paddingLeft="@dimen/common_size_item_padding_left"
                         android:id="@+id/tv_mixer_screen"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/opensans_bold"
+                        android:paddingLeft="@dimen/common_size_item_padding_left"
                         android:text="@string/audio_mixer_name_actionbar"
                         android:textColor="@color/colorBlack"
 
@@ -87,12 +88,12 @@
 
 
                 <ImageView
-                    android:layout_marginRight="@dimen/common_padding_right"
                     android:id="@+id/iv_mixer_screen_search"
                     android:layout_width="@dimen/common_size_item_imagview"
                     android:layout_height="?actionBarSize"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/common_padding_right"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_audiocutter_search" />
@@ -125,12 +126,12 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_mixer"
             android:layout_width="match_parent"
-            android:overScrollMode="never"
             android:layout_height="wrap_content"
             android:layout_above="@id/rlt_next_mixer_parent"
             android:layout_below="@id/rlt_actionbar"
             android:layout_marginTop="0dp"
             android:layout_marginBottom="0dp"
+            android:overScrollMode="never"
             tools:listitem="@layout/item_audio_mixer" />
 
         <ImageView
@@ -183,18 +184,18 @@
 
             <RelativeLayout
                 android:id="@+id/rlt_next_mixer"
-                android:layout_width="100dp"
-                android:layout_height="@dimen/d_48"
+                android:layout_width="90dp"
+                android:layout_height="40dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="@dimen/d_16"
                 android:background="@drawable/bg_next_audio_disabled">
 
                 <LinearLayout
-                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_centerInParent="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:gravity="center"
                     android:orientation="horizontal">
 
@@ -205,12 +206,13 @@
                         android:fontFamily="@font/opensans_bold"
                         android:text="@string/next_mix_screen"
                         android:textColor="@color/colorgray"
-                        android:textSize="@dimen/d_18" />
+                        android:textSize="14dp" />
 
                     <ImageView
+                        android:layout_marginStart="10dp"
                         android:id="@+id/iv_next_mixer"
-                        android:layout_width="@dimen/d_24"
-                        android:layout_height="@dimen/d_24"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
                         android:scaleType="centerInside"
                         android:src="@drawable/ic_mixer_next"
                         app:tint="@color/colorgray" />

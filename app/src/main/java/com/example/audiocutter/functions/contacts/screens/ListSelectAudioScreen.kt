@@ -38,6 +38,7 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
     private val REQ_CODE_PICK_SOUNDFILE = 1990
     private var positionSelect = -1
     private lateinit var binding: ListContactSelectScreenBinding
+    private var fileUri = ""
 
     // observer data
     private val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
@@ -141,7 +142,7 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
             .get(ListSelectAudioViewModel::class.java)
 
         mListSelectAdapter = ListSelectAdapter(this, mListSelectAudioViewModel.getAudioPlayer(), lifecycleScope)
-        val fileUri = safeArg.uri
+        fileUri = safeArg.uri
         mListSelectAudioViewModel.init(fileUri)
     }
 

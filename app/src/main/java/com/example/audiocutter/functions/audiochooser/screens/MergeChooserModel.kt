@@ -1,12 +1,14 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Application
+import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
 import java.io.File
 import java.util.*
@@ -60,21 +62,30 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
 
     private var sortByNo: Comparator<AudioCutterView> = Comparator { o1, o2 -> o1.no - o2.no }
 
+    private var listAudioFiles = ArrayList<AudioCutterView>()
+
     init {
         audioPlayer.init(application.applicationContext)
         _listAudioFiles.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
-            var listAudioFiles: List<AudioCutterView>? = null
+//            var listAudioFiles: List<AudioCutterView>? = null
             when (it.state) {
                 StateLoad.LOADING -> {
                     _stateLoadProgress.postValue(1)
                 }
                 StateLoad.LOADDONE -> {
+
                     _stateLoadProgress.postValue(0)
-                    val tmpList = ArrayList<AudioCutterView>()
-                    it.listAudioFiles.forEach {
-                        tmpList.add(AudioCutterView(it))
-                    }
-                    listAudioFiles = tmpList
+
+//                    val tmpList = ArrayList<AudioCutterView>()
+//                    it.listAudioFiles.forEach {
+//                        tmpList.add(AudioCutterView(it))
+//                    }
+//                    listAudioFiles = tmpList
+
+                    synchronizationData(it)
+                    Log.d(TAG, "list size 22:  ${listAudioFiles.size}")
+                    _listAudioFiles.postValue(listAudioFiles)
+
                 }
                 StateLoad.LOADFAIL -> {
                     _stateLoadProgress.postValue(-1)
@@ -83,9 +94,36 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
                     //do nothing
                 }
             }
-            _listAudioFiles.postValue(listAudioFiles)
         }
 
+    }
+
+    private fun synchronizationData(audioFileScans: AudioFileScans) {
+        val resultListAudio = ArrayList<AudioCutterView>()
+        val newListAudio = audioFileScans.listAudioFiles
+        var isInstance = false
+        if (listAudioFiles.isEmpty()) {
+            newListAudio.forEach { audioFile ->
+                resultListAudio.add(AudioCutterView(audioFile))
+            }
+        } else {
+            for (newItem in newListAudio) {
+                isInstance = false
+                for (oldItem in listAudioFiles) {
+                    if (TextUtils.equals(newItem.getFilePath(), oldItem.audioFile.getFilePath())) {
+                        resultListAudio.add(oldItem)
+                        isInstance = true
+                        break
+                    }
+                }
+                if (!isInstance) {
+                    resultListAudio.add(AudioCutterView(newItem))
+                }
+            }
+        }
+
+        listAudioFiles.clear()
+        listAudioFiles.addAll(resultListAudio)
     }
 
     private val _listFilteredAudioFiles = liveData<List<AudioCutterView>?> {
@@ -176,7 +214,6 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     }
 
 
-
     suspend fun play(pos: Int) {
         val listAudios = getListFilteredAudio()
         val audioItem = listAudios[pos]
@@ -252,17 +289,13 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
         val selectedAudioFile2 = listAudioChooser.findAudioCutterView(filePath2)
         selectedAudioFile1?.swapNo(selectedAudioFile2)
 
-
     }
 
 
     fun swapItemAudio(index1: Int, index2: Int): List<AudioCutterView> {
         listAudioChooser[index1] = listAudioChooser[index1].copy()
         listAudioChooser[index2] = listAudioChooser[index2].copy()
-        swapNo(
-            listAudioChooser[index1].audioFile.getFilePath(),
-            listAudioChooser[index2].audioFile.getFilePath()
-        )
+        swapNo(listAudioChooser[index1].audioFile.getFilePath(), listAudioChooser[index2].audioFile.getFilePath())
         Collections.sort(listAudioChooser, sortByNo)
         return listAudioChooser
     }
@@ -282,13 +315,14 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
             if (mListAudios[index].audioFile.file.absolutePath.equals(item.audioFile.file.absolutePath)) {
                 mListAudios.remove(mListAudios[index])
                 mListPath.remove(mListAudios[index].audioFile.getFilePath())
-                mListAudios.add(
-                    index,
-                    AudioCutterView(item.audioFile, isCheckChooseItem = false, no = -1)
-                )
+                mListAudios.add(index, AudioCutterView(item.audioFile, isCheckChooseItem = false, no = -1))
             }
         }
         _listAudioFiles.postValue(mListAudios)
+    }
+
+    fun clearListChoose() {
+        listAudioChooser.clear()
     }
 
 

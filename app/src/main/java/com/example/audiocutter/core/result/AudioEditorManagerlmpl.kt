@@ -139,7 +139,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                 TYPE_AUDIO = it
                 Log.d(TAG, "processItem: TYPE_AUDIO : " + it)
                 mService?.builderForegroundService(it)
-
             }
             notifyConvertingItemChanged(null)
             item.state = ConvertingState.PROGRESSING
@@ -155,10 +154,8 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             }
 
             if (item is MixingConvertingItem) {
-
                 val audioCore1 = AudioCore(item.audioFile1.file, item.audioFile1.fileName, item.audioFile1.size, item.audioFile1.bitRate, item.audioFile1.duration, item.audioFile1.mimeType)
                 val audioCore2 = AudioCore(item.audioFile2.file, item.audioFile2.fileName, item.audioFile2.size, item.audioFile2.bitRate, item.audioFile2.duration, item.audioFile2.mimeType)
-
                 audioResult = ManagerFactory.getAudioCutter()
                     .mix(audioCore1, audioCore2, item.mixingConfig)
             }
@@ -189,7 +186,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                         } else {
                             item.state = ConvertingState.ERROR
                             notifyConvertingItemChanged(item)
-//                            latestConvertingItem = null
                         }
                     } else {
                         item.outputAudioFile = it
@@ -325,10 +321,8 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                             iterator.remove()
                         }
                         ConvertingState.PROGRESSING -> {
-
                             iterator.remove()
                             ManagerFactory.getAudioCutter().cancelTask()
-
                             mService?.cancelNotidication(id)
                         }
                         else -> {
@@ -353,6 +347,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
     override fun getLastItem(): LiveData<ConvertingItem> {
         return lastItem
+    }
+
+    override fun refeshNotification() {
+        mService?.refeshNotification()
     }
 
     override fun getListCuttingItems(): LiveData<List<ConvertingItem>> {  // tra live data cho list pending cho cutting

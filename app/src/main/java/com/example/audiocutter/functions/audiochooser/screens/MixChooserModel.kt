@@ -1,11 +1,14 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Application
+import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.*
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
 import java.util.*
 import kotlin.collections.ArrayList
@@ -62,11 +65,12 @@ class MixChooserModel(application: Application) : BaseAndroidViewModel(applicati
         return audioPlayer
     }
 
+    private var listAudioFiles = ArrayList<AudioCutterView>()
 
     init {
         audioPlayer.init(application.applicationContext)
         _listAudioFiles.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
-            var listAudioFiles: List<AudioCutterView>? = null
+//            var listAudioFiles: List<AudioCutterView>? = null
 
             when (it.state) {
                 StateLoad.LOADING -> {
@@ -74,11 +78,17 @@ class MixChooserModel(application: Application) : BaseAndroidViewModel(applicati
                 }
                 StateLoad.LOADDONE -> {
                     _stateLoadProgress.postValue(0)
-                    val tmpList = ArrayList<AudioCutterView>()
-                    it.listAudioFiles.forEach {
-                        tmpList.add(AudioCutterView(it))
-                    }
-                    listAudioFiles = tmpList
+
+//                    val tmpList = ArrayList<AudioCutterView>()
+//                    it.listAudioFiles.forEach {
+//                        tmpList.add(AudioCutterView(it))
+//                    }
+//                    listAudioFiles = tmpList
+
+                    synchronizationData(it)
+                    Log.d(TAG, "list size 33:  ${listAudioFiles.size}")
+                    _listAudioFiles.postValue(listAudioFiles)
+
                 }
                 StateLoad.LOADFAIL -> {
                     _stateLoadProgress.postValue(-1)
@@ -86,9 +96,35 @@ class MixChooserModel(application: Application) : BaseAndroidViewModel(applicati
             }
 
 
-            _listAudioFiles.postValue(listAudioFiles)
-
         }
+    }
+
+    private fun synchronizationData(audioFileScans: AudioFileScans) {
+        val resultListAudio = ArrayList<AudioCutterView>()
+        val newListAudio = audioFileScans.listAudioFiles
+        var isInstance = false
+        if (listAudioFiles.isEmpty()) {
+            newListAudio.forEach { audioFile ->
+                resultListAudio.add(AudioCutterView(audioFile))
+            }
+        } else {
+            for (newItem in newListAudio) {
+                isInstance = false
+                for (oldItem in listAudioFiles) {
+                    if (TextUtils.equals(newItem.getFilePath(), oldItem.audioFile.getFilePath())) {
+                        resultListAudio.add(oldItem)
+                        isInstance = true
+                        break
+                    }
+                }
+                if (!isInstance) {
+                    resultListAudio.add(AudioCutterView(newItem))
+                }
+            }
+        }
+
+        listAudioFiles.clear()
+        listAudioFiles.addAll(resultListAudio)
     }
 
     private val _listFilteredAudioFiles = liveData<List<AudioCutterView>?> {

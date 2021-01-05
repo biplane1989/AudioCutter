@@ -152,7 +152,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
             if (playerInfo.currentAudio?.getFilePath()
                     .equals(audioFileView.audioFile.getFilePath())) {
 
-                if (!audioFileView.isExpanded) {
+                if (!audioFileView.isExpanded) {                        // fix bug nhan play va 1 item khac. nhac se chay khi item phat nhac bi an
                     audioPlayer.stop()
                 }
 

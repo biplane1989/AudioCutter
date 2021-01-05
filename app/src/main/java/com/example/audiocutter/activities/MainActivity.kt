@@ -11,6 +11,7 @@ import androidx.navigation.fragment.NavHostFragment
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateScreen
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
+import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.ActivityMainBinding
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.util.PreferencesHelper
@@ -47,6 +48,7 @@ class MainActivity : BaseActivity() {
         intent?.let {
             if (it.action == Constance.NOTIFICATION_ACTION_EDITOR) {
 
+
                 val typeAudio = intent.getIntExtra(Constance.TYPE_RESULT, -1)
                 Log.d("TAG", "handleNotificationIntent  typeAudio: " + typeAudio)
                 if (typeAudio != -1) {
@@ -55,9 +57,15 @@ class MainActivity : BaseActivity() {
                     lifecycleScope.launchWhenResumed {
                         navigationHostFragment?.childFragmentManager?.primaryNavigationFragment?.let {
                             viewStateManager.goToMyStudioScreen(findNavController(R.id.app_nav_host_fragment), typeAudio, it)
+
+                            ManagerFactory.getAudioEditorManager()
+                                .refeshNotification()     // clear notification
                         }
                     }
                 }
+
+
+
             }
         }
     }

@@ -107,7 +107,7 @@ class ResultService : LifecycleService() {
     }
 
     private fun builderNotification(audioTitle: String) {           // build 1 notification
-        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(), PendingIntent.FLAG_ONE_SHOT)
+        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(), PendingIntent.FLAG_UPDATE_CURRENT)
 
         mBuilder = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
             .setSmallIcon(R.drawable.notification_icon).setContentTitle(audioTitle)
@@ -125,6 +125,10 @@ class ResultService : LifecycleService() {
         mBuilder.setContentText(getString(R.string.result_service_loading_fail))
             .setProgress(0, 0, false).setOngoing(false)
         manager.notify(notificationID, mBuilder.build())
+    }
+
+    fun refeshNotification() {
+        manager.cancelAll()
     }
 
     private fun sendNotification(notificationID: Int, data: Int, convertingState: ConvertingState) {        // send 1 notification
@@ -164,7 +168,7 @@ class ResultService : LifecycleService() {
 
     fun builderForegroundService(typeAudio: Int) {        // build foreground service
         TYPE_AUDIO = typeAudio
-        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(), PendingIntent.FLAG_CANCEL_CURRENT)
+        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(), PendingIntent.FLAG_UPDATE_CURRENT)
 
         val notification = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
             .setContentTitle(getString(R.string.result_service_content_title))

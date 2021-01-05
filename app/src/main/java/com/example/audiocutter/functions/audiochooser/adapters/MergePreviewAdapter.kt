@@ -24,13 +24,7 @@ import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
 import kotlinx.coroutines.launch
 
-class MergePreviewAdapter(
-    val mContext: Context,
-    val audioPlayer: AudioPlayer,
-    val lifecycleCoroutineScope: LifecycleCoroutineScope,
-    val activity: Activity
-) : ListAdapter<AudioCutterView, MergePreviewAdapter.MergeChooseHolder>(MergerChooserAudioDiff()),
-    OnItemTouchHelper {
+class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope, val activity: Activity) : ListAdapter<AudioCutterView, MergePreviewAdapter.MergeChooseHolder>(MergerChooserAudioDiff()), OnItemTouchHelper {
 
     //var listAudios = mutableListOf<AudioCutterView>()
     lateinit var mCallback: AudioMergeChooseListener
@@ -82,8 +76,7 @@ class MergePreviewAdapter(
             when (itemAudioFile.state) {
                 PlayerState.PLAYING -> {
                     if (checkValidGlide(bitmap)) {
-                        Glide.with(holder.itemView).load(bitmap)
-                            .into(holder.ivController)
+                        Glide.with(holder.itemView).load(bitmap).into(holder.ivController)
                     } else {
                         holder.ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
                     }
@@ -109,8 +102,7 @@ class MergePreviewAdapter(
                     holder.pgAudio.resetView()
 
                     if (checkValidGlide(bitmap)) {
-                        Glide.with(holder.itemView).load(bitmap)
-                            .into(holder.ivController)
+                        Glide.with(holder.itemView).load(bitmap).into(holder.ivController)
                     } else {
                         holder.ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -129,9 +121,7 @@ class MergePreviewAdapter(
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    inner class MergeChooseHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
-        View.OnClickListener, View.OnTouchListener, GestureDetector.OnGestureListener,
-        LifecycleOwner {
+    inner class MergeChooseHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnTouchListener, GestureDetector.OnGestureListener, LifecycleOwner {
 
         var ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)
         var tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_merge_choose_audio)
@@ -221,7 +211,7 @@ class MergePreviewAdapter(
                             val audioCutterView = getItem(adapterPosition)
                             if (audioCutterView.audioFile.getFilePath() == it.getFilePath()) {
                                 updatePlayInfor(playerInfo)
-                            }else {
+                            } else {
                                 resetItem(audioCutterView)
                             }
                         }
@@ -260,7 +250,7 @@ class MergePreviewAdapter(
                     pgAudio.resetView()
                 }
             }
-            if(itemAudioFile.currentPos>0){
+            if (itemAudioFile.currentPos > 0) {
                 pgAudio.post {
                     pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration, false)
                 }
@@ -271,8 +261,7 @@ class MergePreviewAdapter(
             when (itemAudioFile.state) {
                 PlayerState.PLAYING -> {
                     if (checkValidGlide(bitmap)) {
-                        Glide.with(itemView).load(bitmap)
-                            .into(ivController)
+                        Glide.with(itemView).load(bitmap).into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
                     }
@@ -283,8 +272,7 @@ class MergePreviewAdapter(
                 }
                 PlayerState.PAUSE -> {
                     if (checkValidGlide(bitmap)) {
-                        Glide.with(itemView).load(bitmap)
-                            .into(ivController)
+                        Glide.with(itemView).load(bitmap).into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -395,7 +383,7 @@ class MergePreviewAdapter(
 
 
         override fun onLongPress(p0: MotionEvent?) {
- /*           mTouchHelper.startDrag(this)*/
+            /*           mTouchHelper.startDrag(this)*/
             Log.d("nqm", "onLongPress: on longpress")
 
         }

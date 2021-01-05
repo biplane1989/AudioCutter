@@ -6,14 +6,17 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.contacts.objects.SelectItemStatus
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
+import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
 import com.example.audiocutter.util.Utils
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -28,7 +31,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     private var loadingStatus: MutableLiveData<Boolean> = MutableLiveData()
     private var isEmptyStatus: MutableLiveData<Boolean> = MutableLiveData()
     private var isChoseMusic: MutableLiveData<Boolean> = MutableLiveData()
-
+    private var isFisrtLoadData = true
     fun getLoadingStatus(): LiveData<Boolean> {
         return loadingStatus
     }
@@ -61,9 +64,15 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
 //                    loadingStatus.postValue(true)
                     // khi loading xong thi check co data hay khong de show man hinh empty data
                     if (!it.listAudioFiles.isEmpty()) {
-                        it.listAudioFiles.forEach { audioFile ->
-                            mListAudioFileView.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false))
-                        }
+
+//                        it.listAudioFiles.forEach { audioFile ->
+//                            mListAudioFileView.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false))
+//                        }
+//                        mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
+//                        loadingStatus.postValue(false)
+
+                        synchronizationData(it)
+
                         mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
                         loadingStatus.postValue(false)
 
@@ -71,15 +80,46 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
                         loadingStatus.postValue(false)
                         isEmptyStatus.postValue(true)
                     }
+                    if (isFisrtLoadData) {
+                        selectRingtone(fileUri)
+                    }
+                    isFisrtLoadData = false
+                    Log.d("TAG", "init: mListAudioFileView size: ${mListAudioFileView.size}")
+                    mAudioMediatorLiveData.postValue(mListAudioFileView)
                 }
-                selectRingtone(fileUri)
-                mAudioMediatorLiveData.postValue(mListAudioFileView)
-
             }
         }
     }
 
-    private fun selectRingtone(ringtonePath: String) {
+    private fun synchronizationData(audioFileScans: AudioFileScans) {
+        val resultListAudio = ArrayList<SelectItemView>()
+        val newListAudio = audioFileScans.listAudioFiles
+        var isInstance = false
+        if (mListAudioFileView.isEmpty()) {
+            newListAudio.forEach { audioFile ->
+                resultListAudio.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false))
+            }
+        } else {
+            for (newItem in newListAudio) {
+                isInstance = false
+                for (oldItem in mListAudioFileView) {
+                    if (TextUtils.equals(newItem.getFilePath(), oldItem.getFilePath())) {
+                        resultListAudio.add(oldItem)
+                        isInstance = true
+                        break
+                    }
+                }
+                if (!isInstance) {
+                    resultListAudio.add(SelectItemView(newItem, false, false, SelectItemStatus(), false))
+                }
+            }
+        }
+
+        mListAudioFileView.clear()
+        mListAudioFileView.addAll(resultListAudio)
+    }
+
+    fun selectRingtone(ringtonePath: String) {
         var index = 0
         for (item in mListAudioFileView) {
             if (TextUtils.equals(item.audioFile.uri.toString(), ringtonePath)) {
