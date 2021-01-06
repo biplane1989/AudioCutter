@@ -27,10 +27,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     private lateinit var mContext: Context
     private val TAG = "giangtd"
 
-    private val CUT_AUDIO = 0
-    private val MER_AUDIO = 1
-    private val MIX_AUDIO = 2
-    private var TYPE_AUDIO = -1
+//    private val CUT_AUDIO = 0
+//    private val MER_AUDIO = 1
+//    private val MIX_AUDIO = 2
+//    private var TYPE_AUDIO = -1
 
     private var mService: ResultService? = null
     private var mIsBound: Boolean = false
@@ -73,8 +73,8 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
                 it.percent = audioMering.percent
                 it.state = convertingState
-                it.typeAudio = TYPE_AUDIO
-                Log.d(TAG, "init: TYPE_AUDIO : " + it.typeAudio)
+//                it.typeAudio = TYPE_AUDIO
+//                Log.d(TAG, "init: TYPE_AUDIO : " + it.typeAudio)
                 notifyConvertingItemChanged(it)
                 Log.d(TAG, "currentProcessingItem init: percent: processItem " + it.percent + " status: " + it.state + " ID : " + it.id + " file name: " + it.getFileName())
             }
@@ -135,11 +135,11 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     private suspend fun processItem(item: ConvertingItem) = withContext(Dispatchers.Default) {      // thuc hien mix or mer or cut
 
         mainScope.launch {
-            item.typeAudio?.let {
-                TYPE_AUDIO = it
-                Log.d(TAG, "processItem: TYPE_AUDIO : " + it)
-                mService?.builderForegroundService(it)
-            }
+//            item.getAudioType().let {
+//                TYPE_AUDIO = it
+//                Log.d(TAG, "processItem: TYPE_AUDIO : " + it)
+                mService?.builderForegroundService(item.getAudioType())
+//            }
             notifyConvertingItemChanged(null)
             item.state = ConvertingState.PROGRESSING
             notifyConvertingItemChanged(item)
@@ -223,13 +223,13 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         if (!isMyServiceRunning(ResultService::class.java)) {
             notifyConvertingItemChanged(null)
             Intent(mContext, ResultService::class.java).also {
-                it.putExtra(Constance.TYPE_AUDIO, CUT_AUDIO)
+//                it.putExtra(Constance.TYPE_AUDIO, CUT_AUDIO)
                 mContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
                 Log.d(TAG, "bindService: ")
             }
         }
         currConvertingId++
-        val item = CuttingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile, cuttingConfig, audioFile, CUT_AUDIO)
+        val item = CuttingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile, cuttingConfig, audioFile)
         synchronized(listConvertingItemData) {
             listConvertingItemData.add(item)
             Utils.addGeneratedName(Folder.TYPE_CUTTER, File(cuttingConfig.pathFolder + File.separator + cuttingConfig.fileName))
@@ -249,13 +249,13 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         if (!isMyServiceRunning(ResultService::class.java)) {
             notifyConvertingItemChanged(null)
             Intent(mContext, ResultService::class.java).also {
-                it.putExtra(Constance.TYPE_AUDIO, MIX_AUDIO)
+//                it.putExtra(Constance.TYPE_AUDIO, MIX_AUDIO)
                 mContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
                 Log.d(TAG, "bindService: ")
             }
         }
         currConvertingId++
-        val item = MixingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile1, audioFile2, mixingConfig, null, MIX_AUDIO)
+        val item = MixingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile1, audioFile2, mixingConfig, null)
         synchronized(listConvertingItemData) {
             listConvertingItemData.add(item)
             Utils.addGeneratedName(Folder.TYPE_MIXER, File(mixingConfig.pathFolder + File.separator + mixingConfig.fileName))
@@ -276,13 +276,13 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         if (!isMyServiceRunning(ResultService::class.java)) {
             notifyConvertingItemChanged(null)
             Intent(mContext, ResultService::class.java).also {
-                it.putExtra(Constance.TYPE_AUDIO, MER_AUDIO)
+//                it.putExtra(Constance.TYPE_AUDIO, MER_AUDIO)
                 mContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
                 Log.d(TAG, "bindService: ")
             }
         }
         currConvertingId++
-        val item = MergingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, listAudioFiles, mergingConfig, null, MER_AUDIO)
+        val item = MergingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, listAudioFiles, mergingConfig, null)
         synchronized(listConvertingItemData) {
             listConvertingItemData.add(item)
             Utils.addGeneratedName(Folder.TYPE_MERGER, File(mergingConfig.pathFolder + File.separator + mergingConfig.fileName))

@@ -125,7 +125,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     override fun deleteAudio(audioFile: AudioCutterView) {
         try {
             sendFragmentAction(MergeChooserScreen::class.java.name, "ACTION_DELETE", audioFile)
-            ManagerFactory.getDefaultAudioPlayer().stop()
+//            ManagerFactory.getDefaultAudioPlayer().stop()
             val listAudio = audioMerModel.removeItemAudio(audioFile)
             if (listAudio.isNotEmpty()) {
                 audioMerAdapter.submitList(listAudio)

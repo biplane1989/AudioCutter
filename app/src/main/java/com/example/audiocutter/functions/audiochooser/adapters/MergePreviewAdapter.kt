@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
+import android.text.TextUtils
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
@@ -30,6 +31,8 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
     lateinit var mCallback: AudioMergeChooseListener
     lateinit var mTouchHelper: ItemTouchHelper
 
+    var playingStatus = PlayerState.IDLE
+    var filePathPlaying = ""
     fun setOnCallBack(event: AudioMergeChooseListener) {
         mCallback = event
     }
@@ -70,51 +73,112 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
             onBindViewHolder(holder, position)
         } else {
             val itemAudioFile = getItem(position)
-
-
             val bitmap = itemAudioFile.audioFile.bitmap
-            when (itemAudioFile.state) {
-                PlayerState.PLAYING -> {
-                    if (checkValidGlide(bitmap)) {
-                        Glide.with(holder.itemView).load(bitmap).into(holder.ivController)
-                    } else {
-                        holder.ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
-                    }
-                    holder.ivPausePlay.setImageResource(R.drawable.common_audio_item_play)
-                    holder.pgAudio.visibility = View.VISIBLE
-                    holder.waveView.visibility = View.VISIBLE
+//            when (itemAudioFile.state) {
+//                PlayerState.PLAYING -> {
+//                    if (checkValidGlide(bitmap)) {
+//                        Glide.with(holder.itemView).load(bitmap).into(holder.ivController)
+//                    } else {
+//                        holder.ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
+//                    }
+//                    holder.ivPausePlay.setImageResource(R.drawable.common_audio_item_play)
+//                    holder.pgAudio.visibility = View.VISIBLE
+//                    holder.waveView.visibility = View.VISIBLE
+//
+//                }
+//                PlayerState.PAUSE -> {
+//                    if (checkValidGlide(bitmap)) {
+//                        Glide.with(holder.itemView).load(bitmap)
+//
+//                            .into(holder.ivController)
+//                    } else {
+//                        holder.ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+//                    }
+//                    holder.ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+//                    holder.waveView.visibility = View.INVISIBLE
+//                }
+//                PlayerState.IDLE -> {
+//                    holder.pgAudio.visibility = View.GONE
+//                    holder.waveView.visibility = View.INVISIBLE
+//                    holder.pgAudio.resetView()
+//
+//                    if (checkValidGlide(bitmap)) {
+//                        Glide.with(holder.itemView).load(bitmap).into(holder.ivController)
+//                    } else {
+//                        holder.ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+//                    }
+//                    holder.ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+//
+//                }
+//                else -> {
+//                    //nothing
+//                }
+//            }
 
-                }
-                PlayerState.PAUSE -> {
-                    if (checkValidGlide(bitmap)) {
-                        Glide.with(holder.itemView).load(bitmap)
+//            if (TextUtils.equals(itemAudioFile.audioFile.getFilePath(), filePathPlaying)) {
+//                when (playingStatus) {
+//                    PlayerState.PLAYING -> {
+//
+//                    }
+//                    PlayerState.PAUSE -> {
+//                        holder.pgAudio.visibility = View.VISIBLE
+//                    }
+//                    PlayerState.IDLE -> {
+//
+//                    }
+//                }
+//            }
 
-                            .into(holder.ivController)
-                    } else {
-                        holder.ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
-                    }
-                    holder.ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
-                    holder.waveView.visibility = View.INVISIBLE
-                }
-                PlayerState.IDLE -> {
-                    holder.pgAudio.visibility = View.GONE
-                    holder.waveView.visibility = View.INVISIBLE
-                    holder.pgAudio.resetView()
-
-                    if (checkValidGlide(bitmap)) {
-                        Glide.with(holder.itemView).load(bitmap).into(holder.ivController)
-                    } else {
-                        holder.ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
-                    }
-                    holder.ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
-
-                }
-                else -> {
-                    //nothing
-                }
+            if (TextUtils.equals(itemAudioFile.audioFile.getFilePath(), filePathPlaying)) {
+                updateItem(playingStatus, holder, bitmap)
+            } else {
+                updateItem(itemAudioFile.state, holder, bitmap)
             }
         }
     }
+
+    fun updateItem(status: PlayerState, holder: MergeChooseHolder, bitmap: Bitmap?) {
+        when (status) {
+            PlayerState.PLAYING -> {
+                if (checkValidGlide(bitmap)) {
+                    Glide.with(holder.itemView).load(bitmap).into(holder.ivController)
+                } else {
+                    holder.ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
+                }
+                holder.ivPausePlay.setImageResource(R.drawable.common_audio_item_play)
+                holder.pgAudio.visibility = View.VISIBLE
+                holder.waveView.visibility = View.VISIBLE
+
+            }
+            PlayerState.PAUSE -> {
+                if (checkValidGlide(bitmap)) {
+                    Glide.with(holder.itemView).load(bitmap).into(holder.ivController)
+                } else {
+                    holder.ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+                }
+                holder.ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+                holder.waveView.visibility = View.INVISIBLE
+                holder.pgAudio.visibility = View.VISIBLE
+            }
+            PlayerState.IDLE -> {
+                holder.pgAudio.visibility = View.GONE
+                holder.waveView.visibility = View.INVISIBLE
+                holder.pgAudio.resetView()
+
+                if (checkValidGlide(bitmap)) {
+                    Glide.with(holder.itemView).load(bitmap).into(holder.ivController)
+                } else {
+                    holder.ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+                }
+                holder.ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+
+            }
+            else -> {
+                //nothing
+            }
+        }
+    }
+
 
     private fun checkValidGlide(bitmap: Bitmap?): Boolean {
         return (bitmap != null && !activity.isFinishing)
@@ -141,13 +205,16 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
 
         private var lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
         var playerState: PlayerState = PlayerState.IDLE
-
         override fun getLifecycle(): Lifecycle {
             return lifecycleRegistry
         }
 
         private fun updatePlayInfor(playerInfo: PlayerInfo) {
             playerState = playerInfo.playerState
+            Log.d("TAG", "updatePlayInfor: playerState: updatePlayInfor " + playerState)
+            playingStatus = playerInfo.playerState
+            Log.d("TAG", "onChanged: playing status: " + playerInfo.playerState)
+
             pgAudio.updatePG(playerInfo.posision.toLong(), playerInfo.duration.toLong())
             Log.d("giangtd123", "updatePlayInfor: pecent: " + playerInfo.posision.toLong() + "status: " + playerInfo.playerState)
 
@@ -155,13 +222,13 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
             val bitmap = itemAudioFile.audioFile.bitmap
             itemAudioFile.currentPos = playerInfo.posision.toLong()
             itemAudioFile.duration = playerInfo.duration.toLong()
+
+            filePathPlaying = playerInfo.currentAudio!!.getFilePath()
+
             when (playerInfo.playerState) {
                 PlayerState.PLAYING -> {
                     if (checkValidGlide(bitmap)) {
-                        Glide.with(itemView).load(bitmap)
-//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-//                                .toInt()))
-                            .into(ivController)
+                        Glide.with(itemView).load(bitmap).into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
                     }
@@ -171,10 +238,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 }
                 PlayerState.PAUSE -> {
                     if (checkValidGlide(bitmap)) {
-                        Glide.with(itemView).load(bitmap)
-//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-//                                .toInt()))
-                            .into(ivController)
+                        Glide.with(itemView).load(bitmap).into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -184,10 +248,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                 }
                 PlayerState.IDLE -> {
                     if (checkValidGlide(bitmap)) {
-                        Glide.with(itemView).load(bitmap)
-//                            .transform(RoundedCorners(Utils.convertDp2Px(12, itemView.context)
-//                                .toInt()))
-                            .into(ivController)
+                        Glide.with(itemView).load(bitmap).into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -195,6 +256,8 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                     waveView.visibility = View.INVISIBLE
                     pgAudio.resetView()
                     ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+
+                    filePathPlaying = ""
                 }
                 else -> {
                     //nothing
@@ -212,7 +275,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                             if (audioCutterView.audioFile.getFilePath() == it.getFilePath()) {
                                 updatePlayInfor(playerInfo)
                             } else {
-                                resetItem(audioCutterView)
+//                                resetItem(audioCutterView)
                             }
                         }
                     }
@@ -223,6 +286,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
         fun resetItem(audioCutterView: AudioCutterView) {
 
             playerState = PlayerState.IDLE
+            Log.d("TAG", "updatePlayInfor: playerState:  resetItem" + playerState)
             pgAudio.visibility = View.GONE
             waveView.visibility = View.INVISIBLE
             if (checkValidGlide(audioCutterView.audioFile.bitmap)) {
@@ -240,7 +304,9 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
 
         fun bind() {
             val itemAudioFile = getItem(adapterPosition)
-
+            if (audioPlayer.getPlayerInfoData().currentAudio?.getFilePath() == itemAudioFile.audioFile.getFilePath()) {
+                playerState = audioPlayer.getPlayerInfoData().playerState
+            }
             tvNameAudio.text = itemAudioFile.audioFile.fileName
             when (itemAudioFile.isCheckDistance) {
                 true -> {
@@ -285,9 +351,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                     waveView.visibility = View.INVISIBLE
 
                     if (checkValidGlide(bitmap)) {
-                        Glide.with(itemView).load(bitmap)
-
-                            .into(ivController)
+                        Glide.with(itemView).load(bitmap).into(ivController)
                     } else {
                         ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
                     }
@@ -311,6 +375,9 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
         private fun deleteAudio() {
             try {
                 mCallback.deleteAudio(getItem(adapterPosition))
+                if (getItem(adapterPosition).audioFile.getFilePath().equals(filePathPlaying)) {
+                    audioPlayer.stop()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -321,34 +388,20 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
             if (adapterPosition == -1) {
                 return
             }
-//            when (itemAudio.state) {
-//                PlayerState.IDLE -> {
-//                    mCallback.play(adapterPosition)
-//                }
-//                PlayerState.PAUSE -> {
-//                    mCallback.resume(adapterPosition)
-//                }
-//                PlayerState.PLAYING -> {
-//                    mCallback.pause(adapterPosition)
-//                }
-//            }
 
             when (playerState) {
                 PlayerState.IDLE -> {
-                    pgAudio.resetView()
+//                    pgAudio.resetView()
                     lifecycleCoroutineScope.launch {
                         pgAudio.resetView()
                         audioPlayer.play(itemAudio.audioFile)
                     }
-//                    mCallBack.play(adapterPosition)
                 }
                 PlayerState.PAUSE -> {
                     audioPlayer.resume()
-//                    mCallBack.resume(adapterPosition)
                 }
                 PlayerState.PLAYING -> {
                     audioPlayer.pause()
-//                    mCallBack.pause(adapterPosition)
                 }
                 else -> {
 
@@ -369,6 +422,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
         }
 
         override fun onShowPress(motionEvent: MotionEvent?) {
+            Log.d("nqm", "onShowPress: ")
         }
 
         override fun onSingleTapUp(motionEvent: MotionEvent?): Boolean {

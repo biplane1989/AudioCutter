@@ -121,7 +121,7 @@
                 android:paddingLeft="26dp"
                 android:text="Add File"
                 android:textColor="@color/colorBlack"
-                android:textSize="@dimen/d_18"
+                android:textSize="@dimen/d_14"
                 app:layout_constraintStart_toEndOf="@+id/iv_addfile_merge" />
 
 

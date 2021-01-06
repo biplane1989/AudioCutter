@@ -48,9 +48,9 @@ class MainActivity : BaseActivity() {
         intent?.let {
             if (it.action == Constance.NOTIFICATION_ACTION_EDITOR) {
 
-
                 val typeAudio = intent.getIntExtra(Constance.TYPE_RESULT, -1)
-                Log.d("TAG", "handleNotificationIntent  typeAudio: " + typeAudio)
+                val notificationId = intent.getIntExtra("notificationId", -6)
+                Log.d("TAG", "MainActivity  audio type : " + typeAudio + " notificationId ${notificationId}")
                 if (typeAudio != -1) {
                     val navigationHostFragment: NavHostFragment? = supportFragmentManager.findFragmentById(R.id.app_nav_host_fragment) as NavHostFragment?
 
@@ -63,9 +63,6 @@ class MainActivity : BaseActivity() {
                         }
                     }
                 }
-
-
-
             }
         }
     }
