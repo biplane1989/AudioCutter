@@ -108,7 +108,7 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
         val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar)
         val tvRingtone: TextView = itemView.findViewById(R.id.tv_ringtone)
         val tvRingtoneDefault: TextView = itemView.findViewById(R.id.tv_ringtone_default)
-        val cvDefault: CardView = itemView.findViewById(R.id.cv_default)
+        val tvDefault: TextView = itemView.findViewById(R.id.tv_default)
         val clItemContact: ConstraintLayout = itemView.findViewById(R.id.cl_item_contact)
         val llRingToneDefault: LinearLayout = itemView.findViewById(R.id.ll_ringtone_default)
 
