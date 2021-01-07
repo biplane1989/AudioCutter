@@ -16,28 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- <androidx.cardview.widget.CardView
-                 android:id="@+id/iv_avatar"
-                 android:layout_width="@dimen/d_40"
-                 android:layout_height="@dimen/d_40"
-                 android:layout_marginLeft="16dp"
-
-                 app:cardBackgroundColor="#C4C6D2"
-                 app:cardCornerRadius="4dp"
-                 app:layout_constraintBottom_toBottomOf="parent"
-                 app:layout_constraintStart_toStartOf="parent"
-                 app:layout_constraintTop_toTopOf="parent">
-
-                 <ImageView
-                     android:id="@+id/iv_avatar_music"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:layout_gravity="center"
-                     android:scaleType="centerInside"
-                     android:src="@drawable/my_studio_item_icon_music" />
-             </androidx.cardview.widget.CardView>-->
-
-
             <ImageView
                 android:id="@+id/iv_avatar"
                 android:layout_width="@dimen/common_size_item_imagview"
@@ -55,14 +33,13 @@
                 android:layout_height="0dp"
                 android:layout_marginLeft="@dimen/common_size_item_padding_left"
                 android:ellipsize="end"
-                android:fontFamily="@font/opensans_bold"
+                android:fontFamily="@font/opensans_semibold"
                 android:gravity="bottom"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:text="orangeorangeorangeorangeorangeorangeorangeorange"
                 android:textColor="#2E3041"
                 android:textSize="@dimen/d_16"
-                android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/tv_wait"
                 app:layout_constraintEnd_toStartOf="@+id/iv_cancel"
                 app:layout_constraintStart_toEndOf="@+id/iv_avatar"
@@ -73,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_marginLeft="@dimen/common_size_item_padding_left"
-                android:fontFamily="@font/opensans_light"
+                android:fontFamily="@font/opensans_regular"
                 android:gravity="top"
                 android:text="Wait..."
                 android:textColor="#9C9C9C"

@@ -3,10 +3,8 @@ package com.example.audiocutter.functions.resultscreen.services
 import android.app.PendingIntent
 import android.content.Intent
 import android.os.Binder
-import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
@@ -16,11 +14,7 @@ import com.example.audiocutter.R
 import com.example.audiocutter.activities.MainActivity
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.functions.resultscreen.objects.ConvertingItem
-import com.example.audiocutter.functions.resultscreen.objects.ConvertingState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.example.audiocutter.functions.resultscreen.objects.*
 
 class ResultService : LifecycleService() {
 
@@ -36,9 +30,10 @@ class ResultService : LifecycleService() {
         if (it != null) {
             when (it.state) {
                 ConvertingState.PROGRESSING -> {
-                     sendNotification(serviceForegroundID, it.percent, it.state, it.getFileName(), it.getAudioType())
+                    sendNotificationConverting(serviceForegroundID, it.percent, it.state, it.getFileName(), it.getAudioType())
                 }
                 ConvertingState.SUCCESS -> {
+                    Log.d(TAG, "processObserver: SUCCESS")
                     sendNotificationComplte(it.id, it.getFileName(), it.getAudioType())
                 }
                 ConvertingState.ERROR -> {
@@ -64,8 +59,6 @@ class ResultService : LifecycleService() {
 
     override fun onBind(intent: Intent): IBinder? {
         super.onBind(intent)
-
-
         return mBinder
     }
 
@@ -89,42 +82,66 @@ class ResultService : LifecycleService() {
         stopForeground(true)
     }
 
-    private fun resultIntent(notificationId: Int, typeAudio: Int): Intent {
-        val intent = Intent(this, MainActivity::class.java).apply {
-//            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-//            setFlags(flags)
-            setAction(Constance.NOTIFICATION_ACTION_EDITOR)
-            putExtra(Constance.TYPE_RESULT, typeAudio)
-            putExtra("notificationId", notificationId)
-        }
-
-        return intent
-    }
-
-    private fun builderNotification(notificationId: Int, audioTitle: String, typeAudio: Int): NotificationCompat.Builder {
-        // build 1 notification
-        val intent = resultIntent(notificationId, typeAudio)
-        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        Log.d(TAG, "builderNotification: ${resultPendingIntent}")
-        return NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
-            .setSmallIcon(R.drawable.notification_icon).setContentTitle(audioTitle)
-            .setContentText(strContent).setOngoing(true).setContentIntent(resultPendingIntent)
-            .setOnlyAlertOnce(true).setProgress(progressMax, 0, true).setAutoCancel(true)
-    }
-
     private fun sendNotificationComplte(notificationID: Int, audioTitle: String, typeAudio: Int) {          // send 1 notification khi hoan thanh
         Log.d("taihhhhh", "sendNotificationComplte notificationID ${notificationID} audio type : ${typeAudio}")
-        val builder = builderNotification(notificationID, audioTitle, typeAudio)
-        builder.setContentText(getString(R.string.result_sercice_loading_complete))
-            .setProgress(0, 0, false).setOngoing(false)
+        when (typeAudio) {
+            CUTTING_AUDIO_TYPE -> {
+                buildNotificationComplete(Constance.NOTIFICATION_ACTION_EDITOR_COMPLETE_CUT, Constance.TYPE_RESULT_COMPLETE_CUT, typeAudio, notificationID, audioTitle)
+            }
+            MERGING_AUDIO_TYPE -> {
+                buildNotificationComplete(Constance.NOTIFICATION_ACTION_EDITOR_COMPLETE_MERGER, Constance.TYPE_RESULT_COMPLETE_MERGER, typeAudio, notificationID, audioTitle)
+            }
+            MIXING_AUDIO_TYPE -> {
+                buildNotificationComplete(Constance.NOTIFICATION_ACTION_EDITOR_COMPLETE_MIX, Constance.TYPE_RESULT_COMPLETE_MIX, typeAudio, notificationID, audioTitle)
+            }
+        }
+    }
+
+    private fun buildNotificationComplete(action: String, typeAction: String, typeAudio: Int, notificationID: Int, audioTitle: String) {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            setAction(action)
+            putExtra(typeAction, typeAudio)
+        }
+        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val builder = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
+            .setSmallIcon(R.drawable.notification_icon).setContentTitle(audioTitle)
+            .setContentText(getString(R.string.result_sercice_loading_complete)).setOngoing(true)
+            .setContentIntent(resultPendingIntent).setOnlyAlertOnce(true).setProgress(0, 0, false)
+            .setOngoing(false).setAutoCancel(true)
         manager.notify(notificationID, builder.build())
     }
 
-    private fun sendNotificationFail(notificationID: Int, audioTitle: String, typeAudio: Int) {
 
-        val builder = builderNotification(notificationID, audioTitle, typeAudio)
-        builder.setContentText(getString(R.string.result_service_loading_fail))
-            .setProgress(0, 0, false).setOngoing(false)
+    private fun sendNotificationFail(notificationID: Int, audioTitle: String, typeAudio: Int) {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            setAction(Constance.NOTIFICATION_ACTION_EDITOR_FAIL)
+            putExtra(Constance.TYPE_RESULT_FAIL, typeAudio)
+        }
+        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val builder = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
+            .setSmallIcon(R.drawable.notification_icon).setContentTitle(audioTitle)
+            .setContentText(getString(R.string.result_service_loading_fail)).setOngoing(true)
+            .setContentIntent(resultPendingIntent).setOnlyAlertOnce(true).setProgress(0, 0, false)
+            .setOngoing(false).setAutoCancel(true)
+        manager.notify(notificationID, builder.build())
+    }
+
+
+    private fun sendNotificationConverting(notificationID: Int, data: Int, convertingState: ConvertingState, audioTitle: String, typeAudio: Int) {        // send 1 notification
+
+        val intent = Intent(this, MainActivity::class.java).apply {
+            setAction(Constance.NOTIFICATION_ACTION_EDITOR_CONVERTING)
+            putExtra(Constance.TYPE_RESULT_CONVERTING, typeAudio)
+        }
+        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val builder = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
+            .setSmallIcon(R.drawable.notification_icon).setContentTitle(audioTitle)
+            .setContentText(data.toString() + "%").setOngoing(true)
+            .setContentIntent(resultPendingIntent).setOnlyAlertOnce(true)
+            .setProgress(progressMax, data, false).setOngoing(false).setAutoCancel(true)
         manager.notify(notificationID, builder.build())
     }
 
@@ -132,37 +149,17 @@ class ResultService : LifecycleService() {
         manager.cancelAll()
     }
 
-    private fun sendNotification(notificationID: Int, data: Int, convertingState: ConvertingState, audioTitle: String, typeAudio: Int) {        // send 1 notification
-
-        val builder = builderNotification(notificationID, audioTitle, typeAudio)
-        when (convertingState) {
-            ConvertingState.PROGRESSING -> {
-                builder.setContentText(data.toString() + "%").setProgress(progressMax, data, false)
-            }
-            ConvertingState.SUCCESS -> {
-//                mBuilder.setContentText(getString(R.string.result_service_loading_complete))
-//                    .setProgress(0, 0, false).setOngoing(false)
-            }
-            ConvertingState.ERROR -> {
-//                mBuilder.setContentText(getString(R.string.result_service_loading_fail))
-//                    .setProgress(0, 0, false).setOngoing(false)
-            }
-            else -> {
-                //nothing
-            }
-        }
-        manager.notify(notificationID, builder.build())
-    }
-
     fun builderForegroundService(typeAudio: Int) {        // build foreground service
-        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(serviceForegroundID, typeAudio), PendingIntent.FLAG_UPDATE_CURRENT)
+//        val resultPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, resultIntent(serviceForegroundID, typeAudio), PendingIntent.FLAG_UPDATE_CURRENT)
 
-        Log.d(TAG, "builderForegroundService: ${resultPendingIntent}")
+//        Log.d(TAG, "builderForegroundService: ${resultPendingIntent}")
+
         val notification = NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
             .setContentTitle(getString(R.string.result_service_content_title))
             .setSmallIcon(R.drawable.notification_icon).setContentText(strContent)
-            .setContentIntent(resultPendingIntent).setOngoing(true).setOnlyAlertOnce(true)
-            .setProgress(progressMax, 0, true).setAutoCancel(true).build()
+//            .setContentIntent(resultPendingIntent).setOngoing(true).setOnlyAlertOnce(true)
+            .setOngoing(true).setOnlyAlertOnce(true).setProgress(progressMax, 0, true)
+            .setAutoCancel(true).build()
 
         startForeground(serviceForegroundID, notification)
     }

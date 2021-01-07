@@ -38,7 +38,7 @@
                     android:paddingHorizontal="@dimen/d_16"
                     android:fontFamily="@font/opensans_bold"
                     android:gravity="center"
-                    android:text="Language"
+                    android:text="@string/setting_screen_language"
                     android:textColor="#2E3041"
                     android:textSize="@dimen/text_size_header"
                     android:textStyle="bold" />
@@ -62,7 +62,7 @@
                     android:paddingVertical="@dimen/margin_item_dialog"
                     android:fontFamily="@font/opensans_regular"
                     android:shadowColor="#FDAA74"
-                    android:text="Viet Nam"
+                    android:text="@string/setting_screen_vn"
                     android:textSize="@dimen/text_size_edt" />
 
                 <RadioButton

@@ -31,7 +31,6 @@
                     android:layout_width="@dimen/d_70"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_item_dialog"
-
                     android:fontFamily="@font/opensans_regular"
                     android:text="@string/dialog_advanced_fade_in"
                     android:textColor="@color/dialog_advanced_title_fade_color"

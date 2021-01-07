@@ -220,4 +220,6 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="share_with_dialog_appshare">Share with</string>
     <string name="rule_amout_item_mer">You need to select 2 or more files</string>
     <string name="set_contact_ok">OK</string>
+    <string name="setting_screen_language">Language</string>
+    <string name="setting_screen_vn">Viet Nam</string>
 </resources>

@@ -85,7 +85,7 @@
                     android:singleLine="true"
                     android:text="Audio Name"
                     android:textColor="@color/colorBlack"
-                    android:textSize="@dimen/d_18" />
+                    android:textSize="@dimen/d_16" />
 
 
             </LinearLayout>

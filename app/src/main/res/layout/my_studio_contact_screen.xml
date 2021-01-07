@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         paddingTopSystemWindowInsets="@{true}"
@@ -139,6 +140,7 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_list_contact"
+                tools:listitem="@layout/my_studio_contact_item_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>

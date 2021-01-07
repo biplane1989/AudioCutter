@@ -12,32 +12,20 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.Options
-import com.bumptech.glide.load.resource.bitmap.CenterInside
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.util.Util
 import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.ui.common.glide.RoundedCornersTransformation
 import com.example.audiocutter.util.Utils
 import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 
 interface SelectAudioScreenCallback {
     fun isShowPlayingAudio(filePath: String)
@@ -98,6 +86,13 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 } else {
                     holder.ivSelect.setImageResource(R.drawable.list_contact_unselect)
                 }
+
+                if (newItem.isRingtoneDefault) {
+                    holder.tvRingtoneDefault.visibility = View.VISIBLE
+                } else {
+                    holder.tvRingtoneDefault.visibility = View.GONE
+                }
+
             }
         }
     }
@@ -135,6 +130,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         val llAudioHeader: ConstraintLayout = itemView.findViewById(R.id.ll_audio_item_header)
         val llItem: LinearLayout = itemView.findViewById(R.id.ll_item)
         val ivSelect: ImageView = itemView.findViewById(R.id.iv_select)
+        val tvRingtoneDefault: TextView = itemView.findViewById(R.id.tv_default_song_ringtone)
 
         private var timeFomat = 0
         private var isFirstPlayMusic = true
@@ -268,6 +264,12 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
                 ivSelect.setImageResource(R.drawable.list_contact_select)
             } else {
                 ivSelect.setImageResource(R.drawable.list_contact_unselect)
+            }
+
+            if (selectItemView.isRingtoneDefault) {
+                tvRingtoneDefault.visibility = View.VISIBLE
+            } else {
+                tvRingtoneDefault.visibility = View.GONE
             }
 
             llAudioHeader.setOnClickListener(this)

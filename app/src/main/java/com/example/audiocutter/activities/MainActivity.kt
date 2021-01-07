@@ -14,6 +14,9 @@ import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.ActivityMainBinding
 import com.example.audiocutter.functions.mystudio.Constance
+import com.example.audiocutter.functions.resultscreen.objects.CUTTING_AUDIO_TYPE
+import com.example.audiocutter.functions.resultscreen.objects.MERGING_AUDIO_TYPE
+import com.example.audiocutter.functions.resultscreen.objects.MIXING_AUDIO_TYPE
 import com.example.audiocutter.util.PreferencesHelper
 
 
@@ -46,22 +49,58 @@ class MainActivity : BaseActivity() {
     private fun handleNotificationIntent(intent: Intent?) {
 
         intent?.let {
-            if (it.action == Constance.NOTIFICATION_ACTION_EDITOR) {
+            when (it.action) {
+                Constance.NOTIFICATION_ACTION_EDITOR_CONVERTING -> {
+                    val typeAudio = intent.getIntExtra(Constance.TYPE_RESULT_CONVERTING, -1)
+                    val notificationId = intent.getIntExtra("notificationId", -6)
+                    Log.d("TAG", "MainActivity  audio type converting : " + typeAudio + " notificationId ${notificationId}")
+                    gotoScreen(typeAudio)
+                }
 
-                val typeAudio = intent.getIntExtra(Constance.TYPE_RESULT, -1)
-                val notificationId = intent.getIntExtra("notificationId", -6)
-                Log.d("TAG", "MainActivity  audio type : " + typeAudio + " notificationId ${notificationId}")
-                if (typeAudio != -1) {
-                    val navigationHostFragment: NavHostFragment? = supportFragmentManager.findFragmentById(R.id.app_nav_host_fragment) as NavHostFragment?
+                Constance.NOTIFICATION_ACTION_EDITOR_FAIL -> {
+                    val typeAudio = intent.getIntExtra(Constance.TYPE_RESULT_FAIL, -1)
+                    val notificationId = intent.getIntExtra("notificationId", -6)
+                    Log.d("TAG", "MainActivity  audio type fail: " + typeAudio + " notificationId ${notificationId}")
+                    gotoScreen(typeAudio)
+                }
 
-                    lifecycleScope.launchWhenResumed {
-                        navigationHostFragment?.childFragmentManager?.primaryNavigationFragment?.let {
-                            viewStateManager.goToMyStudioScreen(findNavController(R.id.app_nav_host_fragment), typeAudio, it)
+                Constance.NOTIFICATION_ACTION_EDITOR_COMPLETE_CUT -> {
 
-                            ManagerFactory.getAudioEditorManager()
-                                .refeshNotification()     // clear notification
-                        }
-                    }
+                    val typeAudio = intent.getIntExtra(Constance.TYPE_RESULT_COMPLETE_CUT, -1)
+                    val notificationId = intent.getIntExtra("notificationId", -6)
+                    Log.d("TAG", "MainActivity  audio type complete: " + typeAudio + " notificationId ${notificationId}")
+                    gotoScreen(CUTTING_AUDIO_TYPE)
+                }
+                Constance.NOTIFICATION_ACTION_EDITOR_COMPLETE_MERGER -> {
+
+                    val typeAudio = intent.getIntExtra(Constance.TYPE_RESULT_COMPLETE_MERGER, -1)
+                    val notificationId = intent.getIntExtra("notificationId", -6)
+                    Log.d("TAG", "MainActivity  audio type complete: " + typeAudio + " notificationId ${notificationId}")
+                    gotoScreen(MERGING_AUDIO_TYPE)
+                }
+                Constance.NOTIFICATION_ACTION_EDITOR_COMPLETE_MIX -> {
+                    val typeAudio = intent.getIntExtra(Constance.TYPE_RESULT_COMPLETE_MIX, -1)
+                    val notificationId = intent.getIntExtra("notificationId", -6)
+                    Log.d("TAG", "MainActivity  audio type complete: " + typeAudio + " notificationId ${notificationId}")
+                    gotoScreen(MIXING_AUDIO_TYPE)
+                }
+                else -> {
+                    //no thing
+                }
+            }
+        }
+    }
+
+    fun gotoScreen(typeAudio: Int) {
+        if (typeAudio != -1) {
+            val navigationHostFragment: NavHostFragment? = supportFragmentManager.findFragmentById(R.id.app_nav_host_fragment) as NavHostFragment?
+
+            lifecycleScope.launchWhenResumed {
+                navigationHostFragment?.childFragmentManager?.primaryNavigationFragment?.let {
+                    viewStateManager.goToMyStudioScreen(findNavController(R.id.app_nav_host_fragment), typeAudio, it)
+
+                    ManagerFactory.getAudioEditorManager()
+                        .refeshNotification()     // clear notification
                 }
             }
         }

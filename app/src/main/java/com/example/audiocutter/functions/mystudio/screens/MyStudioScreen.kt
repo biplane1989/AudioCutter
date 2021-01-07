@@ -477,29 +477,22 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
         when (type) {
             Constance.RINGTONE_TYPE -> {
                 if (myStudioViewModel.setRingTone(uri)) {
-
                     showNotification(getString(R.string.result_screen_set_ringtone_successful))
                 } else {
-
                     showNotification(getString(R.string.result_screen_set_ringtone_fail))
                 }
             }
             Constance.ALARM_TYPE -> {
                 if (myStudioViewModel.setAlarm(uri)) {
-
                     showNotification(getString(R.string.result_screen_set_alarm_successful))
-
                 } else {
-
                     showNotification(getString(R.string.result_screen_set_alarm_fail))
                 }
             }
             Constance.NOTIFICATION_TYPE -> {
                 if (myStudioViewModel.setNotification(uri)) {
-
                     showNotification(getString(R.string.result_screen_set_notification_successful))
                 } else {
-
                     showNotification(getString(R.string.result_screen_set_notification_fail))
                 }
             }

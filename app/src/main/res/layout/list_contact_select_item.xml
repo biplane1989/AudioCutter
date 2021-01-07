@@ -29,16 +29,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/roundedCornersImageView" />
 
-        <!--        <ImageView-->
-        <!--            android:id="@+id/cv_avatar"-->
-        <!--            android:layout_width="@dimen/common_size_item_imagview"-->
-        <!--            android:layout_height="@dimen/common_size_item_imagview"-->
-        <!--            android:layout_marginStart="@dimen/common_padding_left"-->
-        <!--            android:scaleType="fitXY"-->
-        <!--            android:src="@drawable/my_studio_item_ic_avatar"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toTopOf="parent" />-->
 
         <TextView
             android:id="@+id/tv_title_music"
@@ -70,10 +60,23 @@
             app:layout_constraintTop_toBottomOf="@id/tv_title_music">
 
             <TextView
+                android:id="@+id/tv_default_song_ringtone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/bg_ringtone_default"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:text="Default"
+                android:textColor="@color/colorWhite"
+                android:textSize="12dp"
+                android:visibility="gone" />
+
+            <TextView
                 android:id="@+id/tv_info_music"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/opensans_light"
+                android:fontFamily="@font/opensans_regular"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:text="apple apple apple apple apple apple apple apple apple "
@@ -119,9 +122,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:progressTint="#FDAA74"
             android:maxHeight="@dimen/d_3"
             android:progressDrawable="@drawable/seekbar_style"
+            android:progressTint="#FDAA74"
             android:thumb="@drawable/bg_thum_sb"
             android:thumbTint="#FDAA74" />
 

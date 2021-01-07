@@ -47,7 +47,8 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     private lateinit var audioCutterModel: CutChooserViewModel
     private val REQ_CODE_PICK_SOUNDFILE = 1989
     private lateinit var dialog: SetAsDialog
-    private lateinit var dialogDone: SetAsDoneDialog
+
+    //    private lateinit var dialogDone: SetAsDoneDialog
     private lateinit var audioCutterItem: AudioCutterView
     private var pendingRequestingPermission = 0
     private val CUT_CHOOSE_REQUESTING_PERMISSION = 1 shl 5
@@ -122,15 +123,8 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        audioCutterModel =
-            ViewModelProvider(this).get(CutChooserViewModel::class.java)
-        audioCutterAdapter =
-            CutChooserAdapter(
-                requireContext(),
-                audioCutterModel.getAudioPlayer(),
-                lifecycleScope,
-                requireActivity()
-            )
+        audioCutterModel = ViewModelProvider(this).get(CutChooserViewModel::class.java)
+        audioCutterAdapter = CutChooserAdapter(requireContext(), audioCutterModel.getAudioPlayer(), lifecycleScope, requireActivity())
 //        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
@@ -217,7 +211,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         binding.ivCutterScreenBackEdt.setOnClickListener(this)
         binding.ivCutterScreenClose.setOnClickListener(this)
         dialog = SetAsDialog(requireContext())
-        dialogDone = SetAsDoneDialog(requireContext())
+//        dialogDone = SetAsDoneDialog(requireContext())
         audioCutterAdapter.setAudioCutterListtener(this)
 
     }
@@ -347,13 +341,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     }
 
     override fun onCutItemClicked(itemAudio: AudioCutterView) {
-            audioCutterModel.stop()
+        audioCutterModel.stop()
         if (itemAudio.audioFile.duration < Constance.MIN_DURATION) {
-            val dialogSnack = Snackbar.make(
-                requireView(),
-                getString(R.string.notification_file_was_short_mystudio_screen),
-                Snackbar.LENGTH_SHORT
-            )
+            val dialogSnack = Snackbar.make(requireView(), getString(R.string.notification_file_was_short_mystudio_screen), Snackbar.LENGTH_SHORT)
             dialogSnack.show()
         } else {
             previousStatus()
@@ -376,14 +366,30 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         when (typeAudioSetAs) {
 
             TypeAudioSetAs.RINGTONE -> {
-                rs = ManagerFactory.getRingtonManager().setRingTone(audioCutterItem.audioFile)
+
+                if (ManagerFactory.getRingtonManager().setRingTone(audioCutterItem.audioFile)) {
+                    showNotification(getString(R.string.result_screen_set_ringtone_successful))
+                } else {
+                    showNotification(getString(R.string.result_screen_set_ringtone_fail))
+                }
+                dialog.dismiss()
             }
             TypeAudioSetAs.ALARM -> {
-                rs = ManagerFactory.getRingtonManager().setAlarmManager(audioCutterItem.audioFile)
+                if (ManagerFactory.getRingtonManager().setAlarmManager(audioCutterItem.audioFile)) {
+                    showNotification(getString(R.string.result_screen_set_alarm_successful))
+                } else {
+                    showNotification(getString(R.string.result_screen_set_alarm_fail))
+                }
+                dialog.dismiss()
             }
             TypeAudioSetAs.NOTIFICATION -> {
-                rs = ManagerFactory.getRingtonManager()
-                    .setNotificationSound(audioCutterItem.audioFile)
+                if (ManagerFactory.getRingtonManager()
+                        .setNotificationSound(audioCutterItem.audioFile)) {
+                    showNotification(getString(R.string.result_screen_set_notification_successful))
+                } else {
+                    showNotification(getString(R.string.result_screen_set_notification_fail))
+                }
+                dialog.dismiss()
             }
             else -> {
                 filePathAudio?.let {
@@ -393,11 +399,18 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
                 }
             }
         }
-        if (rs) {
-            dialog.dismiss()
-            dialogDone.show(childFragmentManager, SetAsDoneDialog::class.java.name)
-        }
+//        if (rs) {
+//            dialog.dismiss()
+//            dialogDone.show(childFragmentManager, SetAsDoneDialog::class.java.name)
+//            showNotification(getString(R.string.my_studio_rename_audio_file_successfull))
+//        }
 
+    }
+
+    private fun showNotification(text: String) {
+        view?.let {
+            Snackbar.make(it, text, Snackbar.LENGTH_LONG).show()
+        }
     }
 
     override fun onClick(view: View) {
@@ -474,11 +487,8 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
                     if (audio.duration > Constance.MIN_DURATION) {
                         viewStateManager.onCuttingItemClicked(this, AudioCutterView(audio))
                     } else {
-                        Snackbar.make(
-                            requireView(),
-                            getString(R.string.notification_file_was_short_mystudio_screen),
-                            Snackbar.LENGTH_SHORT
-                        ).show()
+                        Snackbar.make(requireView(), getString(R.string.notification_file_was_short_mystudio_screen), Snackbar.LENGTH_SHORT)
+                            .show()
                     }
                 }
 

@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.contacts.screens
 
 import android.app.Application
+import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -92,12 +93,19 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     }
 
     private fun synchronizationData(audioFileScans: AudioFileScans) {
+
+        val uriRingtoneDefault = Utils.getUriRingtoneDefault(mContext)
         val resultListAudio = ArrayList<SelectItemView>()
         val newListAudio = audioFileScans.listAudioFiles
         var isInstance = false
         if (mListAudioFileView.isEmpty()) {
             newListAudio.forEach { audioFile ->
-                resultListAudio.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false))
+                if (TextUtils.equals(Uri.parse(audioFile.getFilePath())
+                        .toString(), uriRingtoneDefault)) {
+                    resultListAudio.add(SelectItemView(audioFile, false, false, SelectItemStatus(), true))
+                } else {
+                    resultListAudio.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false))
+                }
             }
         } else {
             for (newItem in newListAudio) {
@@ -110,7 +118,13 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
                     }
                 }
                 if (!isInstance) {
-                    resultListAudio.add(SelectItemView(newItem, false, false, SelectItemStatus(), false))
+                    if (TextUtils.equals(Uri.parse(newItem.getFilePath())
+                            .toString(), uriRingtoneDefault)) {
+                        resultListAudio.add(SelectItemView(newItem, false, false, SelectItemStatus(), true))
+                    } else {
+                        resultListAudio.add(SelectItemView(newItem, false, false, SelectItemStatus(), false))
+                    }
+//                    resultListAudio.add(SelectItemView(newItem, false, false, SelectItemStatus(), false))
                 }
             }
         }

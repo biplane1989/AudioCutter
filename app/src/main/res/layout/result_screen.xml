@@ -131,7 +131,7 @@
                     android:layout_marginLeft="@dimen/common_size_item_padding_left"
                     android:layout_marginRight="16dp"
                     android:ellipsize="end"
-                    android:fontFamily="@font/opensans_bold"
+                    android:fontFamily="@font/opensans_semibold"
                     android:gravity="top"
                     android:maxLines="1"
                     android:textColor="#2E3041"
@@ -156,7 +156,7 @@
                         android:id="@+id/tv_info_music"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_light"
+                        android:fontFamily="@font/opensans_regular"
                         android:gravity="bottom"
                         android:textColor="#9C9C9C"
                         android:textSize="14dp" />

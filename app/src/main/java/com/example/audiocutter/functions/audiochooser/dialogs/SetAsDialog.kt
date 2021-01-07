@@ -24,12 +24,9 @@ class SetAsDialog(val mContext: Context) : DialogFragment(), View.OnClickListene
         setStyle(STYLE_NORMAL, R.style.DialogGray)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        rootView = LayoutInflater.from(mContext).inflate(R.layout.cutchooser_setas_dialog, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        rootView = LayoutInflater.from(mContext)
+            .inflate(R.layout.cutchooser_setas_dialog, container, false)
         initViews()
         return rootView
     }
@@ -66,12 +63,12 @@ class SetAsDialog(val mContext: Context) : DialogFragment(), View.OnClickListene
     }
 
     private fun setAsAudioFile() {
-        if (typeSet == null) {
-            Toast.makeText(context, "please enter choose", Toast.LENGTH_SHORT).show()
-        } else {
-            Log.d("TAG", "setAsAudioFile: ${typeSet.name}")
-            mCallback.setAsTypeAudio(typeSet)
-        }
+//        if (typeSet == null) {
+//            Toast.makeText(context, "please enter choose", Toast.LENGTH_SHORT).show()
+//        } else {
+        Log.d("TAG", "setAsAudioFile: ${typeSet.name}")
+        mCallback.setAsTypeAudio(typeSet)
+//        }
     }
 
     interface setAsListener {
