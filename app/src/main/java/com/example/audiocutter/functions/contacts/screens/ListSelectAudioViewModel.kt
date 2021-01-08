@@ -100,12 +100,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         var isInstance = false
         if (mListAudioFileView.isEmpty()) {
             newListAudio.forEach { audioFile ->
-                if (TextUtils.equals(Uri.parse(audioFile.getFilePath())
-                        .toString(), uriRingtoneDefault)) {
-                    resultListAudio.add(SelectItemView(audioFile, false, false, SelectItemStatus(), true))
-                } else {
-                    resultListAudio.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false))
-                }
+                resultListAudio.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false))
             }
         } else {
             for (newItem in newListAudio) {
@@ -118,13 +113,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
                     }
                 }
                 if (!isInstance) {
-                    if (TextUtils.equals(Uri.parse(newItem.getFilePath())
-                            .toString(), uriRingtoneDefault)) {
-                        resultListAudio.add(SelectItemView(newItem, false, false, SelectItemStatus(), true))
-                    } else {
-                        resultListAudio.add(SelectItemView(newItem, false, false, SelectItemStatus(), false))
-                    }
-//                    resultListAudio.add(SelectItemView(newItem, false, false, SelectItemStatus(), false))
+                    resultListAudio.add(SelectItemView(newItem, false, false, SelectItemStatus(), false))
                 }
             }
         }

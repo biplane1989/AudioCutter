@@ -67,8 +67,8 @@ class AudioCutterImpl : AudioCutter {
         }
     }
 
-    override suspend fun cut(audioFile: AudioCore, audioCutConfig: AudioCutConfig): AudioCore {
-        withContext(Dispatchers.Default) {
+    override suspend fun cut(audioFile: AudioCore, audioCutConfig: AudioCutConfig): AudioCore? {
+        return withContext(Dispatchers.Default) {
             updateItemLiveData(audioFile, 0, FFMpegState.IDE)
             timeVideo = (audioCutConfig.endPosition * 1000).toLong()
             val mimeType = if (audioCutConfig.format == AudioFormat.MP3) AudioFormat.MP3.type else AudioFormat.AAC.type
@@ -88,16 +88,18 @@ class AudioCutterImpl : AudioCutter {
                 Config.RETURN_CODE_CANCEL -> {
                     updateItemLiveData(audioFileCore, 0, FFMpegState.CANCEL)
                     FileUtil.deleteFile(fileCutPath)
+                    return@withContext null
                 }
                 else -> {
                     Log.e(Config.TAG, String.format("Async command execution failed with rc=%d.", returnCode))
 
                     updateItemLiveData(audioFileCore, 0, FFMpegState.FAIL)
+                    return@withContext null
                 }
             }
         }
 
-        return audioFileCore
+
     }
 
     private fun getStringFormat(audioCutConfig: AudioCutConfig, audioFile: AudioCore, fileCutPath: String): String {
@@ -113,8 +115,8 @@ class AudioCutterImpl : AudioCutter {
         }
     }
 
-    override suspend fun mix(audioFile1: AudioCore, audioFile2: AudioCore, audioMixConfig: AudioMixConfig): AudioCore {
-        withContext(Dispatchers.Default) {
+    override suspend fun mix(audioFile1: AudioCore, audioFile2: AudioCore, audioMixConfig: AudioMixConfig): AudioCore? {
+        return withContext(Dispatchers.Default) {
             updateItemLiveData(audioFileCore, 0, FFMpegState.IDE)
 
             val fileName = audioMixConfig.fileName
@@ -139,15 +141,16 @@ class AudioCutterImpl : AudioCutter {
                 Config.RETURN_CODE_CANCEL -> {
                     updateItemLiveData(audioFileCore, 0, FFMpegState.CANCEL)
                     FileUtil.deleteFile(filePath)
+                    return@withContext null
                 }
                 else -> {
                     Log.e(Config.TAG, String.format("Async command execution failed with rc=%d.", requestCode))
                     updateItemLiveData(audioFileCore, 0, FFMpegState.FAIL)
+                    return@withContext null
                 }
             }
 
         }
-        return audioFileCore
     }
 
     override suspend fun cancelTask(): Boolean {
@@ -155,10 +158,10 @@ class AudioCutterImpl : AudioCutter {
         return true
     }
 
-    override suspend fun merge(listAudioFile: List<AudioCore>, fileName: String, audioFormat: AudioFormat, pathFolder: String): AudioCore {
+    override suspend fun merge(listAudioFile: List<AudioCore>, fileName: String, audioFormat: AudioFormat, pathFolder: String): AudioCore? {
         timeVideo = 0
 
-        withContext(Dispatchers.Default) {
+        return withContext(Dispatchers.Default) {
 
             updateItemLiveData(audioFileCore, 0, FFMpegState.IDE)
 
@@ -184,14 +187,16 @@ class AudioCutterImpl : AudioCutter {
                 Config.RETURN_CODE_CANCEL -> {
                     updateItemLiveData(audioFileCore, 0, FFMpegState.CANCEL)
                     FileUtil.deleteFile(pathFileMerge)
+                    return@withContext null
                 }
                 else -> {
                     Log.e(Config.TAG, String.format("Async command execution failed with rc=%d.", returnCode))
                     updateItemLiveData(audioFileCore, 0, FFMpegState.FAIL)
+                    return@withContext null
                 }
             }
         }
-        return audioFileCore
+
     }
 
     override fun getAudioMergingInfo(): LiveData<AudioMergingInfo> {

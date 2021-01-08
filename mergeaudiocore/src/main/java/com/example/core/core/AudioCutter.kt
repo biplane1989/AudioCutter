@@ -24,31 +24,13 @@ enum class FFMpegState {
     IDE, RUNNING, CANCEL, FAIL, SUCCESS
 }
 
-data class AudioCutConfig(
-    var startPosition: Float,
-    var endPosition: Float,
-    var volumePercent: Int = 300,
-    var fileName: String,
-    var inEffect: Effect = Effect.OFF,
-    var outEffect: Effect = Effect.OFF,
-    var bitRate: BitRate = BitRate._128kb,
-    var format: AudioFormat = AudioFormat.MP3,
-    var pathFolder: String
-) : Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readFloat(), parcel.readFloat(), parcel.readInt(), parcel.readString()
-            .toString(), Effect.valueOf(
-            parcel.readString()
-                .toString()
-        ), Effect.valueOf(
-            parcel.readString()
-                .toString()
-        ), BitRate.valueOf(
-            parcel.readString()
-                .toString()
-        ), AudioFormat.valueOf(parcel.readString().toString()), parcel.readString()
-            .toString()
-    ) {
+data class AudioCutConfig(var startPosition: Float, var endPosition: Float, var volumePercent: Int = 300, var fileName: String, var inEffect: Effect = Effect.OFF, var outEffect: Effect = Effect.OFF, var bitRate: BitRate = BitRate._128kb, var format: AudioFormat = AudioFormat.MP3, var pathFolder: String) : Parcelable {
+    constructor(parcel: Parcel) : this(parcel.readFloat(), parcel.readFloat(), parcel.readInt(), parcel.readString()
+        .toString(), Effect.valueOf(parcel.readString()
+        .toString()), Effect.valueOf(parcel.readString()
+        .toString()), BitRate.valueOf(parcel.readString()
+        .toString()), AudioFormat.valueOf(parcel.readString().toString()), parcel.readString()
+        .toString()) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -78,26 +60,13 @@ data class AudioCutConfig(
     }
 }
 
-data class AudioMixConfig(
-    val fileName: String,
-    val pathFolder: String,
-    val selector: MixSelector = MixSelector.LONGEST,
-    val volumePercent1: Int = 100,
-    val volumePercent2: Int = 100,
-    val format: AudioFormat = AudioFormat.MP3,
-    var bitRate: BitRate = BitRate._128kb
+data class AudioMixConfig(val fileName: String, val pathFolder: String, val selector: MixSelector = MixSelector.LONGEST, val volumePercent1: Int = 100, val volumePercent2: Int = 100, val format: AudioFormat = AudioFormat.MP3, var bitRate: BitRate = BitRate._128kb
 
 ) : Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readString().toString(), parcel.readString()
-            .toString(), MixSelector.valueOf(
-            parcel.readString()
-                .toString()
-        ), parcel.readInt(), parcel.readInt(), AudioFormat.valueOf(
-            parcel.readString()
-                .toString()
-        ), BitRate.valueOf(parcel.readString().toString())
-    )
+    constructor(parcel: Parcel) : this(parcel.readString().toString(), parcel.readString()
+        .toString(), MixSelector.valueOf(parcel.readString()
+        .toString()), parcel.readInt(), parcel.readInt(), AudioFormat.valueOf(parcel.readString()
+        .toString()), BitRate.valueOf(parcel.readString().toString()))
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(fileName)
@@ -124,19 +93,10 @@ data class AudioMixConfig(
     }
 }
 
-data class AudioMergingConfig(
-    val audioFormat: AudioFormat,
-    var fileName: String,
-    var pathFolder: String,
-    var bitRate: BitRate = BitRate._128kb
-) : Parcelable {
-    constructor(parcel: Parcel) : this(
-        AudioFormat.valueOf(
-            parcel.readString()
-                .toString()
-        ), parcel.readString().toString(), parcel.readString()
-            .toString(), BitRate.valueOf(parcel.readString().toString())
-    ) {
+data class AudioMergingConfig(val audioFormat: AudioFormat, var fileName: String, var pathFolder: String, var bitRate: BitRate = BitRate._128kb) : Parcelable {
+    constructor(parcel: Parcel) : this(AudioFormat.valueOf(parcel.readString()
+        .toString()), parcel.readString().toString(), parcel.readString()
+        .toString(), BitRate.valueOf(parcel.readString().toString())) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -166,19 +126,10 @@ data class AudioMergingConfig(
 data class OutputAudioInfo(val audioFile: AudioCore, var percent: Int)
 data class AudioMergingInfo(var audioFile: AudioCore?, var percent: Int, var state: FFMpegState)
 interface AudioCutter {
-    suspend fun cut(audioFile: AudioCore, audioCutConfig: AudioCutConfig): AudioCore
-    suspend fun merge(
-        listAudioFile: List<AudioCore>,
-        fileName: String,
-        audioFormat: AudioFormat,
-        pathFolder: String
-    ): AudioCore
+    suspend fun cut(audioFile: AudioCore, audioCutConfig: AudioCutConfig): AudioCore?
+    suspend fun merge(listAudioFile: List<AudioCore>, fileName: String, audioFormat: AudioFormat, pathFolder: String): AudioCore?
 
-    suspend fun mix(
-        audioFile1: AudioCore,
-        audioFile2: AudioCore,
-        audioMixConfig: AudioMixConfig
-    ): AudioCore
+    suspend fun mix(audioFile1: AudioCore, audioFile2: AudioCore, audioMixConfig: AudioMixConfig): AudioCore?
 
     suspend fun cancelTask(): Boolean
     fun getAudioMergingInfo(): LiveData<AudioMergingInfo>
