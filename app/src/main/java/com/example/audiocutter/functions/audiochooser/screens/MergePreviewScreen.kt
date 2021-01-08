@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
@@ -28,6 +29,7 @@ import com.example.audiocutter.ui.audiochooser.merge.WrapContentLinearLayoutMana
 import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioFormat
 import com.example.core.core.AudioMergingConfig
+import com.google.android.material.snackbar.Snackbar
 import java.io.File
 
 class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseListener, View.OnClickListener, MergeDialog.MergeDialogListener {
@@ -42,12 +44,31 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     private lateinit var binding: MergePreviewScreenBinding
     private lateinit var audioMerAdapter: MergePreviewAdapter
 
-    //    private lateinit var audioMerModel: MergePreviewModel
+//        private lateinit var audioMerModel: MergePreviewModel
     private val audioMerModel: MergeChooserModel by navGraphViewModels(R.id.mer_navigation)
     var currentPos = -1
-    private var toast: Toast? = null
+
+    //    private var toast: Toast? = null
     private lateinit var mergeDialog: MergeDialog
 
+    var countItemSelected = Observer<Int> {
+        if (it > 1) {
+            binding.tvMerger.visibility = View.VISIBLE
+            binding.btMergeAudio.visibility = View.VISIBLE
+            binding.tvNotMerger.visibility = View.GONE
+            binding.btNotMergeAudio.visibility = View.GONE
+        } else {
+            binding.tvMerger.visibility = View.GONE
+            binding.btMergeAudio.visibility = View.GONE
+            binding.tvNotMerger.visibility = View.VISIBLE
+            binding.btNotMergeAudio.visibility = View.VISIBLE
+        }
+    }
+
+
+//    val listChooserObserver = Observer<List<AudioCutterView>> {
+//        audioMerAdapter.submitList(it)
+//    }
 
     override fun onPause() {
         super.onPause()
@@ -90,6 +111,10 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         binding.ivMerScreenBack.setOnClickListener(this)
         audioMerAdapter.setOnCallBack(this)
         binding.ivAddfileMerge.setOnClickListener(this)
+        audioMerModel.countItemSelected.observe(viewLifecycleOwner, countItemSelected)
+
+//        audioMerModel.getListChooserLiveData().observe(viewLifecycleOwner, listChooserObserver)
+
     }
 
     private fun initLists() {
@@ -97,10 +122,13 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         val callBack = MyItemTouchHelper(audioMerAdapter, requireContext())
         val itemTouchHelper = ItemTouchHelper(callBack)
         audioMerAdapter.setTouchHelper(itemTouchHelper)
+
         binding.rvMergeChoose.adapter = audioMerAdapter
         itemTouchHelper.attachToRecyclerView(binding.rvMergeChoose)
         binding.rvMergeChoose.setHasFixedSize(true)
         binding.rvMergeChoose.layoutManager = WrapContentLinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+//        binding.rvMergeChoose.layoutManager = LinearLayoutManager(context)
+
 
     }
 
@@ -114,7 +142,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     override fun pause(pos: Int) {
         currentPos = pos
         audioMerModel.pause()
-
     }
 
     override fun resume(pos: Int) {
@@ -125,7 +152,8 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     override fun deleteAudio(audioFile: AudioCutterView) {
         try {
             sendFragmentAction(MergeChooserScreen::class.java.name, "ACTION_DELETE", audioFile)
-//            ManagerFactory.getDefaultAudioPlayer().stop()
+            ManagerFactory.getDefaultAudioPlayer().stop()
+
             val listAudio = audioMerModel.removeItemAudio(audioFile)
             if (listAudio.isNotEmpty()) {
                 audioMerAdapter.submitList(listAudio)
@@ -136,7 +164,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
     }
 
     override fun moveItemAudio(prePos: Int, nextPos: Int) {
@@ -164,16 +191,18 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     private fun mergeAudioFile() {
         val listItem = audioMerModel.getListAudioChoose()
         indexMax = getIndexMax(listItem)
-        if(indexMax!=-1){
+        if (indexMax != -1) {
             audioFormat = getFormatFile(getMimeTypeAudio(listItem[indexMax].audioFile.getFilePath()))
             if (audioMerModel.getListAudioChoose().size >= 2) {
                 val dialog = MergeDialog.newInstance(this, audioMerModel.getListAudioChoose().size, Utils.getBaseName(File(listPath[0])))
                 dialog.show(childFragmentManager, MergeDialog.TAG)
-
                 showKeybroad()
 
             } else {
-                generateToast(getString(R.string.rule_amout_item_mer))
+//                generateToast(getString(R.string.rule_amout_item_mer))
+                context?.let {
+                    showNotification(getString(R.string.rule_amout_item_mer))
+                }
             }
         }
 
@@ -219,13 +248,14 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     override fun onDestroyView() {
         super.onDestroyView()
         audioMerModel.stop()
-        toast?.let {
-            toast!!.cancel()
-        }
+//        toast?.let {
+//            toast!!.cancel()
+//        }
     }
 
     private fun receiveData() {
         audioMerAdapter.submitList(audioMerModel.getListAudioChoose())
+        audioMerModel.getListAudioChoose()
     }
 
     override fun mergeAudioFile(filename: String) {
@@ -245,17 +275,23 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         hideKeyBroad()
     }
 
-    private fun generateToast(text: String) {
-        if (toast != null) {
-            toast!!.cancel()
-            toast = null
-            toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
-        } else if (toast == null) {
-            toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
+//    private fun generateToast(text: String) {
+//        if (toast != null) {
+//            toast!!.cancel()
+//            toast = null
+//            toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
+//        } else if (toast == null) {
+//            toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
+//        }
+//        toast!!.show()
+//
+//
+//    }
+
+    private fun showNotification(text: String) {
+        view?.let {
+            Snackbar.make(it, text, Snackbar.LENGTH_LONG).show()
         }
-        toast!!.show()
-
-
     }
 
     private fun hideKeyBroad() {
@@ -271,6 +307,4 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         val imm = requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
-
-
 }

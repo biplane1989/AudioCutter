@@ -86,6 +86,10 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
                 showList()
                 showProgressBar(false)
 
+                binding.rvAudioCutter.post {
+                    binding.rvAudioCutter.smoothScrollToPosition(0)
+                }
+
             }
         }
     }

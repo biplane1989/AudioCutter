@@ -7,6 +7,7 @@ import androidx.lifecycle.*
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.core.result.AudioEditorManagerlmpl
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
@@ -27,6 +28,8 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
 
     private var indexChoose: Int = 0
     private lateinit var listAudioChooser: MutableList<AudioCutterView>
+//    private val listAudioChooserLiveData = MutableLiveData<List<AudioCutterView>>()
+
     private val audioPlayer = ManagerFactory.newAudioPlayer()
     private val TAG = "NmcheckScrMer"
     private var currentAudioPlaying: File = File("")
@@ -59,6 +62,10 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
             it?.sumBy { if (it.isCheckChooseItem) 1 else 0 } ?: 0
         })
     }
+
+//    fun getListChooserLiveData(): LiveData<List<AudioCutterView>> {
+//        return listAudioChooserLiveData
+//    }
 
     private var sortByNo: Comparator<AudioCutterView> = Comparator { o1, o2 -> o1.no - o2.no }
 
@@ -252,7 +259,6 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
         return mListPath
     }
 
-
     fun getListItemChoose(): List<AudioCutterView> {
         mListPath.clear()
         val mListAudios = getListAllAudio()
@@ -270,11 +276,14 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
             Log.d(TAG, "getListItemChoose: path $it")
         }
         _listAudioFiles.postValue(mListAudios)
+
+//        listAudioChooserLiveData.value = listAudioChooser
         return listAudioChooser
     }
 
     fun getListAudioChoose(): MutableList<AudioCutterView> {
         Collections.sort(listAudioChooser, sortByNo)
+//        listAudioChooserLiveData.value = listAudioChooser
         return listAudioChooser
     }
 
@@ -302,8 +311,16 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
 
     fun removeItemAudio(item: AudioCutterView): List<AudioCutterView> {
         indexChoose--
+
         listAudioChooser.remove(item)
+
+//        synchronized(listAudioChooser) {
+//            listAudioChooser.remove(item)
+//        }
+
+//        listAudioChooserLiveData.value = listAudioChooser
         getlistAfterReceive(item)
+
         /* _stateChecked.postValue(indexChoose)*/
         return listAudioChooser
     }
@@ -320,10 +337,5 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
         }
         _listAudioFiles.postValue(mListAudios)
     }
-
-    fun clearListChoose() {
-        listAudioChooser.clear()
-    }
-
 
 }

@@ -53,7 +53,6 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
         } else {
             super.submitList(null)
         }
-
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -127,15 +126,10 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
 
             if (!contentItem.contactItem.isRingtoneDefault) {
 
-//                tvRingtoneDefault.visibility = View.GONE
-//                cvDefault.visibility = View.GONE
-
                 llRingToneDefault.visibility = View.INVISIBLE
                 tvRingtone.visibility = View.VISIBLE
                 tvRingtone.text = contentItem.contactItem.fileNameRingtone.toLowerCase(Locale.ROOT)
             } else {
-//                tvRingtoneDefault.visibility = View.VISIBLE
-//                cvDefault.visibility = View.VISIBLE
 
                 llRingToneDefault.visibility = View.VISIBLE
                 tvRingtone.visibility = View.INVISIBLE

@@ -13,12 +13,10 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
@@ -28,6 +26,7 @@ import com.example.audiocutter.functions.contacts.adapters.ListSelectAdapter
 import com.example.audiocutter.functions.contacts.adapters.SelectAudioScreenCallback
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.util.FileUtils
+import com.google.android.material.snackbar.Snackbar
 
 
 class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.OnClickListener {
@@ -44,6 +43,9 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
     private val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
         if (listAudio != null) {
             mListSelectAdapter.submitList(ArrayList(listAudio))
+            binding.rvListSelectAudio.post {
+                binding.rvListSelectAudio.smoothScrollToPosition(0)
+            }
         }
     }
 
@@ -60,7 +62,7 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
     // observer is empty status
     private val isEmptyStatusObserver = Observer<Boolean> {
         if (it) {
-            binding.rvListSelectAudio.visibility = View.GONE
+            binding.rvListSelectAudio.visibility = View.INVISIBLE
             binding.clBottom.visibility = View.GONE
             binding.clNoAudio.visibility = View.VISIBLE
         } else {
@@ -200,11 +202,13 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
             }
             binding.btnSave -> {
                 if (mListSelectAudioViewModel.setRingtone(safeArg.phoneNumber)) {
-                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
-                        .show()
+                    context?.let {
+                        showNotification(getString(R.string.result_screen_set_ringtone_successful))
+                    }
                 } else {
-                    Toast.makeText(context, getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
-                        .show()
+                    context?.let {
+                        showNotification(getString(R.string.result_screen_set_ringtone_fail))
+                    }
                 }
                 requireActivity().onBackPressed()
             }
@@ -230,6 +234,12 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
         }
     }
 
+    private fun showNotification(text: String) {
+        view?.let {
+            Snackbar.make(it, text, Snackbar.LENGTH_LONG).show()
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         if (requestCode == REQ_CODE_PICK_SOUNDFILE && resultCode == Activity.RESULT_OK && intent != null) {
 
@@ -238,14 +248,16 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
                 val path = FileUtils.getUriPath(requireContext(), it)
                 path?.let {
                     if (mListSelectAudioViewModel.setRingtoneWithUri(safeArg.phoneNumber, path)) {
-                        Toast.makeText(context, getString(R.string.result_screen_set_ringtone_successful), Toast.LENGTH_SHORT)
-                            .show()
+                        context?.let {
+                            showNotification(getString(R.string.result_screen_set_ringtone_successful))
+                        }
                         lifecycleScope.launchWhenResumed {
                             requireActivity().onBackPressed()
                         }
                     } else {
-                        Toast.makeText(context, getString(R.string.result_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
-                            .show()
+                        context?.let {
+                            showNotification(getString(R.string.result_screen_set_ringtone_fail))
+                        }
                     }
                 }
             }

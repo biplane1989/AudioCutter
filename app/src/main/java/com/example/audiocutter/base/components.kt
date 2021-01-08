@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -198,11 +197,6 @@ abstract class BaseFragment : Fragment() {
             }
         }
     }
-
-    protected fun showToast(yourString: String) {
-        Toast.makeText(context, yourString, Toast.LENGTH_SHORT).show()
-    }
-
 
     protected fun getBaseActivity(): BaseActivity? {
         if (activity != null) {

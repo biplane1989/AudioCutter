@@ -34,6 +34,9 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
     private val listContactObserver = Observer<List<ContactItemView>> { listContact ->
         if (listContact != null) {
             listContactAdapter.submitList(ArrayList(listContact))
+            binding.rvListContact.post {
+                binding.rvListContact.smoothScrollToPosition(0)
+            }
         }
     }
 

@@ -23,6 +23,7 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MixChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MixChooserAdapter
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.google.android.material.snackbar.Snackbar
 
 class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter.AudioMixerListener {
 
@@ -32,7 +33,8 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     private lateinit var binding: MixChooserScreenBinding
     private var currentPos = -1
     private var isCanChoose = 0
-    private var toast: Toast? = null
+
+    //    private var toast: Toast? = null
     private var stateObserver = Observer<Int> {
         when (it) {
             1 -> {
@@ -60,6 +62,10 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
                 audioMixAdapter.submitList(ArrayList(listMusic))
                 showList()
                 showProgressBar(false)
+
+                binding.rvMixer.post {
+                    binding.rvMixer.smoothScrollToPosition(0)
+                }
             }
         }
     }
@@ -73,7 +79,10 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
 
     private val isChoseItemObserver = Observer<Boolean?> {
         if (it != null && it) {
-            generateToast(getString(R.string.ToastExceed))
+//            generateToast(getString(R.string.ToastExceed))
+            context?.let {
+                showNotification(getString(R.string.ToastExceed))
+            }
         }
     }
 
@@ -106,12 +115,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         audioMixModel = ViewModelProvider(this).get(MixChooserModel::class.java)
-        audioMixAdapter = MixChooserAdapter(
-            requireContext(),
-            audioMixModel.getAudioPlayer(),
-            lifecycleScope,
-            requireActivity()
-        )
+        audioMixAdapter = MixChooserAdapter(requireContext(), audioMixModel.getAudioPlayer(), lifecycleScope, requireActivity())
 
     }
 
@@ -185,18 +189,24 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
 
     }
 
-    private fun generateToast(text: String) {
-        if (toast != null) {
-            toast!!.cancel()
-            toast = null
-            toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
-        } else
-            if (toast == null) {
-                toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
-            }
-        toast!!.show()
+//    private fun generateToast(text: String) {
+//        if (toast != null) {
+//            toast!!.cancel()
+//            toast = null
+//            toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
+//        } else
+//            if (toast == null) {
+//                toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
+//            }
+//        toast!!.show()
+//
+//
+//    }
 
-
+    private fun showNotification(text: String) {
+        view?.let {
+            Snackbar.make(it, text, Snackbar.LENGTH_LONG).show()
+        }
     }
 
     private fun hideKeyboard() {
@@ -305,11 +315,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
         val listItemHandle = audioMixModel.getListItemChoose()
         if (listItemHandle.size == 2) {
             previousStatus()
-            viewStateManager.mixingOnSelected(
-                this,
-                listItemHandle[0].audioFile,
-                listItemHandle[1].audioFile
-            )
+            viewStateManager.mixingOnSelected(this, listItemHandle[0].audioFile, listItemHandle[1].audioFile)
         }
 
         /**place handle listItem choose*/
@@ -345,9 +351,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     override fun onDestroyView() {
         super.onDestroyView()
         ManagerFactory.getDefaultAudioPlayer().stop()
-        toast?.let {
-            toast!!.cancel()
-        }
+//        toast?.let {
+//            toast!!.cancel()
+//        }
     }
 
 

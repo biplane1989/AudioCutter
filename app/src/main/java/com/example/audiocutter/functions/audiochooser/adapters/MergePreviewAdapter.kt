@@ -275,7 +275,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
                             if (audioCutterView.audioFile.getFilePath() == it.getFilePath()) {
                                 updatePlayInfor(playerInfo)
                             } else {
-//                                resetItem(audioCutterView)
+                                resetItem(audioCutterView)
                             }
                         }
                     }

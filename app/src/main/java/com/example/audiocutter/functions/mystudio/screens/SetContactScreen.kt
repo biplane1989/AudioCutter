@@ -24,6 +24,7 @@ import com.example.audiocutter.functions.mystudio.adapters.SetContactAdapter
 import com.example.audiocutter.functions.mystudio.adapters.SetContactCallback
 import com.example.audiocutter.functions.mystudio.objects.SetContactItemView
 import com.example.audiocutter.functions.resultscreen.screens.ResultScreenArgs
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
 class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListener {
@@ -52,6 +53,9 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
     private val listContactObserver = Observer<List<SetContactItemView>> { listContact ->
         if (listContact != null) {
             listContactAdapter.submitList(ArrayList(listContact))
+            binding.rvListContact.post {
+                binding.rvListContact.smoothScrollToPosition(0)
+            }
         }
     }
 
@@ -114,7 +118,7 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
 
         mListContactViewModel = ViewModelProviders.of(this).get(SetContactViewModel::class.java)
 
-        listContactAdapter = SetContactAdapter( this)
+        listContactAdapter = SetContactAdapter(this)
 
 
 //        lifecycleScope.launch {
@@ -185,14 +189,26 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
             }
             binding.ivOk -> {
                 if (mListContactViewModel.setRingtoneForContact(safeArg.pathUri)) {
-                    Toast.makeText(context, getString(R.string.set_contact_ringtone_screen_set_ringtone_successfull), Toast.LENGTH_SHORT)
-                        .show()
+//                    Toast.makeText(context, getString(R.string.set_contact_ringtone_screen_set_ringtone_successfull), Toast.LENGTH_SHORT)
+//                        .show()
+                    context?.let {
+                        showNotification(getString(R.string.set_contact_ringtone_screen_set_ringtone_successfull))
+                    }
                     requireActivity().onBackPressed()
                 } else {
-                    Toast.makeText(context, getString(R.string.set_contact_ringtone_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
-                        .show()
+                    context?.let {
+                        showNotification(getString(R.string.set_contact_ringtone_screen_set_ringtone_fail))
+                    }
+//                    Toast.makeText(context, getString(R.string.set_contact_ringtone_screen_set_ringtone_fail), Toast.LENGTH_SHORT)
+//                        .show()
                 }
             }
+        }
+    }
+
+    private fun showNotification(text: String) {
+        view?.let {
+            Snackbar.make(it, text, Snackbar.LENGTH_LONG).show()
         }
     }
 

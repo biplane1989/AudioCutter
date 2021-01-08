@@ -9,6 +9,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.functions.contacts.objects.ContactItemView
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.functions.mystudio.objects.SetContactItemView
 import com.example.audiocutter.objects.ContactItem
@@ -26,7 +27,7 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
     private var isEmptyStatus: MutableLiveData<Boolean> = MutableLiveData()
 
     private val mContactMediatorLivedata = MediatorLiveData<List<SetContactItemView>>()
-
+    private var mListDataContact = ArrayList<ContactItemView>()
     private var mListContact = ArrayList<SetContactItemView>()
     private var mListSearch = ArrayList<SetContactItemView>()
 
@@ -137,7 +138,7 @@ class SetContactViewModel(application: Application) : BaseAndroidViewModel(appli
         } else {
             for (item in mListContact) {
                 if (item.searchHeader.toUpperCase(Locale.ROOT)
-                        .contains(data.toUpperCase(Locale.ROOT))) {
+                        .contains(data.toUpperCase(Locale.ROOT)) && !item.isHeader) {
                     mListSearch.add(item)
                 }
             }

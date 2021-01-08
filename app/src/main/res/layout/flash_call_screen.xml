@@ -668,8 +668,10 @@
                         android:scaleType="centerInside"
                         android:src="@drawable/ic_time1_flcall" />
 
+
                     <TextView
 
+                        android:id="@+id/tv_start_time"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -678,9 +680,7 @@
                         android:text="Start from"
                         android:textColor="@color/colorgray"
                         android:textSize="@dimen/d_16"
-                        android:id="@+id/tv_start_time"
                         android:textStyle="bold" />
-
 
                     <TextView
                         android:id="@+id/tv_start_time_choose"

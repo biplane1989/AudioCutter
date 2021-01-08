@@ -8,7 +8,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -29,12 +28,11 @@ import com.example.core.core.AudioCutConfig
 import com.example.core.core.Effect
 import com.example.waveform.views.WaveformView
 import com.example.waveform.views.WaveformViewListener
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
 
-class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
-    View.OnClickListener, View.OnLongClickListener, OnDialogAdvanceListener,
-    DialogConvert.OnDialogConvertListener {
+class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickListener, View.OnLongClickListener, OnDialogAdvanceListener, DialogConvert.OnDialogConvertListener {
 
     val safeArg: CuttingEditorScreenArgs by navArgs()
     private var playerState = PlayerState.IDLE
@@ -70,13 +68,8 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
         audioPath = safeArg.pathAudio
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.cutting_editor_screen, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.cutting_editor_screen, container, false)
         return binding.root
     }
 
@@ -108,11 +101,9 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
         cuttingViewModel.loading(requireContext(), audioPath)
             .observe(viewLifecycleOwner, Observer<AudioFile?> {
                 if (it == null) {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.audio_file_is_not_found),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    context?.let {
+                        showNotification(getString(R.string.audio_file_is_not_found))
+                    }
                 } else {
                     mWaveformView.setWaveformViewListener(this@CuttingEditorScreen)
                     lifecycleScope.launch {
@@ -154,10 +145,8 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
                 cuttingViewModel.setVolume(1f)
             } else if (it.posision >= cuttingViewModel.getCuttingEndPos() - (fadeOut.time * 1000)) {
                 if (fadeOut != Effect.OFF) {
-                    cuttingViewModel.setVolume(
-                        ((cuttingViewModel.getCuttingEndPos()
-                            .toFloat() - it.posision.toFloat()) / 1000) * ratioVolumeFadeout
-                    )
+                    cuttingViewModel.setVolume(((cuttingViewModel.getCuttingEndPos()
+                        .toFloat() - it.posision.toFloat()) / 1000) * ratioVolumeFadeout)
                 }
             }
         }
@@ -261,11 +250,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
             }
             binding.tickIv -> {
                 cuttingViewModel.getAudioFile()?.let {
-                    DialogConvert.showDialogConvert(
-                        childFragmentManager,
-                        this,
-                        Utils.getBaseName(File(audioPath))
-                    )
+                    DialogConvert.showDialogConvert(childFragmentManager, this, Utils.getBaseName(File(audioPath)))
                 }
             }
             binding.increaseStartTimeIv -> {
@@ -307,32 +292,16 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
     override fun onLongClick(v: View?): Boolean {
         when (v) {
             binding.increaseEndTimeIv -> {
-                updateTimeWaveView(
-                    isIncrease = true,
-                    isStart = false,
-                    view = binding.increaseEndTimeIv
-                )
+                updateTimeWaveView(isIncrease = true, isStart = false, view = binding.increaseEndTimeIv)
             }
             binding.increaseStartTimeIv -> {
-                updateTimeWaveView(
-                    isIncrease = true,
-                    isStart = true,
-                    view = binding.increaseStartTimeIv
-                )
+                updateTimeWaveView(isIncrease = true, isStart = true, view = binding.increaseStartTimeIv)
             }
             binding.reductionStartTimeIv -> {
-                updateTimeWaveView(
-                    isIncrease = false,
-                    isStart = true,
-                    view = binding.reductionStartTimeIv
-                )
+                updateTimeWaveView(isIncrease = false, isStart = true, view = binding.reductionStartTimeIv)
             }
             binding.reductionEndTimeIv -> {
-                updateTimeWaveView(
-                    isIncrease = false,
-                    isStart = false,
-                    view = binding.reductionEndTimeIv
-                )
+                updateTimeWaveView(isIncrease = false, isStart = false, view = binding.reductionEndTimeIv)
             }
         }
         return true
@@ -383,8 +352,12 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener,
         cuttingViewModel.getAudioFile()?.let {
             viewStateManager.editorSaveCutingAudio(this, it, audioCutConfig)
         }
+    }
 
-
+    private fun showNotification(text: String) {
+        view?.let {
+            Snackbar.make(it, text, Snackbar.LENGTH_LONG).show()
+        }
     }
 
 }

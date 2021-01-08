@@ -39,7 +39,6 @@ import com.example.audiocutter.permissions.PermissionManager
 import com.example.audiocutter.permissions.WriteSettingPermissionRequest
 import com.example.audiocutter.util.Utils
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.my_studio_screen_item.view.*
 import kotlinx.coroutines.launch
 
 
@@ -63,7 +62,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     private var progressbarAnimation: ObjectAnimator? = null
     private var playerState: PlayerState = PlayerState.IDLE
     private var timeFomat = 0
-    private var toast: Toast? = null
+//    private var toast: Toast? = null
 
     private var pendingRequestingPermission = 0
     private val CONTACTS_ITEM_REQUESTING_PERMISSION = 1 shl 4
@@ -190,13 +189,6 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     }
 
     private val errorObserver = Observer<Boolean> {
-//        if (it) {
-//            view?.let {
-//                val mySnackbar = Snackbar.make(it, getString(R.string.result_screen_converting_error), Snackbar.LENGTH_LONG)
-//                mySnackbar
-//            }
-//        }
-
         binding.btnOrigin.visibility = View.GONE
         binding.tvWait.visibility = View.GONE
         binding.clOpption.visibility = View.GONE
@@ -253,7 +245,6 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                     sbAnimation?.cancel()
                     binding.sbMusic.progress = 0
                     setSeekbarAnimate(binding.sbMusic, 0, DURATION_ANIMATION)
-//                    binding.sbMusic.clearAnimation()
                 }
                 PlayerState.PAUSE -> {
                     binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
@@ -301,13 +292,40 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                     resetRequestingPermission()
                     when (numberClick) {
                         1 -> {
-                            setRingtone()
+//                            setRingtone()
+                            if (mResultViewModel.setRingTone()) {
+                                context?.let {
+                                    showNotification(getString(R.string.result_screen_set_ringtone_successful))
+                                }
+                            } else {
+                                context?.let {
+                                    showNotification(getString(R.string.result_screen_set_ringtone_fail))
+                                }
+                            }
                         }
                         2 -> {
-                            setAlarm()
+//                            setAlarm()
+                            if (mResultViewModel.setAlarm()) {
+                                context?.let {
+                                    showNotification(getString(R.string.result_screen_set_alarm_successful))
+                                }
+                            } else {
+                                context?.let {
+                                    showNotification(getString(R.string.result_screen_set_alarm_fail))
+                                }
+                            }
                         }
                         3 -> {
-                            setNotifiCation()
+//                            setNotifiCation()
+                            if (mResultViewModel.setNotification()) {
+                                context?.let {
+                                    showNotification(getString(R.string.result_screen_set_notification_successful))
+                                }
+                            } else {
+                                context?.let {
+                                    showNotification(getString(R.string.result_screen_set_notification_fail))
+                                }
+                            }
                         }
                     }
                 }
@@ -326,7 +344,6 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.pbLoading.max = 100 * 100
-//        binding.pbLoading.max = 100
 
         binding.ivPausePlayMusic.setOnClickListener(this)
         binding.llRingtone.setOnClickListener(this)
@@ -342,7 +359,6 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
         binding.sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
-
                 if (playerState != PlayerState.IDLE) {
                     if (fromUser) {
                         binding.sbMusic.clearAnimation()
@@ -361,12 +377,10 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                     playerState = PlayerState.IDLE
                     binding.ivPausePlayMusic.setImageResource(R.drawable.common_ic_play)
                 }
-
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
                 if (playerState == PlayerState.PLAYING) {
-
                     mResultViewModel.pauseAudio()
                     resetAnimation()
                     isSeekBarStatus = true
@@ -382,25 +396,12 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                             .getLatestConvertingItem()?.outputAudioFile
                         audioFile?.let {
                             val newValue = Utils.convertValue(0, binding.sbMusic.max, 0, it.duration.toInt(), binding.sbMusic.progress)
-
-                            Log.d(TAG, "onStopTrackingTouch: playAudioByPositition ")
                             mResultViewModel.playAudioByPositition(it, newValue)
                         }
                     }
 //                    }
-                } else {
-
-//                        Log.d(TAG, "onStopTrackingTouch: status 4: " + playerState)
-//                        sbMusic.clearAnimation()
-//                        sbAnimation?.cancel()
-//                        audioPlayer.seek(sbMusic.progress / 100)
-//                        audioPlayer.resume()
-//                        isSeekBarStatus = false
                 }
-
-                Log.d(TAG, "onStopTrackingTouch: status 4: " + playerState)
                 resetAnimation()
-//                mResultViewModel.seekToAudio(binding.sbMusic.progress / 100, true)
                 mResultViewModel.seekToAudio(binding.sbMusic.progress / 100)
                 mResultViewModel.resumeAudio()
                 isSeekBarStatus = false
@@ -413,30 +414,43 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         sbAnimation?.cancel()
     }
 
+    fun checkAudiofileIsExits(audioFile: AudioFile): Boolean {
+        return Utils.checkUriIsExits(requireContext(), audioFile.uri.toString())
+    }
+
     override fun onClick(view: View?) {
         audioFile = ManagerFactory.getAudioEditorManager()
             .getLatestConvertingItem()?.outputAudioFile
         when (view) {
             binding.ivPausePlayMusic -> {
-                when (playerState) {
-                    PlayerState.IDLE -> {
-                        runOnUI {
-                            mResultViewModel.playAudio()
-                            resetAnimation()
-                            binding.sbMusic.progress = 0
-                            setSeekbarAnimate(binding.sbMusic, 0, DURATION_ANIMATION)
+                audioFile?.let {
+                    if (checkAudiofileIsExits(it)) {
+                        when (playerState) {
+                            PlayerState.IDLE -> {
+                                runOnUI {
+                                    mResultViewModel.playAudio()
+                                    resetAnimation()
+                                    binding.sbMusic.progress = 0
+                                    setSeekbarAnimate(binding.sbMusic, 0, DURATION_ANIMATION)
+                                }
+                            }
+                            PlayerState.PAUSE -> {
+                                mResultViewModel.resumeAudio()
+                            }
+                            PlayerState.PLAYING -> {
+                                mResultViewModel.pauseAudio()
+                            }
+                            else -> {
+                                //nothing
+                            }
+                        }
+                    } else {
+                        context?.let {
+                            showNotification(getString(R.string.result_screen_file_not_is_exit))
                         }
                     }
-                    PlayerState.PAUSE -> {
-                        mResultViewModel.resumeAudio()
-                    }
-                    PlayerState.PLAYING -> {
-                        mResultViewModel.pauseAudio()
-                    }
-                    else -> {
-                        //nothing
-                    }
                 }
+
             }
 
             binding.btnCancel -> {
@@ -460,92 +474,170 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
                 viewStateManager.resultScreenGoToHome(this)
             }
             binding.llRingtone -> {
-                numberClick = 1
-                if (writeSettingPermissionRequest.isPermissionGranted()) {
-                    setRingtone()
-                } else {
-                    resetRequestingPermission()
-                    pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
-                    writeSettingPermissionRequest.requestPermission()
+                audioFile?.let {
+                    if (checkAudiofileIsExits(it)) {
+                        numberClick = 1
+                        if (writeSettingPermissionRequest.isPermissionGranted()) {
+//                            setRingtone()
+                            if (mResultViewModel.setRingTone()) {
+                                context?.let {
+                                    showNotification(getString(R.string.result_screen_set_ringtone_successful))
+                                }
+                            } else {
+                                context?.let {
+                                    showNotification(getString(R.string.result_screen_set_ringtone_fail))
+                                }
+                            }
+                        } else {
+                            resetRequestingPermission()
+                            pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
+                            writeSettingPermissionRequest.requestPermission()
+                        }
+                    } else {
+                        context?.let {
+                            showNotification(getString(R.string.result_screen_file_not_is_exit))
+                        }
+                    }
                 }
 
             }
             binding.llAlarm -> {
-                numberClick = 2
-                if (writeSettingPermissionRequest.isPermissionGranted()) {
-                    setAlarm()
-                } else {
-                    resetRequestingPermission()
-                    pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
-                    writeSettingPermissionRequest.requestPermission()
+                audioFile?.let {
+                    if (checkAudiofileIsExits(it)) {
+                        numberClick = 2
+                        if (writeSettingPermissionRequest.isPermissionGranted()) {
+//                            setAlarm()
+                            if (mResultViewModel.setAlarm()) {
+                                context?.let {
+                                    showNotification(getString(R.string.result_screen_set_alarm_successful))
+                                }
+                            } else {
+                                context?.let {
+                                    showNotification(getString(R.string.result_screen_set_alarm_fail))
+                                }
+                            }
+                        } else {
+                            resetRequestingPermission()
+                            pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
+                            writeSettingPermissionRequest.requestPermission()
+                        }
+                    } else {
+                        context?.let {
+                            showNotification(getString(R.string.result_screen_file_not_is_exit))
+                        }
+                    }
                 }
+
             }
 
             binding.llNotification -> {
-                numberClick = 3
-                if (writeSettingPermissionRequest.isPermissionGranted()) {
-                    setNotifiCation()
-                } else {
-                    resetRequestingPermission()
-                    pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
-                    writeSettingPermissionRequest.requestPermission()
+                audioFile?.let {
+                    if (checkAudiofileIsExits(it)) {
+                        numberClick = 3
+                        if (writeSettingPermissionRequest.isPermissionGranted()) {
+//                            setNotifiCation()
+                            if (mResultViewModel.setNotification()) {
+                                context?.let {
+                                    showNotification(getString(R.string.result_screen_set_notification_successful))
+                                }
+                            } else {
+                                context?.let {
+                                    showNotification(getString(R.string.result_screen_set_notification_fail))
+                                }
+                            }
+                        } else {
+                            resetRequestingPermission()
+                            pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
+                            writeSettingPermissionRequest.requestPermission()
+                        }
+                    } else {
+                        context?.let {
+                            showNotification(getString(R.string.result_screen_file_not_is_exit))
+                        }
+                    }
                 }
+
             }
             binding.llShare -> {
-                ShowDialogShareFile()
-
+                audioFile?.let {
+                    if (checkAudiofileIsExits(it)) {
+                        ShowDialogShareFile()
+                    } else {
+                        context?.let {
+                            showNotification(getString(R.string.result_screen_file_not_is_exit))
+                        }
+                    }
+                }
             }
             binding.llContact -> {
                 audioFile?.let {
-                    checkPermissionContact()
+                    if (checkAudiofileIsExits(it)) {
+                        checkPermissionContact()
+                    } else {
+                        context?.let {
+                            showNotification(getString(R.string.result_screen_file_not_is_exit))
+                        }
+                    }
                 }
-
             }
             binding.llOpenwith -> {
-                audioFile?.uri?.let {
-                    Utils.openWithApp(requireContext(), it)
+                audioFile?.let {
+                    if (checkAudiofileIsExits(it)) {
+                        audioFile?.uri?.let {
+                            Utils.openWithApp(requireContext(), it)
+                        }
+                    } else {
+                        context?.let {
+                            showNotification(getString(R.string.result_screen_file_not_is_exit))
+                        }
+                    }
                 }
+
             }
         }
     }
 
-    private fun setNotifiCation() {
-        if (mResultViewModel.setNotification()) {
-            generateToast(getString(R.string.result_screen_set_notification_successful))
-        } else {
-            generateToast(getString(R.string.result_screen_set_notification_fail))
+    private fun showNotification(text: String) {
+        view?.let {
+            Snackbar.make(it, text, Snackbar.LENGTH_LONG).show()
         }
     }
 
-    @SuppressLint("ShowToast")
-    private fun generateToast(text: String) {
-        if (toast != null) {
-            toast!!.cancel()
-            toast = null
-            toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
-        } else if (toast == null) {
-            toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
-        }
-        toast!!.show()
+//    private fun setNotifiCation() {
+//        if (mResultViewModel.setNotification()) {
+//            generateToast(getString(R.string.result_screen_set_notification_successful))
+//        } else {
+//            generateToast(getString(R.string.result_screen_set_notification_fail))
+//        }
+//    }
 
+//    @SuppressLint("ShowToast")
+//    private fun generateToast(text: String) {
+//        if (toast != null) {
+//            toast!!.cancel()
+//            toast = null
+//            toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
+//        } else if (toast == null) {
+//            toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
+//        }
+//        toast!!.show()
+//    }
 
-    }
-
-    private fun setAlarm() {
-        if (mResultViewModel.setAlarm()) {
-            generateToast(getString(R.string.result_screen_set_alarm_successful))
-        } else {
-            generateToast(getString(R.string.result_screen_set_alarm_fail))
-        }
-    }
-
-    private fun setRingtone() {
-        if (mResultViewModel.setRingTone()) {
-            generateToast(getString(R.string.result_screen_set_ringtone_successful))
-        } else {
-            generateToast(getString(R.string.result_screen_set_ringtone_fail))
-        }
-    }
+//    private fun setAlarm() {
+//        if (mResultViewModel.setAlarm()) {
+//            generateToast(getString(R.string.result_screen_set_alarm_successful))
+//        } else {
+//            generateToast(getString(R.string.result_screen_set_alarm_fail))
+//        }
+//    }
+//
+//    private fun setRingtone() {
+//        if (mResultViewModel.setRingTone()) {
+//            generateToast(getString(R.string.result_screen_set_ringtone_successful))
+//        } else {
+//            generateToast(getString(R.string.result_screen_set_ringtone_fail))
+//        }
+//    }
 
     private fun checkPermissionContact() {
         if (contactPermissionRequest.isPermissionGranted()) {
@@ -597,9 +689,9 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
 
     override fun onDestroyView() {
         super.onDestroyView()
-        toast?.let {
-            toast!!.cancel()
-        }
+//        toast?.let {
+//            toast!!.cancel()
+//        }
         progressbarAnimation?.cancel()
     }
 

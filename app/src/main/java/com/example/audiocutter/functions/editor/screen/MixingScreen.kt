@@ -31,6 +31,7 @@ import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioFormat
 import com.example.core.core.AudioMixConfig
 import com.example.core.core.MixSelector
+import com.google.android.material.snackbar.Snackbar
 
 class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPlayLineChange, FileNameDialogListener {
     private var isLongestAudioChecked = true
@@ -125,22 +126,18 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
                 binding.ivDoneMixing.setOnClickListener(this)
             }
         }
-        Log.e(
-            TAG,
-            "checkFormat: ${getMimeTypeAudio(audioFile1!!.getFilePath())} - ${
-                getMimeTypeAudio(audioFile2!!.getFilePath())
-            }}"
-        )
+        Log.e(TAG, "checkFormat: ${getMimeTypeAudio(audioFile1!!.getFilePath())} - ${
+            getMimeTypeAudio(audioFile2!!.getFilePath())
+        }}")
         if (audioFile1 != null && audioFile2 != null) {
             if (getMimeTypeAudio(audioFile1!!.getFilePath()) == getMimeTypeAudio(audioFile2!!.getFilePath())) {
                 audioFormat = if (getMimeTypeAudio(audioFile1!!.getFilePath()) == Constance.MP3) {
                     AudioFormat.MP3
-                } else
-                    if (getMimeTypeAudio(audioFile1!!.getFilePath()) == Constance.M4A || getMimeTypeAudio(audioFile1!!.getFilePath()) == Constance.AAC) {
-                        AudioFormat.AAC
-                    } else {
-                        AudioFormat.MP3
-                    }
+                } else if (getMimeTypeAudio(audioFile1!!.getFilePath()) == Constance.M4A || getMimeTypeAudio(audioFile1!!.getFilePath()) == Constance.AAC) {
+                    AudioFormat.AAC
+                } else {
+                    AudioFormat.MP3
+                }
             }
         } else {
             audioFormat = if (audioFile1!!.duration > audioFile2!!.duration) {
@@ -175,9 +172,20 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         if (audioFile1 == null || audioFile2 == null) {
-            Toast.makeText(requireContext(), R.string.audio_file_is_not_found, Toast.LENGTH_SHORT)
-                .show()
+//            Toast.makeText(requireContext(), R.string.audio_file_is_not_found, Toast.LENGTH_SHORT)
+//                .show()
+
+            context?.let {
+                showNotification(getString(R.string.audio_file_is_not_found))
+            }
             requireActivity().onBackPressed()
+        }
+    }
+
+
+    private fun showNotification(text: String) {
+        view?.let {
+            Snackbar.make(it, text, Snackbar.LENGTH_LONG).show()
         }
     }
 
@@ -328,7 +336,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         if (newValueSound < 0) {
             newValueSound = 0.0
         }
-        volume1 = (newValueSound*100).toInt()
+        volume1 = (newValueSound * 100).toInt()
         mPlayer1.setVolume(newValueSound.toFloat())
     }
 
@@ -340,7 +348,7 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
         if (newValueSound < 0) {
             newValueSound = 0.0
         }
-        volume2 = (newValueSound*100).toInt()
+        volume2 = (newValueSound * 100).toInt()
         mPlayer2.setVolume(newValueSound.toFloat())
     }
 
@@ -351,10 +359,8 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     override fun onMixClick(fileName: String) {
         Log.d(TAG, "onMixClick: volume1 $volume1 - volume2 $volume2 - mixSelect $mixselect  - audioFormat $audioFormat")
-        val mixingConfig = AudioMixConfig(
-            fileName, ManagerFactory.getAudioFileManager()
-                .getFolderPath(Folder.TYPE_MIXER), mixselect, volume1, volume2, audioFormat
-        )
+        val mixingConfig = AudioMixConfig(fileName, ManagerFactory.getAudioFileManager()
+            .getFolderPath(Folder.TYPE_MIXER), mixselect, volume1, volume2, audioFormat)
         if (audioFile1 != null && audioFile2 != null) {
             viewStateManager.editorSaveMixingAudio(this, audioFile1!!, audioFile2!!, mixingConfig)
         }

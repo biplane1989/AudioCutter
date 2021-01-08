@@ -27,6 +27,7 @@ import com.example.audiocutter.functions.mystudio.dialog.DeleteDialog
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialogListener
 import com.example.audiocutter.functions.mystudio.objects.ActionData
 import com.example.audiocutter.util.Utils
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.my_studio_custom_header_tablayout_1.view.*
 
@@ -53,14 +54,22 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                             isDeleteClicked = false
                         }
                     } else {
-                        Toast.makeText(context, getString(R.string.my_studio_notification_chose_item_delete), Toast.LENGTH_SHORT)
-                            .show()
+                        context?.let {
+                            showNotification(getString(R.string.my_studio_notification_chose_item_delete))
+                        }
+//                        Toast.makeText(context, getString(R.string.my_studio_notification_chose_item_delete), Toast.LENGTH_SHORT)
+//                            .show()
                     }
                     myAudioManagerViewModel.clearAction()
                 }
             }
         }
+    }
 
+    private fun showNotification(text: String) {
+        view?.let {
+            Snackbar.make(it, text, Snackbar.LENGTH_LONG).show()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

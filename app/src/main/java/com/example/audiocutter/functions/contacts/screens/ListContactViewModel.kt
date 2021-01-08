@@ -118,13 +118,12 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
         } else {
             for (item in mListContact) {
                 if (item.searchHeader.toUpperCase(Locale.ROOT)
-                        .contains(data.toUpperCase(Locale.ROOT))) {
+                        .contains(data.toUpperCase(Locale.ROOT)) && !item.isHeader) {
                     mListSearch.add(item)
                 }
             }
             val newListSearch = getHeaderListLatter(mListSearch)
             mContactMediatorLivedata.postValue(newListSearch)
-//            mContactMediatorLivedata.postValue(mListSearch)
         }
 
         if (mListContact.size > 0) {

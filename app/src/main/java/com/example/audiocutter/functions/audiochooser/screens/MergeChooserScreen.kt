@@ -63,6 +63,10 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
                 audioMerAdapter.submitList(ArrayList(listMusic))
                 showList()
                 showProgressBar(false)
+
+                binding.rvMerge.post {
+                    binding.rvMerge.smoothScrollToPosition(0)
+                }
             }
         }
     }
@@ -112,7 +116,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
 
         }
     }
-
 
     private fun checkEdtSearchAudio() {
         binding.edtMerSearch.addTextChangedListener(object : TextWatcher {
