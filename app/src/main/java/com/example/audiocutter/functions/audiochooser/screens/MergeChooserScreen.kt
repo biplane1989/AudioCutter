@@ -22,12 +22,13 @@ import com.example.audiocutter.databinding.MergeChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergeChooserAdapter
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 
-class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAdapter.AudioMergeListener {
+class MergeChooserScreen : BaseFragment(), View.OnClickListener,
+    MergeChooserAdapter.AudioMergeListener {
     private lateinit var binding: MergeChooserScreenBinding
     private lateinit var audioMerAdapter: MergeChooserAdapter
     private val audioMerModel: MergeChooserModel by navGraphViewModels(R.id.mer_navigation)
     var currentPos = -1
-
+    private var isSearchStatus = false
     var stateObserver = Observer<Int> {
         when (it) {
             1 -> {
@@ -60,13 +61,17 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
 
             } else {
 
-                audioMerAdapter.submitList(ArrayList(listMusic))
+                audioMerAdapter.submitList(ArrayList(listMusic)) {
+                    if (isSearchStatus) {
+                        binding.rvMerge.smoothScrollToPosition(0)
+                    }
+                }
                 showList()
                 showProgressBar(false)
 
-                binding.rvMerge.post {
-                    binding.rvMerge.smoothScrollToPosition(0)
-                }
+//                binding.rvMerge.post {
+//                    binding.rvMerge.smoothScrollToPosition(0)
+//                }
             }
         }
     }
@@ -86,7 +91,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     }
 
 
-
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
@@ -98,7 +102,11 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         )
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.merge_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
@@ -123,6 +131,10 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
             }
 
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+                binding.rvMerge.post {
+                    binding.rvMerge.smoothScrollToPosition(0)
+                }
                 audioMerModel.stop()
                 searchAudioByName(textChange.toString())
                 if (textChange.toString() != "") {
@@ -209,7 +221,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     }
 
     override fun chooseItemAudio(audioCutterView: AudioCutterView, rs: Boolean) {
-                audioMerModel.chooseItemAudioFile(audioCutterView, rs)
+        audioMerModel.chooseItemAudioFile(audioCutterView, rs)
     }
 
     private fun showEmptyList() {
@@ -239,9 +251,11 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         when (view) {
             binding.ivMerScreenSearch -> {
                 searchAudiofile()
+                isSearchStatus = true
             }
             binding.ivMerScreenBackEdt -> {
                 previousStatus()
+                isSearchStatus = false
             }
             binding.ivMerScreenClose -> {
                 if (!binding.edtMerSearch.text.toString().isEmpty()) {

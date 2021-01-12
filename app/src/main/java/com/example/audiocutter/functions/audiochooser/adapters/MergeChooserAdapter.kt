@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.*
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -30,6 +31,7 @@ class MergeChooserAdapter(
     val audioPlayer: AudioPlayer,
     val lifecycleCoroutineScope: LifecycleCoroutineScope,
     val activity: Activity
+
 ) : ListAdapter<AudioCutterView, MergeChooserAdapter.MergeHolder>(MergerChooserAudioDiff()) {
     lateinit var mCallBack: AudioMergeListener
     val SIZE_MB = 1024 * 1024
@@ -40,13 +42,23 @@ class MergeChooserAdapter(
         mCallBack = event
     }
 
-    override fun submitList(list: List<AudioCutterView>?) {
+//    override fun submitList(list: List<AudioCutterView>?) {
+//        if (list!!.size != 0 || list != null) {
+//            listAudios = ArrayList(list)
+//            super.submitList(listAudios)
+//        } else if (list!!.size == 0 || list == null) {
+//            listAudios = ArrayList()
+//            super.submitList(listAudios)
+//        }
+//    }
+
+    override fun submitList(list: MutableList<AudioCutterView>?, commitCallback: Runnable?) {
         if (list!!.size != 0 || list != null) {
             listAudios = ArrayList(list)
-            super.submitList(listAudios)
+            super.submitList(listAudios, commitCallback)
         } else if (list!!.size == 0 || list == null) {
             listAudios = ArrayList()
-            super.submitList(listAudios)
+            super.submitList(listAudios, commitCallback)
         }
     }
 
@@ -166,7 +178,8 @@ class MergeChooserAdapter(
     }
 
 
-    inner class MergeHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, LifecycleOwner {
+    inner class MergeHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener, LifecycleOwner {
 
         val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio_merger)
         val ivChecked = itemView.findViewById<ImageView>(R.id.iv_merger_check)
@@ -195,7 +208,10 @@ class MergeChooserAdapter(
         private fun updatePlayInfor(playerInfo: PlayerInfo) {
             playerState = playerInfo.playerState
             pgAudio.updatePG(playerInfo.posision.toLong(), playerInfo.duration.toLong())
-            Log.d("giangtd123", "updatePlayInfor: pecent: " + playerInfo.posision.toLong() + "status: " + playerInfo.playerState)
+            Log.d(
+                "giangtd123",
+                "updatePlayInfor: pecent: " + playerInfo.posision.toLong() + "status: " + playerInfo.playerState
+            )
 
             val itemAudioFile = getItem(adapterPosition)
             val bitmap = itemAudioFile.audioFile.bitmap
@@ -259,7 +275,7 @@ class MergeChooserAdapter(
                             val audioCutterView = getItem(adapterPosition)
                             if (audioCutterView.audioFile.getFilePath() == it.getFilePath()) {
                                 updatePlayInfor(playerInfo)
-                            }else {
+                            } else {
                                 resetItem(audioCutterView)
                             }
                         }
@@ -347,10 +363,13 @@ class MergeChooserAdapter(
                     }
                 }
             }*/
-            if(itemAudioFile.currentPos>0){
+            if (itemAudioFile.currentPos > 0) {
                 pgAudio.post {
                     pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration, false)
-                    Log.d("TAG", "manhnq: currentPos ${itemAudioFile.currentPos} -  duration ${itemAudioFile.duration}")
+                    Log.d(
+                        "TAG",
+                        "manhnq: currentPos ${itemAudioFile.currentPos} -  duration ${itemAudioFile.duration}"
+                    )
                 }
 
             }

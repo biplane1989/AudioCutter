@@ -39,7 +39,8 @@ import com.example.audiocutter.permissions.WriteSettingPermissionRequest
 import com.example.audiocutter.util.FileUtils
 import com.google.android.material.snackbar.Snackbar
 
-class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, SetAsDialog.setAsListener, View.OnClickListener, OnActionCallback {
+class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
+    SetAsDialog.setAsListener, View.OnClickListener, OnActionCallback {
     private var filePathAudio: String? = ""
     val TAG = CutChooserScreen::class.java.name
     private lateinit var binding: CutChooserScreenBinding
@@ -53,7 +54,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     private var pendingRequestingPermission = 0
     private val CUT_CHOOSE_REQUESTING_PERMISSION = 1 shl 5
     private var indexChoose = 0
-
+    private var isSearchStatus = false
 
     private var stateObserver = Observer<Int> {
         when (it) {
@@ -82,13 +83,13 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             if (listMusic.isEmpty()) {
                 showEmptyList()
             } else {
-                audioCutterAdapter.submitList(ArrayList(listMusic))
+                audioCutterAdapter.submitList(ArrayList(listMusic)){
+                    if (isSearchStatus) {
+                        binding.rvAudioCutter.scrollToPosition(0)
+                    }
+                }
                 showList()
                 showProgressBar(false)
-
-                binding.rvAudioCutter.post {
-                    binding.rvAudioCutter.smoothScrollToPosition(0)
-                }
 
             }
         }
@@ -128,14 +129,20 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         audioCutterModel = ViewModelProvider(this).get(CutChooserViewModel::class.java)
-        audioCutterAdapter = CutChooserAdapter(requireContext(), audioCutterModel.getAudioPlayer(), lifecycleScope, requireActivity())
+        audioCutterAdapter = CutChooserAdapter(
+            requireContext(),
+            audioCutterModel.getAudioPlayer(),
+            lifecycleScope,
+            requireActivity()
+        )
 //        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
 
     override fun onCreateView(
 
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.cut_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
@@ -180,6 +187,10 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             }
 
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+                binding.rvAudioCutter.post {
+                    binding.rvAudioCutter.smoothScrollToPosition(0)
+                }
                 audioCutterModel.stop()
                 searchAudioByName(textChange.toString())
                 if (textChange.toString() != "") {
@@ -315,7 +326,10 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
                 pendingRequestingPermission = CUT_CHOOSE_REQUESTING_PERMISSION
                 checkPermissionRequest()
             }
-                .show(requireActivity().supportFragmentManager, ContactPermissionDialog::class.java.name)
+                .show(
+                    requireActivity().supportFragmentManager,
+                    ContactPermissionDialog::class.java.name
+                )
         }
 
     }
@@ -347,7 +361,11 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     override fun onCutItemClicked(itemAudio: AudioCutterView) {
         audioCutterModel.stop()
         if (itemAudio.audioFile.duration < Constance.MIN_DURATION) {
-            val dialogSnack = Snackbar.make(requireView(), getString(R.string.notification_file_was_short_mystudio_screen), Snackbar.LENGTH_SHORT)
+            val dialogSnack = Snackbar.make(
+                requireView(),
+                getString(R.string.notification_file_was_short_mystudio_screen),
+                Snackbar.LENGTH_SHORT
+            )
             dialogSnack.show()
         } else {
             previousStatus()
@@ -388,7 +406,8 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             }
             TypeAudioSetAs.NOTIFICATION -> {
                 if (ManagerFactory.getRingtonManager()
-                        .setNotificationSound(audioCutterItem.audioFile)) {
+                        .setNotificationSound(audioCutterItem.audioFile)
+                ) {
                     showNotification(getString(R.string.result_screen_set_notification_successful))
                 } else {
                     showNotification(getString(R.string.result_screen_set_notification_fail))
@@ -423,11 +442,12 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
                 getAllFile()
             }
             binding.ivCutterScreenSearch -> {
+                isSearchStatus = true
                 searchAudiofile()
             }
             binding.ivCutterScreenBackEdt -> {
                 previousStatus()
-
+                isSearchStatus = false
             }
             binding.ivCutterScreenClose -> {
                 clearText()
@@ -478,7 +498,10 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         intent.type = "audio/*"
 //                intent.type = "audio/mp3"
         intent.addCategory(Intent.CATEGORY_OPENABLE)
-        startActivityForResult(Intent.createChooser(intent, "Select a File "), REQ_CODE_PICK_SOUNDFILE)
+        startActivityForResult(
+            Intent.createChooser(intent, "Select a File "),
+            REQ_CODE_PICK_SOUNDFILE
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
@@ -491,7 +514,11 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
                     if (audio.duration > Constance.MIN_DURATION) {
                         viewStateManager.onCuttingItemClicked(this, AudioCutterView(audio))
                     } else {
-                        Snackbar.make(requireView(), getString(R.string.notification_file_was_short_mystudio_screen), Snackbar.LENGTH_SHORT)
+                        Snackbar.make(
+                            requireView(),
+                            getString(R.string.notification_file_was_short_mystudio_screen),
+                            Snackbar.LENGTH_SHORT
+                        )
                             .show()
                     }
                 }

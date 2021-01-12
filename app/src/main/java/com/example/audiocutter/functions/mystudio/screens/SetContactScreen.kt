@@ -35,6 +35,7 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
     private lateinit var listContactAdapter: SetContactAdapter
     private lateinit var mListContactViewModel: SetContactViewModel
     private val safeArg: SetContactScreenArgs by navArgs()      // truyen du lieu qua navigation
+    private var isSearchStatus = false
 
     companion object {
         val BUNDLE_NAME_KEY = "BUNDLE_NAME_KEY"
@@ -53,9 +54,12 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
     private val listContactObserver = Observer<List<SetContactItemView>> { listContact ->
         if (listContact != null) {
             listContactAdapter.submitList(ArrayList(listContact))
-            binding.rvListContact.post {
-                binding.rvListContact.smoothScrollToPosition(0)
+            if (isSearchStatus) {
+                binding.rvListContact.post {
+                    binding.rvListContact.smoothScrollToPosition(0)
+                }
             }
+
         }
     }
 
@@ -96,8 +100,13 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
         binding.rvListContact.adapter = listContactAdapter
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_contact_screen, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding =
+            DataBindingUtil.inflate(inflater, R.layout.my_studio_contact_screen, container, false)
 
         runOnUI {
             // loi observe hoi lai tai
@@ -127,7 +136,10 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
 //        }
 
         mListContactViewModel.getData()
-            .observe(this as LifecycleOwner, listContactObserver)          // loi observe hoi lai tai
+            .observe(
+                this as LifecycleOwner,
+                listContactObserver
+            )          // loi observe hoi lai tai
 
     }
 
@@ -148,7 +160,12 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
 
-            override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
+            override fun onTextChanged(
+                textChange: CharSequence,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
                 mListContactViewModel.searchContact(textChange.toString())
                 if (textChange.toString() != "") {
                     binding.ivClear.visibility = View.VISIBLE
@@ -174,12 +191,14 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
                 binding.clDefault.visibility = View.GONE
                 binding.clSearch.visibility = View.VISIBLE
                 showKeyboard()
+                isSearchStatus = true
             }
             binding.ivSearchClose -> {
                 binding.clDefault.visibility = View.VISIBLE
                 binding.clSearch.visibility = View.GONE
                 binding.edtSearch.text.clear()
                 hideKeyboard()
+                isSearchStatus = false
             }
             binding.ivClear -> {
                 binding.edtSearch.text.clear()

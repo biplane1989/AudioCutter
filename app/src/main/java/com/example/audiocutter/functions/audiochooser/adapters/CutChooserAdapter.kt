@@ -43,13 +43,23 @@ class CutChooserAdapter(
         mCallBack = event
     }
 
-    override fun submitList(list: List<AudioCutterView>?) {
+//    override fun submitList(list: List<AudioCutterView>?) {
+//        if (list!!.size != 0 || list != null) {
+//            listAudios = ArrayList(list)
+//            super.submitList(listAudios)
+//        } else if (list!!.size == 0 || list == null) {
+//            listAudios = ArrayList()
+//            super.submitList(listAudios)
+//        }
+//    }
+
+    override fun submitList(list: MutableList<AudioCutterView>?, commitCallback: Runnable?) {
         if (list!!.size != 0 || list != null) {
             listAudios = ArrayList(list)
-            super.submitList(listAudios)
+            super.submitList(listAudios,commitCallback)
         } else if (list!!.size == 0 || list == null) {
             listAudios = ArrayList()
-            super.submitList(listAudios)
+            super.submitList(listAudios,commitCallback)
         }
     }
 

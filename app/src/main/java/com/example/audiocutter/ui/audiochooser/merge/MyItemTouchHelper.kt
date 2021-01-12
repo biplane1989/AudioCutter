@@ -1,6 +1,7 @@
 package com.example.audiocutter.ui.audiochooser.merge
 
 import android.content.Context
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -10,6 +11,8 @@ import com.example.audiocutter.functions.audiochooser.event.OnItemTouchHelper
 class MyItemTouchHelper(private var mAdapter : OnItemTouchHelper, val context: Context) :
     ItemTouchHelper.Callback() {
     private var mAdapterTouch: OnItemTouchHelper = mAdapter
+    private var isDragging = false
+
 
     override fun isLongPressDragEnabled(): Boolean {
         return false
@@ -30,6 +33,7 @@ class MyItemTouchHelper(private var mAdapter : OnItemTouchHelper, val context: C
     }
 
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+        isDragging = actionState != ItemTouchHelper.ACTION_STATE_IDLE
         super.onSelectedChanged(viewHolder, actionState)
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
             viewHolder!!.itemView.setBackgroundColor(
@@ -62,6 +66,11 @@ class MyItemTouchHelper(private var mAdapter : OnItemTouchHelper, val context: C
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         //do no thing
+
+    }
+
+    fun isDragging():Boolean{
+        return isDragging
     }
 
 }

@@ -24,8 +24,11 @@ import com.example.audiocutter.databinding.MixChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MixChooserAdapter
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter.AudioMixerListener {
+class MixChooserScreen : BaseFragment(), View.OnClickListener,
+    MixChooserAdapter.AudioMixerListener {
 
     val TAG = CutChooserScreen::class.java.name
     private lateinit var audioMixAdapter: MixChooserAdapter
@@ -33,6 +36,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     private lateinit var binding: MixChooserScreenBinding
     private var currentPos = -1
     private var isCanChoose = 0
+    private var isSearchStatus = false
 
     //    private var toast: Toast? = null
     private var stateObserver = Observer<Int> {
@@ -58,14 +62,14 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
             if (listMusic.isEmpty()) {
                 showEmptyList()
             } else {
-
-                audioMixAdapter.submitList(ArrayList(listMusic))
+                audioMixAdapter.submitList(ArrayList(listMusic)) {
+                    Log.d(TAG, "submitList done : ")
+                    if (isSearchStatus) {
+                        binding.rvMixer.scrollToPosition(0)
+                    }
+                }
                 showList()
                 showProgressBar(false)
-
-                binding.rvMixer.post {
-                    binding.rvMixer.smoothScrollToPosition(0)
-                }
             }
         }
     }
@@ -115,11 +119,20 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         audioMixModel = ViewModelProvider(this).get(MixChooserModel::class.java)
-        audioMixAdapter = MixChooserAdapter(requireContext(), audioMixModel.getAudioPlayer(), lifecycleScope, requireActivity())
+        audioMixAdapter = MixChooserAdapter(
+            requireContext(),
+            audioMixModel.getAudioPlayer(),
+            lifecycleScope,
+            requireActivity()
+        )
 
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.mix_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
@@ -151,10 +164,13 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
     private fun checkEdtSearchAudio() {
         binding.edtMixerSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
             }
 
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                Log.d(TAG, "onTextChanged: change")
+//                binding.rvMixer.post {
+//                    binding.rvMixer.scrollToPosition(0)
+//                }
                 audioMixModel.stop()
                 searchAudioByName(textChange.toString())
                 if (textChange.toString() != "") {
@@ -289,9 +305,11 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
         when (view) {
             binding.ivMixerScreenSearch -> {
                 searchAudiofile()
+                isSearchStatus = true
             }
             binding.ivMixerScreenBackEdt -> {
                 previousStatus()
+                isSearchStatus = false
             }
             binding.ivMixerScreenClose -> {
                 clearText()
@@ -315,7 +333,11 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter
         val listItemHandle = audioMixModel.getListItemChoose()
         if (listItemHandle.size == 2) {
             previousStatus()
-            viewStateManager.mixingOnSelected(this, listItemHandle[0].audioFile, listItemHandle[1].audioFile)
+            viewStateManager.mixingOnSelected(
+                this,
+                listItemHandle[0].audioFile,
+                listItemHandle[1].audioFile
+            )
         }
 
         /**place handle listItem choose*/
