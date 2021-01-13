@@ -44,11 +44,11 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
     private val listAudioObserver = Observer<List<SelectItemView>> { listAudio ->
         if (listAudio != null) {
             mListSelectAdapter.submitList(ArrayList(listAudio))
-            if (isSearchStatus) {
-                binding.rvListSelectAudio.post {
-                    binding.rvListSelectAudio.smoothScrollToPosition(0)
-                }
-            }
+//            if (isSearchStatus) {
+//                binding.rvListSelectAudio.post {
+//                    binding.rvListSelectAudio.smoothScrollToPosition(0)
+//                }
+//            }
         }
     }
 
@@ -190,6 +190,11 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
                 before: Int,
                 count: Int
             ) {
+                if (isSearchStatus) {
+                    binding.rvListSelectAudio.post {
+                        binding.rvListSelectAudio.smoothScrollToPosition(0)
+                    }
+                }
                 mListSelectAudioViewModel.searchAudioFile(textChange.toString())
                 if (textChange.toString() != "") {
                     binding.ivClear.visibility = View.VISIBLE

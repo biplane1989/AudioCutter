@@ -54,11 +54,11 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
     private val listContactObserver = Observer<List<SetContactItemView>> { listContact ->
         if (listContact != null) {
             listContactAdapter.submitList(ArrayList(listContact))
-            if (isSearchStatus) {
-                binding.rvListContact.post {
-                    binding.rvListContact.smoothScrollToPosition(0)
-                }
-            }
+//            if (isSearchStatus) {
+//                binding.rvListContact.post {
+//                    binding.rvListContact.smoothScrollToPosition(0)
+//                }
+//            }
 
         }
     }
@@ -166,6 +166,11 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
                 before: Int,
                 count: Int
             ) {
+                if (isSearchStatus) {
+                    binding.rvListContact.post {
+                        binding.rvListContact.smoothScrollToPosition(0)
+                    }
+                }
                 mListContactViewModel.searchContact(textChange.toString())
                 if (textChange.toString() != "") {
                     binding.ivClear.visibility = View.VISIBLE
@@ -199,6 +204,10 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
                 binding.edtSearch.text.clear()
                 hideKeyboard()
                 isSearchStatus = false
+                binding.rvListContact.post {
+                    binding.rvListContact.smoothScrollToPosition(0)
+                }
+
             }
             binding.ivClear -> {
                 binding.edtSearch.text.clear()

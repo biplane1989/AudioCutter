@@ -62,16 +62,13 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
             } else {
 
                 audioMerAdapter.submitList(ArrayList(listMusic)) {
-                    if (isSearchStatus) {
-                        binding.rvMerge.smoothScrollToPosition(0)
-                    }
+//                    if (isSearchStatus) {
+//                        binding.rvMerge.smoothScrollToPosition(0)
+//                    }
                 }
                 showList()
                 showProgressBar(false)
 
-//                binding.rvMerge.post {
-//                    binding.rvMerge.smoothScrollToPosition(0)
-//                }
             }
         }
     }
@@ -131,9 +128,10 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
             }
 
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-                binding.rvMerge.post {
-                    binding.rvMerge.smoothScrollToPosition(0)
+                if (isSearchStatus) {
+                    binding.rvMerge.post {
+                        binding.rvMerge.smoothScrollToPosition(0)
+                    }
                 }
                 audioMerModel.stop()
                 searchAudioByName(textChange.toString())

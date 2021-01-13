@@ -64,9 +64,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
             } else {
                 audioMixAdapter.submitList(ArrayList(listMusic)) {
                     Log.d(TAG, "submitList done : ")
-                    if (isSearchStatus) {
-                        binding.rvMixer.scrollToPosition(0)
-                    }
+//                    if (isSearchStatus) {
+//                        binding.rvMixer.scrollToPosition(0)
+//                    }
                 }
                 showList()
                 showProgressBar(false)
@@ -168,9 +168,11 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 Log.d(TAG, "onTextChanged: change")
-//                binding.rvMixer.post {
-//                    binding.rvMixer.scrollToPosition(0)
-//                }
+                if (isSearchStatus) {
+                    binding.rvMixer.post {
+                        binding.rvMixer.scrollToPosition(0)
+                    }
+                }
                 audioMixModel.stop()
                 searchAudioByName(textChange.toString())
                 if (textChange.toString() != "") {
