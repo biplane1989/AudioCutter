@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.contacts.screens
 
 import android.app.Application
 import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,6 +26,16 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
     private var mListSearch = ArrayList<ContactItemView>()
     private var mListContact = ArrayList<ContactItemView>()
     private val mContactMediatorLivedata = MediatorLiveData<List<ContactItemView>>()
+
+    private var numberPhoneSelect = ""
+
+    fun setPhoneSelect(phoneSelect: String) {       // get slect position when back screen
+        numberPhoneSelect = phoneSelect
+    }
+
+    fun getPhoneSelect(): String {
+        return numberPhoneSelect
+    }
 
     init {
         contactManager.setup()
@@ -160,5 +171,6 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
     override fun onCleared() {
         super.onCleared()
         contactManager.release()
+        Log.d("TAG", "onCleared: list contact")
     }
 }

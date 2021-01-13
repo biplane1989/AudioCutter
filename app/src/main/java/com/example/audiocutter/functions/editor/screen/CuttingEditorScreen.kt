@@ -1,5 +1,6 @@
 package com.example.audiocutter.functions.editor.screen
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,6 +9,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -171,6 +173,9 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         binding.increaseEndTimeIv.setOnLongClickListener(this)
         binding.reductionEndTimeIv.setOnLongClickListener(this)
 
+        binding.startTimeTv.setOnClickListener(this)
+        binding.endTimeTv.setOnClickListener(this)
+
     }
 
 
@@ -286,6 +291,12 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
             binding.nextIv -> {
                 cuttingViewModel.seekAudio(cuttingViewModel.getCuttingCurrPos() + Utils.FIVE_SECOND)
             }
+            binding.startTimeTv -> {
+
+            }
+            binding.endTimeTv -> {
+
+            }
         }
     }
 
@@ -359,5 +370,6 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
             Snackbar.make(it, text, Snackbar.LENGTH_LONG).show()
         }
     }
+
 
 }

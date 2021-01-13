@@ -99,7 +99,7 @@
     <string name="result_screen_title_loading">Converting...</string>
     <string name="result_screen_title_result">Audio Saved</string>
     <string name="result_screen_size_default">128kb/s</string>
-    <string name="result_scren_wait_task">wait task...</string>
+    <string name="result_scren_wait_task">Please wait until other task finished...</string>
     <string name="result_screen_timelife_default">00:00</string>
     <string name="result_screen_timetotal_default">/00:00</string>
     <string name="result_screen_title_ringtone">Ringtone</string>

@@ -34,10 +34,25 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
     private val listContactObserver = Observer<List<ContactItemView>> { listContact ->
         if (listContact != null) {
             listContactAdapter.submitList(ArrayList(listContact))
-            binding.rvListContact.post {
-                binding.rvListContact.smoothScrollToPosition(0)
+
+            if (mListContactViewModel.getPhoneSelect() != "") {
+                val index = getPositionSelect(listContact, mListContactViewModel.getPhoneSelect())
+                if (index != -1) {
+                    binding.rvListContact.post {
+                        binding.rvListContact.smoothScrollToPosition(index)
+                    }
+                }
             }
         }
+    }
+
+    private fun getPositionSelect(listContact: List<ContactItemView>, phoneNumber: String): Int {
+        var index = 0
+        for (item in listContact) {
+            if (item.contactItem.phoneNumber.equals(phoneNumber)) return index
+            index++
+        }
+        return -1
     }
 
     // observer loading status
@@ -114,6 +129,9 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
 
             override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
                 mListContactViewModel.searchContact(textChange.toString())
+                binding.rvListContact.post {
+                    binding.rvListContact.smoothScrollToPosition(0)
+                }
                 if (textChange.toString() != "") {
                     binding.ivClear.visibility = View.VISIBLE
                 } else {
@@ -124,6 +142,7 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
     }
 
     override fun itemOnClick(phoneNumber: String, ringtonePath: String) {
+        mListContactViewModel.setPhoneSelect(phoneNumber)
         hideKeyboard()
         viewStateManager.contactScreenOnItemClicked(this, phoneNumber, ringtonePath)
     }
