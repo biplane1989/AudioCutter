@@ -9,6 +9,8 @@ import com.example.waveform.R;
 import com.example.waveform.Utils;
 import com.example.waveform.soundfile.AudioDecoder;
 
+import java.util.Locale;
+
 class WaveformDrawer {
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -27,7 +29,6 @@ class WaveformDrawer {
 
     private boolean mInitialized;
     int mOffset;
-    private final String waitingForLoadingText;
     private final Rect textBounds = new Rect();
     private final Paint mLinePlayingPaint;
 
@@ -45,8 +46,6 @@ class WaveformDrawer {
 
         mTextPaint.setColor(Color.BLACK);
         mTextPaint.setTextSize(Utils.Companion.dpToPx(mWaveformmView.getContext(), 16));
-
-        waitingForLoadingText = mWaveformmView.getResources().getString(R.string.waiting_for_loading_waveform);
 
         mLenByZoomLevel = null;
         mZoomFactorByZoomLevel = null;
@@ -159,7 +158,7 @@ class WaveformDrawer {
             int measuredHeight = mWaveformmView.getWaveformHeight();
             int start = mOffset;
             int width = mLenByZoomLevel[mZoomLevel] - start;
-            int ctr = (mWaveformmView.getDrawingStartY() + mWaveformmView.getDrawingEndY())/2;
+            int ctr = (mWaveformmView.getDrawingStartY() + mWaveformmView.getDrawingEndY()) / 2;
 
             if (width > measuredWidth)
                 width = measuredWidth;
@@ -178,10 +177,11 @@ class WaveformDrawer {
         int measuredWidth = mWaveformmView.getMeasuredWidth();
         int measuredHeight = (int) (mWaveformmView.getMeasuredHeight());
         if (measuredHeight > 0 && measuredWidth > 0) {
-            mTextPaint.getTextBounds(waitingForLoadingText, 0, waitingForLoadingText.length(), textBounds);
+            String waitingText = String.format(Locale.getDefault(),"%s %d", mWaveformmView.getResources().getString(R.string.waiting_for_loading_waveform), mWaveformmView.getLoadingPercent()) + "%";
+            mTextPaint.getTextBounds(waitingText, 0, waitingText.length(), textBounds);
             float x = (measuredWidth - textBounds.width() - mWaveformmView.getPaddingLeft() + mWaveformmView.getPaddingRight()) / 2f;
             float y = (measuredHeight - textBounds.height() - mWaveformmView.getPaddingTop() + mWaveformmView.getPaddingBottom()) / 2f;
-            canvas.drawText(waitingForLoadingText, x, y, mTextPaint);
+            canvas.drawText(waitingText, x, y, mTextPaint);
         }
 
     }
@@ -268,7 +268,7 @@ class WaveformDrawer {
         if (canZoomIn()) {
             mZoomLevel++;
             float factor = mLenByZoomLevel[mZoomLevel] / (float) mLenByZoomLevel[mZoomLevel - 1];
-            mOffset = (int) (mWaveformmView.getSelectionStart()*factor);
+            mOffset = (int) (mWaveformmView.getSelectionStart() * factor);
           /*  int offsetCenter = mOffset + (int) (mWaveformmView.getMeasuredWidth() / factor);
             offsetCenter *= factor;
             mOffset = offsetCenter - (int) (mWaveformmView.getMeasuredWidth() / factor);*/
@@ -286,7 +286,7 @@ class WaveformDrawer {
             mZoomLevel--;
             float factor = mLenByZoomLevel[mZoomLevel + 1] / (float) mLenByZoomLevel[mZoomLevel];
             int offsetCenter = (int) (mOffset + mWaveformmView.getMeasuredWidth() / factor);
-            mOffset = (int) (mWaveformmView.getSelectionStart()/factor);
+            mOffset = (int) (mWaveformmView.getSelectionStart() / factor);
             //mOffset /=factor;
           /*  offsetCenter /= factor;
             mOffset = offsetCenter - (int) (mWaveformmView.getMeasuredWidth() / factor);*/

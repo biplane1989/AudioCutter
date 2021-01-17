@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.min
 
 class WaveformView : View, ProgressListener {
     companion object {
@@ -43,8 +44,9 @@ class WaveformView : View, ProgressListener {
     private lateinit var mTouchEventHandler: WaveformTouchEventHandler
     private var isDetachedWindow: Boolean = false
     private val mainScope = MainScope()
-
+    private var loadingPercent:Int = 0
     override fun reportProgress(fractionComplete: Double): Boolean {
+        loadingPercent = min(100, (fractionComplete * 100).toInt())
         return !isDetachedWindow
     }
 
@@ -123,6 +125,7 @@ class WaveformView : View, ProgressListener {
 
 
     suspend fun setDataSource(filePath: String, duration: Long) = withContext(Dispatchers.Default) {
+        loadingPercent = 0
         mAudioDecoder = null
         mTouchEventHandler.reset()
         mWaveformDrawer.reset()
@@ -307,6 +310,8 @@ class WaveformView : View, ProgressListener {
         mWaveformViewListener?.onStartTimeChanged(startTime)
         mWaveformViewListener?.onEndTimeChanged(endTime)
     }
-
+    fun getLoadingPercent():Int{
+        return loadingPercent
+    }
 
 }
