@@ -31,10 +31,12 @@ import com.example.core.core.Effect
 import com.example.waveform.views.WaveformView
 import com.example.waveform.views.WaveformViewListener
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 
-class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickListener, View.OnLongClickListener, OnDialogAdvanceListener, DialogConvert.OnDialogConvertListener {
+class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickListener,
+    View.OnLongClickListener, OnDialogAdvanceListener, DialogConvert.OnDialogConvertListener {
 
     val safeArg: CuttingEditorScreenArgs by navArgs()
     private var playerState = PlayerState.IDLE
@@ -70,8 +72,13 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         audioPath = safeArg.pathAudio
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.cutting_editor_screen, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding =
+            DataBindingUtil.inflate(inflater, R.layout.cutting_editor_screen, container, false)
         return binding.root
     }
 
@@ -128,27 +135,31 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
                     Log.e(TAG, "observerAudio: PREPARING")
                 }
                 PlayerState.PLAYING -> {
+                    Log.e(TAG, "observerAudio: PLAYING")
                     binding.playIv.setImageResource(R.drawable.fragment_cutter_pause_ic)
                     playerState = PlayerState.PLAYING
                     binding.waveEditView.updatePlaybackInMs(it.posision)
                     cuttingViewModel.changeCurrPos(it.posision, false)
                 }
                 PlayerState.PAUSE -> {
+                    Log.e(TAG, "observerAudio: PAUSE")
                     binding.playIv.setImageResource(R.drawable.fragment_cutter_play_ic)
                     playerState = PlayerState.PAUSE
                 }
             }
 
-            if (it.posision <= (fadeIn.time * 1000)) {
+            if ((it.posision - cuttingViewModel.getCuttingStartPos()) <= (fadeIn.time * 1000)) {
                 if (fadeIn != Effect.OFF) {
-                    cuttingViewModel.setVolume((it.posision.toFloat() / 1000) * ratioVolumeFadeIn)
+                    cuttingViewModel.setVolume(((it.posision.toFloat()- cuttingViewModel.getCuttingStartPos()) / 1000) * ratioVolumeFadeIn)
                 }
             } else if (it.posision < cuttingViewModel.getCuttingEndPos() - fadeOut.time * 1000) {
                 cuttingViewModel.setVolume(1f)
             } else if (it.posision >= cuttingViewModel.getCuttingEndPos() - (fadeOut.time * 1000)) {
                 if (fadeOut != Effect.OFF) {
-                    cuttingViewModel.setVolume(((cuttingViewModel.getCuttingEndPos()
-                        .toFloat() - it.posision.toFloat()) / 1000) * ratioVolumeFadeout)
+                    cuttingViewModel.setVolume(
+                        ((cuttingViewModel.getCuttingEndPos()
+                            .toFloat() - it.posision.toFloat()) / 1000) * ratioVolumeFadeout
+                    )
                 }
             }
         }
@@ -254,7 +265,11 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
             }
             binding.tickIv -> {
                 cuttingViewModel.getAudioFile()?.let {
-                    DialogConvert.showDialogConvert(childFragmentManager, this, Utils.getBaseName(File(audioPath)))
+                    DialogConvert.showDialogConvert(
+                        childFragmentManager,
+                        this,
+                        Utils.getBaseName(File(audioPath))
+                    )
                 }
             }
             binding.increaseStartTimeIv -> {
@@ -302,16 +317,32 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
     override fun onLongClick(v: View?): Boolean {
         when (v) {
             binding.increaseEndTimeIv -> {
-                updateTimeWaveView(isIncrease = true, isStart = false, view = binding.increaseEndTimeIv)
+                updateTimeWaveView(
+                    isIncrease = true,
+                    isStart = false,
+                    view = binding.increaseEndTimeIv
+                )
             }
             binding.increaseStartTimeIv -> {
-                updateTimeWaveView(isIncrease = true, isStart = true, view = binding.increaseStartTimeIv)
+                updateTimeWaveView(
+                    isIncrease = true,
+                    isStart = true,
+                    view = binding.increaseStartTimeIv
+                )
             }
             binding.reductionStartTimeIv -> {
-                updateTimeWaveView(isIncrease = false, isStart = true, view = binding.reductionStartTimeIv)
+                updateTimeWaveView(
+                    isIncrease = false,
+                    isStart = true,
+                    view = binding.reductionStartTimeIv
+                )
             }
             binding.reductionEndTimeIv -> {
-                updateTimeWaveView(isIncrease = false, isStart = false, view = binding.reductionEndTimeIv)
+                updateTimeWaveView(
+                    isIncrease = false,
+                    isStart = false,
+                    view = binding.reductionEndTimeIv
+                )
             }
         }
         return true
@@ -336,11 +367,12 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
     override fun onDialogOk(fadeIn: Effect, fadeOut: Effect) {
         this.fadeIn = fadeIn
         this.fadeOut = fadeOut
-        /* ManagerFactory.getAudioPlayer().seek(50)
-         ManagerFactory.getAudioPlayer().resume()*/
-        cuttingViewModel.seekAudio(RESET_AUDIO_VALUE)
-        cuttingViewModel.resumeAudio()
+        cuttingViewModel.changeCurrPos(cuttingViewModel.getCuttingEndPos())
         ratioVolume()
+        lifecycleScope.launchWhenResumed {
+            cuttingViewModel.clickedPlayButton()
+        }
+
     }
 
     private fun ratioVolume() {

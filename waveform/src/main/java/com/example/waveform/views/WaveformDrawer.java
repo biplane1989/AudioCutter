@@ -39,6 +39,7 @@ class WaveformDrawer {
     private final Rect textBounds = new Rect();
     private final Paint mLinePlayingPaint;
     private final int mWaveformSelectedColor, mWaveformUnselectedColor;
+    private final float cursorSize;
 
     WaveformDrawer(WaveformView waveformView, int waveformSelectedColor, int waveformUnselectedColor, int linePlayingColor) {
         mWaveformSelectedColor = waveformSelectedColor;
@@ -55,7 +56,7 @@ class WaveformDrawer {
 
         mTextPaint.setColor(Color.BLACK);
         mTextPaint.setTextSize(Utils.Companion.dpToPx(mWaveformView.getContext(), 16));
-
+        cursorSize = Utils.Companion.dpToPx(mWaveformView.getContext(), WaveformView.DEFAULT_CURSOR_SIZE_DP);
        /* mLenByZoomLevel = null;
         mZoomFactorByZoomLevel = null;*/
 
@@ -227,7 +228,7 @@ class WaveformDrawer {
         int h = (int) (getScaledHeight(mZoomValue, start + i) * measuredHeight / 2);
         drawWaveformLine(canvas, i, ctr - h, ctr + 1 + h, paint);
         if (i + start == mWaveformView.getPlayPos()) {
-            canvas.drawLine(i, mWaveformView.getDrawingStartY(), i, mWaveformView.getDrawingEndY(), mLinePlayingPaint);
+            canvas.drawLine(i, mWaveformView.getDrawingStartY()-cursorSize, i, mWaveformView.getDrawingEndY() + cursorSize, mLinePlayingPaint);
         }
     }
 

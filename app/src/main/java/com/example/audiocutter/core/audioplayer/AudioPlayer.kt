@@ -51,7 +51,10 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
     }
 
     private val listenerError = MediaPlayer.OnErrorListener { mp, what, extra ->
-        Log.d(TAG, "OnErrorListener: what $what isplaying ${mp.isPlaying} MediaPlayer.MEDIA_ERROR_IO ${MediaPlayer.MEDIA_ERROR_IO}")
+        Log.d(
+            TAG,
+            "OnErrorListener: what $what isplaying ${mp.isPlaying} MediaPlayer.MEDIA_ERROR_IO ${MediaPlayer.MEDIA_ERROR_IO}"
+        )
         stop()
         true
     }
@@ -109,9 +112,11 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         }
 
     }
-    private fun reset(){
+
+    private fun reset() {
         isSeeking = false
     }
+
     override fun play(audioFile: AudioFile, currentPosition: Int): Boolean {
         Log.d(TAG, "play: currentPosition : ${currentPosition}")
         mAudioFile = audioFile
@@ -212,7 +217,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         }
     }
 
-    override fun seek(position: Int,autoResume:Boolean) {
+    override fun seek(position: Int, autoResume: Boolean) {
         if (isSeeking) {
             return
         }
@@ -224,7 +229,7 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                 }
                 mPlayer.seekTo(position)
                 playInfoData.posision = position
-                if(autoResume){
+                if (autoResume) {
                     resume()
                     delay(100)
                 }
@@ -268,63 +273,72 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
         updateTimeJob = null
     }
 
+    private fun syncPlayInfoData() {
+        var changed = false
+        if (playInfoData.playerState != PlayerState.PREPARING && playInfoData.playerState != PlayerState.IDLE) {
+            playInfoData.duration = mPlayer.duration
+            var currentPosition = mPlayer.currentPosition
+            if (currentPosition >= mPlayer.duration) {
+                currentPosition = 0
+                playInfoData.posision = currentPosition
+                mPlayer.stop()
+
+                if (playInfoData.playerState != PlayerState.IDLE) {
+                    playInfoData.playerState = PlayerState.IDLE
+                    changed = true
+                }
+            }
+            if (mPlayer.isPlaying) {
+                if (playInfoData.playerState != PlayerState.PLAYING) {
+                    playInfoData.playerState = PlayerState.PLAYING
+                    changed = true
+                }
+            } else {
+                if (isStopped) {
+                    playInfoData.playerState = PlayerState.IDLE
+                    currentPosition = 0
+                    playInfoData.posision = currentPosition
+                    changed = true
+                } else {
+                    if (playInfoData.playerState == PlayerState.PLAYING) {
+                        playInfoData.playerState = PlayerState.PAUSE
+                        changed = true
+                    }
+                }
+
+            }
+
+            if (playInfoData.posision != mPlayer.currentPosition) {
+                changed = true
+                playInfoData.posision = mPlayer.currentPosition
+            }
+            if (changed && !isUpdateTimeJobCancelled()) {
+                notifyPlayerDataChanged()
+            }
+        }
+    }
+
     private suspend fun startTimerIfReady() {
         stopUpdateTime()
 
         updateTimeJob = mainScope.launch {
             while (!isUpdateTimeJobCancelled()) {
-                var changed = false
+
                 delay(500)
+                syncPlayInfoData()
 
-                if (playInfoData.playerState != PlayerState.PREPARING && playInfoData.playerState != PlayerState.IDLE) {
-                    playInfoData.duration = mPlayer.duration
-                    var currentPosition = mPlayer.currentPosition
-                    if (currentPosition >= mPlayer.duration) {
-                        currentPosition = 0
-                        playInfoData.posision = currentPosition
-                        mPlayer.stop()
-
-                        if (playInfoData.playerState != PlayerState.IDLE) {
-                            playInfoData.playerState = PlayerState.IDLE
-                            changed = true
-                        }
-                    }
-                    if (mPlayer.isPlaying) {
-                        if (playInfoData.playerState != PlayerState.PLAYING) {
-                            playInfoData.playerState = PlayerState.PLAYING
-                            changed = true
-                        }
-                    } else {
-                        if (isStopped) {
-                            playInfoData.playerState = PlayerState.IDLE
-                            currentPosition = 0
-                            playInfoData.posision = currentPosition
-                            changed = true
-                        } else {
-                            if (playInfoData.playerState == PlayerState.PLAYING) {
-                                playInfoData.playerState = PlayerState.PAUSE
-                                changed = true
-                            }
-                        }
-
-                    }
-
-                    if (playInfoData.posision != mPlayer.currentPosition) {
-                        changed = true
-                        playInfoData.posision = mPlayer.currentPosition
-                    }
-                    if (changed && !isUpdateTimeJobCancelled()) {
-                        notifyPlayerDataChanged()
-                    }
-                }
             }
         }
     }
-    private fun isUpdateTimeJobCancelled():Boolean{
+
+    private fun isUpdateTimeJobCancelled(): Boolean {
         return updateTimeJob?.isCancelled ?: true
     }
 
     override fun getPlayerInfoData(): PlayerInfo {
+        if(isStopped && playInfoData.playerState != PlayerState.IDLE){
+            syncPlayInfoData()
+        }
         return playInfoData
     }
 

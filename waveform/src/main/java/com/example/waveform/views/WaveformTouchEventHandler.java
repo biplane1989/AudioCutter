@@ -23,17 +23,17 @@ class WaveformTouchEventHandler {
     private int mFlingVelocity;
     private long mWaveformTouchStartMsec;
 
-    protected int mMaxPos;
-    protected int mStartPos;
-    protected int mEndPos;
-    protected int mOffsetGoal;
-    private int mPlaybackPos;
+    protected float mMaxPos;
+    protected float mStartPos;
+    protected float mEndPos;
+    protected float mOffsetGoal;
+    private float mPlaybackPos;
 
     private int mMinFrameDistance;
     private WaveformView mWaveformView;
     private WaveformDrawer mWaveformDrawer;
-    protected int mTouchInitialStartPos;
-    protected int mTouchInitialEndPos;
+    protected float mTouchInitialStartPos;
+    protected float mTouchInitialEndPos;
     private boolean mIsPlayingLineSliding = false;
     private int pendingPlaybackPos = NONE_PENDING_PLAYBACK_POS;
 
@@ -315,7 +315,7 @@ class WaveformTouchEventHandler {
         if (pos < 0)
             return 0;
         if (pos > mMaxPos)
-            return mMaxPos;
+            return (int) mMaxPos;
         return pos;
     }
 
@@ -339,7 +339,7 @@ class WaveformTouchEventHandler {
 
                 mOffset += offsetDelta;
                 if (mOffset + mWaveformView.getMeasuredWidth() / 2 > mMaxPos) {
-                    mOffset = mMaxPos - mWaveformView.getMeasuredWidth() / 2;
+                    mOffset = (int) (mMaxPos - mWaveformView.getMeasuredWidth() / 2);
                     mFlingVelocity = 0;
                 }
                 if (mOffset < 0) {
@@ -348,7 +348,7 @@ class WaveformTouchEventHandler {
                 }
                 mOffsetGoal = mOffset;
             } else {
-                offsetDelta = mOffsetGoal - mOffset;
+                offsetDelta = (int) (mOffsetGoal - mOffset);
 
                 if (offsetDelta > 10)
                     offsetDelta = offsetDelta / 10;
@@ -378,6 +378,7 @@ class WaveformTouchEventHandler {
         mEndPos *= factor;
         mPlaybackPos *= factor;
         mMinFrameDistance *= factor;
+        Log.d("taihhhh", "onWaveformZoomIn: mEndPos " + mEndPos);
     }
 
     void onWaveformZoomOut(float factor) {
@@ -389,6 +390,7 @@ class WaveformTouchEventHandler {
         mEndPos /= factor;
         mPlaybackPos /= factor;
         mMinFrameDistance /= factor;
+        Log.d("taihhhh", "onWaveformZoomOut: mEndPos " + mEndPos);
     }
 
     void onPlaybackChanged(int newPlayPos) {
@@ -412,8 +414,8 @@ class WaveformTouchEventHandler {
                 pendingPlaybackPos = newPlayPos;
             } else {
                 pendingPlaybackPos = NONE_PENDING_PLAYBACK_POS;
-                mAnimator = ValueAnimator.ofInt(mPlaybackPos, newPlayPos);
-                int duration = mWaveformView.pixelsToMillisecs(newPlayPos) - mWaveformView.pixelsToMillisecs(mPlaybackPos);
+                mAnimator = ValueAnimator.ofInt((int) mPlaybackPos, newPlayPos);
+                int duration = mWaveformView.pixelsToMillisecs(newPlayPos) - mWaveformView.pixelsToMillisecs((int) mPlaybackPos);
                 mAnimator.setDuration(Math.min(duration, 500));
                 mAnimator.setInterpolator(mPlayPosInterpolator);
                 mAnimator.addUpdateListener(mPlayPosAnimatorUpdateListener);
@@ -466,7 +468,7 @@ class WaveformTouchEventHandler {
     }
 
     int getPlaybackPos() {
-        return mPlaybackPos;
+        return (int) mPlaybackPos;
     }
 
     private void onPlayPosOutOfRange(boolean isEnd) {

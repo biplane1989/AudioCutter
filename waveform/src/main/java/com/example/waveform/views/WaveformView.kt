@@ -237,11 +237,11 @@ class WaveformView : View, ProgressListener {
     }
 
     protected fun getSelectionStart(): Int {
-        return mTouchEventHandler.mStartPos
+        return mTouchEventHandler.mStartPos.toInt()
     }
 
     protected fun getSelectionEnd(): Int {
-        return mTouchEventHandler.mEndPos
+        return mTouchEventHandler.mEndPos.toInt()
     }
 
     override fun onDetachedFromWindow() {
