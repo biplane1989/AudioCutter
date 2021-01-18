@@ -99,29 +99,30 @@
                     <TextView
                         android:id="@+id/tv_size_audio"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="@dimen/d_5"
+                        android:layout_height="wrap_content"
                         android:fontFamily="@font/opensans_regular"
                         android:gravity="bottom"
                         android:text="@string/default_size_audio"
                         android:textSize="@dimen/d_14" />
 
-                    <View
-                        android:layout_width="0.5dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginVertical="@dimen/d_1"
-                        android:background="@color/colorgray" />
+<!--                    <View-->
+<!--                        android:paddingTop="30dp"-->
+<!--                        android:paddingBottom="30dp"-->
+<!--                        android:layout_width="0.5dp"-->
+<!--                        android:layout_height="match_parent"-->
+<!--                        android:layout_marginVertical="@dimen/d_1"-->
+<!--                        android:background="@color/colorgray" />-->
 
                     <TextView
                         android:id="@+id/tv_bitrate_audio"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="@dimen/d_5"
+                        android:layout_height="wrap_content"
                         android:fontFamily="@font/opensans_regular"
                         android:gravity="bottom"
                         android:text="@string/default_bitrate_audio"
                         android:textSize="@dimen/d_14" />
                 </TableRow>
+
             </LinearLayout>
 
             <com.example.audiocutter.ui.audiochooser.cut.WaveAudio

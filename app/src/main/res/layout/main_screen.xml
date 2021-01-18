@@ -29,8 +29,8 @@
 
             <ImageView
                 android:id="@+id/btn_vip"
-                android:layout_width="@dimen/d_30"
-                android:layout_height="@dimen/d_48"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_gravity="top"
                 android:background="?android:selectableItemBackground"
                 android:scaleType="centerInside"
@@ -38,8 +38,8 @@
 
             <ImageView
                 android:id="@+id/advertisement_button"
-                android:layout_width="@dimen/d_30"
-                android:layout_height="@dimen/d_48"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_gravity="top"
                 android:background="?android:selectableItemBackground"
                 android:scaleType="centerInside"
@@ -47,8 +47,8 @@
 
             <ImageView
                 android:id="@+id/setting_button"
-                android:layout_width="@dimen/d_30"
-                android:layout_height="@dimen/d_48"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_gravity="top"
                 android:layout_marginEnd="10dp"
                 android:background="?android:selectableItemBackground"

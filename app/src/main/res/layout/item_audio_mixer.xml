@@ -100,23 +100,23 @@
                         android:id="@+id/tv_size_audio_recent"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_marginRight="@dimen/d_5"
+
                         android:fontFamily="@font/opensans_regular"
                         android:gravity="bottom"
                         android:text="@string/_2_1_mb_default"
                         android:textSize="@dimen/d_14" />
 
-                    <View
-                        android:layout_width="0.5dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginVertical="@dimen/d_1"
-                        android:background="@color/colorgray" />
+<!--                    <View-->
+<!--                        android:layout_width="0.5dp"-->
+<!--                        android:layout_height="match_parent"-->
+<!--                        android:layout_marginVertical="@dimen/d_1"-->
+<!--                        android:background="@color/colorgray" />-->
 
                     <TextView
                         android:id="@+id/tv_bitrate_audio_recent"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="@dimen/d_5"
+
                         android:fontFamily="@font/opensans_regular"
                         android:gravity="bottom"
                         android:text="@string/_128kb_s_default"
