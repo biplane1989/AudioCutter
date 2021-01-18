@@ -83,7 +83,6 @@ class ResultService : LifecycleService() {
     }
 
     private fun sendNotificationComplte(notificationID: Int, audioTitle: String, typeAudio: Int) {          // send 1 notification khi hoan thanh
-        Log.d("taihhhhh", "sendNotificationComplte notificationID ${notificationID} audio type : ${typeAudio}")
         when (typeAudio) {
             CUTTING_AUDIO_TYPE -> {
                 buildNotificationComplete(Constance.NOTIFICATION_ACTION_EDITOR_COMPLETE_CUT, Constance.TYPE_RESULT_COMPLETE_CUT, typeAudio, notificationID, audioTitle)

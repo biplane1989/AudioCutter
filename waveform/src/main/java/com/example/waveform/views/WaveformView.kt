@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color.parseColor
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import com.example.waveform.Utils
@@ -19,7 +20,8 @@ import kotlin.math.min
 
 class WaveformView : View, ProgressListener {
     companion object {
-        val WAVEFORM_COLOR = parseColor("#FDAA74")
+        val WAVEFORM_SELECTED_COLOR = parseColor("#FDAA74")
+        val WAVEFORM_UNSELECTED_COLOR = parseColor("#E7E0DA")
         const val WAVEFORM_LINE_WITH = 2f //dp
         const val DEFAULT_CURSOR_SIZE_DP = 28f
         const val DEFAULT_RANGE_TIME_TEXT_SIZE = 12f
@@ -44,7 +46,7 @@ class WaveformView : View, ProgressListener {
     private lateinit var mTouchEventHandler: WaveformTouchEventHandler
     private var isDetachedWindow: Boolean = false
     private val mainScope = MainScope()
-    private var loadingPercent:Int = 0
+    private var loadingPercent: Int = 0
     override fun reportProgress(fractionComplete: Double): Boolean {
         loadingPercent = min(100, (fractionComplete * 100).toInt())
         return !isDetachedWindow
@@ -76,8 +78,13 @@ class WaveformView : View, ProgressListener {
 
     private fun init(context: Context) {
         waveformLineWidth = Utils.dpToPx(context, WAVEFORM_LINE_WITH)
-        mWaveformDrawer = WaveformDrawer(this, WAVEFORM_COLOR, DEFAULT_LINE_PLAYING_COLOR)
-        mTouchEventHandler = WaveformTouchEventHandler(this)
+        mWaveformDrawer = WaveformDrawer(
+            this,
+            WAVEFORM_SELECTED_COLOR,
+            WAVEFORM_UNSELECTED_COLOR,
+            DEFAULT_LINE_PLAYING_COLOR
+        )
+        mTouchEventHandler = WaveformTouchEventHandler(this, mWaveformDrawer)
         mRangeDrawer =
             RangeDrawer(
                 this,
@@ -88,36 +95,57 @@ class WaveformView : View, ProgressListener {
     }
 
 
-    fun zoomIn() {
+    fun zoomIn(newOffSet: Int = getSelectionStart()) {
         if (!isInitialized()) {
             return
         }
-        val factor = mWaveformDrawer.zoomIn()
+        val factor = mWaveformDrawer.zoomIn(newOffSet)
         if (factor != -1f) {
             mTouchEventHandler.onWaveformZoomIn(factor)
             setOffset(getOffset())
-            mRangeDrawer.onWaveformZoomIn(factor)
+            mRangeDrawer.onWaveformZoom()
             invalidate()
         }
 
     }
 
-    fun zoomOut() {
+    fun zoomOut(newOffSet: Int = getSelectionStart()) {
         if (!isInitialized()) {
             return
         }
-        val factor = mWaveformDrawer.zoomOut()
+        val factor = mWaveformDrawer.zoomOut(newOffSet)
         if (factor != -1f) {
             mTouchEventHandler.onWaveformZoomOut(factor)
             setOffset(getOffset())
-            mRangeDrawer.onWaveformZoomOut(factor)
+            mRangeDrawer.onWaveformZoom()
+            invalidate()
+        }
+    }
+
+    fun zoom(newOffSet: Int = getSelectionStart(), scaleFactor:Float) {
+        if (!isInitialized()) {
+            return
+        }
+        if(scaleFactor == 1.0f){
+            return
+        }
+        val factor = mWaveformDrawer.zoom(newOffSet, scaleFactor)
+        if (factor != -1f) {
+            if(scaleFactor > 1f){
+                mTouchEventHandler.onWaveformZoomIn(factor)
+            }else{
+                mTouchEventHandler.onWaveformZoomOut(1f/factor)
+            }
+
+            setOffset(getOffset())
+            mRangeDrawer.onWaveformZoom()
             invalidate()
         }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (mTouchEventHandler.onTouchEvent(event)) {
-            return true;
+            return true
         }
         return super.onTouchEvent(event)
 
@@ -187,11 +215,13 @@ class WaveformView : View, ProgressListener {
     }
 
     protected fun setOffset(offset: Int): Boolean {
+        Log.d("taihhh", "setOffset changeOffset mOffset: ")
         if (mWaveformDrawer.setOffset(offset)) {
             mRangeDrawer.onChangeOffset()
-            return true;
+            return true
         }
-        return false;
+        mTouchEventHandler.changeOffset(getOffset())
+        return false
     }
 
     protected fun getOffset(): Int {
@@ -239,15 +269,15 @@ class WaveformView : View, ProgressListener {
         return getDrawingStartY() + timeRangeHeight.toInt()
     }
 
-    protected fun secondsToPixels(seconds: Double): Int {
-        mAudioDecoder?.let {
-            val z = mWaveformDrawer.mZoomFactorByZoomLevel.get(mWaveformDrawer.mZoomLevel)
-            return (z * seconds * it.sampleRate / it.samplesPerFrame + 0.5).toInt()
-        }
-        return -1
-    }
+    /* protected fun secondsToPixels(seconds: Double): Int {
+         mAudioDecoder?.let {
+             val z = mWaveformDrawer.mZoomFactorByZoomLevel.get(mWaveformDrawer.mZoomLevel)
+             return (z * seconds * it.sampleRate / it.samplesPerFrame + 0.5).toInt()
+         }
+         return -1
+     }*/
 
-    protected fun pixelsToSeconds(pixels: Int): Double {
+    /*protected fun pixelsToSeconds(pixels: Int): Double {
         mAudioDecoder?.let {
             if (it.sampleRate != 0) {
                 val z = mWaveformDrawer.mZoomFactorByZoomLevel.get(mWaveformDrawer.mZoomLevel)
@@ -255,11 +285,27 @@ class WaveformView : View, ProgressListener {
             }
         }
         return -1.0
-    }
+    }*/
+
+    /* protected fun millisecsToPixels(msecs: Int): Int {
+         mAudioDecoder?.let {
+             val z = mWaveformDrawer.mZoomFactorByZoomLevel.get(mWaveformDrawer.mZoomLevel)
+             return (msecs * 1.0 * it.sampleRate * z / (1000.0 * it.samplesPerFrame) + 0.5).toInt()
+         }
+         return -1
+     }
+
+     protected fun pixelsToMillisecs(pixels: Int): Int {
+         mAudioDecoder?.let {
+             val z = mWaveformDrawer.mZoomFactorByZoomLevel.get(mWaveformDrawer.mZoomLevel)
+             return (pixels * (1000.0 * it.samplesPerFrame) / (it.sampleRate * z) + 0.5).toInt()
+         }
+         return -1
+     }*/
 
     protected fun millisecsToPixels(msecs: Int): Int {
         mAudioDecoder?.let {
-            val z = mWaveformDrawer.mZoomFactorByZoomLevel.get(mWaveformDrawer.mZoomLevel)
+            val z = mWaveformDrawer.zoomValue
             return (msecs * 1.0 * it.sampleRate * z / (1000.0 * it.samplesPerFrame) + 0.5).toInt()
         }
         return -1
@@ -267,7 +313,7 @@ class WaveformView : View, ProgressListener {
 
     protected fun pixelsToMillisecs(pixels: Int): Int {
         mAudioDecoder?.let {
-            val z = mWaveformDrawer.mZoomFactorByZoomLevel.get(mWaveformDrawer.mZoomLevel)
+            val z = mWaveformDrawer.zoomValue
             return (pixels * (1000.0 * it.samplesPerFrame) / (it.sampleRate * z) + 0.5).toInt()
         }
         return -1
@@ -289,7 +335,7 @@ class WaveformView : View, ProgressListener {
         return mDuration
     }
 
-    protected fun onPlayPosOutOfRange(isEnd:Boolean) {
+    protected fun onPlayPosOutOfRange(isEnd: Boolean) {
         mWaveformViewListener?.onPlayPosOutOfRange(isEnd)
     }
 
@@ -300,6 +346,7 @@ class WaveformView : View, ProgressListener {
     protected fun onFinishDraggingPlayPos() {
         mWaveformViewListener?.onDraggingPlayPos(true)
     }
+
     protected fun onPlayingLineClicked() {
         mWaveformViewListener?.onPlayPositionChanged(pixelsToMillisecs(getPlayPos()), true)
     }
@@ -310,8 +357,8 @@ class WaveformView : View, ProgressListener {
         mWaveformViewListener?.onStartTimeChanged(startTime)
         mWaveformViewListener?.onEndTimeChanged(endTime)
     }
-    fun getLoadingPercent():Int{
+
+    fun getLoadingPercent(): Int {
         return loadingPercent
     }
-
 }

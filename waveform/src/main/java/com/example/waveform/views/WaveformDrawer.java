@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 
 import com.example.waveform.R;
 import com.example.waveform.Utils;
@@ -12,31 +13,39 @@ import com.example.waveform.soundfile.AudioDecoder;
 import java.util.Locale;
 
 class WaveformDrawer {
+    private static final float MAX_ZOOM_VALUE = 4.0f;
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private AudioDecoder mAudioDecoder;
-    private WaveformView mWaveformmView;
+    private WaveformView mWaveformView;
 
     private float range;
     private float scaleFactor;
     private float minGain;
 
-    protected int mZoomLevel;
-    protected int mNumZoomLevels;
 
-    protected int[] mLenByZoomLevel;
-    protected float[] mZoomFactorByZoomLevel;
+
+
+    /*protected int mZoomLevel;
+    protected int mNumZoomLevels;*/
+
+    /*protected int[] mLenByZoomLevel;
+    protected float[] mZoomFactorByZoomLevel;*/
+    private float mZoomValue = -1f;
+    private float mMinZoomValue = -1f;
 
     private boolean mInitialized;
     int mOffset;
     private final Rect textBounds = new Rect();
     private final Paint mLinePlayingPaint;
+    private final int mWaveformSelectedColor, mWaveformUnselectedColor;
 
-    WaveformDrawer(WaveformView waveformView, int waveformColor, int linePlayingColor) {
-        mWaveformmView = waveformView;
+    WaveformDrawer(WaveformView waveformView, int waveformSelectedColor, int waveformUnselectedColor, int linePlayingColor) {
+        mWaveformSelectedColor = waveformSelectedColor;
+        mWaveformUnselectedColor = waveformUnselectedColor;
+        mWaveformView = waveformView;
         mOffset = 0;
         mPaint.setAntiAlias(false);
-        mPaint.setColor(waveformColor);
 
         mLinePlayingPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mLinePlayingPaint.setColor(linePlayingColor);
@@ -45,10 +54,10 @@ class WaveformDrawer {
         mLinePlayingPaint.setStrokeWidth(4f);
 
         mTextPaint.setColor(Color.BLACK);
-        mTextPaint.setTextSize(Utils.Companion.dpToPx(mWaveformmView.getContext(), 16));
+        mTextPaint.setTextSize(Utils.Companion.dpToPx(mWaveformView.getContext(), 16));
 
-        mLenByZoomLevel = null;
-        mZoomFactorByZoomLevel = null;
+       /* mLenByZoomLevel = null;
+        mZoomFactorByZoomLevel = null;*/
 
     }
 
@@ -105,13 +114,15 @@ class WaveformDrawer {
 
         range = maxGain - minGain;
 
-        mNumZoomLevels = 4;
+      /*  mNumZoomLevels = 4;
         mLenByZoomLevel = new int[4];
-        mZoomFactorByZoomLevel = new float[4];
+        mZoomFactorByZoomLevel = new float[4];*/
 
-        float ratio = mWaveformmView.getMeasuredWidth() / (float) numFrames;
+        float ratio = mWaveformView.getMeasuredWidth() / (float) numFrames;
         if (ratio < 1) {
-            mLenByZoomLevel[0] = Math.round(numFrames * ratio);
+            mMinZoomValue = ratio;
+            mZoomValue = ratio;
+          /*  mLenByZoomLevel[0] = Math.round(numFrames * ratio);
             mZoomFactorByZoomLevel[0] = ratio;
 
             mLenByZoomLevel[1] = numFrames;
@@ -123,9 +134,17 @@ class WaveformDrawer {
             mLenByZoomLevel[3] = numFrames * 3;
             mZoomFactorByZoomLevel[3] = 3.0f;
 
-            mZoomLevel = 0;
+            mZoomLevel = 0;*/
         } else {
-            mLenByZoomLevel[0] = numFrames;
+            mMinZoomValue = 1f;
+            mZoomValue = mMinZoomValue;
+            while (mZoomValue <= MAX_ZOOM_VALUE) {
+                if (mZoomValue * numFrames - mWaveformView.getMeasuredWidth() > 0) {
+                    break;
+                }
+                mZoomValue += 0.5f;
+            }
+           /* mLenByZoomLevel[0] = numFrames;
             mZoomFactorByZoomLevel[0] = 1.0f;
 
             mLenByZoomLevel[1] = numFrames * 2;
@@ -139,32 +158,42 @@ class WaveformDrawer {
 
             mZoomLevel = 0;
             for (int i = 0; i < 4; i++) {
-                if (mLenByZoomLevel[mZoomLevel] - mWaveformmView.getMeasuredWidth() > 0) {
-                    if (mLenByZoomLevel[mZoomLevel] > mWaveformmView.getMeasuredWidth() && mZoomLevel > 0) {
+                if (mLenByZoomLevel[mZoomLevel] - mWaveformView.getMeasuredWidth() > 0) {
+                    if (mLenByZoomLevel[mZoomLevel] > mWaveformView.getMeasuredWidth() && mZoomLevel > 0) {
                         mZoomLevel--;
                     }
                     break;
                 } else {
                     mZoomLevel = i;
                 }
-            }
+            }*/
         }
         mInitialized = true;
     }
 
+    private int getLenByZoomLevel() {
+        return (int) (mZoomValue * mAudioDecoder.getNumFrames());
+    }
+
     void onDraw(final Canvas canvas) {
         if (isInitialized()) {
-            int measuredWidth = mWaveformmView.getMeasuredWidth();
-            int measuredHeight = mWaveformmView.getWaveformHeight();
+            int measuredWidth = mWaveformView.getMeasuredWidth();
+            int measuredHeight = mWaveformView.getWaveformHeight();
             int start = mOffset;
-            int width = mLenByZoomLevel[mZoomLevel] - start;
-            int ctr = (mWaveformmView.getDrawingStartY() + mWaveformmView.getDrawingEndY()) / 2;
+            /*  int width = mLenByZoomLevel[mZoomLevel] - start;*/
+            int width = getLenByZoomLevel() - start;
+            int ctr = (mWaveformView.getDrawingStartY() + mWaveformView.getDrawingEndY()) / 2;
 
             if (width > measuredWidth)
                 width = measuredWidth;
 
             int i = 0;
             while (i < width) {
+                if (isPositionSelected(i + start)) {
+                    mPaint.setColor(mWaveformSelectedColor);
+                } else {
+                    mPaint.setColor(mWaveformUnselectedColor);
+                }
                 drawWaveform(canvas, i, start, measuredHeight, ctr, mPaint);
                 i++;
             }
@@ -173,24 +202,32 @@ class WaveformDrawer {
         }
     }
 
+    private boolean isPositionSelected(int position) {
+        if (position >= mWaveformView.getSelectionStart() && position <= mWaveformView.getSelectionEnd()) {
+            return true;
+        }
+        return false;
+    }
+
     private void drawLoadingText(Canvas canvas) {
-        int measuredWidth = mWaveformmView.getMeasuredWidth();
-        int measuredHeight = (int) (mWaveformmView.getMeasuredHeight());
+        int measuredWidth = mWaveformView.getMeasuredWidth();
+        int measuredHeight = (int) (mWaveformView.getMeasuredHeight());
         if (measuredHeight > 0 && measuredWidth > 0) {
-            String waitingText = String.format(Locale.getDefault(),"%s %d", mWaveformmView.getResources().getString(R.string.waiting_for_loading_waveform), mWaveformmView.getLoadingPercent()) + "%";
+            String waitingText = String.format(Locale.getDefault(), "%s %d", mWaveformView.getResources().getString(R.string.waiting_for_loading_waveform), mWaveformView.getLoadingPercent()) + "%";
             mTextPaint.getTextBounds(waitingText, 0, waitingText.length(), textBounds);
-            float x = (measuredWidth - textBounds.width() - mWaveformmView.getPaddingLeft() + mWaveformmView.getPaddingRight()) / 2f;
-            float y = (measuredHeight - textBounds.height() - mWaveformmView.getPaddingTop() + mWaveformmView.getPaddingBottom()) / 2f;
+            float x = (measuredWidth - textBounds.width() - mWaveformView.getPaddingLeft() + mWaveformView.getPaddingRight()) / 2f;
+            float y = (measuredHeight - textBounds.height() - mWaveformView.getPaddingTop() + mWaveformView.getPaddingBottom()) / 2f;
             canvas.drawText(waitingText, x, y, mTextPaint);
         }
 
     }
 
     private void drawWaveform(final Canvas canvas, final int i, final int start, final int measuredHeight, final int ctr, final Paint paint) {
-        int h = (int) (getScaledHeight(mZoomFactorByZoomLevel[mZoomLevel], start + i) * measuredHeight / 2);
+        /*int h = (int) (getScaledHeight(mZoomFactorByZoomLevel[mZoomLevel], start + i) * measuredHeight / 2);*/
+        int h = (int) (getScaledHeight(mZoomValue, start + i) * measuredHeight / 2);
         drawWaveformLine(canvas, i, ctr - h, ctr + 1 + h, paint);
-        if (i + start == mWaveformmView.getPlayPos()) {
-            canvas.drawLine(i, mWaveformmView.getDrawingStartY(), i, mWaveformmView.getDrawingEndY(), mLinePlayingPaint);
+        if (i + start == mWaveformView.getPlayPos()) {
+            canvas.drawLine(i, mWaveformView.getDrawingStartY(), i, mWaveformView.getDrawingEndY(), mLinePlayingPaint);
         }
     }
 
@@ -236,6 +273,7 @@ class WaveformDrawer {
     }
 
     private float getZoomedInHeight(float zoomLevel, int i) {
+        //int f = (int) zoomLevel;
         int f = (int) zoomLevel;
         if (i == 0) {
             return 0.5f * getHeight(0, mAudioDecoder.getNumFrames(), mAudioDecoder.getFrameGains(), scaleFactor, minGain, range);
@@ -243,12 +281,19 @@ class WaveformDrawer {
         if (i == 1) {
             return getHeight(0, mAudioDecoder.getNumFrames(), mAudioDecoder.getFrameGains(), scaleFactor, minGain, range);
         }
-        if (i % f == 0) {
+       /* if (i % f == 0) {
             float x1 = getHeight(i / f - 1, mAudioDecoder.getNumFrames(), mAudioDecoder.getFrameGains(), scaleFactor, minGain, range);
             float x2 = getHeight(i / f, mAudioDecoder.getNumFrames(), mAudioDecoder.getFrameGains(), scaleFactor, minGain, range);
             return 0.5f * (x1 + x2);
         } else if ((i - 1) % f == 0) {
             return getHeight((i - 1) / f, mAudioDecoder.getNumFrames(), mAudioDecoder.getFrameGains(), scaleFactor, minGain, range);
+        }*/
+        if (i % f == 0) {
+            float x1 = getHeight((int) (i / zoomLevel - 1), mAudioDecoder.getNumFrames(), mAudioDecoder.getFrameGains(), scaleFactor, minGain, range);
+            float x2 = getHeight((int) (i / zoomLevel), mAudioDecoder.getNumFrames(), mAudioDecoder.getFrameGains(), scaleFactor, minGain, range);
+            return 0.5f * (x1 + x2);
+        } else if ((i - 1) % f == 0) {
+            return getHeight((int) ((i - 1) / zoomLevel), mAudioDecoder.getNumFrames(), mAudioDecoder.getFrameGains(), scaleFactor, minGain, range);
         }
         return 0;
     }
@@ -264,35 +309,78 @@ class WaveformDrawer {
         return mInitialized;
     }
 
-    float zoomIn() {
+    float zoom(int offset, float scaleFactor) {
+        float currZoomValue = mZoomValue;
+        float newZoomValue = Math.min(MAX_ZOOM_VALUE, mZoomValue * scaleFactor);
+        newZoomValue = Math.max(mMinZoomValue, newZoomValue);
+        float factor = newZoomValue / currZoomValue;
+
+        mZoomValue = newZoomValue;
+        mOffset = (int) (offset * factor);
+        if (mOffset < 0) {
+            mOffset = 0;
+        }
+        mWaveformView.invalidate();
+        return factor;
+    }
+    float getFactorForZoom(float scaleFactor) {
+        float currZoomValue = mZoomValue;
+        float newZoomValue = Math.min(MAX_ZOOM_VALUE, mZoomValue * scaleFactor);
+        newZoomValue = Math.max(mMinZoomValue, newZoomValue);
+        return newZoomValue / currZoomValue;
+
+    }
+    float zoomIn(int offset) {
         if (canZoomIn()) {
-            mZoomLevel++;
-            float factor = mLenByZoomLevel[mZoomLevel] / (float) mLenByZoomLevel[mZoomLevel - 1];
-            mOffset = (int) (mWaveformmView.getSelectionStart() * factor);
-          /*  int offsetCenter = mOffset + (int) (mWaveformmView.getMeasuredWidth() / factor);
-            offsetCenter *= factor;
-            mOffset = offsetCenter - (int) (mWaveformmView.getMeasuredWidth() / factor);*/
+            float currZoomValue = mZoomValue;
+            float newZoomValue = Math.min(MAX_ZOOM_VALUE, mZoomValue + 1);
+            float factor = newZoomValue / currZoomValue;
+            mZoomValue = newZoomValue;
+            Log.d("taihhhhh", "zoomIn: mZoomValue " + mZoomValue);
+            //float factor = getFactorForZoomIn();
+            /* mZoomLevel++;*/
+
+            mOffset = (int) (offset * factor);
             if (mOffset < 0) {
                 mOffset = 0;
             }
-            mWaveformmView.invalidate();
+            mWaveformView.invalidate();
             return factor;
         }
         return -1;
     }
 
-    float zoomOut() {
+   /* float getFactorForZoomOut() {
         if (canZoomOut()) {
-            mZoomLevel--;
-            float factor = mLenByZoomLevel[mZoomLevel + 1] / (float) mLenByZoomLevel[mZoomLevel];
-            int offsetCenter = (int) (mOffset + mWaveformmView.getMeasuredWidth() / factor);
-            mOffset = (int) (mWaveformmView.getSelectionStart() / factor);
-            //mOffset /=factor;
-          /*  offsetCenter /= factor;
-            mOffset = offsetCenter - (int) (mWaveformmView.getMeasuredWidth() / factor);*/
+            return mLenByZoomLevel[mZoomLevel] / (float) mLenByZoomLevel[mZoomLevel - 1];
+        }
+        return -1;
+    }
+
+    float getFactorForZoomIn() {
+        if (canZoomIn()) {
+            return mLenByZoomLevel[mZoomLevel + 1] / (float) mLenByZoomLevel[mZoomLevel];
+        }
+        return -1;
+    }*/
+
+
+
+
+
+    float zoomOut(int offset) {
+        if (canZoomOut()) {
+            float currZoomValue = mZoomValue;
+            float newZoomValue = Math.max(mMinZoomValue, mZoomValue - 1);
+            float factor = currZoomValue / newZoomValue;
+            mZoomValue = newZoomValue;
+            Log.d("taihhhhh", "zoomOut: mZoomValue " + mZoomValue);
+          /*  float factor = getFactorForZoomOut();
+            mZoomLevel--;*/
+            mOffset = (int) (offset / factor);
             if (mOffset < 0)
                 mOffset = 0;
-            mWaveformmView.invalidate();
+            mWaveformView.invalidate();
             return factor;
         }
         return -1;
@@ -300,9 +388,10 @@ class WaveformDrawer {
 
     boolean setOffset(int offset) {
         boolean isChanged = false;
-        float zoomFactor = mZoomFactorByZoomLevel[mZoomLevel];
-        if ((mAudioDecoder.getNumFrames() * zoomFactor - offset) < mWaveformmView.getMeasuredWidth()) {
-            offset = (int) (mAudioDecoder.getNumFrames() * zoomFactor - mWaveformmView.getMeasuredWidth());
+        /* float zoomFactor = mZoomFactorByZoomLevel[mZoomLevel];*/
+        float zoomFactor = mZoomValue;
+        if ((mAudioDecoder.getNumFrames() * zoomFactor - offset) < mWaveformView.getMeasuredWidth()) {
+            offset = (int) (mAudioDecoder.getNumFrames() * zoomFactor - mWaveformView.getMeasuredWidth());
             offset = Math.max(0, offset);
         }
         if (mOffset != offset) {
@@ -313,14 +402,21 @@ class WaveformDrawer {
     }
 
     boolean canZoomIn() {
-        return (mZoomLevel < mNumZoomLevels - 1);
+        /* return (mZoomLevel < mNumZoomLevels - 1);*/
+        return (mZoomValue < MAX_ZOOM_VALUE);
     }
 
     boolean canZoomOut() {
-        return (mZoomLevel > 0);
+        /* return (mZoomLevel > 0);*/
+        return (mZoomValue > mMinZoomValue);
     }
 
     public int maxPos() {
-        return mLenByZoomLevel[mZoomLevel];
+        /* return mLenByZoomLevel[mZoomLevel];*/
+        return getLenByZoomLevel();
+    }
+
+    public float getZoomValue() {
+        return mZoomValue;
     }
 }

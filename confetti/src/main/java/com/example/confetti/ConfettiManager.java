@@ -686,7 +686,6 @@ public class ConfettiManager {
                 // Randomly determine how many confetti to emit
                 final int numNewConfetti = (int)
                         (random.nextFloat() * emissionRate * timeSinceLastEmission);
-                Log.d("taihhh", "processNewEmission numNewConfetti " + numNewConfetti + " emissionRate " + emissionRate + " timeSinceLastEmission " + timeSinceLastEmission);
                 if (numNewConfetti > 0) {
                     lastEmittedTimestamp += Math.round(emissionRateInverse * numNewConfetti);
                     addNewConfetti(numNewConfetti, elapsedTime);
@@ -707,7 +706,6 @@ public class ConfettiManager {
     }
 
     private void addConfetto(Confetto confetto) {
-        Log.d("taihhh", "addConfetto: " + confetti.size());
         this.confetti.add(confetto);
         if (animationListener != null) {
             animationListener.onConfettoEnter(confetto);

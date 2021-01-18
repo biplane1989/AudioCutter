@@ -232,7 +232,6 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                 while (isSeeking && mPlayer.currentPosition < position) {
                     delay(100)
                 }
-                Log.d("taihhhhhh", "seek3: $position isSeeking $isSeeking ${mPlayer} currentPosition ${mPlayer.currentPosition}")
                 isSeeking = false
 
                 startTimerIfReady()
@@ -315,7 +314,6 @@ class AudioPlayerImpl : AudioPlayer, MediaPlayer.OnPreparedListener {
                         playInfoData.posision = mPlayer.currentPosition
                     }
                     if (changed && !isUpdateTimeJobCancelled()) {
-                        Log.d("taihhhhhh", "update: ${playInfoData.posision}  ${mPlayer} currentPosition ${mPlayer.currentPosition}")
                         notifyPlayerDataChanged()
                     }
                 }

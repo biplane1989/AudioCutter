@@ -601,9 +601,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 mergingListAudioJob?.cancelAndJoin()
 
                 mergingListAudioJob = viewModelScope.launch {
-                    Log.d("taihhhhh", "start Merging List Audio  ${this@MyStudioViewModel}")
                     mergeList()
-                    Log.d("taihhhhh", "end Merging List Audio ${this@MyStudioViewModel}")
                 }
             }
         }

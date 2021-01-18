@@ -42,7 +42,6 @@ class CuttingViewModel : BaseViewModel() {
                 audioPlayer.pause()
             } else {
                 if (playerInfo.playerState == PlayerState.IDLE) {
-                    Log.d("taihhhhh", "clickedPlayButton: playerState play ${cuttingCurrPos} ${cuttingStartPos} ${cuttingEndPos}")
                     audioPlayer.play(it, cuttingCurrPos)
                 } else {
 
@@ -52,7 +51,6 @@ class CuttingViewModel : BaseViewModel() {
                         }
                         audioPlayer.seek(cuttingCurrPos)
                     }
-                    Log.d("taihhhhh", "clickedPlayButton: playerState resume ${cuttingCurrPos} ${cuttingStartPos} ${cuttingEndPos}")
                     audioPlayer.resume()
                 }
             }
