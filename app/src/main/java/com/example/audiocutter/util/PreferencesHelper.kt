@@ -11,6 +11,7 @@ object PreferencesHelper {
     val CONVERT_FORMAT = "convert_format"
     val CONVERT_VOLUME = "convert_volume"
     val IS_FIRST_TIME_TO_USED_APP = "IS_FIRST_TIME_TO_USED_APP"
+    val APP_LANGUAGE = "APP_LANGUAGE"
 
     private lateinit var sharedPreferences: SharedPreferences
     fun start(appContext: Context) {

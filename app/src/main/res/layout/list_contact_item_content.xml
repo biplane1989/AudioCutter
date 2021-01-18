@@ -43,7 +43,7 @@
         android:layout_height="0dp"
         android:layout_marginLeft="@dimen/common_size_item_padding_left"
         android:ellipsize="end"
-        android:fontFamily="@font/opensans_light"
+        android:fontFamily="@font/opensans_regular"
         android:gravity="top"
         android:maxLines="1"
         android:text="tomatotomatotomatotomatotomatotomatotomatotomatotomato"
@@ -74,11 +74,12 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
             android:background="@drawable/bg_ringtone_default"
+            android:fontFamily="@font/opensans_regular"
             android:paddingStart="2dp"
             android:paddingEnd="2dp"
-            android:text="Default"
+            android:text="@string/list_contact_item_default"
             android:textColor="@color/colorWhite"
-            android:textSize="12dp" />
+            android:textSize="14dp" />
 
         <TextView
             android:id="@+id/tv_ringtone_default"

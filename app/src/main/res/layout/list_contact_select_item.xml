@@ -67,9 +67,9 @@
                 android:background="@drawable/bg_ringtone_default"
                 android:paddingStart="2dp"
                 android:paddingEnd="2dp"
-                android:text="Default"
+                android:text="@string/list_contact_item_default"
                 android:textColor="@color/colorWhite"
-                android:textSize="12dp"
+                android:textSize="14dp"
                 android:visibility="gone" />
 
             <TextView

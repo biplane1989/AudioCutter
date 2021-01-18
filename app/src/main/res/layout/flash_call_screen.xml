@@ -38,7 +38,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="0.1dp"
+                android:layout_height="1dp"
                 android:layout_alignParentBottom="true"
                 android:background="@color/colorgrayAlpha" />
 
@@ -132,7 +132,7 @@
                     android:text="Status"
                     android:paddingVertical="@dimen/d_8"
                     android:textColor="@color/colorBlack"
-                    android:textSize="@dimen/text_size_header" />
+                    android:textSize="@dimen/text_size_header_flashcall" />
 
                 <TableRow
                     android:layout_width="match_parent"
@@ -145,6 +145,7 @@
                         android:scaleType="centerInside"
                         android:src="@drawable/ic_call_flash_flcall" />
 
+
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -155,7 +156,6 @@
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/d_16"
                         android:textStyle="bold" />
-
 
                     <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/sw_incomming_call"
@@ -274,7 +274,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="0.1dp"
+                    android:layout_height="1dp"
                     android:background="@color/colorgrayAlpha" />
 
 
@@ -430,11 +430,12 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="0.2dp"
+                    android:layout_height="1dp"
                     android:layout_alignParentBottom="true"
                     android:background="@color/colorgrayAlpha" />
 
                 <RelativeLayout
+                    android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -480,8 +481,9 @@
                 </RelativeLayout>
 
                 <View
+                    android:layout_marginBottom="10dp"
                     android:layout_width="match_parent"
-                    android:layout_height="0.2dp"
+                    android:layout_height="1dp"
                     android:layout_alignParentBottom="true"
                     android:background="@color/colorgrayAlpha" />
 
@@ -615,8 +617,9 @@
                 </TableRow>
 
                 <View
+                    android:layout_marginBottom="10dp"
                     android:layout_width="match_parent"
-                    android:layout_height="0.2dp"
+                    android:layout_height="1dp"
                     android:layout_alignParentBottom="true"
                     android:background="@color/colorgrayAlpha" />
 

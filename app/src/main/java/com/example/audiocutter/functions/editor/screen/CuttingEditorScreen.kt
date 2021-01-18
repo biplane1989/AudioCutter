@@ -4,11 +4,11 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.SpannableStringBuilder
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -34,6 +34,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
 
+
 class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickListener, View.OnLongClickListener, OnDialogAdvanceListener, DialogConvert.OnDialogConvertListener {
 
     val safeArg: CuttingEditorScreenArgs by navArgs()
@@ -42,11 +43,17 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
     private var fadeIn = Effect.OFF
     private var fadeOut = Effect.OFF
 
+    private var isShowStatusAbs = true
     private var ratioVolumeFadeIn = 0F
     private var ratioVolumeFadeout = 0F
     private lateinit var cuttingViewModel: CuttingViewModel
     private val mHandler: Handler = Handler(Looper.getMainLooper())
     private var runnable = Runnable {}
+    private var duration = 0L
+    private var startTimeOld = "00:00.0"
+    private var endTimeOld = "00:00.0"
+    private var startTimeLife = 0L
+    private var endTimeLife = 0L
 
     private lateinit var mWaveformView: WaveformView
 
@@ -54,6 +61,12 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
     private lateinit var audioPath: String
 
     companion object {
+        val HOUR_FORMAT = "HOUR_FORMAT"
+        val MINUTE_FORMAT = "MINUTE_FORMAT"
+        val SECOND_FORMAT = "SECOND_FORMAT"
+        val START_KEY = "START_KEY"
+        val END_KEY = "END_KEY"
+
         private const val TAG = "AudioCutFragment"
         const val RESET_AUDIO_VALUE = 1
         fun newInstance(pathAudio: String): CuttingEditorScreen {
@@ -80,7 +93,128 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         setClick()
         initView()
         initSharePre()
+
+        binding.startTimeTv.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE && (actionId == KeyEvent.KEYCODE_ENTER)) {
+                val imm: InputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager;
+                imm.hideSoftInputFromWindow(binding.startTimeTv.getWindowToken(), 0)
+
+                true
+            } else {
+
+                checkValidationTime(binding.startTimeTv.text.toString())?.let {
+                    binding.startTimeTv.text = it
+                }
+
+                if (checkValidationTime(binding.startTimeTv.text.toString()) == null) {
+                    val editable: Editable = SpannableStringBuilder(startTimeOld)
+                    binding.startTimeTv.text = editable
+                } else {
+                    binding.startTimeTv.text = checkValidationTime(binding.startTimeTv.text.toString())
+                    startTimeOld = checkValidationTime(binding.startTimeTv.text.toString()).toString()
+                }
+
+//                binding.adsView.visibility = View.VISIBLE
+                false
+            }
+        }
+
+        binding.endTimeTv.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE && (actionId == KeyEvent.KEYCODE_ENTER)) {
+                val imm: InputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager;
+                imm.hideSoftInputFromWindow(binding.endTimeTv.getWindowToken(), 0)
+
+                true
+            } else {
+
+//                checkValidationTime(binding.endTimeTv.text.toString())?.let {
+//                    binding.endTimeTv.text = it
+//                }
+
+                if (checkValidationTime(binding.endTimeTv.text.toString()) == null) {
+                    val editable: Editable = SpannableStringBuilder(endTimeOld)
+                    binding.endTimeTv.text = editable
+                } else {
+                    binding.endTimeTv.text = checkValidationTime(binding.endTimeTv.text.toString())
+                    endTimeOld = checkValidationTime(binding.endTimeTv.text.toString()).toString()
+                }
+//                binding.adsView.visibility = View.VISIBLE
+                false
+            }
+        }
+
+
+//        binding.startTimeTv.setOnFocusChangeListener(OnFocusChangeListener { v, hasFocus ->
+////            if (hasFocus) editTextClicked() // Instead of your Toast
+//            Log.d("giangtd001", "onViewCreated: on click")
+//        })
     }
+
+    private fun checkValidationTime(time: String): Editable? {
+        var timePattern = ""
+        if (duration / (3600 * 1000) >= 1) {
+            timePattern = "([0-9]{1,9})+:[0-9]{1,2}+:[0-9]{1,2}+.[0-9]{1}"
+
+        } else {
+            timePattern = "[0-9]{1,2}+:[0-9]{1,2}+.[0-9]{1}"
+        }
+        if (time.matches(timePattern.toRegex())) {
+            if (duration / (3600 * 1000) >= 1) {         // hour
+//                if (key.equals(START_KEY)){
+                    if (Utils.getTimeByTimeString(time, HOUR_FORMAT) > -1 && Utils.getTimeByTimeString(time, HOUR_FORMAT) <= duration) {
+                        startTimeLife = Utils.getTimeByTimeString(time, HOUR_FORMAT)
+                        return Utils.formatTime(time, HOUR_FORMAT)
+                    } else {
+                        showNotification("error")
+                        return null
+                    }
+//                }else{
+//
+//                }
+
+            } else {
+                if (duration / (60 * 1000) >= 1) {       // minute
+                    if (Utils.getTimeByTimeString(time, MINUTE_FORMAT) > -1 && Utils.getTimeByTimeString(time, MINUTE_FORMAT) <= duration) {
+                        return Utils.formatTime(time, MINUTE_FORMAT)
+                    } else {
+                        showNotification("error")
+                        return null
+                    }
+                } else {                                 // second
+                    if (Utils.getTimeByTimeString(time, SECOND_FORMAT) > -1 && Utils.getTimeByTimeString(time, SECOND_FORMAT) <= duration) {
+                        return Utils.formatTime(time, SECOND_FORMAT)
+                    } else {
+                        showNotification("error")
+                        return null
+                    }
+                }
+            }
+        } else {
+            showNotification("error")
+            return null
+        }
+    }
+
+//    override fun onResume() {       // xu ly back button
+//        super.onResume()
+//        requireView().isFocusableInTouchMode = true
+//        requireView().requestFocus()
+//        requireView().setOnKeyListener { v, keyCode, event ->
+//            if (event.action == KeyEvent.KEYCODE_BACK) {
+//                Log.d("giangtd001", "onResume: back 1")
+//                true
+//            } else {
+//                false
+//            }
+////            if (event.action == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+////                Log.d(TAG, "onResume: back 2")
+////                binding.adsView.visibility = View.VISIBLE
+////                requireActivity().onBackPressed()
+////                // handle back button
+////                true
+////            } else false
+//        }
+//    }
 
     private fun initSharePre() {
         var fadeInPos = PreferencesHelper.getInt(PreferencesHelper.FADE_IN_TIME, 0)
@@ -110,10 +244,12 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
                     mWaveformView.setWaveformViewListener(this@CuttingEditorScreen)
                     lifecycleScope.launch {
                         mWaveformView.setDataSource(audioPath, it.duration)
+                        duration = it.duration
                     }
                 }
             })
     }
+
 
     private fun observerAudio(): Observer<PlayerInfo> {
         return Observer {
@@ -175,9 +311,9 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
 
         binding.startTimeTv.setOnClickListener(this)
         binding.endTimeTv.setOnClickListener(this)
+        binding.adsView.setOnClickListener(this)
 
     }
-
 
     override fun onStartTimeChanged(startTimeMs: Long) {
         val startTimeStr = Utils.longDurationMsToStringMs(startTimeMs)
@@ -188,7 +324,14 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
             binding.startTimeTv.gravity = Gravity.CENTER_HORIZONTAL
             binding.startTimeTv.layoutParams = layoutParams
         }
-        binding.startTimeTv.text = startTimeStr
+//        binding.startTimeTv.text = startTimeStr
+
+        val editable: Editable = SpannableStringBuilder(startTimeStr)
+        binding.startTimeTv.text = editable
+        startTimeOld = startTimeStr
+
+        Log.d("giangtd001", "onStartTimeChanged: $startTimeStr")
+
         Log.d("taihhhhh", "onStartTimeChanged: startTimeMs ${startTimeMs} CuttingCurrPos ${cuttingViewModel.getCuttingCurrPos()}")
         cuttingViewModel.changeStartPos(startTimeMs.toInt())
     }
@@ -202,7 +345,10 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
             binding.endTimeTv.gravity = Gravity.CENTER_HORIZONTAL
             binding.endTimeTv.layoutParams = layoutParams
         }
-        binding.endTimeTv.text = Utils.longDurationMsToStringMs(endTimeMs)
+        val editable: Editable = SpannableStringBuilder(endTimeStr)
+        binding.endTimeTv.text = editable
+        endTimeOld = endTimeStr
+//        binding..text = Utils.longDurationMsToStringMs(endTimeMs)
         cuttingViewModel.changeEndPos(endTimeMs.toInt())
     }
 
@@ -292,7 +438,8 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
                 cuttingViewModel.seekAudio(cuttingViewModel.getCuttingCurrPos() + Utils.FIVE_SECOND)
             }
             binding.startTimeTv -> {
-
+                Log.d("giangtd001", "onClick: click gone")
+//                binding.adsView.visibility = View.GONE
             }
             binding.endTimeTv -> {
 

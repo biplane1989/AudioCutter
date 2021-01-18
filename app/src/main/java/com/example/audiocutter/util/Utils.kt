@@ -12,6 +12,8 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.View
@@ -26,6 +28,8 @@ import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.functions.audiochooser.objects.ItemAppShare
+import com.example.audiocutter.functions.editor.screen.CuttingEditorScreen
+import com.example.audiocutter.functions.resultscreen.objects.CUTTING_AUDIO_TYPE
 import com.example.audiocutter.objects.AudioFile
 import com.example.core.core.AudioInfor
 import java.io.ByteArrayInputStream
@@ -33,7 +37,11 @@ import java.io.File
 import java.io.InputStream
 import java.text.Normalizer
 import java.text.SimpleDateFormat
+import java.util.*
 import java.util.regex.Pattern
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 
 
 class Utils {
@@ -213,15 +221,11 @@ class Utils {
         fun convertValue(min1: Double, max1: Double, min2: Double, max2: Double, value: Double): Double {
             return ((value - min1) * ((max2 - min2) / (max1 - min1)) + min2)
         }
-        fun convertValue(
-            min1: Float,
-            max1: Float,
-            min2: Float,
-            max2: Float,
-            value: Float
-        ): Float {
+
+        fun convertValue(min1: Float, max1: Float, min2: Float, max2: Float, value: Float): Float {
             return ((value - min1) * ((max2 - min2) / (max1 - min1)) + min2)
         }
+
         fun convertValue(min1: Int, max1: Int, min2: Int, max2: Int, value: Int): Int {
             return ((value - min1) * ((max2 - min2) * 1f / (max1 - min1)) + min2).toInt()
         }
@@ -407,32 +411,16 @@ class Utils {
 
         fun convertToAudioFile(audioInfor: AudioInfor, modified: Long, uri: Uri): AudioFile {
             val file = File(audioInfor.filePath)
-            return AudioFile(
-                file,
-                getName(file),
-                audioInfor.size,
-                audioInfor.bitRate,
-                audioInfor.duration,
-                uri,
-                getBitmapByPath(file.absolutePath),
-                audioInfor.title,
-                audioInfor.alBum,
-                audioInfor.artist,
-                modified,
-                audioInfor.genre,
-                audioInfor.format
-            )
+            return AudioFile(file, getName(file), audioInfor.size, audioInfor.bitRate, audioInfor.duration, uri, getBitmapByPath(file.absolutePath), audioInfor.title, audioInfor.alBum, audioInfor.artist, modified, audioInfor.genre, audioInfor.format)
         }
 
         fun hideKeyboard(context: Context, editText: EditText) {
-            val inputMethodManager =
-                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(editText.windowToken, 0)
         }
 
         fun showKeyboard(context: Context, editText: EditText) {
-            val inputMethodManager =
-                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
         }
 
@@ -448,17 +436,8 @@ class Utils {
             remainingTime = (remainingTime - minutes * 6e4).toLong()
             val seconds = (remainingTime / 1e3).toInt()
             when (timeFormat) {
-                TIME_FORMAT_INCLUDED_HOUR_TWO_ZERO -> return String.format(
-                    "%02d:%02d:%02d",
-                    hours,
-                    minutes,
-                    seconds
-                )
-                TIME_FORMAT_INCLUDED_MINUTE_TWO_ZERO -> return String.format(
-                    "%02d:%02d",
-                    minutes,
-                    seconds
-                )
+                TIME_FORMAT_INCLUDED_HOUR_TWO_ZERO -> return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+                TIME_FORMAT_INCLUDED_MINUTE_TWO_ZERO -> return String.format("%02d:%02d", minutes, seconds)
                 TIME_FORMAT_INCLUDED_SECOND_TWO_ZERO -> return String.format("00:%02d", seconds)
             }
             return String.format("%02d:%02d:%02d", hours, minutes, seconds)
@@ -473,24 +452,9 @@ class Utils {
             val milisecond = ((remainingTime - seconds * 1e3).toLong()) / 100
 
             when (timeFormat) {
-                TIME_FORMAT_INCLUDED_HOUR_TWO_ZERO -> return String.format(
-                    "%02d:%02d:%02d.%d",
-                    hours,
-                    minutes,
-                    seconds,
-                    milisecond
-                )
-                TIME_FORMAT_INCLUDED_MINUTE_TWO_ZERO -> return String.format(
-                    "%02d:%02d.%d",
-                    minutes,
-                    seconds,
-                    milisecond
-                )
-                TIME_FORMAT_INCLUDED_SECOND_TWO_ZERO -> return String.format(
-                    "00:%02d.%d",
-                    seconds,
-                    milisecond
-                )
+                TIME_FORMAT_INCLUDED_HOUR_TWO_ZERO -> return String.format("%02d:%02d:%02d.%d", hours, minutes, seconds, milisecond)
+                TIME_FORMAT_INCLUDED_MINUTE_TWO_ZERO -> return String.format("%02d:%02d.%d", minutes, seconds, milisecond)
+                TIME_FORMAT_INCLUDED_SECOND_TWO_ZERO -> return String.format("00:%02d.%d", seconds, milisecond)
             }
             return String.format("%02d:%02d:%02d:%02d", hours, minutes, seconds, milisecond)
         }
@@ -510,5 +474,136 @@ class Utils {
             }
         }
 
+        fun getTimeByTimeString(time: String, typeFormat: String): Long {
+            when (typeFormat) {
+                CuttingEditorScreen.HOUR_FORMAT -> {
+                    val arrString = time.split(":")
+                    val arrStringSecond = arrString[arrString.size - 1].split(".")
+                    var hour = arrString[0].toLong()
+                    var minute = arrString[1].toLong()
+                    var second = arrStringSecond[0].toLong()
+                    val odd = arrStringSecond[1].toLong()
+
+                    val newTime = hour * 3600 * 1000 + minute * 60 * 1000 + second * 1000 + odd * 100
+                    return newTime
+                }
+                CuttingEditorScreen.MINUTE_FORMAT -> {
+                    val arrString = time.split(":")
+                    val arrStringSecond = arrString[arrString.size - 1].split(".")
+                    var minute = arrString[0].toLong()
+                    var second = arrStringSecond[0].toLong()
+                    val odd = arrStringSecond[1].toLong()
+
+                    val newTime = minute * 60 * 1000 + second * 1000 + odd * 100
+                    return newTime
+
+                }
+                CuttingEditorScreen.SECOND_FORMAT -> {
+                    val arrString = time.split(":")
+                    val arrStringSecond = arrString[arrString.size - 1].split(".")
+                    var minute = arrString[0].toLong()
+                    var second = arrStringSecond[0].toLong()
+                    val odd = arrStringSecond[1].toLong()
+
+                    val newTime = minute * 60 * 1000 + second * 1000 + odd * 100
+                    return newTime
+                }
+            }
+            return -1
+        }
+
+        fun formatTime(time: String, typeFormat: String): Editable? {
+            when (typeFormat) {
+                CuttingEditorScreen.HOUR_FORMAT -> {
+                    val arrString = time.split(":")
+                    val arrStringSecond = arrString[arrString.size - 1].split(".")
+                    var hour = arrString[0].toInt()
+                    var minute = arrString[1].toInt()
+                    var second = arrStringSecond[0].toInt()
+                    val odd = arrStringSecond[1].toInt()
+
+                    if (second >= 60) {
+                        second = second - 60
+                        minute++
+                        if (minute >= 60) {
+                            minute = minute - 60
+                            hour++
+                        }
+                    } else {
+                        if (minute >= 60) {
+                            minute = minute - 60
+                            hour++
+                        }
+                    }
+                    var hourStr = hour.toString()
+                    var minuteStr = minute.toString()
+                    var secondStr = second.toString()
+                    val oddStr = odd.toString()
+                    if (hour < 10) {
+                        hourStr = "0" + hourStr
+                    }
+                    if (minute < 10) {
+                        minuteStr = "0" + minuteStr
+                    }
+                    if (second < 10) {
+                        secondStr = "0" + secondStr
+                    }
+                    val newTime = hourStr + ":" + minuteStr + ":" + secondStr + "." + oddStr
+                    val editable: Editable = SpannableStringBuilder(newTime)
+                    return editable
+                }
+                CuttingEditorScreen.MINUTE_FORMAT -> {
+                    val arrString = time.split(":")
+                    val arrStringSecond = arrString[arrString.size - 1].split(".")
+                    var minute = arrString[0].toInt()
+                    var second = arrStringSecond[0].toInt()
+                    val odd = arrStringSecond[1].toInt()
+
+                    if (second >= 60) {
+                        second = second - 60
+                        minute++
+                    }
+
+                    var minuteStr = minute.toString()
+                    var secondStr = second.toString()
+                    val oddStr = odd.toString()
+                    if (minute < 10) {
+                        minuteStr = "0" + minuteStr
+                    }
+                    if (second < 10) {
+                        secondStr = "0" + secondStr
+                    }
+                    val newTime = minuteStr + ":" + secondStr + "." + oddStr
+                    val editable: Editable = SpannableStringBuilder(newTime)
+                    return editable
+
+                }
+                CuttingEditorScreen.SECOND_FORMAT -> {
+                    val arrString = time.split(":")
+                    val arrStringSecond = arrString[arrString.size - 1].split(".")
+                    var second = arrStringSecond[0].toInt()
+                    val odd = arrStringSecond[1].toInt()
+                    var secondStr = second.toString()
+                    val oddStr = odd.toString()
+                    if (second < 10) {
+                        secondStr = "0" + secondStr
+                    }
+                    val newTime = "00" + ":" + secondStr + "." + oddStr
+                    val editable: Editable = SpannableStringBuilder(newTime)
+                    return editable
+                }
+            }
+            return null
+        }
+
+        fun getDefaultLanguage(): String {
+            val language = Locale.getDefault().language
+            if (language.equals("vi")) {
+                return language
+            } else {
+                return "en"
+            }
+        }
     }
+
 }

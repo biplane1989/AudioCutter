@@ -51,10 +51,9 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="0.1dp"
+            android:layout_height="1dp"
             android:layout_below="@+id/rlt_actionbar_mixing"
             android:background="@color/colorgrayAlpha" />
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -82,9 +81,9 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="0.1dp"
+                android:layout_height="1dp"
                 android:layout_alignParentTop="true"
-                android:background="@color/colorAlphaGray" />
+                android:background="@color/colorgrayAlpha" />
 
             <RelativeLayout
                 android:id="@+id/rlt_play_mixing"

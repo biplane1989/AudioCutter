@@ -82,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/common_padding_left_title"
                 android:backgroundTint="#FFFFFF"
-                android:hint="Search..."
+                android:hint="@string/search"
                 android:maxLines="1"
                 android:singleLine="true"
                 app:layout_constraintBottom_toBottomOf="@id/iv_search_close"
@@ -108,7 +108,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#F6F6F6" />
+            android:background="@color/colorgrayAlpha" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_contact"

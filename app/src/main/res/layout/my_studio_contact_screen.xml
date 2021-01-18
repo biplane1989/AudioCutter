@@ -112,7 +112,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/common_line"
             android:layout_marginTop="?android:actionBarSize"
-            android:background="#F6F6F6"
+            android:background="@color/colorgrayAlpha"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -121,6 +121,7 @@
             android:layout_height="0dp"
             android:paddingStart="@dimen/common_padding_left"
             android:paddingEnd="@dimen/common_padding_right"
+            android:layout_marginBottom="1dp"
             app:layout_constraintBottom_toTopOf="@id/cl_bottom"
             app:layout_constraintTop_toBottomOf="@+id/view">
 
@@ -152,6 +153,7 @@
             android:layout_height="0dp"
             android:paddingStart="@dimen/common_padding_left"
             android:paddingEnd="@dimen/common_padding_right"
+            android:layout_marginBottom="1dp"
             android:visibility="invisible"
             app:layout_constraintBottom_toTopOf="@id/cl_bottom"
             app:layout_constraintTop_toBottomOf="@+id/view">
@@ -181,8 +183,8 @@
         <View
             android:id="@+id/line2"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/common_line"
-            android:background="#F6F6F6"
+            android:layout_height="1dp"
+            android:background="@color/colorgrayAlpha"
             app:layout_constraintBottom_toTopOf="@id/cl_bottom"
             app:layout_constraintTop_toBottomOf="@+id/cl_contact" />
 
@@ -193,6 +195,7 @@
             android:background="#ffffff"
             android:paddingStart="@dimen/common_padding_left"
             android:paddingEnd="@dimen/common_padding_right"
+            android:layout_marginTop="1dp"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView

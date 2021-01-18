@@ -9,6 +9,7 @@ import android.widget.RadioButton
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.example.audiocutter.R
+import com.example.audiocutter.util.Utils
 
 class SetLanguageDialog(val mContext: Context) : DialogFragment(), View.OnClickListener {
     private lateinit var rootView: View
@@ -37,7 +38,15 @@ class SetLanguageDialog(val mContext: Context) : DialogFragment(), View.OnClickL
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.DialogGray)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        if (Utils.getDefaultLanguage().equals("vi")){
+            rbVietNam.isChecked = true
+        }else{
+            rbEnglish.isChecked = true
+        }
     }
 
 

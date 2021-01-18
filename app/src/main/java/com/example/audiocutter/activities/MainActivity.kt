@@ -1,13 +1,16 @@
 package com.example.audiocutter.activities
 
 import android.content.Intent
-import android.graphics.Typeface
+import android.content.res.Configuration
+import android.content.res.Resources
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import com.bumptech.glide.util.Util
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateScreen
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
@@ -18,6 +21,8 @@ import com.example.audiocutter.functions.resultscreen.objects.CUTTING_AUDIO_TYPE
 import com.example.audiocutter.functions.resultscreen.objects.MERGING_AUDIO_TYPE
 import com.example.audiocutter.functions.resultscreen.objects.MIXING_AUDIO_TYPE
 import com.example.audiocutter.util.PreferencesHelper
+import com.example.audiocutter.util.Utils
+import java.util.*
 
 
 class MainActivity : BaseActivity() {
@@ -34,6 +39,7 @@ class MainActivity : BaseActivity() {
             viewStateManager.initState(ViewStateScreen.SPLASH)
             handleNotificationIntent(intent)
         }
+        setLanguage()
     }
 
 
@@ -104,5 +110,16 @@ class MainActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun setLanguage() {
+        val language: String = PreferencesHelper.getString(PreferencesHelper.APP_LANGUAGE, Utils.getDefaultLanguage())
+        Log.d("abba", "setLanguage: $language")
+
+        val myLocale = Locale(language)
+        Locale.setDefault(myLocale)
+        val conf = resources.configuration
+        conf.setLocale(myLocale)
+        resources.updateConfiguration(conf, resources.displayMetrics)
     }
 }
