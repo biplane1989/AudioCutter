@@ -251,7 +251,7 @@ class MixChooserAdapter(
             val itemAudioFile = getItem(position)
             var bitRate = itemAudioFile.audioFile.bitRate / 1000
 
-            tvBitrateAudio.text = "${bitRate}${mContext.resources.getString(R.string.kbps)}"
+            tvBitrateAudio.text = " | ${bitRate}${mContext.resources.getString(R.string.kbps)}"
 
             tvNameAudio.text = itemAudioFile.audioFile.fileName
             var size = (itemAudioFile.audioFile.size.toDouble() / SIZE_MB)
