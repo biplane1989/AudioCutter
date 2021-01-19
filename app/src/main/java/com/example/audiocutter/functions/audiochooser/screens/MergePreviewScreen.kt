@@ -4,17 +4,14 @@ import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
@@ -23,9 +20,8 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MergePreviewScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergePreviewAdapter
 import com.example.audiocutter.functions.audiochooser.dialogs.MergeDialog
-import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
 import com.example.audiocutter.functions.mystudio.Constance
-import com.example.audiocutter.ui.audiochooser.merge.MyItemTouchHelper
 import com.example.audiocutter.ui.audiochooser.merge.WrapContentLinearLayoutManager
 import com.example.audiocutter.util.Utils
 import com.example.core.core.AudioFormat
@@ -154,7 +150,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         audioMerModel.resume()
     }
 
-    override fun deleteAudio(audioFile: AudioCutterView) {
+    override fun deleteAudio(audioFile: AudioCutterViewItem) {
         try {
             sendFragmentAction(MergeChooserScreen::class.java.name, "ACTION_DELETE", audioFile)
 //            ManagerFactory.getDefaultAudioPlayer().stop()
@@ -239,7 +235,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         return ""
     }
 
-    private fun getIndexMax(listItem: MutableList<AudioCutterView>): Int {
+    private fun getIndexMax(listItem: MutableList<AudioCutterViewItem>): Int {
         if (audioMerModel.getListAudioChoose().isNotEmpty()) {
             var indexMax = 0
             var itemMax = audioMerModel.getListAudioChoose()[0].audioFile.duration

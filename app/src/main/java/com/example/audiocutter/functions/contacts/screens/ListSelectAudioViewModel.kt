@@ -1,13 +1,11 @@
 package com.example.audiocutter.functions.contacts.screens
 
 import android.app.Application
-import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
@@ -17,7 +15,6 @@ import com.example.audiocutter.functions.contacts.objects.SelectItemView
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
 import com.example.audiocutter.util.Utils
-import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -54,7 +51,7 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     }
 
     fun init(fileUri: String) {
-        mAudioMediatorLiveData.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) {
+        mAudioMediatorLiveData.addSource(ManagerFactory.getAudioFileManager().getAudioFiles()) {
             runOnBackground {
                 loadingStatus.postValue(true)
                 if (it.state == StateLoad.LOADING) {

@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.text.TextUtils
 import android.util.Log
 import android.view.*
-import android.view.View.OnTouchListener
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.*
@@ -21,14 +20,14 @@ import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.event.OnItemTouchHelper
-import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
 import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
 import com.example.audiocutter.ui.audiochooser.merge.MyItemTouchHelper
 import kotlinx.coroutines.launch
 
 
-class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope, val activity: Activity, val mergerDiff: MergerChooserAudioDiff = MergerChooserAudioDiff()) : ListAdapter<AudioCutterView, MergePreviewAdapter.MergeChooseHolder>(mergerDiff), OnItemTouchHelper {
+class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope, val activity: Activity, val mergerDiff: MergerChooserAudioDiff = MergerChooserAudioDiff()) : ListAdapter<AudioCutterViewItem, MergePreviewAdapter.MergeChooseHolder>(mergerDiff), OnItemTouchHelper {
 
     //var listAudios = mutableListOf<AudioCutterView>()
     lateinit var mCallback: AudioMergeChooseListener
@@ -45,7 +44,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
     }
 
 
-    override fun submitList(list: List<AudioCutterView>?) {
+    override fun submitList(list: List<AudioCutterViewItem>?) {
         if (list != null) {
             super.submitList(ArrayList(list))
 //            Log.d("TAG", "submitList: statusTouch : " + statusTouch)
@@ -237,7 +236,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
             })
         }
 
-        fun resetItem(audioCutterView: AudioCutterView) {
+        fun resetItem(audioCutterView: AudioCutterViewItem) {
 
             playerState = PlayerState.IDLE
             Log.d("TAG", "updatePlayInfor: playerState:  resetItem" + playerState)
@@ -406,7 +405,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
         fun play(pos: Int)
         fun pause(pos: Int)
         fun resume(pos: Int)
-        fun deleteAudio(fileName: AudioCutterView)
+        fun deleteAudio(fileName: AudioCutterViewItem)
         fun moveItemAudio(prePos: Int, nextPos: Int)
     }
 
@@ -416,9 +415,9 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
     }
 }
 
-class MergerChooserAudioDiff() : DiffUtil.ItemCallback<AudioCutterView>() {
+class MergerChooserAudioDiff() : DiffUtil.ItemCallback<AudioCutterViewItem>() {
     var myItemTouchHelper: MyItemTouchHelper? = null
-    override fun areItemsTheSame(oldItem: AudioCutterView, newItem: AudioCutterView): Boolean {
+    override fun areItemsTheSame(oldItem: AudioCutterViewItem, newItem: AudioCutterViewItem): Boolean {
         myItemTouchHelper?.let {
             if (it.isDragging()) {
                 return true
@@ -427,11 +426,11 @@ class MergerChooserAudioDiff() : DiffUtil.ItemCallback<AudioCutterView>() {
         return oldItem.audioFile.fileName == newItem.audioFile.fileName
     }
 
-    override fun areContentsTheSame(oldItem: AudioCutterView, newItem: AudioCutterView): Boolean {
+    override fun areContentsTheSame(oldItem: AudioCutterViewItem, newItem: AudioCutterViewItem): Boolean {
         return oldItem == newItem
     }
 
-    override fun getChangePayload(oldItem: AudioCutterView, newItem: AudioCutterView): Any? {
+    override fun getChangePayload(oldItem: AudioCutterViewItem, newItem: AudioCutterViewItem): Any? {
         return newItem.isCheckChooseItem
     }
 

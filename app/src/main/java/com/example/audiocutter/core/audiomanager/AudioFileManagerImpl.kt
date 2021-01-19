@@ -250,7 +250,7 @@ object AudioFileManagerImpl : AudioFileManager {
         return uriPathSet.contains(uri)
     }
 
-    override fun findAllAudioFiles(): LiveData<AudioFileScans> {
+    override fun getAudioFiles(): LiveData<AudioFileScans> {
         return listAllAudios
     }
 

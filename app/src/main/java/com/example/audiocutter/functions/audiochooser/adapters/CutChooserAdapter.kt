@@ -22,7 +22,7 @@ import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
 import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
 import kotlinx.coroutines.MainScope
@@ -34,10 +34,10 @@ class CutChooserAdapter(
     val audioPlayer: AudioPlayer,
     val lifecycleCoroutineScope: LifecycleCoroutineScope,
     val activity: Activity
-) : ListAdapter<AudioCutterView, CutChooserAdapter.AudiocutterHolder>(CutChooserAudioDiff()) {
+) : ListAdapter<AudioCutterViewItem, CutChooserAdapter.AudiocutterHolder>(CutChooserAudioDiff()) {
     lateinit var mCallBack: CutChooserListener
     val SIZE_MB = 1024 * 1024
-    var listAudios = mutableListOf<AudioCutterView>()
+    var listAudios = mutableListOf<AudioCutterViewItem>()
 
     fun setAudioCutterListtener(event: CutChooserListener) {
         mCallBack = event
@@ -53,7 +53,7 @@ class CutChooserAdapter(
 //        }
 //    }
 
-    override fun submitList(list: MutableList<AudioCutterView>?, commitCallback: Runnable?) {
+    override fun submitList(list: MutableList<AudioCutterViewItem>?, commitCallback: Runnable?) {
         if (list!!.size != 0 || list != null) {
             listAudios = ArrayList(list)
             super.submitList(listAudios,commitCallback)
@@ -190,7 +190,7 @@ class CutChooserAdapter(
             })
         }
 
-        fun resetItem(audioCutterView: AudioCutterView) {
+        fun resetItem(audioCutterView: AudioCutterViewItem) {
 
             playerState = PlayerState.IDLE
             pgAudio.visibility = View.GONE
@@ -210,7 +210,7 @@ class CutChooserAdapter(
 
         @SuppressLint("SetTextI18n")
         fun bind() {
-            val itemAudioFile: AudioCutterView = getItem(adapterPosition)
+            val itemAudioFile: AudioCutterViewItem = getItem(adapterPosition)
             var bitRate = itemAudioFile.audioFile.bitRate / 1000
             tvBitrateAudio.text = " | ${bitRate}${mContext.resources.getString(R.string.kbps)}"
 
@@ -313,7 +313,7 @@ class CutChooserAdapter(
             }
         }
 
-        private fun showPopupMenu(itemAudio: AudioCutterView) {
+        private fun showPopupMenu(itemAudio: AudioCutterViewItem) {
             val popupMenu = PopupMenu(mContext, lnMenu)
             popupMenu.menuInflater.inflate(R.menu.menu_item_audio, popupMenu.menu)
             popupMenu.setOnMenuItemClickListener {
@@ -341,25 +341,22 @@ class CutChooserAdapter(
     }
 
     interface CutChooserListener {
-        fun play(pos: Int)
-        fun pause(pos: Int)
-        fun resume(pos: Int)
-        fun showDialogSetAs(itemAudio: AudioCutterView)
-        fun onCutItemClicked(itemAudio: AudioCutterView)
+        fun showDialogSetAs(itemAudio: AudioCutterViewItem)
+        fun onCutItemClicked(itemAudio: AudioCutterViewItem)
         fun onTickAudio(pos: Int)
     }
 }
 
-class CutChooserAudioDiff : DiffUtil.ItemCallback<AudioCutterView>() {
-    override fun areItemsTheSame(oldItem: AudioCutterView, newItem: AudioCutterView): Boolean {
+class CutChooserAudioDiff : DiffUtil.ItemCallback<AudioCutterViewItem>() {
+    override fun areItemsTheSame(oldItem: AudioCutterViewItem, newItem: AudioCutterViewItem): Boolean {
         return oldItem.audioFile.fileName == oldItem.audioFile.fileName
     }
 
-    override fun areContentsTheSame(oldItem: AudioCutterView, newItem: AudioCutterView): Boolean {
+    override fun areContentsTheSame(oldItem: AudioCutterViewItem, newItem: AudioCutterViewItem): Boolean {
         return oldItem == newItem
     }
 
-    override fun getChangePayload(oldItem: AudioCutterView, newItem: AudioCutterView): Any {
+    override fun getChangePayload(oldItem: AudioCutterViewItem, newItem: AudioCutterViewItem): Any {
         return newItem
     }
 

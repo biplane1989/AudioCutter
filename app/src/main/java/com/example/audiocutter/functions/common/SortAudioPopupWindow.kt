@@ -16,8 +16,8 @@ enum class SortField {
 }
 
 enum class SortType {
-    LONGEST,
-    SHORTEST
+    ASC,
+    DESC
 }
 
 data class SortValue(val sortType: SortType, val sortField: SortField)
@@ -86,7 +86,7 @@ class SortAudioPopupWindow(
 
     private fun selectSortType() {
         when (defaultSortValue.sortType) {
-            SortType.LONGEST -> {
+            SortType.ASC -> {
                 sortLongestButton.setBackgroundResource(R.drawable.menu_sort_audio_bg_selected_sort_button)
                 sortLongestButton.setTextColor(SELECT_TEXT_BUTTON_COLOR)
 
@@ -94,7 +94,7 @@ class SortAudioPopupWindow(
                 sortShortestButton.setTextColor(UNSELECT_TEXT_BUTTON_COLOR)
 
             }
-            SortType.SHORTEST -> {
+            SortType.DESC -> {
                 sortLongestButton.setBackgroundResource(R.drawable.menu_sort_audio_bg_unselected_sort_button)
                 sortLongestButton.setTextColor(UNSELECT_TEXT_BUTTON_COLOR)
 
@@ -154,11 +154,13 @@ class SortAudioPopupWindow(
             }
 
             sortLongestButton -> {
-                onItemSelected(SortValue(SortType.LONGEST, sortFieldSelected))
+                onItemSelected(SortValue(SortType.ASC, sortFieldSelected))
+                popupWindow.dismiss()
             }
 
             sortShortestButton -> {
-                onItemSelected(SortValue(SortType.SHORTEST, sortFieldSelected))
+                onItemSelected(SortValue(SortType.DESC, sortFieldSelected))
+                popupWindow.dismiss()
             }
         }
     }

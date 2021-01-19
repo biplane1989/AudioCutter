@@ -5,11 +5,11 @@ import android.app.Application
 import com.example.audiocutter.base.BaseAndroidViewModel
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
 
 class MergePreviewModel(application: Application) : BaseAndroidViewModel(application) {
     private val TAG = MergePreviewModel::class.java.name
-    private var mListAudio = ArrayList<AudioCutterView>()
+    private var mListAudio = ArrayList<AudioCutterViewItem>()
     private var mlistPath = ArrayList<String>()
     private val audioPlayer = ManagerFactory.newAudioPlayer()
     fun getAudioPlayer(): AudioPlayer {
@@ -25,7 +25,7 @@ class MergePreviewModel(application: Application) : BaseAndroidViewModel(applica
         audioPlayer.play(audioItem.audioFile)
     }
 
-    fun getListAudio(): List<AudioCutterView> {
+    fun getListAudio(): List<AudioCutterViewItem> {
         return mListAudio
     }
 
@@ -37,7 +37,7 @@ class MergePreviewModel(application: Application) : BaseAndroidViewModel(applica
         audioPlayer.resume()
     }
 
-    fun initListFileAudio(listData: List<AudioCutterView>) {
+    fun initListFileAudio(listData: List<AudioCutterViewItem>) {
         mListAudio.clear()
         mListAudio.addAll(listData)
         mlistPath.clear()
@@ -46,12 +46,12 @@ class MergePreviewModel(application: Application) : BaseAndroidViewModel(applica
         }
     }
 
-    fun removeItemAudio(item: AudioCutterView): List<AudioCutterView> {
+    fun removeItemAudio(item: AudioCutterViewItem): List<AudioCutterViewItem> {
         mListAudio.remove(item)
         return mListAudio
     }
 
-    fun moveItemAudio(prePos: Int, nextPos: Int): List<AudioCutterView> {
+    fun moveItemAudio(prePos: Int, nextPos: Int): List<AudioCutterViewItem> {
         val preItem = mListAudio[prePos].copy()
         mListAudio.remove(preItem)
         mListAudio.add(nextPos, preItem)

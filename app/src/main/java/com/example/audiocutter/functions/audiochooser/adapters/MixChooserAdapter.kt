@@ -21,7 +21,7 @@ import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
 import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
 import kotlinx.coroutines.launch
@@ -31,10 +31,10 @@ class MixChooserAdapter(
     val audioPlayer: AudioPlayer,
     val lifecycleCoroutineScope: LifecycleCoroutineScope,
     val activity: Activity
-) : ListAdapter<AudioCutterView, MixChooserAdapter.RecentHolder>(MixChooserAudioDiff()) {
+) : ListAdapter<AudioCutterViewItem, MixChooserAdapter.RecentHolder>(MixChooserAudioDiff()) {
     lateinit var mCallBack: AudioMixerListener
     val SIZE_MB = 1024 * 1024
-    var listAudios = mutableListOf<AudioCutterView>()
+    var listAudios = mutableListOf<AudioCutterViewItem>()
 
 
     fun setAudioCutterListtener(event: AudioMixerListener) {
@@ -51,17 +51,15 @@ class MixChooserAdapter(
 //        }
 //    }
 
-    override fun submitList(list: MutableList<AudioCutterView>?, commitCallback: Runnable?) {
+    override fun submitList(list: MutableList<AudioCutterViewItem>?, commitCallback: Runnable?) {
         if (list!!.size != 0 || list != null) {
             listAudios = ArrayList(list)
-            super.submitList(listAudios,commitCallback)
+            super.submitList(listAudios, commitCallback)
         } else if (list!!.size == 0 || list == null) {
             listAudios = ArrayList()
-            super.submitList(listAudios,commitCallback)
+            super.submitList(listAudios, commitCallback)
         }
     }
-
-
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecentHolder {
@@ -89,6 +87,12 @@ class MixChooserAdapter(
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
         } else {
+            val itemAudioFile = getItem(position)
+            when (itemAudioFile.isCheckChooseItem) {
+                true -> holder.ivChecked.setImageResource(R.drawable.ic_checkdone)
+                false -> holder.ivChecked.setImageResource(R.drawable.ic_noncheck)
+            }
+
 //            val itemAudioFile = getItem(position)
 //            val audioCutterView = payloads.firstOrNull() as AudioCutterView
 
@@ -128,7 +132,8 @@ class MixChooserAdapter(
         }
     }
 
-    inner class RecentHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, LifecycleOwner {
+    inner class RecentHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener, LifecycleOwner {
 
         val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio_recent)
         val ivChecked = itemView.findViewById<ImageView>(R.id.iv_recent_check)
@@ -157,7 +162,10 @@ class MixChooserAdapter(
         private fun updatePlayInfor(playerInfo: PlayerInfo) {
             playerState = playerInfo.playerState
             pgAudio.updatePG(playerInfo.posision.toLong(), playerInfo.duration.toLong())
-            Log.d("giangtd123", "updatePlayInfor: pecent: " + playerInfo.posision.toLong() + "status: " + playerInfo.playerState)
+            Log.d(
+                "giangtd123",
+                "updatePlayInfor: pecent: " + playerInfo.posision.toLong() + "status: " + playerInfo.playerState
+            )
 
             val itemAudioFile = getItem(adapterPosition)
             val bitmap = itemAudioFile.audioFile.bitmap
@@ -219,7 +227,7 @@ class MixChooserAdapter(
                             val audioCutterView = getItem(adapterPosition)
                             if (audioCutterView.audioFile.getFilePath() == it.getFilePath()) {
                                 updatePlayInfor(playerInfo)
-                            }else {
+                            } else {
                                 resetItem(audioCutterView)
                             }
                         }
@@ -228,7 +236,7 @@ class MixChooserAdapter(
             })
         }
 
-        fun resetItem(audioCutterView: AudioCutterView) {
+        fun resetItem(audioCutterView: AudioCutterViewItem) {
 
             playerState = PlayerState.IDLE
             pgAudio.visibility = View.GONE
@@ -308,7 +316,7 @@ class MixChooserAdapter(
                      }
                  }
              }*/
-            if(itemAudioFile.currentPos>0){
+            if (itemAudioFile.currentPos > 0) {
                 pgAudio.post {
                     pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration, false)
                 }
@@ -388,37 +396,8 @@ class MixChooserAdapter(
         }
 
         private fun checkItem() {
-            val item = getItem(adapterPosition)
+            mCallBack.selectItem(adapterPosition)
 
-            var count = 0
-            for (item in listAudios) {
-                if (item.isCheckChooseItem) {
-                    count++
-                }
-                if (count >= 2) {
-                    break
-                }
-            }
-
-            if (count < 2) {
-                item.isCheckChooseItem = !item.isCheckChooseItem
-                mCallBack.chooseItemAudio(getItem(adapterPosition), item.isCheckChooseItem)
-                when (item.isCheckChooseItem) {
-                    true -> ivChecked.setImageResource(R.drawable.ic_checkdone)
-                    false -> ivChecked.setImageResource(R.drawable.ic_noncheck)
-                }
-            } else {
-                if (item.isCheckChooseItem) {
-                    item.isCheckChooseItem = !item.isCheckChooseItem
-                    mCallBack.chooseItemAudio(getItem(adapterPosition), item.isCheckChooseItem)
-                    when (item.isCheckChooseItem) {
-                        true -> ivChecked.setImageResource(R.drawable.ic_checkdone)
-                        false -> ivChecked.setImageResource(R.drawable.ic_noncheck)
-                    }
-                }else{
-                    mCallBack.chooseItemAudio(getItem(adapterPosition), false)
-                }
-            }
         }
 
 
@@ -456,23 +435,29 @@ class MixChooserAdapter(
     }
 
     interface AudioMixerListener {
-        fun play(pos: Int)
-        fun pause(pos: Int)
-        fun resume(pos: Int)
-        fun chooseItemAudio(item: AudioCutterView, rs: Boolean)
+        fun selectItem(position:Int)
     }
 }
 
-class MixChooserAudioDiff : DiffUtil.ItemCallback<AudioCutterView>() {
-    override fun areItemsTheSame(oldItem: AudioCutterView, newItem: AudioCutterView): Boolean {
+class MixChooserAudioDiff : DiffUtil.ItemCallback<AudioCutterViewItem>() {
+    override fun areItemsTheSame(
+        oldItem: AudioCutterViewItem,
+        newItem: AudioCutterViewItem
+    ): Boolean {
         return oldItem.audioFile.fileName == oldItem.audioFile.fileName
     }
 
-    override fun areContentsTheSame(oldItem: AudioCutterView, newItem: AudioCutterView): Boolean {
+    override fun areContentsTheSame(
+        oldItem: AudioCutterViewItem,
+        newItem: AudioCutterViewItem
+    ): Boolean {
         return oldItem == newItem
     }
 
-    override fun getChangePayload(oldItem: AudioCutterView, newItem: AudioCutterView): Any? {
+    override fun getChangePayload(
+        oldItem: AudioCutterViewItem,
+        newItem: AudioCutterViewItem
+    ): Any? {
         return newItem.state
     }
 

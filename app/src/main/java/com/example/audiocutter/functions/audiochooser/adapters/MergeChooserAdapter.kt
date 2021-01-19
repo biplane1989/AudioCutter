@@ -13,7 +13,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.*
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -21,7 +20,7 @@ import com.example.audiocutter.R
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
 import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
 import kotlinx.coroutines.launch
@@ -32,10 +31,10 @@ class MergeChooserAdapter(
     val lifecycleCoroutineScope: LifecycleCoroutineScope,
     val activity: Activity
 
-) : ListAdapter<AudioCutterView, MergeChooserAdapter.MergeHolder>(MergerChooserAudioDiff()) {
+) : ListAdapter<AudioCutterViewItem, MergeChooserAdapter.MergeHolder>(MergerChooserAudioDiff()) {
     lateinit var mCallBack: AudioMergeListener
     val SIZE_MB = 1024 * 1024
-    var listAudios = mutableListOf<AudioCutterView>()
+    var listAudios = mutableListOf<AudioCutterViewItem>()
 
 
     fun setAudioListener(event: AudioMergeListener) {
@@ -52,7 +51,7 @@ class MergeChooserAdapter(
 //        }
 //    }
 
-    override fun submitList(list: MutableList<AudioCutterView>?, commitCallback: Runnable?) {
+    override fun submitList(list: MutableList<AudioCutterViewItem>?, commitCallback: Runnable?) {
         if (list!!.size != 0 || list != null) {
             listAudios = ArrayList(list)
             super.submitList(listAudios, commitCallback)
@@ -284,7 +283,7 @@ class MergeChooserAdapter(
             })
         }
 
-        fun resetItem(audioCutterView: AudioCutterView) {
+        fun resetItem(audioCutterView: AudioCutterViewItem) {
 
             playerState = PlayerState.IDLE
             pgAudio.visibility = View.GONE
@@ -495,7 +494,7 @@ class MergeChooserAdapter(
         fun play(pos: Int)
         fun pause(pos: Int)
         fun resume(pos: Int)
-        fun chooseItemAudio(audioCutterView: AudioCutterView, rs: Boolean)
+        fun chooseItemAudio(audioCutterView: AudioCutterViewItem, rs: Boolean)
     }
 }
 

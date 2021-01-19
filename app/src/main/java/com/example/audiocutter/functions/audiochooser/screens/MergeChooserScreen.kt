@@ -20,7 +20,7 @@ import com.example.audiocutter.base.IViewModel
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MergeChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.MergeChooserAdapter
-import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
 
 class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     MergeChooserAdapter.AudioMergeListener {
@@ -52,7 +52,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         binding.tvCountFileMer.text = "$it file"
     }
 
-    private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
+    private val listAudioObserver = Observer<List<AudioCutterViewItem>?> { listMusic ->
         if (listMusic == null) {
             binding.rvMerge.visibility = View.INVISIBLE
         } else {
@@ -218,7 +218,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         audioMerModel.resume()
     }
 
-    override fun chooseItemAudio(audioCutterView: AudioCutterView, rs: Boolean) {
+    override fun chooseItemAudio(audioCutterView: AudioCutterViewItem, rs: Boolean) {
         audioMerModel.chooseItemAudioFile(audioCutterView, rs)
     }
 
