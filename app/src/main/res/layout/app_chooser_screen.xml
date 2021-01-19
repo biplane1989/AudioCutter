@@ -14,7 +14,6 @@
             android:layout_height="wrap_content">
 
             <RelativeLayout
-
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
                 android:background="?attr/selectableItemBackground">
@@ -26,13 +25,12 @@
                     android:background="@color/colorgrayAlpha" />
 
                 <EditText
-
                     android:id="@+id/edt_apps_search"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/colorWhite"
                     android:focusableInTouchMode="true"
-                    android:hint="Search..."
+                    android:hint="@string/search"
                     android:paddingHorizontal="?actionBarSize"
                     android:paddingStart="@dimen/d_80"
                     android:singleLine="true"
@@ -101,8 +99,6 @@
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_audiocutter_close"
                     android:visibility="invisible" />
-
-
             </RelativeLayout>
         </LinearLayout>
 

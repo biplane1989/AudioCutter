@@ -112,7 +112,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:fontFamily="@font/opensans_regular"
                     android:gravity="center"
-                    android:text="CANCEL"
+                    android:text="@string/dialog_advanced_cancel"
                     android:textColor="#BDBDBD"
                     android:textSize="@dimen/text_size_button"
                     android:visibility="visible" />

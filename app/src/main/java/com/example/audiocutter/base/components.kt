@@ -3,6 +3,7 @@ package com.example.audiocutter.base
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,11 @@ import androidx.lifecycle.*
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateManager
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateManagerImpl
 import com.example.audiocutter.functions.mystudio.screens.FragmentMeta
+import com.example.audiocutter.util.PreferencesHelper
+import com.example.audiocutter.util.Utils
 import kotlinx.coroutines.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 private const val DIALOG_STYLE_KEY = "DIALOG_STYLE_KEY"
 
@@ -140,6 +145,7 @@ abstract class BaseActivity : AppCompatActivity() {
         onPostCreate()
         fragmentDataTransporter =
             ViewModelProviders.of(this).get(FragmentDataTransporter::class.java)
+        setLanguage()
     }
 
     protected fun runOnUI(executable: Executable): Job {
@@ -169,6 +175,20 @@ abstract class BaseActivity : AppCompatActivity() {
 
     fun addFragmentViewModel(fragmentViewModel: IViewModel) {
         fragmentDataTransporter.addFragmentViewModel(fragmentViewModel)
+    }
+
+    private fun setLanguage() {
+        val language: String = PreferencesHelper.getString(PreferencesHelper.APP_LANGUAGE, Utils.getDefaultLanguage())
+        Log.d("abba", "setLanguage: $language")
+
+        val myLocale = Locale(language)
+
+        Utils.updateLocale(this, myLocale)
+
+//        Locale.setDefault(myLocale)
+//        val conf = resources.configuration
+//        conf.setLocale(myLocale)
+//        resources.updateConfiguration(conf, resources.displayMetrics)
     }
 
 

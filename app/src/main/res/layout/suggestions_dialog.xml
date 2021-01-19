@@ -59,7 +59,7 @@
                     android:fontFamily="@font/opensans_semibold"
                     android:gravity="center"
                     android:paddingLeft="@dimen/d_10"
-                    android:text="IMPROTANT INTRODUCTION"
+                    android:text="@string/dialog_improtant_introduction"
                     android:textColor="@color/colorYelowDark"
                     android:textSize="@dimen/text_size_edt" />
             </TableRow>
@@ -96,7 +96,7 @@
                     android:fontFamily="@font/opensans_semibold"
                     android:gravity="center"
                     android:paddingLeft="@dimen/d_10"
-                    android:text="GENERAL SUGGESTIONS"
+                    android:text="@string/dialog_general_suggestions"
                     android:textColor="@color/colorYelowDark"
                     android:textSize="@dimen/text_size_edt" />
             </TableRow>

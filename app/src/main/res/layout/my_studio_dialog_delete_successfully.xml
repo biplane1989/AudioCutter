@@ -46,17 +46,17 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/d_48"
-                android:paddingHorizontal="@dimen/d_16"
-                android:fontFamily="@font/opensans_bold"
-                android:gravity="center"
-                android:text="Deleted Successfully"
-                android:textColor="#2E3041"
-                android:textSize="20dp"
-                android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@+id/iv_delete" />
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="@dimen/d_48"-->
+<!--                android:paddingHorizontal="@dimen/d_16"-->
+<!--                android:fontFamily="@font/opensans_bold"-->
+<!--                android:gravity="center"-->
+<!--                android:text="Deleted Successfully"-->
+<!--                android:textColor="#2E3041"-->
+<!--                android:textSize="20dp"-->
+<!--                android:textStyle="bold"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/iv_delete" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

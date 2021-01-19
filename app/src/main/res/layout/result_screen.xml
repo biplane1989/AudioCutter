@@ -101,7 +101,6 @@
                     android:id="@+id/iv_avatar"
                     android:layout_width="@dimen/common_size_item_imagview"
                     android:layout_height="@dimen/common_size_item_imagview"
-
                     app:cardBackgroundColor="#C4C6D2"
                     app:cardCornerRadius="4dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -168,6 +167,9 @@
         </LinearLayout>
 
         <TextView
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:fontFamily="@font/opensans_regular"
             android:id="@+id/tv_wait"
             android:layout_width="match_parent"

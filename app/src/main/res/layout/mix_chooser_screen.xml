@@ -151,7 +151,7 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:fontFamily="@font/opensans_regular"
-            android:text="No result."
+            android:text="@string/no_result_empty"
             android:textColor="@color/colorgray"
             android:textSize="@dimen/d_18"
             android:visibility="gone" />

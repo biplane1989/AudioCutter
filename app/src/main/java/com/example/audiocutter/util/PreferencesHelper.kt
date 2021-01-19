@@ -60,6 +60,10 @@ object PreferencesHelper {
         return sharedPreferences.getBoolean(key, defaultValue)
     }
 
+    fun getLanguage():String{
+        return getString(APP_LANGUAGE, "en")
+    }
+
     fun getStringSet(key: String): Set<String> {
         return sharedPreferences.getStringSet(key, HashSet())!!
     }

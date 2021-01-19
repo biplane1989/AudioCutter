@@ -2,8 +2,10 @@ package com.example.audiocutter.util
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.database.Cursor
 import android.graphics.*
 import android.media.MediaMetadataRetriever
@@ -11,6 +13,7 @@ import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
+import android.os.LocaleList
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.SpannableStringBuilder
@@ -32,6 +35,7 @@ import com.example.audiocutter.functions.editor.screen.CuttingEditorScreen
 import com.example.audiocutter.functions.resultscreen.objects.CUTTING_AUDIO_TYPE
 import com.example.audiocutter.objects.AudioFile
 import com.example.core.core.AudioInfor
+import com.google.android.material.internal.ContextUtils
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.InputStream
@@ -602,6 +606,24 @@ class Utils {
                 return language
             } else {
                 return "en"
+            }
+        }
+
+        fun updateLocale(c: Context, localeToSwitchTo: Locale) {        // update ngôn ngữ hệ thống
+            var context = c
+            val resources: Resources = context.resources
+            val configuration = resources.configuration
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                val localeList = LocaleList(localeToSwitchTo)
+                LocaleList.setDefault(localeList)
+                configuration.setLocales(localeList)
+            } else {
+                configuration.locale = localeToSwitchTo
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                context.createConfigurationContext(configuration)
+            } else {
+                resources.updateConfiguration(configuration, resources.displayMetrics)
             }
         }
     }

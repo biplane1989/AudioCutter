@@ -117,7 +117,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/opensans_semibold"
                             android:paddingLeft="@dimen/d_14"
-                            android:text="Get Premium"
+                            android:text="@string/setting_screen_get_premium"
                             android:textColor="@color/colorWhite"
                             android:textSize="@dimen/d_16" />
 
@@ -153,6 +153,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:text="viet nam"
                         android:id="@+id/tv_language_settings"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

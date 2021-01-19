@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fitsSystemWindows="true"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:fitsSystemWindows="true">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/cdl_test"
@@ -20,8 +20,7 @@
             android:background="@color/colorWhite"
             android:orientation="vertical"
             app:behavior_peekHeight="@dimen/d_size_peek_height_bottomsheet"
-            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-           >
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
 
             <TextView
@@ -34,11 +33,11 @@
                 android:textSize="@dimen/text_size_button" />
 
             <ImageView
-                android:background="?attr/selectableItemBackgroundBorderless"
                 android:id="@+id/iv_cancel_dialog"
                 android:layout_width="?actionBarSize"
                 android:layout_height="?actionBarSize"
                 android:layout_alignParentRight="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_cancel_dialog" />
 

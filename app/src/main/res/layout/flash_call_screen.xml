@@ -91,10 +91,7 @@
                 android:textSize="@dimen/d_5"
                 app:thumbTint="@color/color_state_thumb"
                 app:trackTint="@color/color_state_track" />
-
-
         </RelativeLayout>
-
 
         <ScrollView
             android:id="@+id/scr_mode_onflash"
@@ -129,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/opensans_bold"
                     android:paddingHorizontal="@dimen/d_16"
-                    android:text="Status"
+                    android:text="@string/flash_call_screen_status"
                     android:paddingVertical="@dimen/d_8"
                     android:textColor="@color/colorBlack"
                     android:textSize="@dimen/text_size_header_flashcall" />
@@ -350,7 +347,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:fontFamily="@font/opensans_light"
-                            android:text="Lightning speed"
+                            android:text="@string/flash_call_screen_lightning_speed"
                             android:textColor="@color/colorBlack"
                             android:textSize="@dimen/text_size_edt"
                             android:textStyle="bold" />
@@ -419,7 +416,7 @@
                             android:fontFamily="@font/opensans_regular"
                             android:gravity="center"
                             android:paddingVertical="@dimen/d_10"
-                            android:text="STOP"
+                            android:text="@string/flash_call_screen_stop"
                             android:textColor="@color/colorYelowDark"
                             android:textSize="@dimen/d_20" />
 
@@ -494,7 +491,7 @@
                     android:fontFamily="@font/opensans_bold"
                     android:paddingHorizontal="@dimen/d_16"
                     android:paddingVertical="@dimen/d_8"
-                    android:text="Turn on Flash in mode"
+                    android:text="@string/flash_call_screen_turn_on_flash_in_mode"
                     android:textColor="@color/colorBlack"
                     android:textSize="@dimen/text_size_header" />
 
@@ -515,7 +512,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/opensans_light"
                         android:gravity="center_vertical"
-                        android:text="Bell"
+                        android:text="@string/bell"
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/d_16"
                         android:textStyle="bold" />
@@ -554,7 +551,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/opensans_light"
                         android:gravity="center_vertical"
-                        android:text="Vibrate"
+                        android:text="@string/vibrate"
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/d_16"
                         android:textStyle="bold" />
@@ -593,7 +590,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/opensans_light"
                         android:gravity="center_vertical"
-                        android:text="Silent"
+                        android:text="@string/silent"
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/d_16"
                         android:textStyle="bold" />
@@ -638,7 +635,7 @@
                         android:gravity="center_vertical"
                         android:paddingHorizontal="@dimen/d_16"
 
-                        android:text="Flash timer off"
+                        android:text="@string/flash_timer_off"
                         android:textSize="@dimen/text_size_header"
                         android:textStyle="bold" />
 
@@ -680,7 +677,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/opensans_light"
                         android:gravity="center_vertical"
-                        android:text="Start from"
+                        android:text="@string/start_from"
                         android:textColor="@color/colorgray"
                         android:textSize="@dimen/d_16"
                         android:textStyle="bold" />
@@ -716,7 +713,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/opensans_light"
                         android:gravity="center_vertical"
-                        android:text="End"
+                        android:text="@string/end"
                         android:textColor="@color/colorgray"
                         android:textSize="@dimen/d_16"
                         android:textStyle="bold" />

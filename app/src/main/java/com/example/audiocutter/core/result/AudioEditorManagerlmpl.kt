@@ -3,6 +3,7 @@ package com.example.audiocutter.core.result
 import android.app.ActivityManager
 import android.content.*
 import android.os.IBinder
+import android.os.ResultReceiver
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,6 +11,7 @@ import androidx.lifecycle.Transformations
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.AudioEditorManager
 import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.resultscreen.objects.*
 import com.example.audiocutter.functions.resultscreen.services.ResultService
 import com.example.audiocutter.objects.AudioFile
@@ -23,9 +25,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
     private lateinit var mContext: Context
     private val TAG = "giangtd"
-    private var mService: ResultService? = null
-    private var mIsBound: Boolean = false
-
     private val listConvertingItem = ArrayList<ConvertingItem>()
     private val listConvertingItemsLiveData = MutableLiveData<List<ConvertingItem>>()  // list chung
     private var currConvertingId = 0
@@ -66,23 +65,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 //                    convertingState = ConvertingState.SUCCESS
                 }
             }
-//            currentProcessingItemLiveData.value?.let {
-//                it.percent = audioMering.percent
-//                it.state = convertingState
-//                notifyConvertingItemChanged(it)
-//            }
-        }
-    }
-
-    val serviceConnection = object : ServiceConnection {
-        override fun onServiceConnected(className: ComponentName, iBinder: IBinder) {
-            val binder = iBinder as ResultService.MyBinder
-            mService = binder.service
-            mIsBound = true
-        }
-
-        override fun onServiceDisconnected(arg0: ComponentName) {
-            mIsBound = false
         }
     }
 
@@ -105,9 +87,8 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         if (waitingItem == null) {      // khi khong con item nao thi bo service di
             if (isMyServiceRunning(ResultService::class.java)) {
                 Intent(mContext, ResultService::class.java).also { intent ->
-                    mContext.unbindService(serviceConnection)
+                    mContext.stopService(intent)
                 }
-                Log.d(TAG, "unbindService: ")
             }
         } else {
             waitingItem.state = ConvertingState.PROGRESSING
@@ -124,7 +105,9 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     private suspend fun processItem(item: ConvertingItem) = withContext(Dispatchers.Default) {      // thuc hien mix or mer or cut
         mainScope.launch {
 
-            mService?.builderForegroundService(item.getAudioType())     // tao 1 foreground service
+            val intent = Intent(mContext, ResultService::class.java)
+            intent.setAction(Constance.SERVICE_ACTION_BUILD_FORGROUND_SERVICE)
+            mContext.startService(intent)
 
             notifyConvertingItemChanged(null)
             item.state = ConvertingState.PROGRESSING
@@ -159,7 +142,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
             if (audioResult != null) {      // thanh cong
                 ManagerFactory.getAudioFileManager().buildAudioFile(audioResult.file.absolutePath) {
                     if (it != null) {
-//                        if (convertingState != ConvertingState.ERROR) {
                         item.outputAudioFile = it
                         item.state = ConvertingState.SUCCESS
                         onConvertingItemDetached(item)
@@ -168,10 +150,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                         listConvertingItemsLiveData.postValue(listConvertingItem)
                         processNextItem()
 
-//                        } else {
-//                            item.state = ConvertingState.ERROR
-//                            notifyConvertingItemChanged(item)
-//                        }
                     } else {
                         item.outputAudioFile = it
                         item.state = ConvertingState.ERROR
@@ -192,13 +170,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     }
 
     override fun cutAudio(audioFile: AudioFile, cuttingConfig: AudioCutConfig) {        // add them 1 item loai cut vao list
-        if (!isMyServiceRunning(ResultService::class.java)) {
-            notifyConvertingItemChanged(null)
-            Intent(mContext, ResultService::class.java).also {
-                mContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
-                Log.d(TAG, "bindService: ")
-            }
-        }
         currConvertingId++
         val item = CuttingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile, cuttingConfig, audioFile)
         synchronized(listConvertingItem) {
@@ -216,14 +187,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     }
 
     override fun mixAudio(audioFile1: AudioFile, audioFile2: AudioFile, mixingConfig: AudioMixConfig) {
-
-        if (!isMyServiceRunning(ResultService::class.java)) {
-            notifyConvertingItemChanged(null)
-            Intent(mContext, ResultService::class.java).also {
-                mContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
-                Log.d(TAG, "bindService: ")
-            }
-        }
         currConvertingId++
         val item = MixingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile1, audioFile2, mixingConfig, null)
         synchronized(listConvertingItem) {
@@ -242,14 +205,6 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     }
 
     override fun mergeAudio(listAudioFiles: List<AudioFile>, mergingConfig: AudioMergingConfig) {
-
-        if (!isMyServiceRunning(ResultService::class.java)) {
-            notifyConvertingItemChanged(null)
-            Intent(mContext, ResultService::class.java).also {
-                mContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
-                Log.d(TAG, "bindService: ")
-            }
-        }
         currConvertingId++
         val item = MergingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, listAudioFiles, mergingConfig, null)
         synchronized(listConvertingItem) {
@@ -292,7 +247,12 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                         ConvertingState.PROGRESSING -> {
                             iterator.remove()
                             ManagerFactory.getAudioCutter().cancelTask()
-                            mService?.cancelNotidication(id)
+
+                            val intent = Intent(mContext, ResultService::class.java)
+                            intent.setAction(Constance.SERVICE_ACTION_CANCEL_NOTIFICATION)
+                            intent.putExtra(Constance.SERVICE_ACTION_CANCEL_ID, id)
+                            mContext.startService(intent)
+
                         }
                         else -> {
                             // nothing
@@ -319,7 +279,9 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     }
 
     override fun refeshNotification() {
-        mService?.refeshNotification()
+        val intent = Intent(mContext, ResultService::class.java)
+        intent.setAction(Constance.SERVICE_ACTION_REFESHER_NOTIFICATION)
+        mContext.startService(intent)
     }
 
     override fun getListCuttingItems(): LiveData<List<ConvertingItem>> {  // tra live data cho list pending cho cutting
@@ -362,7 +324,7 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         return latestConvertingItem
     }
 
-    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
+    fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
         val manager = mContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?
         manager?.let {
             for (service in it.getRunningServices(Int.MAX_VALUE)) {

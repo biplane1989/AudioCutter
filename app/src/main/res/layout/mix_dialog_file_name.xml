@@ -32,7 +32,7 @@
                 android:fontFamily="@font/opensans_bold"
                 android:gravity="center"
                 android:paddingHorizontal="@dimen/margin_item_dialog"
-                android:text="Audio Mixer"
+                android:text="@string/dialog_audio_mixer"
                 android:textColor="#2E3041"
                 android:textSize="20dp"
                 android:textStyle="bold" />
@@ -44,7 +44,7 @@
                 android:fontFamily="@font/opensans_regular"
                 android:gravity="start"
                 android:paddingHorizontal="@dimen/margin_item_dialog"
-                android:text="File Name"
+                android:text="@string/file_name"
                 android:textColor="#6E6E6E"
                 android:textSize="12dp" />
 
@@ -57,7 +57,7 @@
                 android:layout_marginBottom="@dimen/margin_item_dialog"
                 android:background="@drawable/bg_edt_ctm"
                 android:fontFamily="@font/opensans_regular"
-                android:hint="Audio Mix"
+                android:hint="@string/dialog_audio_mix_hint"
                 android:singleLine="true"
                 android:textColor="#2E3041"
                 android:textSize="@dimen/text_size_edt"

@@ -1,8 +1,12 @@
 package com.example.audiocutter.activities
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +16,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.bumptech.glide.util.Util
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateScreen
+import com.example.audiocutter.MyApplication
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.core.manager.ManagerFactory
@@ -39,7 +44,7 @@ class MainActivity : BaseActivity() {
             viewStateManager.initState(ViewStateScreen.SPLASH)
             handleNotificationIntent(intent)
         }
-        setLanguage()
+//        setLanguage()
     }
 
 
@@ -112,14 +117,17 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun setLanguage() {
-        val language: String = PreferencesHelper.getString(PreferencesHelper.APP_LANGUAGE, Utils.getDefaultLanguage())
-        Log.d("abba", "setLanguage: $language")
-
-        val myLocale = Locale(language)
-        Locale.setDefault(myLocale)
-        val conf = resources.configuration
-        conf.setLocale(myLocale)
-        resources.updateConfiguration(conf, resources.displayMetrics)
-    }
+//    private fun setLanguage() {
+//        val language: String = PreferencesHelper.getString(PreferencesHelper.APP_LANGUAGE, Utils.getDefaultLanguage())
+//        Log.d("abba", "setLanguage: $language")
+//
+//        val myLocale = Locale(language)
+//
+////        Utils.updateLocale(this, myLocale)
+//
+//        Locale.setDefault(myLocale)
+//        val conf = resources.configuration
+//        conf.setLocale(myLocale)
+//        resources.updateConfiguration(conf, resources.displayMetrics)
+//    }
 }

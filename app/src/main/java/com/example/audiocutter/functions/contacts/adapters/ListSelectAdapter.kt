@@ -216,7 +216,7 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         }
 
         fun onViewDetachedFromWindow() {                                                // go~ view ra khoi windows do minh tu viet
-            lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+            lifecycleRegistry .currentState = Lifecycle.State.DESTROYED
             sbAnimation?.cancel()
         }
 
