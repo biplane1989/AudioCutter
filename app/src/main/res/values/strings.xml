@@ -224,4 +224,10 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="set_contact_ok">OK</string>
     <string name="setting_screen_language">Language</string>
     <string name="setting_screen_vn">Viet Nam</string>
+    <string name="menu_sort_audio_sort_by_name">Sort By Name</string>
+    <string name="menu_sort_audio_sort_by_date">Sort By Date</string>
+    <string name="menu_sort_audio_sort_by_duration">Sort By Duration</string>
+    <string name="menu_sort_audio_sort_by_size">Sort By Size</string>
+    <string name="menu_sort_audio_longest">Longest</string>
+    <string name="menu_sort_audio_shortest">Shortest</string>
 </resources>

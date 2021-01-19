@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.Animation
 import com.example.audiocutter.R
+import kotlinx.coroutines.coroutineScope
 
 
 class HandSwitchButtonView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
@@ -27,7 +28,7 @@ class HandSwitchButtonView(context: Context?, attrs: AttributeSet?) : View(conte
     private val bmHand: Bitmap
     private var valueAnimator = ValueAnimator.ofFloat(0f, 1f)
     private val modeSrcIn = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
-
+    suspend fun test()= coroutineScope {  }
     init {
         paint.setColor(BACKGROUND_COLOR)
         bmHand = BitmapFactory.decodeResource(context!!.resources, R.drawable.switch_button_ic_hand)

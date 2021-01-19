@@ -105,6 +105,14 @@
                     android:src="@drawable/ic_audiocutter_file" />
 
                 <ImageView
+                    android:id="@+id/iv_cutter_screen_sort"
+                    android:layout_width="@dimen/common_size_item_imagview"
+                    android:layout_height="match_parent"
+                    android:layout_toLeftOf="@+id/iv_audio_cutter_screen_file"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_sort_audio" />
+
+                <ImageView
                     android:id="@+id/iv_cutter_screen_close"
                     android:layout_width="@dimen/common_size_item_imagview"
                     android:layout_height="match_parent"
@@ -114,6 +122,7 @@
                     android:scaleType="centerInside"
                     android:src="@drawable/my_studio_screen_icon_close"
                     android:visibility="invisible" />
+
             </RelativeLayout>
         </LinearLayout>
 

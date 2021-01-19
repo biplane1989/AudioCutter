@@ -41,6 +41,7 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
 
 
     fun getStateLoading(): LiveData<Int> {
+        viewModelScope
         return stateLoadProgress
     }
 
