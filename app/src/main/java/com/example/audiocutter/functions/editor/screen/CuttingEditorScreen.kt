@@ -6,10 +6,13 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.SpannableStringBuilder
+import android.text.TextUtils
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -35,7 +38,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 
-class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickListener, View.OnLongClickListener, OnDialogAdvanceListener, DialogConvert.OnDialogConvertListener {
+class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickListener, View.OnLongClickListener, OnDialogAdvanceListener, DialogConvert.OnDialogConvertListener, TextView.OnEditorActionListener, View.OnFocusChangeListener {
 
     val safeArg: CuttingEditorScreenArgs by navArgs()
     private var playerState = PlayerState.IDLE
@@ -43,7 +46,6 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
     private var fadeIn = Effect.OFF
     private var fadeOut = Effect.OFF
 
-    private var isShowStatusAbs = true
     private var ratioVolumeFadeIn = 0F
     private var ratioVolumeFadeout = 0F
     private lateinit var cuttingViewModel: CuttingViewModel
@@ -54,6 +56,8 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
     private var endTimeOld = "00:00.0"
     private var startTimeLife = 0L
     private var endTimeLife = 0L
+    private var isShowAbsStart = true
+    private var isShowAbsEnd = true
 
     private lateinit var mWaveformView: WaveformView
 
@@ -94,60 +98,59 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         initView()
         initSharePre()
 
-        binding.startTimeTv.setOnEditorActionListener { v, actionId, event ->       // xử lý event enter trên bàn phím
-            if (actionId == EditorInfo.IME_ACTION_DONE && (actionId == KeyEvent.KEYCODE_ENTER)) {
-                val imm: InputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager;
-                imm.hideSoftInputFromWindow(binding.startTimeTv.getWindowToken(), 0)
-
-                true
-            } else {
-
-                checkValidationTime(binding.startTimeTv.text.toString(), START_KEY)?.let {
-                    binding.startTimeTv.text = it
+        binding.startTimeTv.setKeyImeChangeListener(object : TimeEditText.KeyImeChange {
+            override fun onKeyIme(keyCode: Int, event: KeyEvent?) {
+                if (KeyEvent.KEYCODE_BACK == event?.keyCode) {
+                    binding.startTimeTv.clearFocus()
+                    val startTime = checkValidationTime(binding.startTimeTv.text.toString(), START_KEY)
+                    if (startTime == null) {
+                        val editable: Editable = SpannableStringBuilder(startTimeOld)
+                        binding.startTimeTv.text = editable
+                    } else {
+                        binding.startTimeTv.text = startTime
+                        startTimeOld = startTime.toString()
+                    }
                 }
-
-                if (checkValidationTime(binding.startTimeTv.text.toString(), START_KEY) == null) {
-                    val editable: Editable = SpannableStringBuilder(startTimeOld)
-                    binding.startTimeTv.text = editable
-                } else {
-                    binding.startTimeTv.text = checkValidationTime(binding.startTimeTv.text.toString(), START_KEY)
-                    startTimeOld = checkValidationTime(binding.startTimeTv.text.toString(), START_KEY).toString()
-                }
-
-//                binding.adsView.visibility = View.VISIBLE
-                false
             }
-        }
+        })
 
-        binding.endTimeTv.setOnEditorActionListener { v, actionId, event ->     // xử lý event enter trên bàn phím
-            if (actionId == EditorInfo.IME_ACTION_DONE && (actionId == KeyEvent.KEYCODE_ENTER)) {
-                val imm: InputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager;
-                imm.hideSoftInputFromWindow(binding.endTimeTv.getWindowToken(), 0)
-
-                true
-            } else {
-
-                checkValidationTime(binding.endTimeTv.text.toString(), END_KEY)?.let {
-                    binding.endTimeTv.text = it
+        binding.endTimeTv.setKeyImeChangeListener(object : TimeEditText.KeyImeChange {
+            override fun onKeyIme(keyCode: Int, event: KeyEvent?) {
+                if (KeyEvent.KEYCODE_BACK == event?.keyCode) {
+                    binding.endTimeTv.clearFocus()
+                    val endTime = checkValidationTime(binding.endTimeTv.text.toString(), END_KEY)
+                    if (endTime == null) {
+                        val editable: Editable = SpannableStringBuilder(endTimeOld)
+                        binding.endTimeTv.text = editable
+                    } else {
+                        binding.endTimeTv.text = endTime
+                        endTimeOld = endTime.toString()
+                    }
                 }
-
-                if (checkValidationTime(binding.endTimeTv.text.toString(), END_KEY) == null) {
-                    val editable: Editable = SpannableStringBuilder(endTimeOld)
-                    binding.endTimeTv.text = editable
-                } else {
-                    binding.endTimeTv.text = checkValidationTime(binding.endTimeTv.text.toString(), END_KEY)
-                    endTimeOld = checkValidationTime(binding.endTimeTv.text.toString(), END_KEY).toString()
-                }
-//                binding.adsView.visibility = View.VISIBLE
-                false
             }
-        }
+        })
 
+        binding.startTimeTv.setOnKeyListener(object : View.OnKeyListener {
+            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
+                if (keyCode == KeyEvent.KEYCODE_DEL) {
+                    val positionCount = binding.startTimeTv.selectionStart
+                    if (positionCount > 1) {
+                        if (TextUtils.equals(binding.startTimeTv.text.toString()
+                                .get(positionCount - 1).toString(), ":")) return true
+                        if (TextUtils.equals(binding.startTimeTv.text.toString()
+                                .get(positionCount - 1).toString(), ".")) return true
+                        return false
+                    }
+                    return true
+                }
+                return false
+            }
+        })
+    }
 
-//        binding.startTimeTv.setOnFocusChangeListener(OnFocusChangeListener { v, hasFocus ->
-////            if (hasFocus) editTextClicked() // Instead of your Toast
-//            Log.d("giangtd001", "onViewCreated: on click")
-//        })
+    private fun hideKeyboard() {
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
     override fun onResume() {       // xu ly back button
@@ -155,17 +158,8 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         requireView().isFocusableInTouchMode = true
         requireView().requestFocus()
         requireView().setOnKeyListener { v, keyCode, event ->
-//            if (event.action == KeyEvent.KEYCODE_BACK) {
-//                Log.d("giangtd001", "onResume: back 1")
-//                true
-//            } else {
-//                false
-//            }
             if (event.action == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                Log.d(TAG, "onResume: back 2")
-                binding.adsView.visibility = View.VISIBLE
-//                requireActivity().onBackPressed()
-                // handle back button
+                requireActivity().onBackPressed()
                 true
             } else false
         }
@@ -204,7 +198,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         if (key.equals(START_KEY)) {
             startTimeLife = Utils.getTimeByTimeString(time, typeTime)
             val oldTimeEnd = Utils.getTimeByTimeString(endTimeOld, typeTime) - 1000
-            if (Utils.getTimeByTimeString(time, typeTime) > -1 && Utils.getTimeByTimeString(time, typeTime) <= duration && startTimeLife < oldTimeEnd) {
+            if (startTimeLife > -1 && startTimeLife <= duration && startTimeLife < oldTimeEnd) {
                 return Utils.formatTime(time, typeTime)
             } else {
                 showNotification(getString(R.string.cutting_editor_screen_error_validator))
@@ -213,7 +207,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         } else {
             endTimeLife = Utils.getTimeByTimeString(time, typeTime)
             val oldTimeNew = Utils.getTimeByTimeString(startTimeOld, typeTime) + 1000
-            if (Utils.getTimeByTimeString(time, typeTime) > -1 && Utils.getTimeByTimeString(time, typeTime) <= duration && endTimeLife > oldTimeNew) {
+            if (endTimeLife > -1 && endTimeLife <= duration && endTimeLife > oldTimeNew) {
                 return Utils.formatTime(time, typeTime)
             } else {
                 showNotification(getString(R.string.cutting_editor_screen_error_validator))
@@ -319,6 +313,11 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         binding.endTimeTv.setOnClickListener(this)
         binding.adsView.setOnClickListener(this)
 
+        binding.startTimeTv.setOnEditorActionListener(this)
+        binding.endTimeTv.setOnEditorActionListener(this)
+        binding.startTimeTv.setOnFocusChangeListener(this)
+        binding.endTimeTv.setOnFocusChangeListener(this)
+
     }
 
     override fun onStartTimeChanged(startTimeMs: Long) {
@@ -330,15 +329,11 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
             binding.startTimeTv.gravity = Gravity.CENTER_HORIZONTAL
             binding.startTimeTv.layoutParams = layoutParams
         }
-//        binding.startTimeTv.text = startTimeStr
 
         val editable: Editable = SpannableStringBuilder(startTimeStr)
         binding.startTimeTv.text = editable
         startTimeOld = startTimeStr
 
-        Log.d("giangtd001", "onStartTimeChanged: $startTimeStr")
-
-        Log.d("taihhhhh", "onStartTimeChanged: startTimeMs ${startTimeMs} CuttingCurrPos ${cuttingViewModel.getCuttingCurrPos()}")
         cuttingViewModel.changeStartPos(startTimeMs.toInt())
     }
 
@@ -354,7 +349,6 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         val editable: Editable = SpannableStringBuilder(endTimeStr)
         binding.endTimeTv.text = editable
         endTimeOld = endTimeStr
-//        binding..text = Utils.longDurationMsToStringMs(endTimeMs)
         cuttingViewModel.changeEndPos(endTimeMs.toInt())
     }
 
@@ -401,7 +395,9 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
                 activity?.onBackPressed()
             }
             binding.optionIv -> {
-                DialogAdvanced.showDialogAdvanced(requireContext(), this)
+//                DialogAdvanced.showDialogAdvanced(requireContext(), this)
+                val dialog = DialogAdvanced.newInstance(this)
+                dialog.show(childFragmentManager, DialogAdvanced.TAG)
                 /* ManagerFactory.getAudioPlayer().pause()*/
                 cuttingViewModel.pauseAudio()
             }
@@ -444,7 +440,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
                 cuttingViewModel.seekAudio(cuttingViewModel.getCuttingCurrPos() + Utils.FIVE_SECOND)
             }
             binding.startTimeTv -> {
-                Log.d("giangtd001", "onClick: click gone")
+//                Log.d("giangtd001", "onClick: click gone")
 //                binding.adsView.visibility = View.GONE
             }
             binding.endTimeTv -> {
@@ -472,7 +468,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
     }
 
     //isIncrease -> true increase, false reduction
-    //isStart -> true timeStart, false timeEnd
+//isStart -> true timeStart, false timeEnd
     private fun updateTimeWaveView(isIncrease: Boolean, isStart: Boolean, view: View) {
         mHandler.removeCallbacks(runnable)
         runnable = Runnable {
@@ -524,5 +520,66 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         }
     }
 
+    override fun onEditorAction(view: TextView?, actionId: Int, p2: KeyEvent?): Boolean {       // xu ly su kien an enter tren ban phim
+
+        if (actionId == EditorInfo.IME_ACTION_DONE && (actionId == KeyEvent.KEYCODE_ENTER)) {
+            val imm: InputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager;
+            imm.hideSoftInputFromWindow(binding.startTimeTv.getWindowToken(), 0)
+            imm.hideSoftInputFromWindow(binding.endTimeTv.getWindowToken(), 0)
+            return true
+        } else {
+            when (view) {
+                binding.startTimeTv -> {
+                    val startTime = checkValidationTime(binding.startTimeTv.text.toString(), START_KEY)
+                    if (startTime == null) {
+                        val editable: Editable = SpannableStringBuilder(startTimeOld)
+                        binding.startTimeTv.text = editable
+                    } else {
+                        binding.startTimeTv.text = startTime
+                        startTimeOld = startTime.toString()
+                    }
+                    binding.startTimeTv.clearFocus()
+                    hideKeyboard()
+                }
+                binding.endTimeTv -> {
+                    val endTime = checkValidationTime(binding.endTimeTv.text.toString(), END_KEY)
+                    if (endTime == null) {
+                        val editable: Editable = SpannableStringBuilder(endTimeOld)
+                        binding.endTimeTv.text = editable
+                    } else {
+                        binding.endTimeTv.text = endTime
+                        endTimeOld = endTime.toString()
+                    }
+                    binding.endTimeTv.clearFocus()
+                    hideKeyboard()
+                }
+            }
+
+            return false
+        }
+    }
+
+    override fun onFocusChange(view: View?, p1: Boolean) {          // su kien thay doi focus EditTime
+        view?.let {
+            when (view) {
+                binding.startTimeTv -> {
+                    isShowAbsStart = !isShowAbsStart
+//                    showHideAbs(isShowAbsStart)
+                }
+                binding.endTimeTv -> {
+                    isShowAbsEnd = !isShowAbsEnd
+//                    showHideAbs(isShowAbsEnd)
+                }
+            }
+        }
+    }
+
+    private fun showHideAbs(isShowStatus: Boolean) {
+        if (isShowStatus) {
+            binding.adsView.visibility = View.VISIBLE
+        } else {
+            binding.adsView.visibility = View.GONE
+        }
+    }
 
 }

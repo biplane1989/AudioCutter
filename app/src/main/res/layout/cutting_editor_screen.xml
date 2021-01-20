@@ -69,6 +69,7 @@
             android:layout_marginBottom="10dp" />
 
         <View
+            android:visibility="gone"
             android:id="@+id/ads_view"
             android:layout_width="match_parent"
             android:layout_height="76dp"
@@ -96,7 +97,22 @@
                     android:scaleType="center"
                     android:src="@drawable/fragment_cutter_reduced_time_ic" />
 
-                <EditText
+<!--                <EditText-->
+<!--                    android:background="@color/colorWhite"-->
+<!--                    android:maxWidth="80dp"-->
+<!--                    android:maxLines="1"-->
+<!--                    android:singleLine="true"-->
+<!--                    android:id="@+id/start_time_tv"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:fontFamily="@font/opensans_regular"-->
+<!--                    android:inputType="number"-->
+<!--                    android:text="00:00.0"-->
+<!--                    android:textColor="@color/fragment_cutter_text_time_color"-->
+<!--                    android:textSize="14sp" />-->
+
+                <com.example.audiocutter.functions.editor.screen.TimeEditText
                     android:background="@color/colorWhite"
                     android:maxWidth="80dp"
                     android:maxLines="1"
@@ -137,7 +153,21 @@
                     android:scaleType="center"
                     android:src="@drawable/fragment_cutter_reduced_time_ic" />
 
-                <EditText
+<!--                <EditText-->
+<!--                    android:background="@color/colorWhite"-->
+<!--                    android:maxWidth="80dp"-->
+<!--                    android:maxLines="1"-->
+<!--                    android:singleLine="true"-->
+<!--                    android:id="@+id/end_time_tv"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:fontFamily="@font/opensans_regular"-->
+<!--                    android:inputType="number"-->
+<!--                    android:text="00:00.0"-->
+<!--                    android:textColor="@color/fragment_cutter_text_time_color"-->
+<!--                    android:textSize="14sp" />-->
+                <com.example.audiocutter.functions.editor.screen.TimeEditText
                     android:background="@color/colorWhite"
                     android:maxWidth="80dp"
                     android:maxLines="1"

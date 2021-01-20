@@ -1,27 +1,25 @@
 package com.example.audiocutter.functions.editor.dialogs
 
-import android.app.Dialog
-import android.content.Context
-import android.view.LayoutInflater
+import android.os.Bundle
 import android.view.View
-import androidx.databinding.DataBindingUtil
 import com.example.audiocutter.R
-import com.example.audiocutter.databinding.DialogAdvancedBinding
+import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.util.PreferencesHelper
 import com.example.core.core.Effect
+import kotlinx.android.synthetic.main.dialog_advanced.*
 
-class DialogAdvanced : Dialog, View.OnClickListener {
-    private lateinit var advancedBinding: DialogAdvancedBinding
-    private lateinit var listener: OnDialogAdvanceListener
+class DialogAdvanced : BaseDialog() {
+    //    private lateinit var advancedBinding: DialogAdvancedBinding
+//    private lateinit var listener: OnDialogAdvanceListener
     private var fadeInPos = 0
     private var fadeOutPos = 0
     private val valuesEffect = Effect.values()
 
-    constructor(context: Context) : this(context, 0)
-    constructor(context: Context, themeResId: Int) : super(context, themeResId) {
-        initView(context)
-        initData()
-    }
+//    constructor(context: Context) : this(context, 0)
+//    constructor(context: Context, themeResId: Int) : super(context, themeResId) {
+//        initView(context)
+//        initData()
+//    }
 
     private fun initData() {
         fadeInPos = PreferencesHelper.getInt(PreferencesHelper.FADE_IN_TIME, 0)
@@ -32,21 +30,19 @@ class DialogAdvanced : Dialog, View.OnClickListener {
             if (i == 0) {
                 list.add(valuesEffect[i].name.upperFirstString())
             } else {
-                list.add(
-                    if (valuesEffect[i].time == 3) valuesEffect[i].time.toString()
-                        .plus("s (Recommend)") else valuesEffect[i].time.toString().plus("s")
-                )
+                list.add(if (valuesEffect[i].time == 3) valuesEffect[i].time.toString()
+                    .plus("s (Recommend)") else valuesEffect[i].time.toString().plus("s"))
             }
         }
 
-        advancedBinding.spinnerFadeIn.apply {
+        spinner_fade_in.apply {
             setItems(list)
             selectedIndex = fadeInPos
             setOnItemSelectedListener { view, position, id, item ->
                 fadeInPos = position
             }
         }
-        advancedBinding.spinnerFadeOut.apply {
+        spinner_fade_out.apply {
             setItems(list)
             selectedIndex = fadeOutPos
             setOnItemSelectedListener { view, position, id, item ->
@@ -55,7 +51,6 @@ class DialogAdvanced : Dialog, View.OnClickListener {
         }
     }
 
-
     private fun String.upperFirstString(): String {
         val string = this.toLowerCase()
         val endString = this.substring(1, this.length).toLowerCase()
@@ -63,49 +58,80 @@ class DialogAdvanced : Dialog, View.OnClickListener {
         return string1.plus(endString)
     }
 
-    private fun initView(context: Context) {
+//    private fun initView() {
 //        if (window != null) window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        advancedBinding = DataBindingUtil.inflate(
-            LayoutInflater.from(context),
-            R.layout.dialog_advanced,
-            null,
-            false
-        )
-        setContentView(advancedBinding.root)
-        advancedBinding.cancelTv.setOnClickListener(this)
-        advancedBinding.okTv.setOnClickListener(this)
-    }
+//        advancedBinding = DataBindingUtil.inflate(
+//            LayoutInflater.from(context),
+//            R.layout.dialog_advanced,
+//            null,
+//            false
+//        )
+//        setContentView(advancedBinding.root)
+//        cancel_tv.setOnClickListener(this)
+//        ok_tv.setOnClickListener(this)
+//    }
 
-    override fun onClick(v: View?) {
-        when (v) {
-            advancedBinding.cancelTv -> {
-                dismiss()
-            }
-            advancedBinding.okTv -> {
-                PreferencesHelper.putInt(
-                    PreferencesHelper.FADE_IN_TIME, fadeInPos
-                )
-                PreferencesHelper.putInt(
-                    PreferencesHelper.FADE_OUT_TIME, fadeOutPos
-                )
-                listener.onDialogOk(valuesEffect[fadeInPos], valuesEffect[fadeOutPos])
-                cancel()
-            }
+//    override fun onClick(v: View?) {
+//        when (v) {
+//            cancel_tv -> {
+////                dismiss()
+//                dialog?.dismiss()
+//            }
+//            ok_tv -> {
+//                PreferencesHelper.putInt(PreferencesHelper.FADE_IN_TIME, fadeInPos)
+//                PreferencesHelper.putInt(PreferencesHelper.FADE_OUT_TIME, fadeOutPos)
+//                listener.onDialogOk(valuesEffect[fadeInPos], valuesEffect[fadeOutPos])
+////                cancel()
+//                dialog?.dismiss()
+//            }
+//        }
+//    }
+
+//    companion object {
+//        fun showDialogAdvanced(context: Context, onDialogAdvanceListener: OnDialogAdvanceListener) {
+//            val dialog = DialogAdvanced()
+//            dialog.listener = onDialogAdvanceListener
+////            dialog.show()
+//        }
+//    }
+
+    companion object {
+        val TAG = "DeleteDialog"
+        lateinit var dialogListener: OnDialogAdvanceListener
+
+        @JvmStatic
+        fun newInstance(listener: OnDialogAdvanceListener): DialogAdvanced {
+            this.dialogListener = listener
+            val dialog = DialogAdvanced()
+            return dialog
         }
     }
 
-    companion object {
-        fun showDialogAdvanced(
-            context: Context,
-            onDialogAdvanceListener: OnDialogAdvanceListener
-        ) {
-            val dialog =
-                DialogAdvanced(
-                    context
-                )
-            dialog.listener = onDialogAdvanceListener
-            dialog.show()
+    override fun getLayoutResId(): Int {
+        return R.layout.dialog_advanced
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_TITLE, R.style.DialogGray)
+//        initView()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+//        initView()
+        initData()
+
+        cancel_tv.setOnClickListener {
+            dialog?.dismiss()
+        }
+        ok_tv.setOnClickListener {
+            PreferencesHelper.putInt(PreferencesHelper.FADE_IN_TIME, fadeInPos)
+            PreferencesHelper.putInt(PreferencesHelper.FADE_OUT_TIME, fadeOutPos)
+            dialogListener.onDialogOk(valuesEffect[fadeInPos], valuesEffect[fadeOutPos])
+//                cancel()
+            dialog?.dismiss()
         }
     }
 }

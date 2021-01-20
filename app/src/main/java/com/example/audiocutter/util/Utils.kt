@@ -626,6 +626,7 @@ class Utils {
                 resources.updateConfiguration(configuration, resources.displayMetrics)
             }
         }
+
     }
 
 }

@@ -118,7 +118,7 @@
                 android:layout_gravity="center_vertical"
                 android:fontFamily="@font/opensans_bold"
                 android:gravity="center"
-                android:paddingLeft="26dp"
+                android:paddingLeft="7dp"
                 android:text="@string/merge_preview_screen_add_file"
                 android:textColor="@color/colorBlack"
                 android:textSize="@dimen/d_14"

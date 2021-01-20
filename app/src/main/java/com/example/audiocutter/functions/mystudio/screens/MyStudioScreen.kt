@@ -128,6 +128,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
     // observer loading done danh cho dialog
     private val loadingDoneObserver = Observer<Boolean> {
         if (it) {
+            isDeleteClicked = true
             dialog?.let {
                 it.dismiss()
             }
