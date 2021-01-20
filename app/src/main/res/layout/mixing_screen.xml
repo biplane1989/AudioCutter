@@ -44,7 +44,7 @@
                     android:layout_centerVertical="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_done_mixing" />
+                    android:src="@drawable/fragment_cutter_tick_ic" />
             </RelativeLayout>
 
         </LinearLayout>

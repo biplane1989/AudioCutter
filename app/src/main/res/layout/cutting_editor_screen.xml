@@ -35,8 +35,9 @@
                 android:textSize="18dp" />
 
             <ImageView
+                android:layout_marginRight="@dimen/common_padding_left"
                 android:id="@+id/tick_iv"
-                android:layout_width="?actionBarSize"
+                android:layout_width="@dimen/common_size_item_imagview"
                 android:layout_height="?actionBarSize"
                 android:layout_alignParentRight="true"
                 android:background="@drawable/ripple_item_view"
@@ -45,7 +46,7 @@
 
             <ImageView
                 android:id="@+id/option_iv"
-                android:layout_width="?actionBarSize"
+                android:layout_width="@dimen/common_size_item_imagview"
                 android:layout_height="?actionBarSize"
                 android:layout_toLeftOf="@id/tick_iv"
                 android:background="@drawable/ripple_item_view"

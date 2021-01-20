@@ -94,11 +94,26 @@ class Utils {
         }
 
         fun longDurationMsToStringMs(time: Long): String {
-            val seconds = time / 1000
-            val minutes = seconds / 60
-            val oddSeconds = seconds - minutes * 60
-            val oddMSeconds = (time - (minutes * 60 + oddSeconds) * 1000) / 100
-            return minutes.toString() + ":" + (if (oddSeconds > 9) oddSeconds else "0$oddSeconds") + "." + oddMSeconds
+//            if (time / (3600 * 1000) >= 1) {     // hour
+//
+//                val hour = time / (3600 * 1000)
+//                val minute = (time - hour * 3600 * 1000) / (60 * 1000)
+//                val second = (time - hour * 3600 * 1000 - minute * 60 * 1000) / 1000
+//                val mSecond = (time - hour * 3600 * 1000 - minute * 60 * 1000 - second * 1000) / 100
+//                return (if (hour > 9) hour.toString() else "0$hour") + ":" + (if (minute > 9) minute else "0$minute") + ":" + (if (second > 9) second else "0$second") + "." + mSecond
+//            } else {                  // minute
+//                val seconds = time / 1000
+//                val minutes = seconds / 60
+//                val oddSeconds = seconds - minutes * 60
+//                val oddMSeconds = (time - (minutes * 60 + oddSeconds) * 1000) / 100
+//                return if (minutes > 9) minutes.toString() else "0$minutes" + ":" + (if (oddSeconds > 9) oddSeconds else "0$oddSeconds") + "." + oddMSeconds
+//            }
+
+            val minute = time / (60 * 1000)
+            val second = (time - minute * 60 * 1000) / 1000
+            val mSecond = (time - minute * 60 * 1000 - second * 1000) / 100
+            return (if (minute > 9) minute.toString() else "0$minute") + ":" + (if (second > 9) second else "0$second") + "." + mSecond
+
         }
 
         fun longMsToString(ms: Long): String {
@@ -480,17 +495,17 @@ class Utils {
 
         fun getTimeByTimeString(time: String, typeFormat: String): Long {
             when (typeFormat) {
-                CuttingEditorScreen.HOUR_FORMAT -> {
-                    val arrString = time.split(":")
-                    val arrStringSecond = arrString[arrString.size - 1].split(".")
-                    var hour = arrString[0].toLong()
-                    var minute = arrString[1].toLong()
-                    var second = arrStringSecond[0].toLong()
-                    val odd = arrStringSecond[1].toLong()
+                /* CuttingEditorScreen.HOUR_FORMAT -> {
+                     val arrString = time.split(":")
+                     val arrStringSecond = arrString[arrString.size - 1].split(".")
+                     var hour = arrString[0].toLong()
+                     var minute = arrString[1].toLong()
+                     var second = arrStringSecond[0].toLong()
+                     val odd = arrStringSecond[1].toLong()
 
-                    val newTime = hour * 3600 * 1000 + minute * 60 * 1000 + second * 1000 + odd * 100
-                    return newTime
-                }
+                     val newTime = hour * 3600 * 1000 + minute * 60 * 1000 + second * 1000 + odd * 100
+                     return newTime
+                 }*/
                 CuttingEditorScreen.MINUTE_FORMAT -> {
                     val arrString = time.split(":")
                     val arrStringSecond = arrString[arrString.size - 1].split(".")
@@ -518,44 +533,44 @@ class Utils {
 
         fun formatTime(time: String, typeFormat: String): Editable? {
             when (typeFormat) {
-                CuttingEditorScreen.HOUR_FORMAT -> {
-                    val arrString = time.split(":")
-                    val arrStringSecond = arrString[arrString.size - 1].split(".")
-                    var hour = arrString[0].toInt()
-                    var minute = arrString[1].toInt()
-                    var second = arrStringSecond[0].toInt()
-                    val odd = arrStringSecond[1].toInt()
+                /* CuttingEditorScreen.HOUR_FORMAT -> {
+                     val arrString = time.split(":")
+                     val arrStringSecond = arrString[arrString.size - 1].split(".")
+                     var hour = arrString[0].toInt()
+                     var minute = arrString[1].toInt()
+                     var second = arrStringSecond[0].toInt()
+                     val odd = arrStringSecond[1].toInt()
 
-                    if (second >= 60) {
-                        second = second - 60
-                        minute++
-                        if (minute >= 60) {
-                            minute = minute - 60
-                            hour++
-                        }
-                    } else {
-                        if (minute >= 60) {
-                            minute = minute - 60
-                            hour++
-                        }
-                    }
-                    var hourStr = hour.toString()
-                    var minuteStr = minute.toString()
-                    var secondStr = second.toString()
-                    val oddStr = odd.toString()
-                    if (hour < 10) {
-                        hourStr = "0" + hourStr
-                    }
-                    if (minute < 10) {
-                        minuteStr = "0" + minuteStr
-                    }
-                    if (second < 10) {
-                        secondStr = "0" + secondStr
-                    }
-                    val newTime = hourStr + ":" + minuteStr + ":" + secondStr + "." + oddStr
-                    val editable: Editable = SpannableStringBuilder(newTime)
-                    return editable
-                }
+                     if (second >= 60) {
+                         second = second - 60
+                         minute++
+                         if (minute >= 60) {
+                             minute = minute - 60
+                             hour++
+                         }
+                     } else {
+                         if (minute >= 60) {
+                             minute = minute - 60
+                             hour++
+                         }
+                     }
+                     var hourStr = hour.toString()
+                     var minuteStr = minute.toString()
+                     var secondStr = second.toString()
+                     val oddStr = odd.toString()
+                     if (hour < 10) {
+                         hourStr = "0" + hourStr
+                     }
+                     if (minute < 10) {
+                         minuteStr = "0" + minuteStr
+                     }
+                     if (second < 10) {
+                         secondStr = "0" + secondStr
+                     }
+                     val newTime = hourStr + ":" + minuteStr + ":" + secondStr + "." + oddStr
+                     val editable: Editable = SpannableStringBuilder(newTime)
+                     return editable
+                 }*/
                 CuttingEditorScreen.MINUTE_FORMAT -> {
                     val arrString = time.split(":")
                     val arrStringSecond = arrString[arrString.size - 1].split(".")
