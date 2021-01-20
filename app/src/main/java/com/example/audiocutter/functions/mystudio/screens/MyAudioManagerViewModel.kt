@@ -31,6 +31,9 @@ class MyAudioManagerViewModel : BaseViewModel() {
                 Constance.ACTION_DELETE -> {
                     actionLiveData.postValue(ActionData(Constance.ACTION_DELETE, data))
                 }
+                Constance.ACTION_SORT_UP -> {
+                    actionLiveData.postValue(ActionData(Constance.ACTION_SORT_UP, data))
+                }
             }
         }
     }

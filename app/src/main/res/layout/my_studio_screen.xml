@@ -16,10 +16,10 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_marginStart="@dimen/common_padding_left"
                 android:id="@+id/back_button"
                 android:layout_width="@dimen/common_size_item_imagview"
                 android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/common_padding_left"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/my_studio_screen_icon_back"
@@ -28,11 +28,11 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:gravity="start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/common_padding_left_title"
                 android:fontFamily="@font/opensans_bold"
+                android:gravity="start"
                 android:text="@string/my_studio_title"
                 android:textColor="#2E3041"
                 android:textSize="18dp"
@@ -42,15 +42,24 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:layout_marginEnd="@dimen/common_padding_right"
                 android:id="@+id/iv_extends"
                 android:layout_width="@dimen/common_size_item_imagview"
                 android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/common_padding_right"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/my_studio_screen_icon_extends"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/iv_my_studio_screen_sort"
+                android:layout_width="@dimen/common_size_item_imagview"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_sort_audio"
+                app:layout_constraintRight_toLeftOf="@+id/iv_extends"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -64,10 +73,10 @@
             android:visibility="gone">
 
             <ImageView
-                android:layout_marginStart="@dimen/common_padding_left"
                 android:id="@+id/iv_close"
                 android:layout_width="@dimen/common_size_item_imagview"
                 android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/common_padding_left"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/my_studio_screen_icon_close"
@@ -100,10 +109,10 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:layout_marginEnd="@dimen/common_padding_right"
                 android:id="@+id/iv_delete"
                 android:layout_width="@dimen/common_size_item_imagview"
                 android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/common_padding_right"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/my_studio_screen_icon_delete"

@@ -57,6 +57,12 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                     }
                     myAudioManagerViewModel.clearAction()
                 }
+                Constance.ACTION_SORT_UP -> {
+                    Log.d("giangtd001", "ACTION_SORT_UP: ")
+                }
+                else -> {
+                    //Todo
+                }
             }
         }
     }
@@ -67,7 +73,11 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.my_studio_screen, container, false)
 
         return binding.root
@@ -79,7 +89,11 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
             .get(MyAudioManagerViewModel::class.java)
     }
 
-    override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {       // khi ket thuc animation chuyen man hinh thi moi cho dang ky observe
+    override fun onCreateAnimation(
+        transit: Int,
+        enter: Boolean,
+        nextAnim: Int
+    ): Animation? {       // khi ket thuc animation chuyen man hinh thi moi cho dang ky observe
         if (nextAnim != 0x0) {
             val animator = AnimationUtils.loadAnimation(activity, nextAnim)
 
@@ -139,7 +153,12 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 tabPosition = tab.position
 
                 tab.view.tv_header?.let {
-                    it.setTextColor(ContextCompat.getColor(requireContext(), R.color.my_studio_header_select))
+                    it.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.my_studio_header_select
+                        )
+                    )
                 }
 
             }
@@ -147,7 +166,12 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
             @SuppressLint("ResourceAsColor")
             override fun onTabUnselected(tab: TabLayout.Tab) {
                 tab.view.tv_header?.let {
-                    it.setTextColor(ContextCompat.getColor(requireContext(), R.color.my_studio_header_unselect))
+                    it.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.my_studio_header_unselect
+                        )
+                    )
                 }
             }
 
@@ -163,15 +187,24 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
         binding.ivExtends.setOnClickListener(this)
         binding.ivClose.setOnClickListener(this)
         binding.ivDelete.setOnClickListener(this)
+        binding.ivMyStudioScreenSort.setOnClickListener(this)
     }
 
     override fun onClick(view: View) {
         when (view) {
             binding.ivShare -> {
-                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_SHARE, tabPosition)
+                sendFragmentAction(
+                    MyStudioScreen::class.java.name,
+                    Constance.ACTION_SHARE,
+                    tabPosition
+                )
             }
             binding.ivDelete -> {
-                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_CHECK_DELETE, tabPosition)
+                sendFragmentAction(
+                    MyStudioScreen::class.java.name,
+                    Constance.ACTION_CHECK_DELETE,
+                    tabPosition
+                )
             }
             binding.ivClose -> {
                 binding.clDefault.visibility = View.VISIBLE
@@ -181,9 +214,13 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 binding.viewPager.setPagingEnabled(true)
                 setEnabledTablayout(false)
 
-                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_HIDE, tabPosition)      // do action extends va close khong can quan tam toi data nen truyen vao -1
+                sendFragmentAction(
+                    MyStudioScreen::class.java.name,
+                    Constance.ACTION_HIDE,
+                    tabPosition
+                )      // do action extends va close khong can quan tam toi data nen truyen vao -1
             }
-            binding.ivExtends -> {
+            binding.ivExtends -> {              // trang thai isdelete
                 binding.clDefault.visibility = View.GONE
                 binding.clDelete.visibility = View.VISIBLE
 
@@ -191,10 +228,21 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 binding.viewPager.setPagingEnabled(false)
                 setEnabledTablayout(true)
 
-                sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_DELETE_STATUS, tabPosition)
+                sendFragmentAction(
+                    MyStudioScreen::class.java.name,
+                    Constance.ACTION_DELETE_STATUS,
+                    tabPosition
+                )
             }
             binding.backButton -> {
                 requireActivity().onBackPressed()
+            }
+            binding.ivMyStudioScreenSort -> {
+                sendFragmentAction(
+                    MyStudioScreen::class.java.name,
+                    Constance.ACTION_SORT,
+                    tabPosition
+                )
             }
         }
     }
@@ -218,7 +266,11 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
 
         isDeleteClicked = true
 //        sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_HIDE, tabPosition)
-        sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_DELETE_ALL, tabPosition)
+        sendFragmentAction(
+            MyStudioScreen::class.java.name,
+            Constance.ACTION_DELETE_ALL,
+            tabPosition
+        )
     }
 
     override fun onCancel() {
