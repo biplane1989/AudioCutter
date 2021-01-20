@@ -305,10 +305,6 @@
             android:id="@+id/merge_preview_screen"
             android:name="com.example.audiocutter.functions.audiochooser.screens.MergePreviewScreen"
             tools:layout="@layout/merge_preview_screen">
-
-            <argument
-                android:name="listaudio"
-                app:argType="string[]" />
             <action
                 android:id="@+id/go_to_merging_editor_result_screen"
                 app:destination="@+id/editor_result_screen"

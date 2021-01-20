@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -56,10 +57,10 @@ class CutChooserAdapter(
     override fun submitList(list: MutableList<AudioCutterViewItem>?, commitCallback: Runnable?) {
         if (list!!.size != 0 || list != null) {
             listAudios = ArrayList(list)
-            super.submitList(listAudios,commitCallback)
+            super.submitList(listAudios, commitCallback)
         } else if (list!!.size == 0 || list == null) {
             listAudios = ArrayList()
-            super.submitList(listAudios,commitCallback)
+            super.submitList(listAudios, commitCallback)
         }
     }
 
@@ -84,16 +85,72 @@ class CutChooserAdapter(
         holder.onViewDetachedFromWindow()
     }
 
-    override fun onBindViewHolder(holder: AudiocutterHolder, position: Int, payloads: MutableList<Any>) {
-        super.onBindViewHolder(holder, position, payloads)
+    override fun onBindViewHolder(
+        holder: AudiocutterHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
+        }else{
+            val itemAudioFile = getItem(position)
+            val diff = payloads.get(0) as Bundle
+
+            if (diff.containsKey(ITEM_PROGRESSING_CHANGED)) {
+                holder.pgAudio.updatePG(itemAudioFile.currentPos, itemAudioFile.duration, true)
+            }
+            if (diff.containsKey(ITEM_PLAY_BUTTON_CHANGED)) {
+                val bitmap = itemAudioFile.audioFile.bitmap
+                updateItem(itemAudioFile.state, holder, bitmap)
+            }
         }
     }
 
-    inner class AudiocutterHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, LifecycleOwner {
+    fun updateItem(status: PlayerState, holder: AudiocutterHolder, bitmap: Bitmap?) {
+        when (status) {
+            PlayerState.PLAYING -> {
 
-        private val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)!!
+                if (checkValidGlide(bitmap)) {
+                    Glide.with(holder.itemView).load(bitmap).into(holder.ivController)
+                } else {
+                    holder.ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
+                }
+                holder.ivPausePlay.setImageResource(R.drawable.common_audio_item_play)
+                holder.pgAudio.visibility = View.VISIBLE
+                holder.waveView.visibility = View.VISIBLE
+            }
+            PlayerState.PAUSE -> {
+                if (checkValidGlide(bitmap)) {
+                    Glide.with(holder.itemView).load(bitmap).into(holder.ivController)
+                } else {
+                    holder.ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+                }
+                holder.ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+                holder.waveView.visibility = View.INVISIBLE
+                holder.pgAudio.visibility = View.VISIBLE
+            }
+            PlayerState.IDLE -> {
+                if (checkValidGlide(bitmap)) {
+                    Glide.with(holder.itemView).load(bitmap).into(holder.ivController)
+                } else {
+                    holder.ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
+                }
+                holder.pgAudio.visibility = View.GONE
+                holder.waveView.visibility = View.INVISIBLE
+                holder.pgAudio.resetView()
+                holder.ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
+            }
+            else -> {
+                //nothing
+            }
+        }
+    }
+
+
+    inner class AudiocutterHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener, LifecycleOwner {
+
+        val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)!!
         private val tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_audio)
         private val tvSizeAudio = itemView.findViewById<TextView>(R.id.tv_size_audio)
         private val tvBitrateAudio = itemView.findViewById<TextView>(R.id.tv_bitrate_audio)
@@ -118,51 +175,18 @@ class CutChooserAdapter(
         }
 
         private fun updatePlayInfo(playerInfo: PlayerInfo) {
-            Log.d("TAG", "updatePlayInfo: ${playerInfo.currentAudio?.fileName} - ${playerInfo.playerState}")
+            Log.d(
+                "TAG",
+                "updatePlayInfo: ${playerInfo.currentAudio?.fileName} - ${playerInfo.playerState}"
+            )
             playerState = playerInfo.playerState
             val itemAudioFile = getItem(adapterPosition)
             val bitmap = itemAudioFile.audioFile.bitmap
 
             itemAudioFile.currentPos = playerInfo.posision.toLong()
             itemAudioFile.duration = playerInfo.duration.toLong()
-
-            when (playerInfo.playerState) {
-                PlayerState.PLAYING -> {
-                    pgAudio.updatePG(playerInfo.posision.toLong(), playerInfo.duration.toLong())
-                    if (checkValidGlide(bitmap)) {
-                        Glide.with(itemView).load(bitmap).into(ivController)
-                    } else {
-                        ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
-                    }
-                    ivPausePlay.setImageResource(R.drawable.common_audio_item_play)
-                    pgAudio.visibility = View.VISIBLE
-                    waveView.visibility = View.VISIBLE
-                }
-                PlayerState.PAUSE -> {
-                    if (checkValidGlide(bitmap)) {
-                        Glide.with(itemView).load(bitmap).into(ivController)
-                    } else {
-                        ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
-                    }
-                    ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
-                    waveView.visibility = View.INVISIBLE
-                    pgAudio.visibility = View.VISIBLE
-                }
-                PlayerState.IDLE -> {
-                    if (checkValidGlide(bitmap)) {
-                        Glide.with(itemView).load(bitmap).into(ivController)
-                    } else {
-                        ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
-                    }
-                    pgAudio.visibility = View.GONE
-                    waveView.visibility = View.INVISIBLE
-                    pgAudio.resetView()
-                    ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
-                }
-                else -> {
-                    //nothing
-                }
-            }
+            pgAudio.updatePG(playerInfo.posision.toLong(), playerInfo.duration.toLong())
+            updateItem(playerInfo.playerState, this, bitmap)
         }
 
         fun onViewAttachedToWindow() {
@@ -170,22 +194,17 @@ class CutChooserAdapter(
             lifecycleRegistry.currentState = Lifecycle.State.STARTED
             audioPlayer.getPlayerInfo().observe(this, object : Observer<PlayerInfo> {
                 override fun onChanged(playerInfo: PlayerInfo) {
-                    MainScope().launch {
-                        playerInfo.currentAudio?.let {
-                            Log.d(
-                                "TAG",
-                                "onChanged: ${playerInfo.currentAudio!!.fileName}-- pos ${playerInfo.posision}  state ${playerInfo.playerState}"
-                            )
-                            if (adapterPosition != -1) {
-                                val audioCutterView = getItem(adapterPosition)
-                                if (audioCutterView.audioFile.getFilePath() == it.getFilePath()) {
-                                    updatePlayInfo(playerInfo)
-                                } else {
-                                    resetItem(audioCutterView)
-                                }
+                    playerInfo.currentAudio?.let {
+                        if (adapterPosition != -1) {
+                            val audioCutterView = getItem(adapterPosition)
+                            if (audioCutterView.audioFile.getFilePath() == it.getFilePath()) {
+                                updatePlayInfo(playerInfo)
+                            } else {
+                                resetItem(audioCutterView)
                             }
                         }
                     }
+
                 }
             })
         }
@@ -233,44 +252,7 @@ class CutChooserAdapter(
 
             }
             val bitmap = itemAudioFile.audioFile.bitmap
-
-            when (itemAudioFile.state) {
-//                PlayerState.PLAYING -> {
-//                    if (checkValidGlide(bitmap)) {
-//                        Glide.with(itemView).load(bitmap).into(ivController)
-//                    } else {
-//                        ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
-//                    }
-//                    ivPausePlay.setImageResource(R.drawable.common_audio_item_play)
-//                    pgAudio.visibility = View.VISIBLE
-//                    waveView.visibility = View.VISIBLE
-//
-//                }
-//                PlayerState.PAUSE -> {
-//                    if (checkValidGlide(bitmap)) {
-//                        Glide.with(itemView).load(bitmap).into(ivController)
-//                    } else {
-//                        ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
-//                    }
-//                    ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
-//                    waveView.visibility = View.INVISIBLE
-//                    pgAudio.visibility = View.VISIBLE
-//                }
-                PlayerState.IDLE -> {
-                    pgAudio.visibility = View.GONE
-                    waveView.visibility = View.INVISIBLE
-
-                    if (checkValidGlide(bitmap)) {
-                        Glide.with(itemView).load(bitmap).into(ivController)
-                    } else {
-                        ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
-                    }
-                    ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
-                }
-                else -> {
-
-                }
-            }
+            updateItem(itemAudioFile.state, this, bitmap)
         }
 
         override fun onClick(p0: View) {
@@ -348,11 +330,17 @@ class CutChooserAdapter(
 }
 
 class CutChooserAudioDiff : DiffUtil.ItemCallback<AudioCutterViewItem>() {
-    override fun areItemsTheSame(oldItem: AudioCutterViewItem, newItem: AudioCutterViewItem): Boolean {
-        return oldItem.audioFile.fileName == oldItem.audioFile.fileName
+    override fun areItemsTheSame(
+        oldItem: AudioCutterViewItem,
+        newItem: AudioCutterViewItem
+    ): Boolean {
+        return oldItem.audioFile.getFilePath() == newItem.audioFile.getFilePath()
     }
 
-    override fun areContentsTheSame(oldItem: AudioCutterViewItem, newItem: AudioCutterViewItem): Boolean {
+    override fun areContentsTheSame(
+        oldItem: AudioCutterViewItem,
+        newItem: AudioCutterViewItem
+    ): Boolean {
         return oldItem == newItem
     }
 

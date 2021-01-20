@@ -83,6 +83,13 @@
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_audiocutter_search" />
 
+                <ImageView
+                    android:id="@+id/iv_mer_screen_sort"
+                    android:layout_width="@dimen/common_size_item_imagview"
+                    android:layout_height="match_parent"
+                    android:layout_toLeftOf="@+id/iv_mer_screen_search"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_sort_audio" />
 
                 <ImageView
                     android:id="@+id/iv_mer_screen_close"

@@ -3,6 +3,7 @@ package com.example.audiocutter.base.viewstate
 import androidx.navigation.fragment.findNavController
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateMutable
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateScreen
+import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
 import com.example.audiocutter.functions.audiochooser.screens.CutChooserScreenDirections
@@ -28,11 +29,10 @@ interface ChooserScreenViewStateManager {
         }
     }
 
-    fun onMergingItemClicked(baseFragment: BaseFragment, listPathAudio: Array<String>) {
+    fun onMergingItemClicked(baseFragment: BaseFragment) {
         if (getViewStateMutable().getLastState() == ViewStateScreen.MP3_MERGE_CHOOSER_SCREEN) {
             getViewStateMutable().pushViewState(ViewStateScreen.MERGING_EDITOR_SCREEN)
-            val action = MergeChooserScreenDirections.goToPreviewScreen(listPathAudio)
-            baseFragment.findNavController().navigate(action)
+            baseFragment.findNavController().navigate(R.id.go_to_preview_screen)
         }
     }
 

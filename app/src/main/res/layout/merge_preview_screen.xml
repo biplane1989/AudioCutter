@@ -140,8 +140,8 @@
 
             <TextView
                 android:id="@+id/tv_merger"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="49dp"
+                android:layout_height="23dp"
                 android:fontFamily="@font/opensans_bold"
                 android:text="Merger"
                 android:textColor="#FFFFFF"
@@ -150,34 +150,6 @@
                 app:layout_constraintEnd_toEndOf="@id/bt_merge_audio"
                 app:layout_constraintStart_toStartOf="@id/bt_merge_audio"
                 app:layout_constraintTop_toTopOf="@id/bt_merge_audio" />
-
-            <ImageView
-                android:id="@+id/bt_not_merge_audio"
-                android:layout_width="90dp"
-                android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/my_studio_set_contact_btn_ok_bg"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_not_merger"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/opensans_bold"
-                android:text="Merger"
-                android:textColor="#9C9C9C"
-                android:textSize="14dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/bt_not_merge_audio"
-                app:layout_constraintEnd_toEndOf="@id/bt_not_merge_audio"
-                app:layout_constraintStart_toStartOf="@id/bt_not_merge_audio"
-                app:layout_constraintTop_toTopOf="@id/bt_not_merge_audio" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

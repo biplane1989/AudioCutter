@@ -34,19 +34,14 @@ import kotlinx.android.synthetic.main.my_studio_custom_header_tablayout_1.view.*
 
 class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickListener {
     private lateinit var binding: MyStudioScreenBinding
-    private val TAG = "giangtd"
     private var isDeleteClicked = true
-    private var isShareClicked = true
     private var tabPosition = -1
     private lateinit var myAudioManagerViewModel: MyAudioManagerViewModel
-    private val safeArg: MyAudioManagerScreenArgs by navArgs()
-    private lateinit var dialogShare: DialogAppShare
 
     private val actionObserver = Observer<ActionData?> { actionData ->
         actionData?.let {
             when (it.action) {
                 Constance.ACTION_DELETE -> {  // nếu ko có item nào được chọn thì sẽ không hiển thị dialog delete
-                    Log.d("giangtd001", "Constance.ACTION_DELETE: ")
                     if ((it.data == Constance.TRUE)) {
                         if (isDeleteClicked) {
                             val dialog = DeleteDialog.newInstance(this)

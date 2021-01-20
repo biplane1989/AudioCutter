@@ -2,7 +2,6 @@ package com.example.audiocutter.functions.audiochooser.dialogs
 
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -92,7 +91,7 @@ class MergeDialog : BaseDialog(), View.OnClickListener {
     override fun onClick(v: View) {
         when (v.id) {
             R.id.tv_cancel_dialog_merge -> {
-                mCallback.cancalKeybroad()
+                mCallback.cancelKeybroad()
                 hideKeyBroad()
                 dismiss()
             }
@@ -131,6 +130,6 @@ class MergeDialog : BaseDialog(), View.OnClickListener {
 
     interface MergeDialogListener {
         fun mergeAudioFile(filename: String)
-        fun cancalKeybroad()
+        fun cancelKeybroad()
     }
 }

@@ -109,8 +109,6 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
             if (!myStudioViewModel.isExitItemSelectDelete()) {
                 binding.clDeleteAll.visibility = View.GONE
             }
-
-            Log.d(TAG, "aloha : size :${listAudio.size}")
             audioCutterAdapter.submitList(ArrayList(listAudio))
 
         }
@@ -239,9 +237,6 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
 
     private fun init() {
         val linearLayoutManager = LinearLayoutManager(context)
-//        linearLayoutManager.reverseLayout = false
-//        linearLayoutManager.stackFromEnd = false
-//        binding.rvListAudioCutter.layoutManager = LinearLayoutManager(context)
         binding.rvListAudioCutter.layoutManager = linearLayoutManager
         binding.rvListAudioCutter.adapter = audioCutterAdapter
     }
@@ -359,25 +354,6 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
             writeSettingPermissionRequest.requestPermission()
         }
     }
-
-    /* private fun checkContactPermission() {
-         if (contactPermissionRequest.isPermissionGranted()) {
-             viewStateManager.myStudioSetContactItemClicked(
-                 this,
-                 audioFile.file.absolutePath
-             )
-         } else {
-             ContactPermissionDialog.newInstance {
-                 resetRequestingPermission()
-                 pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
-                 contactPermissionRequest.requestPermission()
-             }
-                 .show(
-                     requireActivity().supportFragmentManager,
-                     ContactPermissionDialog::class.java.name
-                 )
-         }
-     }*/
 
     private fun checkSetAsWriteSettingPermission() {
 

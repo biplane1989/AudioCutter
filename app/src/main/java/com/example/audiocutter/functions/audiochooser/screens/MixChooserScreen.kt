@@ -78,15 +78,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         }
     }
 
-    private val isChoseItemObserver = Observer<Boolean?> {
-        if (it != null && it) {
-//            generateToast(getString(R.string.ToastExceed))
-            context?.let {
-                showNotification(getString(R.string.ToastExceed))
-            }
-        }
-    }
-
 
     private fun showList() {
         binding.rvMixer.visibility = View.VISIBLE
