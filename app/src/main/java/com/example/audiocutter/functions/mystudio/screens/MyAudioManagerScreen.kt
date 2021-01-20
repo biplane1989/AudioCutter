@@ -1,7 +1,6 @@
 package com.example.audiocutter.functions.mystudio.screens
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,23 +9,24 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.navArgs
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.IViewModel
 import com.example.audiocutter.databinding.MyStudioScreenBinding
-import com.example.audiocutter.functions.audiochooser.dialogs.DialogAppShare
+import com.example.audiocutter.functions.audiochooser.objects.SortAudioParam
+import com.example.audiocutter.functions.common.SortAudioPopupWindow
+import com.example.audiocutter.functions.common.SortField
+import com.example.audiocutter.functions.common.SortType
+import com.example.audiocutter.functions.common.SortValue
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.adapters.MyStudioViewPagerAdapter
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialog
 import com.example.audiocutter.functions.mystudio.dialog.DeleteDialogListener
 import com.example.audiocutter.functions.mystudio.objects.ActionData
-import com.example.audiocutter.util.Utils
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.my_studio_custom_header_tablayout_1.view.*
@@ -35,30 +35,28 @@ import kotlinx.android.synthetic.main.my_studio_custom_header_tablayout_1.view.*
 class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickListener {
     private lateinit var binding: MyStudioScreenBinding
     private var isDeleteClicked = true
-    private var tabPosition = -1
+    private var tabPositionSelected = -1
     private lateinit var myAudioManagerViewModel: MyAudioManagerViewModel
+
+
 
     private val actionObserver = Observer<ActionData?> { actionData ->
         actionData?.let {
             when (it.action) {
                 Constance.ACTION_DELETE -> {  // nếu ko có item nào được chọn thì sẽ không hiển thị dialog delete
-                    if ((it.data == Constance.TRUE)) {
+                    if (it.data == Constance.TRUE) {
                         if (isDeleteClicked) {
                             val dialog = DeleteDialog.newInstance(this)
                             dialog.show(childFragmentManager, DeleteDialog.TAG)
                             isDeleteClicked = false
+                        }else{
+                            // nothing
                         }
                     } else {
                         context?.let {
                             showNotification(getString(R.string.my_studio_notification_chose_item_delete))
                         }
-//                        Toast.makeText(context, getString(R.string.my_studio_notification_chose_item_delete), Toast.LENGTH_SHORT)
-//                            .show()
                     }
-                    myAudioManagerViewModel.clearAction()
-                }
-                Constance.ACTION_SORT_UP -> {
-                    Log.d("giangtd001", "ACTION_SORT_UP: ")
                 }
                 else -> {
                     //Todo
@@ -125,7 +123,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     }
 
     fun setUp() {
-        myAudioManagerViewModel.getAction().observe(viewLifecycleOwner, actionObserver)
+        myAudioManagerViewModel.actionLiveData.observe(viewLifecycleOwner, actionObserver)
 
         val myStudioAdapter = MyStudioViewPagerAdapter(childFragmentManager)
         binding.viewPager.adapter = myStudioAdapter
@@ -144,13 +142,13 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        tabPosition = binding.tabLayout.selectedTabPosition
+        tabPositionSelected = binding.tabLayout.selectedTabPosition
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             @SuppressLint("ResourceAsColor")
             override fun onTabSelected(tab: TabLayout.Tab) {
                 sendFragmentAction(MyStudioScreen::class.java.name, Constance.ACTION_STOP_MUSIC)
-                tabPosition = tab.position
+                tabPositionSelected = tab.position
 
                 tab.view.tv_header?.let {
                     it.setTextColor(
@@ -196,14 +194,14 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 sendFragmentAction(
                     MyStudioScreen::class.java.name,
                     Constance.ACTION_SHARE,
-                    tabPosition
+                    tabPositionSelected
                 )
             }
             binding.ivDelete -> {
                 sendFragmentAction(
                     MyStudioScreen::class.java.name,
                     Constance.ACTION_CHECK_DELETE,
-                    tabPosition
+                    tabPositionSelected
                 )
             }
             binding.ivClose -> {
@@ -217,7 +215,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 sendFragmentAction(
                     MyStudioScreen::class.java.name,
                     Constance.ACTION_HIDE,
-                    tabPosition
+                    tabPositionSelected
                 )      // do action extends va close khong can quan tam toi data nen truyen vao -1
             }
             binding.ivExtends -> {              // trang thai isdelete
@@ -231,18 +229,23 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
                 sendFragmentAction(
                     MyStudioScreen::class.java.name,
                     Constance.ACTION_DELETE_STATUS,
-                    tabPosition
+                    tabPositionSelected
                 )
             }
             binding.backButton -> {
                 requireActivity().onBackPressed()
             }
             binding.ivMyStudioScreenSort -> {
-                sendFragmentAction(
-                    MyStudioScreen::class.java.name,
-                    Constance.ACTION_SORT,
-                    tabPosition
-                )
+                val sortAudioPopupWindow = SortAudioPopupWindow(
+                    binding.ivMyStudioScreenSort , myAudioManagerViewModel.getSortValue(tabPositionSelected)) {
+                    myAudioManagerViewModel.changeSortValue(tabPositionSelected, it)
+                    sendFragmentAction(
+                        MyStudioScreen::class.java.name,
+                        Constance.ACTION_SORT_AUDIO,
+                        SortAudioParam(tabPositionSelected, it)
+                    )
+                }
+                sortAudioPopupWindow.show()
             }
         }
     }
@@ -269,7 +272,7 @@ class MyAudioManagerScreen : BaseFragment(), DeleteDialogListener, View.OnClickL
         sendFragmentAction(
             MyStudioScreen::class.java.name,
             Constance.ACTION_DELETE_ALL,
-            tabPosition
+            tabPositionSelected
         )
     }
 

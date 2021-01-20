@@ -66,8 +66,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         }
     }
 
-
-    var currentPos = -1
     private val listAudioObserver = Observer<List<AudioCutterViewItem>?> { listMusic ->
         listMusic?.forEach {
 

@@ -3,33 +3,54 @@ package com.example.audiocutter.functions.contacts.screens
 import android.app.Application
 import android.text.TextUtils
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import com.example.audiocutter.base.BaseAndroidViewModel
+import com.example.audiocutter.base.SingleLiveEvent
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerState
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
+import com.example.audiocutter.functions.audiochooser.screens.findItem
+import com.example.audiocutter.functions.common.SortField
+import com.example.audiocutter.functions.common.SortType
+import com.example.audiocutter.functions.common.SortValue
 import com.example.audiocutter.functions.contacts.objects.SelectItemStatus
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
+import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
 import com.example.audiocutter.util.Utils
+import kotlinx.coroutines.*
 import java.util.*
 import kotlin.collections.ArrayList
 
+fun List<SelectItemView>.findItem(audioFile: AudioFile): SelectItemView? {
+    this.forEach {
+        if (it.audioFile.getFilePath() == audioFile.getFilePath()) {
+            return it
+        }
+    }
+    return null
+}
+
 class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(application) {
+    private val _sortAudioValue =
+        MutableLiveData<SortValue>(SortValue(SortType.ASC, SortField.SORT_BY_NAME))
 
     private val mContext = getApplication<Application>().applicationContext
     private val audioPlayer = ManagerFactory.newAudioPlayer()
-    private var mListAudioFileView = ArrayList<SelectItemView>()
-    private var mListSearch = ArrayList<SelectItemView>()
+
+    private val _showSortAudioDialog = SingleLiveEvent<SortValue>()
+    val showSortAudioDialog: LiveData<SortValue> = _showSortAudioDialog
 
     private val mAudioMediatorLiveData = MediatorLiveData<ArrayList<SelectItemView>>()
     private var loadingStatus: MutableLiveData<Boolean> = MutableLiveData()
     private var isEmptyStatus: MutableLiveData<Boolean> = MutableLiveData()
     private var isChoseMusic: MutableLiveData<Boolean> = MutableLiveData()
     private var isFisrtLoadData = true
+    private var syncDataJob: Job? = null
+    private var itemSelected: SelectItemView? = null
+
     fun getLoadingStatus(): LiveData<Boolean> {
         return loadingStatus
     }
@@ -46,173 +67,200 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         return isChoseMusic
     }
 
+    private val listAudioFiles = ManagerFactory.getAudioFileManager().getAudioFiles()
+    private val _searchAudioName = MutableLiveData<String>("")
+    private lateinit var mInitFileUri: String
+
     init {
         audioPlayer.init(application.applicationContext)
     }
 
     fun init(fileUri: String) {
-        mAudioMediatorLiveData.addSource(ManagerFactory.getAudioFileManager().getAudioFiles()) {
-            runOnBackground {
+        mInitFileUri = fileUri
+        mAudioMediatorLiveData.addSource(_searchAudioName) {
+            syncDataJob?.cancel()
+            syncDataJob = viewModelScope.launch {
+                synchronizationData()
+            }
+        }
+        mAudioMediatorLiveData.addSource(_sortAudioValue) {
+            syncDataJob?.cancel()
+            syncDataJob = viewModelScope.launch {
+                synchronizationData()
+            }
+        }
+
+        mAudioMediatorLiveData.addSource(listAudioFiles) {
+
+            loadingStatus.value = true
+            if (it.state == StateLoad.LOADING) {
                 loadingStatus.postValue(true)
-                if (it.state == StateLoad.LOADING) {
-                    //isEmptyStatus.postValue(false)
-                    loadingStatus.postValue(true)
+            }
+            if (it.state == StateLoad.LOADDONE) {
+                syncDataJob?.cancel()
+                syncDataJob = viewModelScope.launch {
+                    synchronizationData()
                 }
-                if (it.state == StateLoad.LOADDONE) {
-//                    loadingStatus.postValue(true)
-                    // khi loading xong thi check co data hay khong de show man hinh empty data
-                    if (!it.listAudioFiles.isEmpty()) {
 
-//                        it.listAudioFiles.forEach { audioFile ->
-//                            mListAudioFileView.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false))
-//                        }
-//                        mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
-//                        loadingStatus.postValue(false)
 
-                        synchronizationData(it)
-
-                        mListAudioFileView = getRingtoneDefault(mListAudioFileView) as ArrayList<SelectItemView>
-                        loadingStatus.postValue(false)
-
-                    } else {
-                        loadingStatus.postValue(false)
-                        isEmptyStatus.postValue(true)
-                    }
-                    if (isFisrtLoadData) {
-                        selectRingtone(fileUri)
-                    }
-                    isFisrtLoadData = false
-                    Log.d("TAG", "init: mListAudioFileView size: ${mListAudioFileView.size}")
-                    mAudioMediatorLiveData.postValue(mListAudioFileView)
-                }
             }
         }
     }
 
-    private fun synchronizationData(audioFileScans: AudioFileScans) {
-
-        val uriRingtoneDefault = Utils.getUriRingtoneDefault(mContext)
-        val resultListAudio = ArrayList<SelectItemView>()
-        val newListAudio = audioFileScans.listAudioFiles
-        var isInstance = false
-        if (mListAudioFileView.isEmpty()) {
-            newListAudio.forEach { audioFile ->
-                resultListAudio.add(SelectItemView(audioFile, false, false, SelectItemStatus(), false))
+    private suspend fun synchronizationData() = coroutineScope {
+        val searchAudioNameValue = _searchAudioName.value
+        val sortTypeValue = _sortAudioValue.value
+        val listAudioFileData = listAudioFiles.value?.listAudioFiles
+        if (searchAudioNameValue == null || sortTypeValue == null || listAudioFileData == null || listAudioFiles.value?.state != StateLoad.LOADDONE) {
+            return@coroutineScope
+        }
+        withContext(Dispatchers.Default) {
+            val resultListAudio = ArrayList<SelectItemView>()
+            var listAudioFileFiltered = listAudioFileData
+            if (searchAudioNameValue.isNotEmpty()) {
+                listAudioFileFiltered = listAudioFileFiltered.filter {
+                    it.fileName.toLowerCase(Locale.getDefault())
+                        .contains(searchAudioNameValue.toLowerCase(Locale.getDefault()))
+                }
             }
-        } else {
-            for (newItem in newListAudio) {
-                isInstance = false
-                for (oldItem in mListAudioFileView) {
-                    if (TextUtils.equals(newItem.getFilePath(), oldItem.getFilePath())) {
+            when (sortTypeValue.sortField) {
+                SortField.SORT_BY_NAME -> {
+                    listAudioFileFiltered =
+                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.fileName } else listAudioFileFiltered.sortedByDescending { it.fileName }
+                }
+                SortField.SORT_BY_DURATION -> {
+                    listAudioFileFiltered =
+                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.duration } else listAudioFileFiltered.sortedByDescending { it.duration }
+                }
+                SortField.SORT_BY_DATE -> {
+                    listAudioFileFiltered =
+                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.modified } else listAudioFileFiltered.sortedByDescending { it.modified }
+                }
+                SortField.SORT_BY_SIZE -> {
+                    listAudioFileFiltered =
+                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.size } else listAudioFileFiltered.sortedByDescending { it.size }
+                }
+            }
+
+            listAudioFileFiltered.forEach {
+                if (itemSelected?.audioFile?.getFilePath() == it.getFilePath()) {
+                    itemSelected?.let {
+                        resultListAudio.add(it)
+                    }
+                } else {
+                    val oldItem = mAudioMediatorLiveData.value?.findItem(it)
+                    if (oldItem == null) {
+                        val item = SelectItemView(
+                            it,
+                            false,
+                            false,
+                            SelectItemStatus(),
+                            false
+                        )
+                        resultListAudio.add(item)
+                    } else {
                         resultListAudio.add(oldItem)
-                        isInstance = true
-                        break
                     }
                 }
-                if (!isInstance) {
-                    resultListAudio.add(SelectItemView(newItem, false, false, SelectItemStatus(), false))
+
+            }
+            if (isActive) {
+                withContext(Dispatchers.Main) {
+                    loadingStatus.value = false
+                    isEmptyStatus.value = resultListAudio.size == 0
+                    mAudioMediatorLiveData.value = resultListAudio
+                    if (isFisrtLoadData) {
+                        selectRingtone(mInitFileUri)
+                        isFisrtLoadData = false
+                    }
                 }
+
             }
         }
-
-        mListAudioFileView.clear()
-        mListAudioFileView.addAll(resultListAudio)
     }
 
     fun selectRingtone(ringtonePath: String) {
-        var index = 0
-        for (item in mListAudioFileView) {
-            if (TextUtils.equals(item.audioFile.uri.toString(), ringtonePath)) {
-                val newItem = item.copy()
-                newItem.isSelect = true
-                mListAudioFileView.set(index, newItem)
-                break
+        mAudioMediatorLiveData.value?.let {
+            val listCopy = ArrayList(it)
+            var index = 0
+            for (item in listCopy) {
+                if (TextUtils.equals(item.audioFile.uri.toString(), ringtonePath)) {
+                    val newItem = item.copy()
+                    newItem.isSelect = true
+                    listCopy.set(index, newItem)
+                    mAudioMediatorLiveData.value = listCopy
+                    break
+                }
+                index++
             }
-            index++
+            checkIsChoseRingTone()
         }
-        checkIsChoseRingTone()
     }
 
-    fun getIndexSelectRingtone(ringtonePath: String): Int {         // lay vi tri cua file audio la nhac chuong cua contact
-        var index = 0
-//         for (item in mListAudioFileView) {
-//             if (TextUtils.equals(item.audioFile.fileName + item.audioFile.mimeType, fileName)) {
-//
-//                 return index
-//             }
-//             index++
-//         }
-        for (item in mListAudioFileView) {
-            if (TextUtils.equals(item.audioFile.uri.toString(), ringtonePath)) {
+    fun getIndexSelectRingtone(ringtonePath: String): Int { // lay vi tri cua file audio la nhac chuong cua contact
+        mAudioMediatorLiveData.value?.let {
+            var index = 0
+            for (item in it) {
+                if (TextUtils.equals(item.audioFile.uri.toString(), ringtonePath)) {
 
-                return index
+                    return index
+                }
+                index++
             }
-            index++
         }
         return 0
     }
 
     fun checkIsChoseRingTone() {
-        if (checkIsSelect()) {
-            isChoseMusic.postValue(true)
-        } else {
-            isChoseMusic.postValue(false)
-        }
-    }
-
-    private fun checkIsSelect(): Boolean {
-        for (item in mListAudioFileView) {
-            if (item.isSelect) {
-                return true
+        mAudioMediatorLiveData.value?.let {
+            if (it.any { it.isSelect }) {
+                isChoseMusic.value = true
+            } else {
+                isChoseMusic.value = false
             }
         }
-        return false
     }
 
     fun showPlayingAudio(filePath: String) {
+        itemSelected = null
         // khi play nhac reset lai trang thai cac item khac
-
-        var newAudioList = ArrayList<SelectItemView>()
-        if (mListSearch.size > 0) {
-            newAudioList = mListSearch
-        } else {
-            newAudioList = mListAudioFileView
-        }
-
-        var index1 = 0
-        for (item in newAudioList) {
-            if (!TextUtils.equals(item.getFilePath(), filePath)) {
-                val newItem = item.copy()
-                newItem.isSelect = false
-                newItem.isExpanded = false
-                newAudioList[index1] = newItem
-            } else {
-                val newItem = item.copy()
-                newItem.isSelect = true
-                newItem.isExpanded = !item.isExpanded
-                newAudioList[index1] = newItem
+        mAudioMediatorLiveData.value?.let {
+            val newAudioList = ArrayList(it)
+            var index1 = 0
+            for (item in newAudioList) {
+                if (!TextUtils.equals(item.getFilePath(), filePath)) {
+                    val newItem = item.copy()
+                    newItem.isSelect = false
+                    newItem.isExpanded = false
+                    newAudioList[index1] = newItem
+                } else {
+                    val newItem = item.copy()
+                    newItem.isSelect = true
+                    newItem.isExpanded = !item.isExpanded
+                    newAudioList[index1] = newItem
+                    itemSelected = newItem
+                }
+                index1++
             }
-            index1++
-        }
 
-        var index = 0
-        for (item in mListAudioFileView) {
-            if (!TextUtils.equals(item.getFilePath(), filePath)) {
-                val newItem = item.copy()
-                newItem.isSelect = false
-                newItem.isExpanded = false
-                mListAudioFileView[index] = newItem
-            } else {
-                val newItem = item.copy()
-                newItem.isSelect = true
-//                newItem.isExpanded = !item.isExpanded
-                mListAudioFileView[index] = newItem
-            }
-            index++
+            /*  var index = 0
+              for (item in mListAudioFileView) {
+                  if (!TextUtils.equals(item.getFilePath(), filePath)) {
+                      val newItem = item.copy()
+                      newItem.isSelect = false
+                      newItem.isExpanded = false
+                      mListAudioFileView[index] = newItem
+                  } else {
+                      val newItem = item.copy()
+                      newItem.isSelect = true
+  //                newItem.isExpanded = !item.isExpanded
+                      mListAudioFileView[index] = newItem
+                  }
+                  index++
+              }*/
+            mAudioMediatorLiveData.value = newAudioList
+            checkIsChoseRingTone()
         }
-
-        mAudioMediatorLiveData.postValue(newAudioList)
-        checkIsChoseRingTone()
     }
 
     private fun getRingtoneDefault(list: List<SelectItemView>): List<SelectItemView> {
@@ -224,17 +272,19 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     }
 
     fun stopAudio(position: Int) {
-
         audioPlayer.stop()
+        mAudioMediatorLiveData.value?.let {
+            val listItemsCopy = ArrayList(it)
+            val selectItemView = listItemsCopy.get(position).copy()
+            val itemLoadStatus = selectItemView.selectItemStatus.copy()
+            itemLoadStatus.playerState = PlayerState.IDLE
+            selectItemView.selectItemStatus = itemLoadStatus
 
-        val selectItemView = mListAudioFileView.get(position).copy()
-        val itemLoadStatus = selectItemView.selectItemStatus.copy()
-        itemLoadStatus.playerState = PlayerState.IDLE
-        selectItemView.selectItemStatus = itemLoadStatus
+            listItemsCopy.set(position, selectItemView)
 
-        mListAudioFileView.set(position, selectItemView)
+            mAudioMediatorLiveData.value = listItemsCopy
+        }
 
-        mAudioMediatorLiveData.postValue(mListAudioFileView)    //TODO
     }
 
 
@@ -248,53 +298,24 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
     }
 
     fun searchAudioFile(data: String) {
-
-        Log.d("TAG", "searchAudioFile: data search:  " + data)
-        var index = 0                   // dong bo hoa mListSearch va mListAudioFileView
-        if (mListSearch.size > 0) {
-            for (item in mListAudioFileView) {
-                for (searchItem in mListSearch) {
-                    if (TextUtils.equals(item.audioFile.uri.toString(), searchItem.audioFile.uri.toString())) {
-                        mListAudioFileView.set(index, searchItem)
-                        break
-                    }
-                }
-                index++
-            }
-        }
-
-        mListSearch.clear()
-        if (data.equals("")) {
-            mAudioMediatorLiveData.postValue(mListAudioFileView)
-        } else {
-            for (item in mListAudioFileView) {
-                if (item.audioFile.fileName.toUpperCase(Locale.ROOT)
-                        .contains(data.toUpperCase(Locale.ROOT))) {
-                    mListSearch.add(item)
-                }
-            }
-            mAudioMediatorLiveData.postValue(mListSearch)
-        }
-
-        if (mListAudioFileView.size > 0) {
-            isEmptyStatus.postValue(false)
-            if (mListSearch.size == 0 && !data.equals("")) {
-                isEmptyStatus.postValue(true)
-            }
-        } else {
-            isEmptyStatus.postValue(true)
-        }
+        _searchAudioName.value = data
     }
 
     fun setRingtone(phoneNumber: String): Boolean {
-        if (phoneNumber != "") {
-            for (audio in mListAudioFileView) {
-                if (audio.isSelect) {
-                    return ManagerFactory.getRingtoneManager()
-                        .setRingToneWithContactNumberandFilePath(audio.audioFile.file.absolutePath, phoneNumber)
+        mAudioMediatorLiveData.value?.let {
+            if (phoneNumber != "") {
+                for (audio in it) {
+                    if (audio.isSelect) {
+                        return ManagerFactory.getRingtoneManager()
+                            .setRingToneWithContactNumberandFilePath(
+                                audio.audioFile.file.absolutePath,
+                                phoneNumber
+                            )
+                    }
                 }
             }
         }
+
         return false
     }
 
@@ -304,5 +325,17 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
                 .setRingToneWithContactNumberAndUri(uri, phoneNumber)
         }
         return false
+    }
+
+    fun clickedOnSortButton() {
+        _sortAudioValue.value?.let {
+            _showSortAudioDialog.value = it
+        }
+    }
+
+    fun sortAudioBy(sortValue: SortValue) {
+        if (_sortAudioValue.value != sortValue) {
+            _sortAudioValue.value = sortValue
+        }
     }
 }

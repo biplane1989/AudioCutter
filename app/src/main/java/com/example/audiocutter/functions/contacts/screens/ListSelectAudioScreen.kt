@@ -17,11 +17,13 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.databinding.ListContactSelectScreenBinding
+import com.example.audiocutter.functions.common.SortAudioPopupWindow
 import com.example.audiocutter.functions.contacts.adapters.ListSelectAdapter
 import com.example.audiocutter.functions.contacts.adapters.SelectAudioScreenCallback
 import com.example.audiocutter.functions.contacts.objects.SelectItemView
@@ -109,6 +111,14 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
         mListSelectAudioViewModel.getLoadingStatus()
             .observe(viewLifecycleOwner, loadingStatusObserver)
         mListSelectAudioViewModel.getChoseMusic().observe(viewLifecycleOwner, isChoseRingTone)
+
+        mListSelectAudioViewModel.showSortAudioDialog.observe(viewLifecycleOwner) {
+            val sortAudioPopupWindow = SortAudioPopupWindow(
+                binding.ivSort, it) {
+                mListSelectAudioViewModel.sortAudioBy(it)
+            }
+            sortAudioPopupWindow.show()
+        }
     }
 
     override fun onCreateAnimation(
@@ -174,6 +184,7 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
         binding.ivSearchClose.setOnClickListener(this)
         binding.ivClear.setOnClickListener(this)
         binding.btnSave.setOnClickListener(this)
+        binding.ivSort.setOnClickListener(this)
         binding.ivFile.setOnClickListener(this)
         binding.backButton.setOnClickListener(this)
 
@@ -265,6 +276,9 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
             }
             binding.backButton -> {
                 requireActivity().onBackPressed()
+            }
+            binding.ivSort -> {
+                mListSelectAudioViewModel.clickedOnSortButton()
             }
         }
     }

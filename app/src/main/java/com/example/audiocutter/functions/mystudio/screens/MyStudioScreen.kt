@@ -239,15 +239,6 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
                     }
                 }
             }
-
-            Constance.ACTION_SORT -> {   // truyen sort xuong
-                Log.d(TAG, "onReceivedAction 11: type:  $type")
-                sendFragmentAction(
-                    MyAudioManagerScreen::class.java.name,
-                    Constance.ACTION_SORT_UP,
-                    Constance.FALSE
-                )
-            }
         }
     }
 

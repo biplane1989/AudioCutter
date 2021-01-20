@@ -56,7 +56,7 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
         return audioPlayer
     }
 
-    private var filterText = ""
+
     private val listAudioFiles = ManagerFactory.getAudioFileManager().getAudioFiles()
     private val _listAudioCutterViewItems = MediatorLiveData<List<AudioCutterViewItem>>()
     val listAudioCutterViewItems: LiveData<List<AudioCutterViewItem>> = _listAudioCutterViewItems

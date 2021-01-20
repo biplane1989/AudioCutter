@@ -14,6 +14,10 @@ import com.example.audiocutter.core.manager.AudioEditorManager
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.ext.toListAudioFiles
+import com.example.audiocutter.functions.audiochooser.objects.SortAudioParam
+import com.example.audiocutter.functions.common.SortField
+import com.example.audiocutter.functions.common.SortType
+import com.example.audiocutter.functions.common.SortValue
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.functions.mystudio.ItemLoadStatus
 import com.example.audiocutter.functions.mystudio.objects.ActionData
@@ -24,9 +28,7 @@ import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.AudioFileScans
 import com.example.audiocutter.objects.StateLoad
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
 import java.io.File
-import java.lang.reflect.Array
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -43,7 +45,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     private val audioPlayer = ManagerFactory.newAudioPlayer()
 
-    private val mAudioMediatorLiveData = MediatorLiveData<ArrayList<AudioFileView>>()
+    private val mAudioMediatorLiveData = MediatorLiveData<List<AudioFileView>>()
 
     /* private var mListAudio = ArrayList<AudioFileView>()*/
 
@@ -66,9 +68,10 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     private var loadingStatus: MutableLiveData<Boolean> = MutableLiveData()
     private var isEmptyStatus: MutableLiveData<Boolean> = MutableLiveData()
     private var loadingDone: MutableLiveData<Boolean> = MutableLiveData()
-    private val mainScope = MainScope()
     private var listScansIsEmptyStatus = false
     private var listConvertingIsEmptyStatus = false
+    private val _sortAudioValue =
+        MutableLiveData<SortValue>(SortValue(SortType.ASC, SortField.SORT_BY_NAME))
 
     private var mergingListAudioJob: Job? = null
 
@@ -76,8 +79,9 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         audioPlayer.init(application.applicationContext)
     }
 
+    private var mTypeAudio: Int = -1
     fun init(typeAudio: Int) {
-
+        mTypeAudio = typeAudio
         var listScaners: LiveData<AudioFileScans> = MutableLiveData()
         Log.d(TAG, "init 1:  ${Thread.currentThread().name}")
         when (typeAudio) {
@@ -106,7 +110,12 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                 listConvertingItems = ManagerFactory.getAudioEditorManager().getListMixingItems()
             }
         }
-
+        mAudioMediatorLiveData.addSource(_sortAudioValue) {
+            mergingListAudioJob?.cancel()
+            mergingListAudioJob = viewModelScope.launch {
+                mergeList()
+            }
+        }
 
         mAudioMediatorLiveData.addSource(listScaners) { // khi data co su thay doi thi se goi vao ham nay
 
@@ -220,17 +229,17 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     private suspend fun mergeList() = withContext(Dispatchers.Default) {
-
-        for (item in mListConvertingItems) {
-            Log.d(TAG, "mergeList: 002 : " + item.getFilePath())
+        val sortTypeValue = _sortAudioValue.value
+        if (sortTypeValue == null) {
+            return@withContext
         }
-
         val filePathMapConvertingItem = mListConvertingItems.toMap()
 
         val filePathMapItemView =
             mAudioMediatorLiveData.value?.toMap() ?: emptyMap<String, AudioFileView>()
         val newListAudio = ArrayList<AudioFileView>()
         newListAudio.addAll(mListConvertingItems)
+        val listItemConverted = ArrayList<AudioFileView>()
 
         val listAudioFileExcludedConvertingItems =
             mListScannedAudioFile.filter { !filePathMapConvertingItem.containsKey(it.getFilePath()) }
@@ -244,21 +253,39 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
                     filePathMapItemView.get(it.getFilePath())?.let {
                         val audioViewItem = filePathMapItemView.get(it.getFilePath())
                         audioViewItem?.let {
-                            newListAudio.add(audioViewItem.copy())
+                            listItemConverted.add(audioViewItem.copy())
                         }
                     }
                 } else {
                     if (isDeleteStatus) {                           // khi dang o trang thai delete
                         it.itemLoadStatus.deleteState = DeleteState.UNCHECK
                     }
-                    newListAudio.add(it.copy())
+                    listItemConverted.add(it.copy())
                     Log.d(TAG, "mergeList: aloha 3")
                 }
             }
         }
 
+        val listItemConvertedSorted: List<AudioFileView> = when (sortTypeValue.sortField) {
+            SortField.SORT_BY_NAME -> {
+                if (sortTypeValue.sortType == SortType.ASC) listItemConverted.sortedBy { it.audioFile.getFilePath() } else listItemConverted.sortedByDescending { it.audioFile.getFilePath() }
+            }
+            SortField.SORT_BY_DURATION -> {
+
+                if (sortTypeValue.sortType == SortType.ASC) listItemConverted.sortedBy { it.audioFile.duration } else listItemConverted.sortedByDescending { it.audioFile.duration }
+            }
+            SortField.SORT_BY_DATE -> {
+
+                if (sortTypeValue.sortType == SortType.ASC) listItemConverted.sortedBy { it.audioFile.modified } else listItemConverted.sortedByDescending { it.audioFile.modified }
+            }
+            SortField.SORT_BY_SIZE -> {
+
+                if (sortTypeValue.sortType == SortType.ASC) listItemConverted.sortedBy { it.audioFile.size } else listItemConverted.sortedByDescending { it.audioFile.size }
+            }
+        }
 
         if (isActive) {
+            newListAudio.addAll(listItemConvertedSorted)
             withContext(Dispatchers.Main) {
                 loadingStatus.value = false
                 loadingDone.value = true
@@ -325,7 +352,7 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
 
     }
 
-    fun getListAudioFile(): MediatorLiveData<ArrayList<AudioFileView>> {
+    fun getListAudioFile(): MediatorLiveData<List<AudioFileView>> {
         return mAudioMediatorLiveData
     }
 
@@ -623,29 +650,38 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
         super.onReceivedAction(fragmentMeta)
         Log.d(TAG, "onReceivedAction: 1")
         fragmentMeta.data?.let {
-            Log.d(TAG, "onReceivedAction: 2")
-            val typeAudio = fragmentMeta.data as Int
+
             when (fragmentMeta.action) {
                 Constance.ACTION_DELETE_STATUS -> { // trang thai isdelete
+                    val typeAudio = fragmentMeta.data as Int
                     actionLiveData.postValue(ActionData(Constance.ACTION_DELETE_STATUS, typeAudio))
                 }
                 Constance.ACTION_HIDE -> {  // trang thai undelete
+                    val typeAudio = fragmentMeta.data as Int
                     actionLiveData.postValue(ActionData(Constance.ACTION_HIDE, typeAudio))
                 }
                 Constance.ACTION_STOP_MUSIC -> {
+                    val typeAudio = fragmentMeta.data as Int
                     actionLiveData.postValue(ActionData(Constance.ACTION_STOP_MUSIC, typeAudio))
                 }
                 Constance.ACTION_DELETE_ALL -> {
+                    val typeAudio = fragmentMeta.data as Int
                     actionLiveData.postValue(ActionData(Constance.ACTION_DELETE_ALL, typeAudio))
                 }
                 Constance.ACTION_CHECK_DELETE -> {
+                    val typeAudio = fragmentMeta.data as Int
                     actionLiveData.postValue(ActionData(Constance.ACTION_CHECK_DELETE, typeAudio))
                 }
                 Constance.ACTION_SHARE -> {
+                    val typeAudio = fragmentMeta.data as Int
                     actionLiveData.postValue(ActionData(Constance.ACTION_SHARE, typeAudio))
                 }
-                Constance.ACTION_SORT ->{
-                    actionLiveData.postValue(ActionData(Constance.ACTION_SORT, typeAudio))
+                Constance.ACTION_SORT_AUDIO -> {
+                    val sortAudioParam = fragmentMeta.data as SortAudioParam
+                    if (sortAudioParam.typeAudio == mTypeAudio) {
+                        _sortAudioValue.value = sortAudioParam.sortValue
+                    }
+
                 }
             }
         }
