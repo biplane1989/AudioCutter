@@ -17,6 +17,7 @@ import androidx.lifecycle.*
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateManager
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateManagerImpl
 import com.example.audiocutter.functions.mystudio.screens.FragmentMeta
+import com.example.audiocutter.permissions.PermissionManager
 import com.example.audiocutter.util.PreferencesHelper
 import com.example.audiocutter.util.Utils
 import kotlinx.coroutines.*
@@ -140,6 +141,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     final override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+       /* lifecycle.addObserver(PermissionManager)*/
         if (!onPreCreate()) return
         createView(savedInstanceState)
         onPostCreate()
@@ -207,6 +209,7 @@ abstract class BaseFragment : Fragment() {
     final override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onPostCreate(savedInstanceState)
+        /*lifecycle.addObserver(PermissionManager)*/
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -267,6 +270,10 @@ abstract class BaseDialog : DialogFragment() {
         super.show(manager, tag)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+     /*   lifecycle.addObserver(PermissionManager)*/
+    }
     protected fun runOnUI(executable: Executable): Job {
         return mainScope.launch {
             executable()
@@ -289,7 +296,6 @@ abstract class BaseDialog : DialogFragment() {
             }
         } ?: throw IllegalArgumentException("tag is not null")
     }
-
     override fun onDestroy() {
         super.onDestroy()
         mainScope.cancel()

@@ -3,8 +3,7 @@ package com.example.audiocutter.permissions
 import android.Manifest
 import android.content.Context
 import android.os.Build
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import com.example.audiocutter.util.PreferencesHelper
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.MainScope
@@ -142,14 +141,13 @@ class AppPermission {
 object PermissionManager {
     private val APP_PERMISSION_PREFERENCE_KEY = "APP_PERMISSION_PREFERENCE_KEY"
     private lateinit var appContext: Context
-    private val mainScope = MainScope()
     private val appPermissionLiveData = MutableLiveData<AppPermission>()
     private lateinit var appPermission: AppPermission
 
     fun start(appContext: Context) {
         this.appContext = appContext
         init()
-        mainScope.launch {
+        /*mainScope.launch {
             while (true) {
                 delay(1000)
                 if (appPermission.isPermissionChanged(PermissionManager.appContext)) {
@@ -158,6 +156,13 @@ object PermissionManager {
                     appPermissionLiveData.postValue(appPermission)
                 }
             }
+        }*/
+    }
+    fun checkChangingPermission(){
+        if (appPermission.isPermissionChanged(PermissionManager.appContext)) {
+            appPermission.updatePermission(PermissionManager.appContext)
+            PreferencesHelper.putString(APP_PERMISSION_PREFERENCE_KEY, appPermission.encode())
+            appPermissionLiveData.postValue(appPermission)
         }
     }
 

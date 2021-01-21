@@ -15,7 +15,7 @@ interface StoragePermissionRequest : PermissionRequest, Observer<AppPermission> 
     }
 
     override fun requestPermission() {
-
+        super.requestPermission()
         if (!isPermissionGranted()) {
             val baseActivity = getPermissionActivity()
             baseActivity?.let {
@@ -31,25 +31,25 @@ interface StoragePermissionRequest : PermissionRequest, Observer<AppPermission> 
                         this@StoragePermissionRequest::class.java.name + "goToPermissionSettingScreen",
                         true
                     )
-                    PendingCallFunction.guidePermissionToast?.cancel()
-                    PendingCallFunction.guidePermissionToast = Toast.makeText(
+                    RequestingPermissionObject.guidePermissionToast?.cancel()
+                    RequestingPermissionObject.guidePermissionToast = Toast.makeText(
                         getPermissionActivity(),
                         "",
                         Toast.LENGTH_SHORT
                     )
-                    PendingCallFunction.guidePermissionToast!!.setGravity(
+                    RequestingPermissionObject.guidePermissionToast!!.setGravity(
                         Gravity.FILL_HORIZONTAL or Gravity.BOTTOM,
                         0,
                         0
                     )
                     val inflater: LayoutInflater =
                         baseActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                    PendingCallFunction.guidePermissionToast!!.view = inflater.inflate(
+                    RequestingPermissionObject.guidePermissionToast!!.view = inflater.inflate(
                         R.layout.storage_guide_turn_on_permission_layout,
                         null
                     )
-                    PendingCallFunction.guidePermissionToast!!.duration = Toast.LENGTH_LONG
-                    PendingCallFunction.guidePermissionToast!!.show()
+                    RequestingPermissionObject.guidePermissionToast!!.duration = Toast.LENGTH_LONG
+                    RequestingPermissionObject.guidePermissionToast!!.show()
                     PermissionUtil.goToPermissionSettingScreen(
                         baseActivity,
                         STORAGE_REQUEST_CODE
@@ -70,7 +70,7 @@ interface StoragePermissionRequest : PermissionRequest, Observer<AppPermission> 
 
     override fun onChanged(appPermission: AppPermission) {
         if (isPermissionGranted()) {
-            PendingCallFunction.guidePermissionToast?.cancel()
+            RequestingPermissionObject.guidePermissionToast?.cancel()
             if (PreferencesHelper.getBoolean(
                     this@StoragePermissionRequest::class.java.name + "goToPermissionSettingScreen",
                     false

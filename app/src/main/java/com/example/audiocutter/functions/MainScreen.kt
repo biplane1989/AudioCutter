@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.base.BaseFragment
@@ -35,6 +36,9 @@ class MainScreen : BaseFragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.main_screen, container, false)
+        lifecycleScope.launchWhenResumed {
+            binding.btnVip.startBlink()
+        }
         PermissionManager.getAppPermission()
             .observe(this.viewLifecycleOwner, Observer<AppPermission> {
                 if (storagePermissionRequest.isPermissionGranted() && (pendingRequestingPermission and MP3_CUTTER_REQUESTING_PERMISSION) != 0) {
@@ -168,6 +172,7 @@ class MainScreen : BaseFragment(), View.OnClickListener {
 
     private fun onContactsItemClicked() {
         if (contactPermissionRequest.isPermissionGranted()) {
+            ManagerFactory.getAudioFileManager().init(requireContext())
             viewStateManager.mainScreenOnContactItemClicked(this)
         } else {
             ContactPermissionDialog.newInstance {
@@ -187,10 +192,10 @@ class MainScreen : BaseFragment(), View.OnClickListener {
 /*        if (contactPermissionRequest.isPermissionGranted() && writeSettingPermissionRequest.isPermissionGranted()) {
             viewStateManager.mainScreenOnMyAudioItemClicked(this)
         } else {*/
-        if(storagePermissionRequest.isPermissionGranted()){
+        if (storagePermissionRequest.isPermissionGranted()) {
             ManagerFactory.getAudioFileManager().init(requireContext())
             viewStateManager.mainScreenOnMyAudioItemClicked(this)
-        }else{
+        } else {
             StoragePermissionDialog.newInstance {
                 resetRequestingPermission()
                 pendingRequestingPermission = MY_STUDIO_REQUESTING_PERMISSION

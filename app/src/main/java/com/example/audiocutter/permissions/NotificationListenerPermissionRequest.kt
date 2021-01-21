@@ -6,7 +6,6 @@ import android.os.Build
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.Toast
-import androidx.lifecycle.*
 import com.example.audiocutter.R
 
 interface NotificationListenerPermissionRequest : PermissionRequest {
@@ -24,6 +23,7 @@ interface NotificationListenerPermissionRequest : PermissionRequest {
     }
 
     override fun requestPermission() {
+        super.requestPermission()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
 
             if (!PermissionManager.getAppPermissionData().hasNotificationListenerPermission()) {
@@ -32,25 +32,25 @@ interface NotificationListenerPermissionRequest : PermissionRequest {
                     Intent(ACTION_NOTIFICATION_LISTENER_SETTINGS),
                     NOTIFICATION_LISTENER_REQUEST_CODE
                 )
-                PendingCallFunction.guidePermissionToast?.cancel()
-                PendingCallFunction.guidePermissionToast = Toast.makeText(
+                RequestingPermissionObject.guidePermissionToast?.cancel()
+                RequestingPermissionObject.guidePermissionToast = Toast.makeText(
                     getPermissionActivity(),
                     "",
                     Toast.LENGTH_SHORT
                 )
-                PendingCallFunction.guidePermissionToast!!.setGravity(
+                RequestingPermissionObject.guidePermissionToast!!.setGravity(
                     Gravity.FILL_HORIZONTAL or Gravity.BOTTOM,
                     0,
                     0
                 )
                 val inflater: LayoutInflater =
                     baseActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                PendingCallFunction.guidePermissionToast!!.view = inflater.inflate(
+                RequestingPermissionObject.guidePermissionToast!!.view = inflater.inflate(
                     R.layout.locknotification_guide_turn_on_permission_layout,
                     null
                 )
-                PendingCallFunction.guidePermissionToast!!.duration = Toast.LENGTH_LONG
-                PendingCallFunction.guidePermissionToast!!.show()
+                RequestingPermissionObject.guidePermissionToast!!.duration = Toast.LENGTH_LONG
+                RequestingPermissionObject.guidePermissionToast!!.show()
 
 
             }

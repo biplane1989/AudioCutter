@@ -626,4 +626,9 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
     override fun getFragmentViewModel(): IViewModel? {
         return myStudioViewModel
     }
+
+    init {
+        writeSettingPermissionRequest.init()
+        contactPermissionRequest.init()
+    }
 }

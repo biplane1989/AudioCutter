@@ -19,7 +19,7 @@ interface ContactItemPermissionRequest : PermissionRequest, Observer<AppPermissi
     }
 
     override fun requestPermission() {
-
+        super.requestPermission()
         if (!isPermissionGranted()) {
             val baseActivity = getPermissionActivity()!!
             if (PermissionUtil.clickedOnNeverAskAgain(
@@ -36,25 +36,25 @@ interface ContactItemPermissionRequest : PermissionRequest, Observer<AppPermissi
                     this@ContactItemPermissionRequest::class.java.name + "goToPermissionSettingScreen",
                     true
                 )
-                PendingCallFunction.guidePermissionToast?.cancel()
-                PendingCallFunction.guidePermissionToast = Toast.makeText(
+                RequestingPermissionObject.guidePermissionToast?.cancel()
+                RequestingPermissionObject.guidePermissionToast = Toast.makeText(
                     getPermissionActivity(),
                     "",
                     Toast.LENGTH_SHORT
                 )
-                PendingCallFunction.guidePermissionToast!!.setGravity(
+                RequestingPermissionObject.guidePermissionToast!!.setGravity(
                     Gravity.FILL_HORIZONTAL or Gravity.BOTTOM,
                     0,
                     0
                 )
                 val inflater: LayoutInflater =
                     baseActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                PendingCallFunction.guidePermissionToast!!.view = inflater.inflate(
+                RequestingPermissionObject.guidePermissionToast!!.view = inflater.inflate(
                     R.layout.contact_guide_turn_on_permission_layout,
                     null
                 )
-                PendingCallFunction.guidePermissionToast!!.duration = Toast.LENGTH_LONG
-                PendingCallFunction.guidePermissionToast!!.show()
+                RequestingPermissionObject.guidePermissionToast!!.duration = Toast.LENGTH_LONG
+                RequestingPermissionObject.guidePermissionToast!!.show()
                 PermissionUtil.goToPermissionSettingScreen(
                     baseActivity,
                     CONTACT_REQUEST_CODE

@@ -6,7 +6,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="#ffffff">
 
         <LinearLayout
             paddingTopSystemWindowInsets="@{true}"
@@ -27,28 +28,24 @@
                 android:textSize="@dimen/text_size_header"
                 android:textStyle="bold" />
 
-            <ImageView
+            <com.example.audiocutter.ui.common.VipView
                 android:id="@+id/btn_vip"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_gravity="top"
-                android:background="?android:selectableItemBackground"
-                android:scaleType="centerInside"
-                android:src="@drawable/home_screen_ic_vip" />
+                android:background="?android:selectableItemBackground" />
 
-            <ImageView
+            <com.example.audiocutter.ui.common.AdView
                 android:id="@+id/advertisement_button"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_gravity="top"
-                android:background="?android:selectableItemBackground"
-                android:scaleType="centerInside"
-                android:src="@drawable/home_ic_advertisement" />
+                android:background="?android:selectableItemBackground" />
 
             <ImageView
                 android:id="@+id/setting_button"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_gravity="top"
                 android:layout_marginEnd="10dp"
                 android:background="?android:selectableItemBackground"

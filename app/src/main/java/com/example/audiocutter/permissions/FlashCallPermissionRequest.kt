@@ -16,6 +16,7 @@ interface FlashCallPermissionRequest : PermissionRequest, Observer<AppPermission
     }
 
     override fun requestPermission() {
+        super.requestPermission()
         if (!isPermissionGranted()) {
             val baseActivity = getPermissionActivity()
             baseActivity?.let {
@@ -28,25 +29,25 @@ interface FlashCallPermissionRequest : PermissionRequest, Observer<AppPermission
                         this@FlashCallPermissionRequest::class.java.name + "goToPermissionSettingScreen",
                         true
                     )
-                    PendingCallFunction.guidePermissionToast?.cancel()
-                    PendingCallFunction.guidePermissionToast = Toast.makeText(
+                    RequestingPermissionObject.guidePermissionToast?.cancel()
+                    RequestingPermissionObject.guidePermissionToast = Toast.makeText(
                         getPermissionActivity(),
                         "",
                         Toast.LENGTH_SHORT
                     )
-                    PendingCallFunction.guidePermissionToast!!.setGravity(
+                    RequestingPermissionObject.guidePermissionToast!!.setGravity(
                         Gravity.FILL_HORIZONTAL or Gravity.BOTTOM,
                         0,
                         0
                     )
                     val inflater: LayoutInflater =
                         baseActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                    PendingCallFunction.guidePermissionToast!!.view = inflater.inflate(
+                    RequestingPermissionObject.guidePermissionToast!!.view = inflater.inflate(
                         R.layout.call_phone_guide_turn_on_permission_layout,
                         null
                     )
-                    PendingCallFunction.guidePermissionToast!!.duration = Toast.LENGTH_LONG
-                    PendingCallFunction.guidePermissionToast!!.show()
+                    RequestingPermissionObject.guidePermissionToast!!.duration = Toast.LENGTH_LONG
+                    RequestingPermissionObject.guidePermissionToast!!.show()
                     PermissionUtil.goToPermissionSettingScreen(
                         baseActivity,
                         CALL_PHONE_REQUEST_CODE
@@ -66,7 +67,7 @@ interface FlashCallPermissionRequest : PermissionRequest, Observer<AppPermission
 
     override fun onChanged(appPermission: AppPermission) {
         if (isPermissionGranted()) {
-            PendingCallFunction.guidePermissionToast?.cancel()
+            RequestingPermissionObject.guidePermissionToast?.cancel()
             if (PreferencesHelper.getBoolean(
                     this@FlashCallPermissionRequest::class.java.name + "goToPermissionSettingScreen",
                     false

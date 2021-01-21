@@ -13,9 +13,6 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 interface WriteSettingPermissionRequest : PermissionRequest, Observer<AppPermission> {
     fun isPermissionGranted(): Boolean {
@@ -24,18 +21,18 @@ interface WriteSettingPermissionRequest : PermissionRequest, Observer<AppPermiss
     }
 
     override fun requestPermission() {
+        super.requestPermission()
         if (!isPermissionGranted()) {
             val baseActivity = getPermissionActivity()!!
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                PendingCallFunction.guidePermissionToast?.cancel()
-                PendingCallFunction.guidePermissionToast = Toast.makeText(getPermissionActivity(), "", Toast.LENGTH_SHORT)
-                PendingCallFunction.guidePermissionToast!!.setGravity(Gravity.FILL_HORIZONTAL or Gravity.BOTTOM, 0, 0)
+                RequestingPermissionObject.guidePermissionToast?.cancel()
+                RequestingPermissionObject.guidePermissionToast = Toast.makeText(getPermissionActivity(), "", Toast.LENGTH_SHORT)
+                RequestingPermissionObject.guidePermissionToast!!.setGravity(Gravity.FILL_HORIZONTAL or Gravity.BOTTOM, 0, 0)
                 val inflater: LayoutInflater = baseActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                PendingCallFunction.guidePermissionToast!!.view = inflater.inflate(R.layout.common_guide_turn_on_write_setting_permission, null)
-                PendingCallFunction.guidePermissionToast!!.duration = Toast.LENGTH_LONG
-                PendingCallFunction.guidePermissionToast!!.show()
+                RequestingPermissionObject.guidePermissionToast!!.view = inflater.inflate(R.layout.common_guide_turn_on_write_setting_permission, null)
+                RequestingPermissionObject.guidePermissionToast!!.duration = Toast.LENGTH_LONG
+                RequestingPermissionObject.guidePermissionToast!!.show()
                 goToSetting(baseActivity)
-
             } else {
                 PermissionUtil.requestPermission(baseActivity, arrayOf(Manifest.permission.WRITE_SETTINGS), WRITE_SETTINGS_REQUEST_CODE)
             }
