@@ -148,7 +148,8 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         }
         audioMixModel.showSortAudioDialog.observe(viewLifecycleOwner) {
             val sortAudioPopupWindow = SortAudioPopupWindow(
-                binding.ivMixScreenSort, it) {
+                binding.ivMixScreenSort, it
+            ) {
                 audioMixModel.sortAudioBy(it)
             }
             sortAudioPopupWindow.show()

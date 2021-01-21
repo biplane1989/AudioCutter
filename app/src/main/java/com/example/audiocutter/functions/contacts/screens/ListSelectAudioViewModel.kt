@@ -242,22 +242,6 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
                 }
                 index1++
             }
-
-            /*  var index = 0
-              for (item in mListAudioFileView) {
-                  if (!TextUtils.equals(item.getFilePath(), filePath)) {
-                      val newItem = item.copy()
-                      newItem.isSelect = false
-                      newItem.isExpanded = false
-                      mListAudioFileView[index] = newItem
-                  } else {
-                      val newItem = item.copy()
-                      newItem.isSelect = true
-  //                newItem.isExpanded = !item.isExpanded
-                      mListAudioFileView[index] = newItem
-                  }
-                  index++
-              }*/
             mAudioMediatorLiveData.value = newAudioList
             checkIsChoseRingTone()
         }

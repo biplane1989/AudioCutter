@@ -243,4 +243,11 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="setting_screen_get_premium">Get Premium</string>
     <string name="dialog_improtant_introduction">IMPROTANT INTRODUCTION</string>
     <string name="dialog_general_suggestions">GENERAL SUGGESTIONS</string>
+
+    <string name="menu_sort_audio_sort_by_name">Sort By Name</string>
+    <string name="menu_sort_audio_sort_by_date">Sort By Date</string>
+    <string name="menu_sort_audio_sort_by_duration">Sort By Duration</string>
+    <string name="menu_sort_audio_sort_by_size">Sort By Size</string>
+    <string name="menu_sort_audio_asc">ASC</string>
+    <string name="menu_sort_audio_desc">DESC</string>
 </resources>
