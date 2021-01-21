@@ -2,33 +2,33 @@ package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Application
 import android.text.TextUtils
-import android.util.Log
 import androidx.lifecycle.*
 import com.example.audiocutter.base.BaseAndroidViewModel
+import com.example.audiocutter.base.SingleLiveEvent
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
-import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
-import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
-import com.example.audiocutter.functions.contacts.objects.SelectItemStatus
-import com.example.audiocutter.functions.contacts.objects.SelectItemView
-import com.example.audiocutter.objects.AudioFileScans
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
+import com.example.audiocutter.functions.common.SortField
+import com.example.audiocutter.functions.common.SortType
+import com.example.audiocutter.functions.common.SortValue
+import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.objects.StateLoad
-import java.io.File
+import kotlinx.coroutines.*
 import java.util.*
 import kotlin.collections.ArrayList
 
+fun List<AudioCutterViewItem>.findItem(audioFile: AudioFile): AudioCutterViewItem? {
+    this.forEach {
+        if (it.audioFile.getFilePath() == audioFile.getFilePath()) {
+            return it
+        }
+    }
+    return null
+}
+
 class CutChooserViewModel(application: Application) : BaseAndroidViewModel(application) {
-
-    private val mContext = getApplication<Application>().applicationContext
-    private val TAG = CutChooserViewModel::class.java.name
-    private var currentAudioPlaying: File = File("")
-
-    var duration: Long? = 0L
-
     private var audioPlayer = ManagerFactory.newAudioPlayer()
-    private lateinit var mcallBack: OnActionCallback
 
     private var _stateLoadProgress = MutableLiveData<Int>()
     val stateLoadProgress: LiveData<Int>
@@ -39,8 +39,16 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
     val isEmptyState: LiveData<Boolean>
         get() = _isEmptyState
 
+    private val _showSortAudioDialog = SingleLiveEvent<SortValue>()
+    val showSortAudioDialog: LiveData<SortValue> = _showSortAudioDialog
+
+    private val _searchAudioName = MutableLiveData<String>("")
+    private val _sortAudioValue =
+        MutableLiveData<SortValue>(SortValue(SortType.ASC, SortField.SORT_BY_NAME))
+
 
     fun getStateLoading(): LiveData<Int> {
+        viewModelScope
         return stateLoadProgress
     }
 
@@ -48,119 +56,112 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
         return audioPlayer
     }
 
-    private var filterText = ""
 
-    private val _listAudioFiles = MediatorLiveData<List<AudioCutterView>?>()
+    private val listAudioFiles = ManagerFactory.getAudioFileManager().getAudioFiles()
+    private val _listAudioCutterViewItems = MediatorLiveData<List<AudioCutterViewItem>>()
+    val listAudioCutterViewItems: LiveData<List<AudioCutterViewItem>> = _listAudioCutterViewItems
 
-    private var listAudioFiles = ArrayList<AudioCutterView>()
+    //private var listAudioFiles = ArrayList<AudioCutterView>()
+    private var syncDataJob: Job? = null
 
     init {
         audioPlayer.init(application.applicationContext)
-        _listAudioFiles.addSource(ManagerFactory.getAudioFileManager().findAllAudioFiles()) { it ->
+        _listAudioCutterViewItems.addSource(listAudioFiles) { it ->
             when (it.state) {
                 StateLoad.LOADING -> {
-                    _stateLoadProgress.postValue(1)
+                    _stateLoadProgress.value = 1
                 }
                 StateLoad.LOADDONE -> {
-                    _stateLoadProgress.postValue(0)
-
-//                    val tmpList = ArrayList<AudioCutterView>()
-//                    it.listAudioFiles.forEach {
-//                        tmpList.add(AudioCutterView(it))
-//                    }
-//                    listAudioFiles = tmpList
-
-                    synchronizationData(it)
-
-                    Log.d(TAG, "list size 11:  ${listAudioFiles.size}")
-                    _listAudioFiles.postValue(listAudioFiles)
+                    syncDataJob?.cancel()
+                    syncDataJob = viewModelScope.launch {
+                        synchronizationData()
+                    }
                 }
                 StateLoad.LOADFAIL -> {
-                    _stateLoadProgress.postValue(-1)
+                    _stateLoadProgress.value = -1
                 }
+            }
+        }
+        _listAudioCutterViewItems.addSource(_searchAudioName) {
+            syncDataJob?.cancel()
+            syncDataJob = viewModelScope.launch {
+                synchronizationData()
+            }
+        }
+        _listAudioCutterViewItems.addSource(_sortAudioValue) {
+            syncDataJob?.cancel()
+            syncDataJob = viewModelScope.launch {
+                synchronizationData()
             }
         }
     }
 
-    private fun synchronizationData(audioFileScans: AudioFileScans) {
-        val resultListAudio = ArrayList<AudioCutterView>()
-        val newListAudio = audioFileScans.listAudioFiles
-        var isInstance = false
-        if (listAudioFiles.isEmpty()) {
-            newListAudio.forEach { audioFile ->
-                resultListAudio.add(AudioCutterView(audioFile))
+    private suspend fun synchronizationData() = coroutineScope {
+        val searchAudioNameValue = _searchAudioName.value
+        val sortTypeValue = _sortAudioValue.value
+        val listAudioFileData = listAudioFiles.value?.listAudioFiles
+        if (searchAudioNameValue == null || sortTypeValue == null || listAudioFileData == null || listAudioFiles.value?.state != StateLoad.LOADDONE) {
+            return@coroutineScope
+        }
+        withContext(Dispatchers.Default) {
+            val listAudioCutterItems = ArrayList<AudioCutterViewItem>()
+            var listAudioFileFiltered = listAudioFileData
+            if (searchAudioNameValue.isNotEmpty()) {
+                listAudioFileFiltered = listAudioFileFiltered.filter {
+                    it.fileName.toLowerCase(Locale.getDefault())
+                        .contains(searchAudioNameValue.toLowerCase(Locale.getDefault()))
+                }
             }
-        } else {
-            for (newItem in newListAudio) {
-                isInstance = false
-                for (oldItem in listAudioFiles) {
-                    if (TextUtils.equals(newItem.getFilePath(), oldItem.audioFile.getFilePath())) {
-                        resultListAudio.add(oldItem)
-                        isInstance = true
-                        break
-                    }
+            when (sortTypeValue.sortField) {
+                SortField.SORT_BY_NAME -> {
+                    listAudioFileFiltered =
+                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.fileName } else listAudioFileFiltered.sortedByDescending { it.fileName }
                 }
-                if (!isInstance) {
-                    resultListAudio.add(AudioCutterView(newItem))
+                SortField.SORT_BY_DURATION -> {
+                    listAudioFileFiltered =
+                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.duration } else listAudioFileFiltered.sortedByDescending { it.duration }
                 }
+                SortField.SORT_BY_DATE -> {
+                    listAudioFileFiltered =
+                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.modified } else listAudioFileFiltered.sortedByDescending { it.modified }
+                }
+                SortField.SORT_BY_SIZE -> {
+                    listAudioFileFiltered =
+                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.size } else listAudioFileFiltered.sortedByDescending { it.size }
+                }
+            }
+            listAudioFileFiltered.forEach {
+                val oldItem = listAudioCutterViewItems.value?.findItem(it)
+                if (oldItem == null) {
+                    listAudioCutterItems.add(AudioCutterViewItem(it))
+                } else {
+                    listAudioCutterItems.add(oldItem)
+                }
+            }
+            if (isActive) {
+                withContext(Dispatchers.Main) {
+                    _stateLoadProgress.value = 0
+                    _isEmptyState.value = listAudioCutterItems.size == 0
+                    _listAudioCutterViewItems.value = listAudioCutterItems
+                }
+
             }
         }
+    }
+    fun clickedOnSortButton(){
+        _sortAudioValue.value?.let {
+            _showSortAudioDialog.value = it
+        }
 
-        listAudioFiles.clear()
-        listAudioFiles.addAll(resultListAudio)
     }
 
-
-    private val _listFilteredAudioFiles = liveData<List<AudioCutterView>?> {
-        emitSource(_listAudioFiles.map {
-            it?.let {
-                var listResult: List<AudioCutterView>? = null
-                listResult = ArrayList(it)
-                val listEmpty = ArrayList<Boolean>()
-                if (filterText.isNotEmpty()) {
-                    listResult.clear()
-                    it.forEach { item ->
-                        val rs = item.audioFile.fileName.toLowerCase(Locale.getDefault())
-                            .contains(filterText.toLowerCase(Locale.getDefault()))
-                        listEmpty.add(rs)
-                        if (rs) {
-                            listResult.add(item)
-                        }
-                    }
-                    if (!listEmpty.contains(true)) {
-                        _isEmptyState.postValue(false)
-                    } else {
-                        _isEmptyState.postValue(true)
-                    }
-                }
-
-                listResult
-            }
-        })
+    fun sortAudioBy(sortValue: SortValue){
+        if(_sortAudioValue.value != sortValue){
+            _sortAudioValue.value = sortValue
+        }
     }
-
-    fun getAllAudioFile(): LiveData<List<AudioCutterView>?> {
-        return _listFilteredAudioFiles
-    }
-
     fun getStateEmpty(): LiveData<Boolean> {
         return isEmptyState
-    }
-
-    fun getListAllAudioFile(): ArrayList<AudioCutterView> {
-        return ArrayList(_listAudioFiles.value ?: ArrayList())
-    }
-
-    fun getListFilteredAudios(): ArrayList<AudioCutterView> {
-        return ArrayList(_listFilteredAudioFiles.value ?: ArrayList())
-    }
-
-
-    suspend fun play(pos: Int) {
-        val listAudios = getListFilteredAudios()
-        val audioItem = listAudios[pos]
-        Log.d("TAG", "CheckDUrationModel:  filename:${audioItem.audioFile.fileName}  duration  ${audioItem.duration}")
-        audioPlayer.play(audioItem.audioFile)
     }
 
     fun pause() {
@@ -178,68 +179,7 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
     }
 
     fun searchAudio(yourTextSearch: String) {
-        filterText = yourTextSearch
-        _listAudioFiles.postValue(_listAudioFiles.value)
-    }
-
-    fun updateMediaInfo(playerInfo: PlayerInfo) {
-        Log.d(TAG, "updateMediaInfo: ${playerInfo.playerState}")
-        val listAudioViews = getListAllAudioFile()
-//        val listAudioViews = getListFilteredAudio()
-
-        if (playerInfo.currentAudio != null) {
-            if (currentAudioPlaying.absoluteFile != playerInfo.currentAudio!!.file.absoluteFile) {
-
-                val oldPos = getAudioFilePos(currentAudioPlaying)
-                val newPos = getAudioFilePos(playerInfo.currentAudio!!.file)
-                if (oldPos != -1) {
-                    val audioFile = listAudioViews[oldPos].copy()
-                    audioFile.state = PlayerState.IDLE
-                    audioFile.isCheckDistance = false
-                    audioFile.currentPos = playerInfo.posision.toLong()
-                    audioFile.duration = playerInfo.duration.toLong()
-                    listAudioViews[oldPos] = audioFile
-                }
-                if (newPos != -1) {
-                    val audioCutterView = listAudioViews[newPos].copy()
-                    updateState(audioCutterView, playerInfo, true)
-                    listAudioViews[newPos] = audioCutterView
-                }
-            } else {
-                val atPos = getAudioFilePos(currentAudioPlaying)
-                if (atPos != -1) {
-                    Log.d(TAG, "updateMediaInfo: atPOs   ${listAudioViews.get(atPos).state}")
-                    val audioCutterView = listAudioViews[atPos].copy()
-                    updateState(audioCutterView, playerInfo, true)
-                    listAudioViews[atPos] = audioCutterView
-                }
-            }
-            currentAudioPlaying = playerInfo.currentAudio!!.file
-        }
-        _listAudioFiles.postValue(listAudioViews)
-    }
-
-
-    private fun updateState(audioFile: AudioCutterView, playerInfo: PlayerInfo, rs: Boolean) {
-
-        audioFile.state = playerInfo.playerState
-        audioFile.isCheckDistance = rs
-        audioFile.currentPos = playerInfo.posision.toLong()
-        audioFile.duration = playerInfo.duration.toLong()
-
-    }
-
-
-    private fun getAudioFilePos(file: File): Int {
-        val listAudios = getListAllAudioFile()
-        var i = 0
-        while (i < listAudios.size) {
-            if (listAudios[i].audioFile.file == file) {
-                return i
-            }
-            i++
-        }
-        return -1
+        _searchAudioName.value = yourTextSearch
     }
 
 

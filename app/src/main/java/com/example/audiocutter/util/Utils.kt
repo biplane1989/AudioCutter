@@ -80,8 +80,8 @@ class Utils {
             return false
         }
 
-        fun dpToPx(context: Context, dp: Float): Float {
-            return dp * context.resources.displayMetrics.density + 0.5f
+        fun dpToPx(context: Context, dp: Float): Int {
+            return (dp * context.resources.displayMetrics.density + 0.5f).toInt()
         }
 
 

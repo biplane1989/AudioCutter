@@ -113,17 +113,6 @@ class AudioCutterAdapter(val audioCutterScreenCallback: AudioCutterScreenCallbac
                 val newItem = data as AudioFileView
                 Log.d(TAG, "onBindViewHolder: orange 2" + " status: " + newItem.convertingState)
                 if (holder is SuccessViewHolder) {
-
-//                val diff = payloads.get(0) as Bundle          // lay ra data duoc thay doi o ham payload va update len view
-//                if(diff.containsKey("item1")){
-//
-//                }
-//                if(diff.containsKey("item2")){
-//
-//                }
-//                if(diff.containsKey("item3")){
-//
-//                }
                     val successViewHolder = holder
                     when (newItem.itemLoadStatus.deleteState) {
                         DeleteState.HIDE -> {

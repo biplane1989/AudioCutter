@@ -133,8 +133,8 @@ public class RangeDrawer {
                 mCursorRightRect.right, mCursorLeftRect.top,
                 mCursorRightRect.right - 3f, mCursorRightRect.bottom,
                 mLineSelectionPaint);
-        canvas.drawRect(mLeftSelectionRect, mRangeSelectionPaint);
-        canvas.drawRect(mRightSelectionRect, mRangeSelectionPaint);
+      /*  canvas.drawRect(mLeftSelectionRect, mRangeSelectionPaint);
+        canvas.drawRect(mRightSelectionRect, mRangeSelectionPaint);*/
 
         canvas.drawBitmap(mCursorLeftBitmap, null, mCursorLeftRect, null);
         canvas.drawBitmap(mCursorRightBitmap, null, mCursorRightRect, null);
@@ -213,11 +213,7 @@ public class RangeDrawer {
         return String.format("%02d:%02d:%02d.%02d", hours, minutes, seconds, time);
     }
 
-    void onWaveformZoomIn(float factor) {
-        splitTimeInterval();
-    }
-
-    void onWaveformZoomOut(float factor) {
+    void onWaveformZoom() {
         splitTimeInterval();
     }
 

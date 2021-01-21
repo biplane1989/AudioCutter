@@ -15,7 +15,7 @@ typealias BuildAudioCompleted = (AudioFile?) -> Unit
 
 interface AudioFileManager {
     fun init(appContext: Context)
-    fun findAllAudioFiles(): LiveData<AudioFileScans>
+    fun getAudioFiles(): LiveData<AudioFileScans>
     fun findAudioFile(filePath: String): AudioFile?
     fun buildAudioFile(filePath: String, listener: BuildAudioCompleted)
     fun deleteFile(listAudioFile: List<AudioFile>, typeFile: Folder): Boolean

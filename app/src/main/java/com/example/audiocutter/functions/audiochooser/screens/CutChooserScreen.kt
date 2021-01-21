@@ -13,10 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
@@ -26,11 +23,10 @@ import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.databinding.CutChooserScreenBinding
 import com.example.audiocutter.functions.audiochooser.adapters.CutChooserAdapter
 import com.example.audiocutter.functions.audiochooser.dialogs.SetAsDialog
-import com.example.audiocutter.functions.audiochooser.dialogs.SetAsDoneDialog
 import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
-import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
 import com.example.audiocutter.functions.audiochooser.objects.TypeAudioSetAs
-import com.example.audiocutter.functions.common.ContactPermissionDialog
+import com.example.audiocutter.functions.common.*
 import com.example.audiocutter.functions.mystudio.Constance
 import com.example.audiocutter.permissions.AppPermission
 import com.example.audiocutter.permissions.ContactItemPermissionRequest
@@ -50,7 +46,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     private lateinit var dialog: SetAsDialog
 
     //    private lateinit var dialogDone: SetAsDoneDialog
-    private lateinit var audioCutterItem: AudioCutterView
+    private lateinit var audioCutterItem: AudioCutterViewItem
     private var pendingRequestingPermission = 0
     private val CUT_CHOOSE_REQUESTING_PERMISSION = 1 shl 5
     private var indexChoose = 0
@@ -70,9 +66,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         }
     }
 
-
-    var currentPos = -1
-    private val listAudioObserver = Observer<List<AudioCutterView>?> { listMusic ->
+    private val listAudioObserver = Observer<List<AudioCutterViewItem>?> { listMusic ->
         listMusic?.forEach {
 
             Log.d(TAG, "checkListMusic:${it.audioFile.fileName} ")
@@ -83,7 +77,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
             if (listMusic.isEmpty()) {
                 showEmptyList()
             } else {
-                audioCutterAdapter.submitList(ArrayList(listMusic)){
+                audioCutterAdapter.submitList(ArrayList(listMusic)) {
                     if (isSearchStatus) {
                         binding.rvAudioCutter.scrollToPosition(0)
                     }
@@ -164,11 +158,20 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLists()
-        runOnUI {
-            audioCutterModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
-            audioCutterModel.getAllAudioFile().observe(viewLifecycleOwner, listAudioObserver)
-            audioCutterModel.getStateEmpty().observe(viewLifecycleOwner, emptyState)
+        observerData()
+    }
 
+    private fun observerData() {
+        audioCutterModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
+        audioCutterModel.listAudioCutterViewItems.observe(viewLifecycleOwner, listAudioObserver)
+        audioCutterModel.getStateEmpty().observe(viewLifecycleOwner, emptyState)
+
+        audioCutterModel.showSortAudioDialog.observe(viewLifecycleOwner) {
+            val sortAudioPopupWindow = SortAudioPopupWindow(
+                binding.ivCutterScreenSort, it) {
+                audioCutterModel.sortAudioBy(it)
+            }
+            sortAudioPopupWindow.show()
         }
     }
 
@@ -225,6 +228,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         binding.ivCutterScreenSearch.setOnClickListener(this)
         binding.ivCutterScreenBackEdt.setOnClickListener(this)
         binding.ivCutterScreenClose.setOnClickListener(this)
+        binding.ivCutterScreenSort.setOnClickListener(this)
         dialog = SetAsDialog(requireContext())
 //        dialogDone = SetAsDoneDialog(requireContext())
         audioCutterAdapter.setAudioCutterListtener(this)
@@ -241,6 +245,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         binding.ivCutterScreenSearch.visibility = status
         binding.tvCutterScreen.visibility = status
         binding.ivAudioCutterScreenFile.visibility = status
+        binding.ivCutterScreenSort.visibility = status
     }
 
     private fun showEmptyList() {
@@ -274,25 +279,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         binding.rvAudioCutter.layoutManager = LinearLayoutManager(requireContext())
     }
 
-
-    override fun play(pos: Int) {
-        runOnUI {
-            currentPos = pos
-            audioCutterModel.play(pos)
-        }
-    }
-
-    override fun pause(pos: Int) {
-        currentPos = pos
-        audioCutterModel.pause()
-
-    }
-
-    override fun resume(pos: Int) {
-        currentPos = pos
-        audioCutterModel.resume()
-    }
-
     /*  override fun showDialogSetAs(itemAudio: AudioCutterView) {
           audioCutterItem = itemAudio
           filePathAudio = itemAudio.audioFile.getFilePath()
@@ -313,7 +299,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
           }
       }*/
 
-    override fun showDialogSetAs(itemAudio: AudioCutterView) {
+    override fun showDialogSetAs(itemAudio: AudioCutterViewItem) {
         audioCutterItem = itemAudio
         filePathAudio = itemAudio.audioFile.getFilePath()
 
@@ -358,7 +344,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
 
     }
 
-    override fun onCutItemClicked(itemAudio: AudioCutterView) {
+    override fun onCutItemClicked(itemAudio: AudioCutterViewItem) {
         audioCutterModel.stop()
         if (itemAudio.audioFile.duration < Constance.MIN_DURATION) {
             val dialogSnack = Snackbar.make(
@@ -455,6 +441,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
             binding.ivCutterScreenBack -> {
                 activity?.onBackPressed()
             }
+            binding.ivCutterScreenSort -> {
+                audioCutterModel.clickedOnSortButton()
+            }
         }
     }
 
@@ -479,6 +468,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     private fun searchAudiofile() {
         hideOrShowEditText(View.VISIBLE)
         hideOrShowView(View.INVISIBLE)
+
         showKeyboard()
     }
 
@@ -512,7 +502,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
                 val audio = ManagerFactory.getAudioFileManager().findAudioFile(it)
                 audio?.let {
                     if (audio.duration > Constance.MIN_DURATION) {
-                        viewStateManager.onCuttingItemClicked(this, AudioCutterView(audio))
+                        viewStateManager.onCuttingItemClicked(this, AudioCutterViewItem(audio))
                     } else {
                         Snackbar.make(
                             requireView(),

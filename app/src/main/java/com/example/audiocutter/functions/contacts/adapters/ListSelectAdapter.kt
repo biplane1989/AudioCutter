@@ -108,15 +108,6 @@ class ListSelectAdapter(var selectAudioScreenCallback: SelectAudioScreenCallback
         holder.onViewDetachedFromWindow()
     }
 
-
-    override fun submitList(list: List<SelectItemView>?) {
-        if (list != null) {
-            super.submitList(ArrayList(list))
-        } else {
-            super.submitList(null)
-        }
-    }
-
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, LifecycleOwner {
 
         val ivAvatarSelect: ImageView = itemView.findViewById(R.id.cv_avatar)

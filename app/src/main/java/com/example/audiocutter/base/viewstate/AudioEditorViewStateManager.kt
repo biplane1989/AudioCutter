@@ -1,13 +1,10 @@
 package com.example.audiocutter.base.viewstate
 
-import android.content.Context
-import android.content.Intent
 import androidx.navigation.fragment.findNavController
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateMutable
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateScreen
-import com.example.audiocutter.activities.MainActivity
 import com.example.audiocutter.base.BaseFragment
-import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
 import com.example.audiocutter.functions.audiochooser.screens.MergePreviewScreenDirections
 import com.example.audiocutter.functions.editor.screen.CuttingEditorScreenDirections
 import com.example.audiocutter.functions.editor.screen.MixingScreenDirections
@@ -38,7 +35,7 @@ interface AudioEditorViewStateManager {
         }
     }
 
-    fun editorSaveMergingAudio(baseFragment: BaseFragment, listPathAudio: List<AudioCutterView>, audioMergingConfig: AudioMergingConfig) {
+    fun editorSaveMergingAudio(baseFragment: BaseFragment, listPathAudio: List<AudioCutterViewItem>, audioMergingConfig: AudioMergingConfig) {
         if (getViewStateMutable().getLastState() == ViewStateScreen.MERGING_EDITOR_SCREEN) {
             getViewStateMutable().pushViewState(ViewStateScreen.RESULT_SCREEN)
             val audioPathArray = ArrayList<String>()

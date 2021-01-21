@@ -87,8 +87,13 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         audioPath = safeArg.pathAudio
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.cutting_editor_screen, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding =
+            DataBindingUtil.inflate(inflater, R.layout.cutting_editor_screen, container, false)
         return binding.root
     }
 
@@ -295,16 +300,18 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
                 }
             }
 
-            if (it.posision <= (fadeIn.time * 1000)) {
+            if ((it.posision - cuttingViewModel.getCuttingStartPos()) <= (fadeIn.time * 1000)) {
                 if (fadeIn != Effect.OFF) {
-                    cuttingViewModel.setVolume((it.posision.toFloat() / 1000) * ratioVolumeFadeIn)
+                    cuttingViewModel.setVolume(((it.posision.toFloat()- cuttingViewModel.getCuttingStartPos()) / 1000) * ratioVolumeFadeIn)
                 }
             } else if (it.posision < cuttingViewModel.getCuttingEndPos() - fadeOut.time * 1000) {
                 cuttingViewModel.setVolume(1f)
             } else if (it.posision >= cuttingViewModel.getCuttingEndPos() - (fadeOut.time * 1000)) {
                 if (fadeOut != Effect.OFF) {
-                    cuttingViewModel.setVolume(((cuttingViewModel.getCuttingEndPos()
-                        .toFloat() - it.posision.toFloat()) / 1000) * ratioVolumeFadeout)
+                    cuttingViewModel.setVolume(
+                        ((cuttingViewModel.getCuttingEndPos()
+                            .toFloat() - it.posision.toFloat()) / 1000) * ratioVolumeFadeout
+                    )
                 }
             }
         }
@@ -424,7 +431,11 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
             }
             binding.tickIv -> {
                 cuttingViewModel.getAudioFile()?.let {
-                    DialogConvert.showDialogConvert(childFragmentManager, this, Utils.getBaseName(File(audioPath)))
+                    DialogConvert.showDialogConvert(
+                        childFragmentManager,
+                        this,
+                        Utils.getBaseName(File(audioPath))
+                    )
                 }
             }
             binding.increaseStartTimeIv -> {
@@ -504,11 +515,12 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
     override fun onDialogOk(fadeIn: Effect, fadeOut: Effect) {
         this.fadeIn = fadeIn
         this.fadeOut = fadeOut
-        /* ManagerFactory.getAudioPlayer().seek(50)
-         ManagerFactory.getAudioPlayer().resume()*/
-        cuttingViewModel.seekAudio(RESET_AUDIO_VALUE)
-        cuttingViewModel.resumeAudio()
+        cuttingViewModel.changeCurrPos(cuttingViewModel.getCuttingEndPos())
         ratioVolume()
+        lifecycleScope.launchWhenResumed {
+            cuttingViewModel.clickedPlayButton()
+        }
+
     }
 
     private fun ratioVolume() {

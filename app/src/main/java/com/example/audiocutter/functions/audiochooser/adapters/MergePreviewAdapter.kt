@@ -4,10 +4,10 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.*
-import android.view.View.OnTouchListener
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.*
@@ -21,14 +21,24 @@ import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.PlayerInfo
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.event.OnItemTouchHelper
-import com.example.audiocutter.functions.audiochooser.objects.AudioCutterView
+import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
 import com.example.audiocutter.ui.audiochooser.cut.ProgressView
 import com.example.audiocutter.ui.audiochooser.cut.WaveAudio
 import com.example.audiocutter.ui.audiochooser.merge.MyItemTouchHelper
 import kotlinx.coroutines.launch
 
+const val ITEM_PLAY_BUTTON_CHANGED = "ITEM_PLAY_BUTTON_CHANGED"
+const val ITEM_PROGRESSING_CHANGED = "ITEM_PROGRESSING_CHANGED"
+const val ITEM_CHECKBOX_CHANGED = "ITEM_CHECKBOX_CHANGED"
 
-class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope, val activity: Activity, val mergerDiff: MergerChooserAudioDiff = MergerChooserAudioDiff()) : ListAdapter<AudioCutterView, MergePreviewAdapter.MergeChooseHolder>(mergerDiff), OnItemTouchHelper {
+class MergePreviewAdapter(
+    val mContext: Context,
+    val audioPlayer: AudioPlayer,
+    val lifecycleCoroutineScope: LifecycleCoroutineScope,
+    val activity: Activity,
+    val mergerDiff: MergerChooserAudioDiff = MergerChooserAudioDiff()
+) : ListAdapter<AudioCutterViewItem, MergePreviewAdapter.MergeChooseHolder>(mergerDiff),
+    OnItemTouchHelper {
 
     //var listAudios = mutableListOf<AudioCutterView>()
     lateinit var mCallback: AudioMergeChooseListener
@@ -44,15 +54,6 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
         mergerDiff.myItemTouchHelper = mTouchHelper
     }
 
-
-    override fun submitList(list: List<AudioCutterView>?) {
-        if (list != null) {
-            super.submitList(ArrayList(list))
-//            Log.d("TAG", "submitList: statusTouch : " + statusTouch)
-        } else {
-            super.submitList(ArrayList())
-        }
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MergeChooseHolder {
         val itemView = LayoutInflater.from(mContext)
@@ -75,7 +76,11 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
 
     }
 
-    override fun onBindViewHolder(holder: MergeChooseHolder, position: Int, payloads: MutableList<Any>) {
+    override fun onBindViewHolder(
+        holder: MergeChooseHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
         super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
@@ -139,7 +144,9 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    inner class MergeChooseHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnTouchListener, GestureDetector.OnGestureListener, LifecycleOwner {
+    inner class MergeChooseHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener, View.OnTouchListener, GestureDetector.OnGestureListener,
+        LifecycleOwner {
 
         var ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)
         var tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_merge_choose_audio)
@@ -165,58 +172,17 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
 
         private fun updatePlayInfor(playerInfo: PlayerInfo) {
             playerState = playerInfo.playerState
-            Log.d("TAG", "updatePlayInfor: playerState: updatePlayInfor " + playerState)
             playingStatus = playerInfo.playerState
-            Log.d("TAG", "onChanged: playing status: " + playerInfo.playerState)
-
             pgAudio.updatePG(playerInfo.posision.toLong(), playerInfo.duration.toLong())
-            Log.d("giangtd123", "updatePlayInfor: pecent: " + playerInfo.posision.toLong() + "status: " + playerInfo.playerState)
 
             val itemAudioFile = getItem(adapterPosition)
             val bitmap = itemAudioFile.audioFile.bitmap
             itemAudioFile.currentPos = playerInfo.posision.toLong()
             itemAudioFile.duration = playerInfo.duration.toLong()
+            itemAudioFile.state = playerInfo.playerState
 
             filePathPlaying = playerInfo.currentAudio!!.getFilePath()
-
-            when (playerInfo.playerState) {
-                PlayerState.PLAYING -> {
-                    if (checkValidGlide(bitmap)) {
-                        Glide.with(itemView).load(bitmap).into(ivController)
-                    } else {
-                        ivController.setImageResource(R.drawable.common_audio_item_bg_play_default)
-                    }
-                    ivPausePlay.setImageResource(R.drawable.common_audio_item_play)
-                    pgAudio.visibility = View.VISIBLE
-                    waveView.visibility = View.VISIBLE
-                }
-                PlayerState.PAUSE -> {
-                    if (checkValidGlide(bitmap)) {
-                        Glide.with(itemView).load(bitmap).into(ivController)
-                    } else {
-                        ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
-                    }
-                    ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
-                    waveView.visibility = View.INVISIBLE
-                    pgAudio.visibility = View.VISIBLE
-                }
-                PlayerState.IDLE -> {
-                    if (checkValidGlide(bitmap)) {
-                        Glide.with(itemView).load(bitmap).into(ivController)
-                    } else {
-                        ivController.setImageResource(R.drawable.common_audio_item_bg_pause_default)
-                    }
-                    pgAudio.visibility = View.GONE
-                    waveView.visibility = View.INVISIBLE
-                    pgAudio.resetView()
-                    ivPausePlay.setImageResource(R.drawable.common_audio_item_pause)
-
-                    filePathPlaying = ""
-                }
-                else -> {
-                    //nothing
-                }
-            }
+            updateItem(playerInfo.playerState, this, bitmap)
         }
 
         fun onViewAttachedToWindow() {
@@ -237,7 +203,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
             })
         }
 
-        fun resetItem(audioCutterView: AudioCutterView) {
+        fun resetItem(audioCutterView: AudioCutterViewItem) {
 
             playerState = PlayerState.IDLE
             Log.d("TAG", "updatePlayInfor: playerState:  resetItem" + playerState)
@@ -385,7 +351,12 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
             return false
         }
 
-        override fun onScroll(motionEvent: MotionEvent?, p1: MotionEvent?, p2: Float, p3: Float): Boolean {
+        override fun onScroll(
+            motionEvent: MotionEvent?,
+            p1: MotionEvent?,
+            p2: Float,
+            p3: Float
+        ): Boolean {
             Log.d("nqm", "onScroll: ")
             return false
         }
@@ -403,10 +374,7 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
     }
 
     interface AudioMergeChooseListener {
-        fun play(pos: Int)
-        fun pause(pos: Int)
-        fun resume(pos: Int)
-        fun deleteAudio(fileName: AudioCutterView)
+        fun deleteAudio(fileName: AudioCutterViewItem)
         fun moveItemAudio(prePos: Int, nextPos: Int)
     }
 
@@ -416,23 +384,42 @@ class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, v
     }
 }
 
-class MergerChooserAudioDiff() : DiffUtil.ItemCallback<AudioCutterView>() {
+class MergerChooserAudioDiff() : DiffUtil.ItemCallback<AudioCutterViewItem>() {
     var myItemTouchHelper: MyItemTouchHelper? = null
-    override fun areItemsTheSame(oldItem: AudioCutterView, newItem: AudioCutterView): Boolean {
+    override fun areItemsTheSame(
+        oldItem: AudioCutterViewItem,
+        newItem: AudioCutterViewItem
+    ): Boolean {
         myItemTouchHelper?.let {
             if (it.isDragging()) {
                 return true
             }
         }
-        return oldItem.audioFile.fileName == newItem.audioFile.fileName
+        return oldItem.audioFile.getFilePath() == newItem.audioFile.getFilePath()
     }
 
-    override fun areContentsTheSame(oldItem: AudioCutterView, newItem: AudioCutterView): Boolean {
+    override fun areContentsTheSame(
+        oldItem: AudioCutterViewItem,
+        newItem: AudioCutterViewItem
+    ): Boolean {
         return oldItem == newItem
     }
 
-    override fun getChangePayload(oldItem: AudioCutterView, newItem: AudioCutterView): Any? {
-        return newItem.isCheckChooseItem
+    override fun getChangePayload(
+        oldItem: AudioCutterViewItem,
+        newItem: AudioCutterViewItem
+    ): Any? {
+        val diff = Bundle()
+        if (oldItem.isplaying != newItem.isplaying) {
+            diff.putBoolean(ITEM_PLAY_BUTTON_CHANGED, true)
+        }
+        if (oldItem.currentPos != newItem.currentPos) {
+            diff.putBoolean(ITEM_PROGRESSING_CHANGED, true)
+        }
+        if (oldItem.isCheckChooseItem != newItem.isCheckChooseItem) {
+            diff.putBoolean(ITEM_CHECKBOX_CHANGED, true)
+        }
+        return diff
     }
 
 }

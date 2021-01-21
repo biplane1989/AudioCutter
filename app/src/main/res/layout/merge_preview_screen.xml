@@ -140,8 +140,8 @@
 
             <TextView
                 android:id="@+id/tv_merger"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="49dp"
+                android:layout_height="23dp"
                 android:fontFamily="@font/opensans_bold"
                 android:text="@string/merger_preview_merger"
                 android:textColor="#FFFFFF"
