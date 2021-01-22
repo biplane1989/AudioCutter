@@ -250,4 +250,5 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="menu_sort_audio_sort_by_size">Sort By Size</string>
     <string name="menu_sort_audio_asc">ASC</string>
     <string name="menu_sort_audio_desc">DESC</string>
+    <string name="home_ad">AD</string>
 </resources>

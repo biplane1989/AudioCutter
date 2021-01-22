@@ -39,6 +39,7 @@ class MainScreen : BaseFragment(), View.OnClickListener {
         lifecycleScope.launchWhenResumed {
             binding.btnVip.startBlink()
         }
+        lifecycleScope.launchWhenResumed {binding.advertisementButton.startAnim()}
         PermissionManager.getAppPermission()
             .observe(this.viewLifecycleOwner, Observer<AppPermission> {
                 if (storagePermissionRequest.isPermissionGranted() && (pendingRequestingPermission and MP3_CUTTER_REQUESTING_PERMISSION) != 0) {
