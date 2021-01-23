@@ -56,8 +56,12 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
     private var endTimeOld = "00:00.0"
     private var startTimeLife = 0L
     private var endTimeLife = 0L
-//    private var isShowAbsStart = true
-//    private var isShowAbsEnd = true
+    private var isShowAbsStart = true
+    private var isShowAbsEnd = true
+
+    //    var timeLifeStart = 0
+//    var timeLifeEnd = 0
+    var TIME_FORMAT = ""
 
     private lateinit var mWaveformView: WaveformView
 
@@ -87,13 +91,8 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         audioPath = safeArg.pathAudio
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.cutting_editor_screen, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.cutting_editor_screen, container, false)
         return binding.root
     }
 
@@ -103,74 +102,169 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         initView()
         initSharePre()
 
+//        if (duration > -1 && duration / (60 * 1000) >= 1) {       // minute
+//            TIME_FORMAT = MINUTE_FORMAT
+//        } else {
+//            TIME_FORMAT = SECOND_FORMAT
+//        }
+
         binding.startTimeTv.setKeyImeChangeListener(object : TimeEditText.KeyImeChange {        // su kien back tren ban phim
             override fun onKeyIme(keyCode: Int, event: KeyEvent?) {
                 if (KeyEvent.KEYCODE_BACK == event?.keyCode) {
                     binding.startTimeTv.clearFocus()
-                    val startTime = checkValidationTime(binding.startTimeTv.text.toString(), START_KEY)
-                    if (startTime == null) {
-                        val editable: Editable = SpannableStringBuilder(startTimeOld)
-                        binding.startTimeTv.text = editable
-                    } else {
-                        binding.startTimeTv.text = startTime
-                        startTimeOld = startTime.toString()
-                        mWaveformView.setStartTimeMs(startTimeLife.toInt())
-                    }
+//                    val startTime = checkValidationTime(binding.startTimeTv.text.toString(), START_KEY)
+//                    if (startTime == null) {
+//                        val editable: Editable = SpannableStringBuilder(startTimeOld)
+//                        binding.startTimeTv.text = editable
+//                    } else {
+//                        binding.startTimeTv.text = startTime
+//                        startTimeOld = startTime.toString()
+//                        mWaveformView.setStartTimeMs(startTimeLife.toInt())
+//                    }
                 }
             }
         })
 
-        binding.endTimeTv.setKeyImeChangeListener(object : TimeEditText.KeyImeChange {      // su kien back tren ban phim
-            override fun onKeyIme(keyCode: Int, event: KeyEvent?) {
-                if (KeyEvent.KEYCODE_BACK == event?.keyCode) {
-                    binding.endTimeTv.clearFocus()
-                    val endTime = checkValidationTime(binding.endTimeTv.text.toString(), END_KEY)
-                    if (endTime == null) {
-                        val editable: Editable = SpannableStringBuilder(endTimeOld)
-                        binding.endTimeTv.text = editable
-                    } else {
-                        binding.endTimeTv.text = endTime
-                        endTimeOld = endTime.toString()
-                        mWaveformView.setEndTimeMs(endTimeLife.toInt())
+//        binding.endTimeTv.setKeyImeChangeListener(object : TimeEditText.KeyImeChange {      // su kien back tren ban phim
+//            override fun onKeyIme(keyCode: Int, event: KeyEvent?) {
+//                if (KeyEvent.KEYCODE_BACK == event?.keyCode) {
+//                    binding.endTimeTv.clearFocus()
+//                    val endTime = checkValidationTime(binding.endTimeTv.text.toString(), END_KEY)
+//                    if (endTime == null) {
+//                        val editable: Editable = SpannableStringBuilder(endTimeOld)
+//                        binding.endTimeTv.text = editable
+//                    } else {
+//                        binding.endTimeTv.text = endTime
+//                        endTimeOld = endTime.toString()
+//                        mWaveformView.setEndTimeMs(endTimeLife.toInt())
+//                    }
+//                }
+//            }
+//        })
+
+//        binding.startTimeTv.setOnKeyListener(object : View.OnKeyListener {
+//            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
+//                if (keyCode == KeyEvent.KEYCODE_DEL) {
+//                    val positionCount = binding.startTimeTv.selectionStart
+//                    Log.d(TAG, "onKey: value : ${binding.endTimeTv.text.get(positionCount - 1)}")
+//                    if (positionCount >= 1) {
+//                        if (TextUtils.equals(binding.startTimeTv.text.toString()
+//                                .get(positionCount - 1).toString(), ":")) return true
+//                        if (TextUtils.equals(binding.startTimeTv.text.toString()
+//                                .get(positionCount - 1).toString(), ".")) return true
+//                        return false
+//                    }
+//                    return true
+//                }
+//                return false
+//            }
+//        })
+//        binding.endTimeTv.setOnKeyListener(object : View.OnKeyListener {
+//            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
+//                if (keyCode == KeyEvent.KEYCODE_DEL) {
+//                    val positionCount = binding.endTimeTv.selectionStart
+//
+//                    if (positionCount >= 1) {
+//                        if (TextUtils.equals(binding.endTimeTv.text.toString()
+//                                .get(positionCount - 1).toString(), ":")) return true
+//                        if (TextUtils.equals(binding.endTimeTv.text.toString()
+//                                .get(positionCount - 1).toString(), ".")) return true
+//                        return false
+//                    }
+//                    return true
+//                }
+//                return false
+//            }
+//        })
+
+
+        var statusMinuteStart = false
+        var statusSecondStatus = false
+        var stringChangeMinuteStart = ""
+        var stringChangeSecondeStart = ""
+        binding.startTimeTv.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                Log.d(TAG, "onTextChanged: CharSequence: $s start : $start count: $count before: $before")
+
+                if (count == 0 && before == 1 && statusMinuteStart) {
+                    val editable: Editable = SpannableStringBuilder(stringChangeMinuteStart)
+                    binding.startTimeTv.text = editable
+                    binding.startTimeTv.setSelection(start)
+                    statusMinuteStart = false
+                }
+                if (count == 0 && before == 1 && statusSecondStatus) {
+                    val editable: Editable = SpannableStringBuilder(stringChangeSecondeStart)
+                    binding.startTimeTv.text = editable
+                    binding.startTimeTv.setSelection(start)
+                    statusSecondStatus = false
+                }
+//                timeLifeStart = Utils.getTimeByTimeString(s.toString(), START_KEY).toInt()
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                if (count == 1 && after == 0) {
+                    if (TextUtils.equals(binding.startTimeTv.text.toString().get(start)
+                            .toString(), ":")) {
+                        stringChangeMinuteStart = s.toString()
+                        statusMinuteStart = true
+                    }
+                    if (TextUtils.equals(binding.startTimeTv.text.toString().get(start)
+                            .toString(), ".")) {
+                        stringChangeSecondeStart = s.toString()
+                        statusSecondStatus = true
                     }
                 }
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                Log.d(TAG, "afterTextChanged: beforeTextChanged CharSequence s: $s")
             }
         })
 
-        binding.startTimeTv.setOnKeyListener(object : View.OnKeyListener {
-            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
-                if (keyCode == KeyEvent.KEYCODE_DEL) {
-                    val positionCount = binding.startTimeTv.selectionStart
-                    Log.d(TAG, "onKey: value : ${binding.endTimeTv.text.get(positionCount - 1)}")
-                    if (positionCount >= 1) {
-                        if (TextUtils.equals(binding.startTimeTv.text.toString()
-                                .get(positionCount - 1).toString(), ":")) return true
-                        if (TextUtils.equals(binding.startTimeTv.text.toString()
-                                .get(positionCount - 1).toString(), ".")) return true
-                        return false
-                    }
-                    return true
-                }
-                return false
-            }
-        })
-        binding.endTimeTv.setOnKeyListener(object : View.OnKeyListener {
-            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
-                if (keyCode == KeyEvent.KEYCODE_DEL) {
-                    val positionCount = binding.endTimeTv.selectionStart
 
-                    if (positionCount >= 1) {
-                        if (TextUtils.equals(binding.endTimeTv.text.toString()
-                                .get(positionCount - 1).toString(), ":")) return true
-                        if (TextUtils.equals(binding.endTimeTv.text.toString()
-                                .get(positionCount - 1).toString(), ".")) return true
-                        return false
-                    }
-                    return true
+        var statusMinuteEnd = false
+        var statusSecondEnd = false
+        var stringChangeMinuteEnd = ""
+        var stringChangeSecondEnd = ""
+        binding.endTimeTv.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                Log.d(TAG, "onTextChanged: CharSequence: $s start : $start count: $count before: $before")
+
+                if (count == 0 && before == 1 && statusMinuteEnd) {
+                    val editable: Editable = SpannableStringBuilder(stringChangeMinuteEnd)
+                    binding.endTimeTv.text = editable
+                    binding.endTimeTv.setSelection(start)
+                    statusMinuteEnd = false
                 }
-                return false
+                if (count == 0 && before == 1 && statusSecondEnd) {
+                    val editable: Editable = SpannableStringBuilder(stringChangeSecondEnd)
+                    binding.endTimeTv.text = editable
+                    binding.endTimeTv.setSelection(start)
+                    statusSecondEnd = false
+                }
+//                timeLifeEnd = Utils.getTimeByTimeString(s.toString(), END_KEY).toInt()
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                if (count == 1 && after == 0) {
+                    if (TextUtils.equals(binding.endTimeTv.text.toString().get(start)
+                            .toString(), ":")) {
+                        stringChangeMinuteEnd = s.toString()
+                        statusMinuteEnd = true
+                    }
+                    if (TextUtils.equals(binding.endTimeTv.text.toString().get(start)
+                            .toString(), ".")) {
+                        stringChangeSecondEnd = s.toString()
+                        statusSecondEnd = true
+                    }
+                }
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                Log.d(TAG, "afterTextChanged: beforeTextChanged CharSequence s: $s")
             }
         })
+
     }
 
     private fun hideKeyboard() {
@@ -223,19 +317,21 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         if (key.equals(START_KEY)) {
             startTimeLife = Utils.getTimeByTimeString(time, typeTime)
             val oldTimeEnd = Utils.getTimeByTimeString(endTimeOld, typeTime) - 1000
-            if (startTimeLife > -1 && startTimeLife <= duration && startTimeLife < oldTimeEnd) {
+            if (startTimeLife > -1 && startTimeLife <= duration && startTimeLife <= oldTimeEnd) {
+//            if (startTimeLife > -1 && startTimeLife <= duration && startTimeLife <= timeLifeEnd - 1000) {
                 return Utils.formatTime(time, typeTime)
             } else {
-                showNotification(getString(R.string.cutting_editor_screen_error_validator))
+                showNotification(getString(R.string.cutting_editor_screen_invalid_start_time))
                 return null
             }
         } else {
             endTimeLife = Utils.getTimeByTimeString(time, typeTime)
             val oldTimeNew = Utils.getTimeByTimeString(startTimeOld, typeTime) + 1000
-            if (endTimeLife > -1 && endTimeLife <= duration && endTimeLife > oldTimeNew) {
+            if (endTimeLife > -1 && endTimeLife <= duration && endTimeLife >= oldTimeNew) {
+//            if (endTimeLife > -1 && endTimeLife <= duration && endTimeLife >= timeLifeStart + 1000) {
                 return Utils.formatTime(time, typeTime)
             } else {
-                showNotification(getString(R.string.cutting_editor_screen_error_validator))
+                showNotification(getString(R.string.cutting_editor_screen_invalid_end_time))
                 return null
             }
         }
@@ -302,16 +398,14 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
 
             if ((it.posision - cuttingViewModel.getCuttingStartPos()) <= (fadeIn.time * 1000)) {
                 if (fadeIn != Effect.OFF) {
-                    cuttingViewModel.setVolume(((it.posision.toFloat()- cuttingViewModel.getCuttingStartPos()) / 1000) * ratioVolumeFadeIn)
+                    cuttingViewModel.setVolume(((it.posision.toFloat() - cuttingViewModel.getCuttingStartPos()) / 1000) * ratioVolumeFadeIn)
                 }
             } else if (it.posision < cuttingViewModel.getCuttingEndPos() - fadeOut.time * 1000) {
                 cuttingViewModel.setVolume(1f)
             } else if (it.posision >= cuttingViewModel.getCuttingEndPos() - (fadeOut.time * 1000)) {
                 if (fadeOut != Effect.OFF) {
-                    cuttingViewModel.setVolume(
-                        ((cuttingViewModel.getCuttingEndPos()
-                            .toFloat() - it.posision.toFloat()) / 1000) * ratioVolumeFadeout
-                    )
+                    cuttingViewModel.setVolume(((cuttingViewModel.getCuttingEndPos()
+                        .toFloat() - it.posision.toFloat()) / 1000) * ratioVolumeFadeout)
                 }
             }
         }
@@ -361,6 +455,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         val editable: Editable = SpannableStringBuilder(startTimeStr)
         binding.startTimeTv.text = editable
         startTimeOld = startTimeStr
+//        timeLifeStart = Utils.getTimeByTimeString(startTimeStr, TIME_FORMAT).toInt()
 
         cuttingViewModel.changeStartPos(startTimeMs.toInt())
     }
@@ -377,6 +472,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         val editable: Editable = SpannableStringBuilder(endTimeStr)
         binding.endTimeTv.text = editable
         endTimeOld = endTimeStr
+//        timeLifeEnd = Utils.getTimeByTimeString(endTimeStr.toString(), TIME_FORMAT).toInt()
         cuttingViewModel.changeEndPos(endTimeMs.toInt())
     }
 
@@ -431,11 +527,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
             }
             binding.tickIv -> {
                 cuttingViewModel.getAudioFile()?.let {
-                    DialogConvert.showDialogConvert(
-                        childFragmentManager,
-                        this,
-                        Utils.getBaseName(File(audioPath))
-                    )
+                    DialogConvert.showDialogConvert(childFragmentManager, this, Utils.getBaseName(File(audioPath)))
                 }
             }
             binding.increaseStartTimeIv -> {
@@ -558,36 +650,36 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
             imm.hideSoftInputFromWindow(binding.endTimeTv.getWindowToken(), 0)
             return true
         } else {
-//            when (view) {
-//                binding.startTimeTv -> {
-                    val startTime = checkValidationTime(binding.startTimeTv.text.toString(), START_KEY)
-                    if (startTime == null) {
-                        val editable: Editable = SpannableStringBuilder(startTimeOld)
-                        binding.startTimeTv.text = editable
-                    } else {
-                        binding.startTimeTv.text = startTime
-                        startTimeOld = startTime.toString()
-                        Log.d(TAG, "onEditorAction: start : startTimeLife: " + startTimeLife + "endtimeLife: " + endTimeLife)
-                        mWaveformView.setStartTimeMs(startTimeLife.toInt())
-                    }
+            when (view) {
+                binding.startTimeTv -> {
+//            val startTime = checkValidationTime(binding.startTimeTv.text.toString(), START_KEY)
+//            if (startTime == null) {
+//                val editable: Editable = SpannableStringBuilder(startTimeOld)
+//                binding.startTimeTv.text = editable
+//            } else {
+//                binding.startTimeTv.text = startTime
+//                startTimeOld = startTime.toString()
+//                Log.d(TAG, "onEditorAction: start : startTimeLife: " + startTimeLife + "endtimeLife: " + endTimeLife)
+//                mWaveformView.setStartTimeMs(startTimeLife.toInt())
+//            }
                     binding.startTimeTv.clearFocus()
-//                    hideKeyboard()
-//                }
-//                binding.endTimeTv -> {
-                    val endTime = checkValidationTime(binding.endTimeTv.text.toString(), END_KEY)
-                    if (endTime == null) {
-                        val editable: Editable = SpannableStringBuilder(endTimeOld)
-                        binding.endTimeTv.text = editable
-                    } else {
-                        binding.endTimeTv.text = endTime
-                        endTimeOld = endTime.toString()
-                        mWaveformView.setEndTimeMs(endTimeLife.toInt())
-                        Log.d(TAG, "onEditorAction: end : startTimeLife: " + startTimeLife + "endtimeLife: " + endTimeLife)
-                    }
+                    hideKeyboard()
+                }
+                binding.endTimeTv -> {
+//            val endTime = checkValidationTime(binding.endTimeTv.text.toString(), END_KEY)
+//            if (endTime == null) {
+//                val editable: Editable = SpannableStringBuilder(endTimeOld)
+//                binding.endTimeTv.text = editable
+//            } else {
+//                binding.endTimeTv.text = endTime
+//                endTimeOld = endTime.toString()
+//                mWaveformView.setEndTimeMs(endTimeLife.toInt())
+//                Log.d(TAG, "onEditorAction: end : startTimeLife: " + startTimeLife + "endtimeLife: " + endTimeLife)
+//            }
                     binding.endTimeTv.clearFocus()
                     hideKeyboard()
-//                }
-//            }
+                }
+            }
 
             return false
         }
@@ -597,11 +689,36 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         view?.let {
             when (view) {
                 binding.startTimeTv -> {
-//                    isShowAbsStart = !isShowAbsStart
+                    isShowAbsStart = !isShowAbsStart
+                    if (isShowAbsStart) {
+                        val startTime = checkValidationTime(binding.startTimeTv.text.toString(), START_KEY)
+                        if (startTime == null) {
+                            val editable: Editable = SpannableStringBuilder(startTimeOld)
+                            binding.startTimeTv.text = editable
+                        } else {
+                            binding.startTimeTv.text = startTime
+                            startTimeOld = startTime.toString()
+                            Log.d(TAG, "onEditorAction: start : startTimeLife: " + startTimeLife + "endtimeLife: " + endTimeLife)
+                            mWaveformView.setStartTimeMs(startTimeLife.toInt())
+                        }
+                    }
 //                    showHideAbs(isShowAbsStart)
                 }
                 binding.endTimeTv -> {
-//                    isShowAbsEnd = !isShowAbsEnd
+                    isShowAbsEnd = !isShowAbsEnd
+                    if (isShowAbsEnd) {
+                        val endTime = checkValidationTime(binding.endTimeTv.text.toString(), END_KEY)
+                        if (endTime == null) {
+                            val editable: Editable = SpannableStringBuilder(endTimeOld)
+                            binding.endTimeTv.text = editable
+                        } else {
+                            binding.endTimeTv.text = endTime
+                            endTimeOld = endTime.toString()
+                            mWaveformView.setEndTimeMs(endTimeLife.toInt())
+                            Log.d(TAG, "onEditorAction: end : startTimeLife: " + startTimeLife + "endtimeLife: " + endTimeLife)
+                        }
+                    }
+
 //                    showHideAbs(isShowAbsEnd)
                 }
             }

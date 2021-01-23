@@ -224,6 +224,8 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="setting_screen_language">Language</string>
     <string name="setting_screen_vn">Viet Nam</string>
     <string name="cutting_editor_screen_error_validator">Time format is incorrect</string>
+    <string name="cutting_editor_screen_invalid_end_time">End time must be more than start time and less than duration</string>
+    <string name="cutting_editor_screen_invalid_start_time">Start time must be less than end time</string>
     <string name="flash_call_screen_status">Status</string>
     <string name="flash_call_screen_lightning_speed">Lightning speed</string>
     <string name="flash_call_screen_stop">STOP</string>
@@ -250,5 +252,12 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="menu_sort_audio_sort_by_size">Sort By Size</string>
     <string name="menu_sort_audio_asc">ASC</string>
     <string name="menu_sort_audio_desc">DESC</string>
+    <string name="audio_chooser_screen_play">Play</string>
+    <string name="audio_chooser_screen_cut">Cut</string>
+    <string name="audio_chooser_screen_set_as">Set As</string>
+
+    <string name="dialog_advanced_recommend">Recommend</string>
+    <string name="dialog_advanced_off">Off</string>
+    <string name="merger_screen_file">File</string>
     <string name="home_ad">AD</string>
 </resources>

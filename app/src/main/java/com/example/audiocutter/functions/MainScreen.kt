@@ -17,6 +17,7 @@ import com.example.audiocutter.functions.common.ContactPermissionDialog
 import com.example.audiocutter.functions.common.StoragePermissionDialog
 import com.example.audiocutter.functions.flashcall.dialogs.PhoneCallPerMissionDialog
 import com.example.audiocutter.permissions.*
+import com.example.audiocutter.util.PreferencesHelper
 
 class MainScreen : BaseFragment(), View.OnClickListener {
     private val MP3_CUTTER_REQUESTING_PERMISSION = 1 shl 1
@@ -25,11 +26,23 @@ class MainScreen : BaseFragment(), View.OnClickListener {
     private val CONTACTS_ITEM_REQUESTING_PERMISSION = 1 shl 4
     private val MY_STUDIO_REQUESTING_PERMISSION = 1 shl 5
     private val FLASH_CALL_REQUESTING_PERMISSION = 1 shl 6
+    private val FIRST_TIME_TO_USED_APP_REQUESTING_PERMISSION = 1 shl 7
 
     private lateinit var binding: MainScreenBinding
     private var pendingRequestingPermission = 0
     private val TAG = "giangtd"
-
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        if(PreferencesHelper.isFirstTimeToUsedApp()){
+            lifecycleScope.launchWhenResumed {
+                if(!storagePermissionRequest.isPermissionGranted()){
+                    pendingRequestingPermission = FIRST_TIME_TO_USED_APP_REQUESTING_PERMISSION
+                    storagePermissionRequest.requestPermission()
+                }
+            }
+        }
+        PreferencesHelper.setFirstTimeToUsedApp(false)
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,6 +55,10 @@ class MainScreen : BaseFragment(), View.OnClickListener {
         lifecycleScope.launchWhenResumed {binding.advertisementButton.startAnim()}
         PermissionManager.getAppPermission()
             .observe(this.viewLifecycleOwner, Observer<AppPermission> {
+                if (storagePermissionRequest.isPermissionGranted() && (pendingRequestingPermission and FIRST_TIME_TO_USED_APP_REQUESTING_PERMISSION) != 0) {
+                    resetRequestingPermission()
+                    ManagerFactory.getAudioFileManager().init(requireContext())
+                }
                 if (storagePermissionRequest.isPermissionGranted() && (pendingRequestingPermission and MP3_CUTTER_REQUESTING_PERMISSION) != 0) {
                     resetRequestingPermission()
                     onMp3CutterItemClicked()

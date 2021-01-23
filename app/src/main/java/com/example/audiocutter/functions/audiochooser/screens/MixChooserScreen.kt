@@ -134,7 +134,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
             }
         }
         audioMixModel.countItemSelected.observe(viewLifecycleOwner) {
-            binding.tvCountFile.text = "$it file"
+            binding.tvCountFile.text = "$it ${getString(R.string.merger_screen_file)}"
         }
 
         audioMixModel.checkMoreThanTwoItemsIsSelected.observe(viewLifecycleOwner) {

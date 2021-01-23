@@ -183,7 +183,7 @@ Hoặc: cài đặt điện thoại> Quản lý ứng dụng> Cắt nhạc Pro> 
     <string name="flashing_type">Loại nhấp nháy</string>
     <string name="continuity_name">Liên tục</string>
     <string name="beat_name_flash_call">Tiết tấu</string>
-    <string name="test">KIỂM TRA</string>
+    <string name="test">Kiểm tra</string>
     <string name="flash_blinks_when_a_call_comes_in_flahscall">Đèn flash nhấp nháy khi có cuộc gọi đến.</string>
     <string name="Continuity_flash_call">Liên tục</string>
     <string name="beat_type_flash_call">Tiết tấu</string>
@@ -243,4 +243,21 @@ Hoặc: cài đặt điện thoại> Quản lý ứng dụng> Cắt nhạc Pro> 
     <string name="setting_screen_get_premium">Nâng Cấp Bản Cao Cấp</string>
     <string name="dialog_improtant_introduction">Chú Ý Quan Trọng</string>
     <string name="dialog_general_suggestions">Hướng Dẫn</string>
+
+    <string name="menu_sort_audio_sort_by_name">Sắp xếp theo tên</string>
+    <string name="menu_sort_audio_sort_by_date">Sắp xếp theo ngày</string>
+    <string name="menu_sort_audio_sort_by_duration">Sắp xếp theo thời lượng</string>
+    <string name="menu_sort_audio_sort_by_size">Sắp xếp theo dung lượng</string>
+    <string name="menu_sort_audio_asc">Tăng dần</string>
+    <string name="menu_sort_audio_desc">Giảm dần</string>
+
+    <string name="audio_chooser_screen_play">Chơi nhạc</string>
+    <string name="audio_chooser_screen_cut">Cắt nhạc</string>
+    <string name="audio_chooser_screen_set_as">Đặt làm</string>
+    <string name="dialog_advanced_recommend">Khuyến nghị</string>
+    <string name="dialog_advanced_off">Tắt</string>
+    <string name="merger_screen_file">Tệp</string>
+    <string name="home_ad">QC</string>
+    <string name="cutting_editor_screen_invalid_end_time">Thời gian kết thúc phải lớn hơn thời gian bắt đầu và nhỏ hơn tổng thời gian</string>
+    <string name="cutting_editor_screen_invalid_start_time">Thời gian bắt đầu phải lớn hơn thời gian kết thúc</string>
 </resources>

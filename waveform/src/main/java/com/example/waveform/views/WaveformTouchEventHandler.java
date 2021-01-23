@@ -10,6 +10,7 @@ import android.view.ScaleGestureDetector;
 import android.view.animation.LinearInterpolator;
 
 class WaveformTouchEventHandler {
+    private static final int EPSILON_TO_REACH_RANGE = 100;
     private static final int NONE_PENDING_PLAYBACK_POS = -1;
     public static final int NONE_RANGE_BUTTON_SELECTED = 0;
     public static final int LEFT_RANGE_BUTTON_SELECTED = 1 << 1;
@@ -57,7 +58,7 @@ class WaveformTouchEventHandler {
                     }
 
                     public boolean onScale(ScaleGestureDetector d) {
-                        if(d.getScaleFactor() != 1f){
+                        if (d.getScaleFactor() != 1f) {
                             float deltaX = d.getFocusX();
                             float factor = mWaveformDrawer.getFactorForZoom(d.getScaleFactor());
                             int newOffset = (int) (mOffset + (1 - 1 / factor) * deltaX);
@@ -390,14 +391,15 @@ class WaveformTouchEventHandler {
         mEndPos /= factor;
         mPlaybackPos /= factor;
         mMinFrameDistance /= factor;
-        Log.d("taihhhh", "onWaveformZoomOut: mEndPos " + mEndPos);
+
     }
 
     void onPlaybackChanged(int newPlayPos) {
 
         if (newPlayPos >= 0 && newPlayPos <= mMaxPos) {
-            if (newPlayPos < mStartPos || newPlayPos > mEndPos) {
-                onPlayPosOutOfRange(newPlayPos > mEndPos);
+            if ((mStartPos - newPlayPos) >= EPSILON_TO_REACH_RANGE || (newPlayPos - mEndPos) >=EPSILON_TO_REACH_RANGE ) {
+                Log.d("taihhhh", "onPlaybackChanged: newPlayPos " + newPlayPos + " newPlayPos " + newPlayPos);
+                onPlayPosOutOfRange((newPlayPos - mEndPos) >=EPSILON_TO_REACH_RANGE);
                 return;
             }
             movePlaybackPos(newPlayPos);

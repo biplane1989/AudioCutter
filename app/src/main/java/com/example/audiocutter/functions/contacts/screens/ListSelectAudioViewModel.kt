@@ -91,17 +91,15 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
         }
 
         mAudioMediatorLiveData.addSource(listAudioFiles) {
-
-            loadingStatus.value = true
             if (it.state == StateLoad.LOADING) {
-                loadingStatus.postValue(true)
+                loadingStatus.value = true
             }
             if (it.state == StateLoad.LOADDONE) {
                 syncDataJob?.cancel()
                 syncDataJob = viewModelScope.launch {
                     synchronizationData()
                 }
-
+//                loadingStatus.postValue(false)
 
             }
         }
@@ -166,9 +164,10 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
             }
             if (isActive) {
                 withContext(Dispatchers.Main) {
-                    loadingStatus.value = false
+
                     isEmptyStatus.value = resultListAudio.size == 0
                     mAudioMediatorLiveData.value = resultListAudio
+                    loadingStatus.value = false
                     if (isFisrtLoadData) {
                         selectRingtone(mInitFileUri)
                         isFisrtLoadData = false

@@ -52,8 +52,6 @@ class IntroductionInfoScreen : BaseFragment(), View.OnClickListener {
                     }
                     3 -> {
                         viewStateManager.introductionScreenToHomeScreen(this)
-                        PreferencesHelper.setFirstTimeToUsedApp(true)
-                        Log.d(TAG, "onClick:  Start")
                     }
                 }
             }

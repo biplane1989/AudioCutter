@@ -26,13 +26,27 @@ class DialogAdvanced : BaseDialog() {
         fadeOutPos = PreferencesHelper.getInt(PreferencesHelper.FADE_OUT_TIME, 0)
 
         val list = ArrayList<String>()
-        for (i in valuesEffect.indices) {
-            if (i == 0) {
-                list.add(valuesEffect[i].name.upperFirstString())
-            } else {
-                list.add(if (valuesEffect[i].time == 3) valuesEffect[i].time.toString()
-                    .plus("s (Recommend)") else valuesEffect[i].time.toString().plus("s"))
+        for (effect in valuesEffect) {
+            when (effect) {
+                Effect.OFF -> {
+
+                    list.add(getString(R.string.dialog_advanced_off))
+                }
+                Effect.AFTER_3_S -> {
+                    list.add("${effect.time} s (${getString(R.string.dialog_advanced_recommend)})")
+                }
+                else -> {
+                    list.add(effect.time.toString() + " s")
+                }
             }
+            /*if (i == 0) {
+                when ()
+
+            } else {
+                val recommend = getString(R.string.dialog_advanced_recommend)
+                list.add(if (valuesEffect[i].time == 3) valuesEffect[i].time.toString()
+                    .plus("s ($recommend)") else valuesEffect[i].time.toString().plus("s"))
+            }*/
         }
 
         spinner_fade_in.apply {

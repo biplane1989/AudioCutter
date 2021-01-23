@@ -734,4 +734,8 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         progressbarAnimation?.interpolator = DecelerateInterpolator()
         progressbarAnimation?.start()
     }
+    init {
+        writeSettingPermissionRequest.init()
+        contactPermissionRequest.init()
+    }
 }

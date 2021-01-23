@@ -25,8 +25,7 @@ import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewIte
 import com.example.audiocutter.functions.common.SortAudioPopupWindow
 import com.google.android.material.snackbar.Snackbar
 
-class MergeChooserScreen : BaseFragment(), View.OnClickListener,
-    MergeChooserAdapter.AudioMergeListener {
+class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAdapter.AudioMergeListener {
     private lateinit var binding: MergeChooserScreenBinding
     private lateinit var audioMerAdapter: MergeChooserAdapter
     private val audioMerModel: MergeChooserModel by navGraphViewModels(R.id.mer_navigation)
@@ -46,7 +45,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     }
 
     var countItemSelected = Observer<Int> {
-        binding.tvCountFileMer.text = "$it file"
+        binding.tvCountFileMer.text = "$it ${getString(R.string.merger_screen_file)}"
     }
 
     private val listAudioObserver = Observer<List<AudioCutterViewItem>?> { listMusic ->
@@ -75,19 +74,10 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
-        audioMerAdapter = MergeChooserAdapter(
-            requireContext(),
-            audioMerModel.getAudioPlayer(),
-            lifecycleScope,
-            requireActivity()
-        )
+        audioMerAdapter = MergeChooserAdapter(requireContext(), audioMerModel.getAudioPlayer(), lifecycleScope, requireActivity())
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.merge_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
@@ -126,8 +116,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener,
         }
 
         audioMerModel.showSortAudioDialog.observe(viewLifecycleOwner) {
-            val sortAudioPopupWindow = SortAudioPopupWindow(
-                binding.ivMerScreenSort, it) {
+            val sortAudioPopupWindow = SortAudioPopupWindow(binding.ivMerScreenSort, it) {
                 audioMerModel.sortAudioBy(it)
             }
             sortAudioPopupWindow.show()

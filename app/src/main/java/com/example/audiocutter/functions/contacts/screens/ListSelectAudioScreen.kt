@@ -60,11 +60,7 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
             binding.pbSelect.visibility = View.VISIBLE
         } else {
             binding.pbSelect.visibility = View.GONE
-            binding.rvListSelectAudio.scrollToPosition(
-                mListSelectAudioViewModel.getIndexSelectRingtone(
-                    safeArg.uri
-                )
-            )       // set vi tri khi chuyen sang man hinh den bai nhac da duoc chon
+            binding.rvListSelectAudio.scrollToPosition(mListSelectAudioViewModel.getIndexSelectRingtone(safeArg.uri))       // set vi tri khi chuyen sang man hinh den bai nhac da duoc chon
         }
     }
 
@@ -113,19 +109,14 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
         mListSelectAudioViewModel.getChoseMusic().observe(viewLifecycleOwner, isChoseRingTone)
 
         mListSelectAudioViewModel.showSortAudioDialog.observe(viewLifecycleOwner) {
-            val sortAudioPopupWindow = SortAudioPopupWindow(
-                binding.ivSort, it) {
+            val sortAudioPopupWindow = SortAudioPopupWindow(binding.ivSort, it) {
                 mListSelectAudioViewModel.sortAudioBy(it)
             }
             sortAudioPopupWindow.show()
         }
     }
 
-    override fun onCreateAnimation(
-        transit: Int,
-        enter: Boolean,
-        nextAnim: Int
-    ): Animation? {       // khi ket thuc animation chuyen man hinh thi moi cho dang ky observe
+    override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {       // khi ket thuc animation chuyen man hinh thi moi cho dang ky observe
         if (nextAnim != 0x0) {
             val animator = AnimationUtils.loadAnimation(activity, nextAnim)
 
@@ -153,13 +144,8 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
     }
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.list_contact_select_screen, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.list_contact_select_screen, container, false)
         return binding.root
     }
 
@@ -169,8 +155,7 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
         mListSelectAudioViewModel = ViewModelProviders.of(this)
             .get(ListSelectAudioViewModel::class.java)
 
-        mListSelectAdapter =
-            ListSelectAdapter(this, mListSelectAudioViewModel.getAudioPlayer(), lifecycleScope)
+        mListSelectAdapter = ListSelectAdapter(this, mListSelectAudioViewModel.getAudioPlayer(), lifecycleScope)
         fileUri = safeArg.uri
         mListSelectAudioViewModel.init(fileUri)
     }
@@ -195,12 +180,7 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
 
-            override fun onTextChanged(
-                textChange: CharSequence,
-                start: Int,
-                before: Int,
-                count: Int
-            ) {
+            override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
                 if (isSearchStatus) {
                     binding.rvListSelectAudio.post {
                         binding.rvListSelectAudio.smoothScrollToPosition(0)
@@ -267,12 +247,7 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
                 intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                 intent.type = "audio/*"
                 intent.addCategory(Intent.CATEGORY_OPENABLE)
-                startActivityForResult(
-                    Intent.createChooser(
-                        intent,
-                        getString(R.string.list_select_audio_screen_open_file_title)
-                    ), REQ_CODE_PICK_SOUNDFILE
-                )
+                startActivityForResult(Intent.createChooser(intent, getString(R.string.list_select_audio_screen_open_file_title)), REQ_CODE_PICK_SOUNDFILE)
             }
             binding.backButton -> {
                 requireActivity().onBackPressed()
@@ -296,11 +271,7 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
 
                 val path = FileUtils.getUriPath(requireContext(), it)
                 path?.let {
-                    if (mListSelectAudioViewModel.setRingtoneWithUri(
-                            safeArg.phoneNumber,
-                            path
-                        )
-                    ) {
+                    if (mListSelectAudioViewModel.setRingtoneWithUri(safeArg.phoneNumber, path)) {
                         context?.let {
                             showNotification(getString(R.string.result_screen_set_ringtone_successful))
                         }

@@ -522,6 +522,11 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         ManagerFactory.getDefaultAudioPlayer().stop()
     }
 
+    /*init {
+        writeSettingPermissionRequest.init()
+        contactPermissionRequest.init()
+    }*/
+
 }
 
 

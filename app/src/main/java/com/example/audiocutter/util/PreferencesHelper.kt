@@ -77,6 +77,6 @@ object PreferencesHelper {
     }
 
     fun isFirstTimeToUsedApp():Boolean{
-        return getBoolean(IS_FIRST_TIME_TO_USED_APP, false)
+        return getBoolean(IS_FIRST_TIME_TO_USED_APP, true)
     }
 }

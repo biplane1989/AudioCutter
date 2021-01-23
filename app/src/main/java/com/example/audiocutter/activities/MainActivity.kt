@@ -34,7 +34,7 @@ class MainActivity : BaseActivity() {
     lateinit var binding: ActivityMainBinding
     override fun onPostCreate() {
         super.onPostCreate()
-        if (PreferencesHelper.isFirstTimeToUsedApp()) {
+        if (!PreferencesHelper.isFirstTimeToUsedApp()) {
             viewStateManager.initState(ViewStateScreen.HOME_SCREEN)
             handleNotificationIntent(intent)
             val navGraph = findNavController(R.id.app_nav_host_fragment).graph

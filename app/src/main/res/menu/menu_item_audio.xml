@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_play"
-        android:title="Play" />
+        android:title="@string/audio_chooser_screen_play" />
     <item
         android:id="@+id/menu_cut"
-        android:title="Cut" />
+        android:title="@string/audio_chooser_screen_cut" />
     <item
         android:id="@+id/menu_setas"
-        android:title="Set As" />
+        android:title="@string/audio_chooser_screen_set_as" />
 
 </menu>

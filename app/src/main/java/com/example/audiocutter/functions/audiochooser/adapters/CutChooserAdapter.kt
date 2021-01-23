@@ -345,7 +345,17 @@ class CutChooserAudioDiff : DiffUtil.ItemCallback<AudioCutterViewItem>() {
     }
 
     override fun getChangePayload(oldItem: AudioCutterViewItem, newItem: AudioCutterViewItem): Any {
-        return newItem
+        val diff = Bundle()
+        if (oldItem.isplaying != newItem.isplaying) {
+            diff.putBoolean(ITEM_PLAY_BUTTON_CHANGED, true)
+        }
+        if (oldItem.currentPos != newItem.currentPos) {
+            diff.putBoolean(ITEM_PROGRESSING_CHANGED, true)
+        }
+        if (oldItem.isCheckChooseItem != newItem.isCheckChooseItem) {
+            diff.putBoolean(ITEM_CHECKBOX_CHANGED, true)
+        }
+        return diff
     }
 
 }
