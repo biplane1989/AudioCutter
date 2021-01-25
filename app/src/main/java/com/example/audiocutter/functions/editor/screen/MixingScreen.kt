@@ -359,8 +359,10 @@ class MixingScreen : BaseFragment(), View.OnClickListener, ChangeRangeView.OnPla
 
     override fun onMixClick(fileName: String) {
         Log.d(TAG, "onMixClick: volume1 $volume1 - volume2 $volume2 - mixSelect $mixselect  - audioFormat $audioFormat")
-        val mixingConfig = AudioMixConfig(fileName, ManagerFactory.getAudioFileManager()
-            .getFolderPath(Folder.TYPE_MIXER), mixselect, volume1, volume2, audioFormat)
+        val mixingConfig = AudioMixConfig(fileName,
+            ManagerFactory.getAudioFileManager().getRelFolderPath(Folder.TYPE_MIXER),
+            ManagerFactory.getAudioFileManager().getFolderPath(Folder.TYPE_MIXER),
+            mixselect, volume1, volume2, audioFormat)
         if (audioFile1 != null && audioFile2 != null) {
             viewStateManager.editorSaveMixingAudio(this, audioFile1!!, audioFile2!!, mixingConfig)
         }

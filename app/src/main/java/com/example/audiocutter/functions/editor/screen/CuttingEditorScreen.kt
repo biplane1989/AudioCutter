@@ -629,7 +629,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         audioConfig.endPosition = (cuttingViewModel.getCuttingEndPos()
             .toFloat() / 1000) - audioConfig.startPosition
 
-        audioConfig.pathFolder = cuttingViewModel.getStorageFolder()
+        audioConfig.absFolderPath = cuttingViewModel.getStorageFolder()
 
         cuttingViewModel.getAudioFile()?.let {
             viewStateManager.editorSaveCutingAudio(this, it, audioCutConfig)

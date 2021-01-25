@@ -264,6 +264,7 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
             val mergingConfig = AudioMergingConfig(
                 getFormatFile(it.audioFile.getFilePath()),
                 fileName,
+                ManagerFactory.getAudioFileManager().getRelFolderPath(Folder.TYPE_MERGER),
                 ManagerFactory.getAudioFileManager().getFolderPath(Folder.TYPE_MERGER)
             )
             listAudioCutterViewItemsSelected.value?.let {

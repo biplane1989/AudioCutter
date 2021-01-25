@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
-import com.arthenica.mobileffmpeg.FFprobe
 import com.arthenica.mobileffmpeg.Level
 import com.example.core.utils.FileUtil
 import kotlinx.coroutines.*
@@ -73,7 +72,7 @@ class AudioCutterImpl : AudioCutter {
             timeVideo = (audioCutConfig.endPosition * 1000).toLong()
             val mimeType = if (audioCutConfig.format == AudioFormat.MP3) AudioFormat.MP3.type else AudioFormat.AAC.type
 
-            val fileCutPath = audioCutConfig.pathFolder.plus("/${audioCutConfig.fileName.plus(mimeType)}")
+            val fileCutPath = audioCutConfig.absFolderPath.plus("/${audioCutConfig.fileName.plus(mimeType)}")
 
 
             val format = getStringFormat(audioCutConfig, audioFile, fileCutPath)
@@ -121,7 +120,7 @@ class AudioCutterImpl : AudioCutter {
 
             val fileName = audioMixConfig.fileName
             val mimeType = if (audioMixConfig.format == AudioFormat.MP3) AudioFormat.MP3.type else AudioFormat.AAC.type
-            val filePath = audioMixConfig.pathFolder.plus("/${fileName.plus(mimeType)}")
+            val filePath = audioMixConfig.absFolderPath.plus("/${fileName.plus(mimeType)}")
             timeVideo = if (audioMixConfig.selector == MixSelector.LONGEST) {
                 if (audioFile1.time - audioFile2.time >= 0) audioFile1.time else audioFile2.time
             } else {
