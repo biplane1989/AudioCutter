@@ -142,6 +142,8 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
                                 BitRate.values()[positionBitrate],
                                 AudioFormat.values()[positionFormat],
                                 ManagerFactory.getAudioFileManager()
+                                    .getRelFolderPath(Folder.TYPE_CUTTER),
+                                ManagerFactory.getAudioFileManager()
                                     .getFolderPath(Folder.TYPE_CUTTER)
                             )
                         )

@@ -138,17 +138,17 @@ class MyStudioViewModel(application: Application) : BaseAndroidViewModel(applica
             if (!it.isEmpty()) {
                 for (item in it) {
                     if (item is CuttingConvertingItem) {
-                        val fileCutting = File(item.cuttingConfig.pathFolder + "/" + item.cuttingConfig.fileName + "." + item.cuttingConfig.format.toString()
+                        val fileCutting = File(item.cuttingConfig.absFolderPath + "/" + item.cuttingConfig.fileName + "." + item.cuttingConfig.format.toString()
                             .toLowerCase(Locale.ROOT))
                         mListConvertingItems.add(AudioFileView(AudioFile(fileCutting, item.cuttingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
                     }
                     if (item is MergingConvertingItem) {
-                        val fileConverting = File(item.mergingConfig.pathFolder + "/" + item.mergingConfig.fileName + "." + item.mergingConfig.audioFormat.toString()
+                        val fileConverting = File(item.mergingConfig.absFolderPath + "/" + item.mergingConfig.fileName + "." + item.mergingConfig.audioFormat.toString()
                             .toLowerCase(Locale.ROOT))
                         mListConvertingItems.add(AudioFileView(AudioFile(fileConverting, item.mergingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
                     }
                     if (item is MixingConvertingItem) {
-                        val fileMixing = File(item.mixingConfig.pathFolder + "/" + item.mixingConfig.fileName + "." + item.mixingConfig.format.toString()
+                        val fileMixing = File(item.mixingConfig.absFolderPath + "/" + item.mixingConfig.fileName + "." + item.mixingConfig.format.toString()
                             .toLowerCase(Locale.ROOT))
                         mListConvertingItems.add(AudioFileView(AudioFile(fileMixing, item.mixingConfig.fileName, 100), false, ItemLoadStatus(), item.state, item.percent, item.id))
                     }

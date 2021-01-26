@@ -21,6 +21,7 @@ interface AudioFileManager {
     fun deleteFile(listAudioFile: List<AudioFile>, typeFile: Folder): Boolean
     fun getListAudioFileByType(typeFile: Folder): LiveData<AudioFileScans>
     fun getFolderPath(typeFile: Folder): String
+    fun getRelFolderPath(typeFile: Folder): String
     fun renameToFileAudio(newName: String, audioFile: AudioFile, typeFile: Folder): Boolean
     fun checkFileNameDuplicate(name: String, typeFile: Folder): Boolean
     fun hasAudioFileWithUri(uri: String): Boolean

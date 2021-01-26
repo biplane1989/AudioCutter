@@ -616,7 +616,8 @@ class Utils {
         }
 
         fun getDefaultLanguage(): String {
-            val language = Locale.getDefault().language
+//            val language = Locale.getDefault().language
+            val language = PreferencesHelper.getLanguage()
             if (language.equals("vi")) {
                 return language
             } else {
@@ -628,7 +629,11 @@ class Utils {
             var context = c
             val resources: Resources = context.resources
             val configuration = resources.configuration
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+
+
+            configuration.setLocale(localeToSwitchTo)
+            resources.updateConfiguration(configuration, resources.displayMetrics)
+            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 val localeList = LocaleList(localeToSwitchTo)
                 LocaleList.setDefault(localeList)
                 configuration.setLocales(localeList)
@@ -639,7 +644,7 @@ class Utils {
                 context.createConfigurationContext(configuration)
             } else {
                 resources.updateConfiguration(configuration, resources.displayMetrics)
-            }
+            }*/
         }
 
     }

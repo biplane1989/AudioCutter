@@ -1,6 +1,5 @@
 package com.example.audiocutter.permissions
 
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.CallSuper
 import androidx.lifecycle.Lifecycle
@@ -10,7 +9,6 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.example.audiocutter.base.BaseActivity
 import kotlinx.coroutines.*
 
-typealias PendingPermissionAction = () -> Unit
 
 interface PermissionRequest : Observer<AppPermission> {
     val STORAGE_REQUEST_CODE: Int get() = 1

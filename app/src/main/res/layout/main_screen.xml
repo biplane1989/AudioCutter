@@ -40,7 +40,8 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_gravity="top"
-                android:background="?android:selectableItemBackground" />
+                android:background="?android:selectableItemBackground"
+                android:padding="4dp"/>
 
             <ImageView
                 android:id="@+id/setting_button"
