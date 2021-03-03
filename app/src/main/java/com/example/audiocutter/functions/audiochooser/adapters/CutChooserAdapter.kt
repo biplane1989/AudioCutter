@@ -58,7 +58,7 @@ class CutChooserAdapter(
         if (list!!.size != 0 || list != null) {
             listAudios = ArrayList(list)
             super.submitList(listAudios, commitCallback)
-        } else if (list!!.size == 0 || list == null) {
+        } else if (list.size == 0 || list == null) {
             listAudios = ArrayList()
             super.submitList(listAudios, commitCallback)
         }
