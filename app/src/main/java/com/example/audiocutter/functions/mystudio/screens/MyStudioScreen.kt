@@ -168,7 +168,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
 //                    binding.clDeleteAll.visibility = View.GONE
 //                }
 
-                if (myStudioViewModel.isExitItemSelectDelete()) {
+                if (!myStudioViewModel.isExitItemSelectDelete()) {
                     binding.clDeleteAll.visibility = View.GONE
                 } else {
                     binding.clDeleteAll.visibility = View.VISIBLE

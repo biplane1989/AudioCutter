@@ -666,7 +666,6 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         audioFile?.uri?.let {
             Utils.shareFileAudio(requireContext(), it, null)
         }
-
     }
 
     override fun shareFilesToAppsDialog(pkgName: String, typeShare: TypeShare, isDialogMulti: Boolean?) {

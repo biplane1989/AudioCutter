@@ -103,7 +103,6 @@ class SortAudioPopupWindow(
 
             }
         }
-
     }
 
     private fun selectSortField() {

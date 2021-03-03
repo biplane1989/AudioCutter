@@ -100,7 +100,6 @@ class ListSelectAudioViewModel(application: Application) : BaseAndroidViewModel(
                     synchronizationData()
                 }
 //                loadingStatus.postValue(false)
-
             }
         }
     }

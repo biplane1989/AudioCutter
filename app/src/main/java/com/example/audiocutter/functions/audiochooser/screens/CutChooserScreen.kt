@@ -147,7 +147,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
                     requestPermissinWriteSetting()
                     if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CUT_CHOOSE_REQUESTING_PERMISSION) != 0) {
                         showDialogSetAsTypeAudio()
-                    }
+                        }
                 }
 
 

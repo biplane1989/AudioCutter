@@ -77,7 +77,8 @@ class SettimeDialog : BaseDialog(), View.OnClickListener {
         when (v.id) {
             R.id.tv_ok_dialog_settime -> {
                 if (requireArguments().getInt(SettimeDialog.BUNDLE_TYPE_KEY, 0) == 2) {
-                    if (hoursChooser >= requireArguments().getInt(SettimeDialog.BUNDLE_HOUR_KEY, 0) && minuteChooser >= requireArguments().getInt(SettimeDialog.BUNDLE_MINUTE_KEY, 0)) {
+                    val time = hoursChooser * 60 + minuteChooser
+                    if (time > requireArguments().getInt(SettimeDialog.BUNDLE_HOUR_KEY, 0)) {
                         mCallback.changeTimeFlash(hoursChooser, minuteChooser)
                     } else {
                         view?.let {

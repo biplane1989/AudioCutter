@@ -309,7 +309,8 @@ class FlashCallScreen : BaseFragment(), CompoundButton.OnCheckedChangeListener, 
                     startHour = flashCallConfig.flashTimer.startHour
                     startMinute = flashCallConfig.flashTimer.startMinute
                 }
-                val dialog = SettimeDialog.newInstance(this, startHour, startMinute, numCheckClick)
+                val time = startHour * 60 + startMinute
+                val dialog = SettimeDialog.newInstance(this, time, startMinute, numCheckClick)
                 dialogSettime = dialog
                 dialog.show(childFragmentManager, SettimeDialog::class.java.name)
 

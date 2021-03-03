@@ -8,6 +8,7 @@ import com.example.audiocutter.base.SingleLiveEvent
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.AudioPlayer
 import com.example.audiocutter.core.manager.ManagerFactory
+import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
 import com.example.audiocutter.functions.common.SortField
 import com.example.audiocutter.functions.common.SortType
@@ -37,7 +38,7 @@ fun List<AudioCutterViewItem>.unselectedItem(filePath: String): List<AudioCutter
         val index = this.indexOf(item)
         if (index != -1) {
             val listCopy = ArrayList(this)
-            listCopy[index] = it.copy(isCheckChooseItem = false, no = -1)
+            listCopy[index] = it.copy(isCheckChooseItem = false, no = -1,isplaying = false, state = PlayerState.IDLE)
             return listCopy
         }
     }
@@ -116,8 +117,6 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
                     syncDataJob = viewModelScope.launch {
                         synchronizationData()
                     }
-
-
                 }
                 StateLoad.LOADFAIL -> {
                     _stateLoadProgress.value = -1
