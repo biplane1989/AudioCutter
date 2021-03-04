@@ -100,18 +100,21 @@
                 android:background="@color/colorgrayAlpha"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            
             <ImageView
+                android:background="?attr/selectableItemBackground"
                 android:id="@+id/iv_addfile_merge"
-                android:layout_width="@dimen/common_size_item_imagview"
+                android:layout_width="?actionBarSize"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/common_padding_left"
-                android:background="?attr/selectableItemBackground"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_added_audio"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
+                android:background="?attr/selectableItemBackground"
+                android:id="@+id/add_file_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
@@ -124,60 +127,25 @@
                 android:textSize="@dimen/d_14"
                 app:layout_constraintStart_toEndOf="@+id/iv_addfile_merge" />
 
-
-            <ImageView
+            <TextView
                 android:id="@+id/bt_merge_audio"
                 android:layout_width="90dp"
                 android:layout_height="40dp"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="10dp"
+                android:textColor="#ffffff"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:textSize="14dp"
+                android:fontFamily="@font/opensans_bold"
+                android:text="@string/merger_preview_merger"
                 android:layout_marginRight="16dp"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/main_screen_item_selector_mp3_cutter"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_merger"
-                android:layout_width="49dp"
-                android:layout_height="23dp"
-                android:fontFamily="@font/opensans_bold"
-                android:text="@string/merger_preview_merger"
-                android:textColor="#FFFFFF"
-                android:textSize="14dp"
-                app:layout_constraintBottom_toBottomOf="@id/bt_merge_audio"
-                app:layout_constraintEnd_toEndOf="@id/bt_merge_audio"
-                app:layout_constraintStart_toStartOf="@id/bt_merge_audio"
-                app:layout_constraintTop_toTopOf="@id/bt_merge_audio" />
-
-            <ImageView
-                android:id="@+id/bt_not_merge_audio"
-                android:layout_width="90dp"
-                android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/my_studio_set_contact_btn_ok_bg"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_not_merger"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/opensans_bold"
-                android:text="@string/merger_preview_merger"
-                android:textColor="#9C9C9C"
-                android:textSize="14dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/bt_not_merge_audio"
-                app:layout_constraintEnd_toEndOf="@id/bt_not_merge_audio"
-                app:layout_constraintStart_toStartOf="@id/bt_not_merge_audio"
-                app:layout_constraintTop_toTopOf="@id/bt_not_merge_audio" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

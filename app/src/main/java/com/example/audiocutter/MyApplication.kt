@@ -34,7 +34,7 @@ class MyApplication : MultiDexApplication() {
     private fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Log.d("abba", "createNotificationChannels: ")
-            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
+            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW)
             channel.description = DESCRIPTION
             channel.enableLights(true)
             channel.enableVibration(true)

@@ -1,6 +1,7 @@
 package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Activity
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -110,14 +111,21 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     private fun initViews() {
         binding.btMergeAudio.setOnClickListener(this)
         binding.ivMerScreenBack.setOnClickListener(this)
+        binding.addFileTv.setOnClickListener(this)
         audioMerAdapter.setOnCallBack(this)
         binding.ivAddfileMerge.setOnClickListener(this)
         audioMerModel.checkNextButtonEnable.observe(viewLifecycleOwner) {
-            if (it) {
+            binding.btMergeAudio.isEnabled = it
+            if(it){
+                binding.btMergeAudio.setTextColor(Color.parseColor("#ffffff"))
+            }else{
+                binding.btMergeAudio.setTextColor(Color.parseColor("#8C8C8C"))
+            }
+          /*  if (it) {
                 setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
             } else {
                 setColorButtonNext(R.color.colorgray, R.drawable.bg_next_audio_disabled, false)
-            }
+            }*/
         }
     }
 
@@ -132,6 +140,7 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
 
     override fun deleteAudio(audioFile: AudioCutterViewItem) {
         audioMerModel.removeItemAudio(audioFile)
+
     }
 
     override fun moveItemAudio(prePos: Int, nextPos: Int) {
@@ -150,6 +159,10 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
             }
             R.id.bt_merge_audio -> {
                 audioMerModel.clickedOnMergingButton()
+            }
+            R.id.add_file_tv ->{
+                ManagerFactory.getDefaultAudioPlayer().stop()
+                activity?.onBackPressed()
             }
         }
     }
@@ -193,6 +206,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
     private fun setColorButtonNext(color: Int, bg: Int, rs: Boolean) {
         binding.btMergeAudio.isEnabled = rs
         binding.btMergeAudio.background = (ContextCompat.getDrawable(requireContext(), bg))
-        binding.tvMerger.setTextColor(ContextCompat.getColor(requireContext(), color))
+//        binding.bt_merge_audio.setTextColor(ContextCompat.getColor(requireContext(), color))
     }
 }

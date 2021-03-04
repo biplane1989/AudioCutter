@@ -101,6 +101,7 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
         setClick()
         initView()
         initSharePre()
+        resetFadeInFadeOut()
 
 //        if (duration > -1 && duration / (60 * 1000) >= 1) {       // minute
 //            TIME_FORMAT = MINUTE_FORMAT
@@ -265,6 +266,11 @@ class CuttingEditorScreen : BaseFragment(), WaveformViewListener, View.OnClickLi
             }
         })
 
+    }
+
+    private fun resetFadeInFadeOut(){
+        PreferencesHelper.putInt(PreferencesHelper.FADE_IN_TIME, 0)
+        PreferencesHelper.putInt(PreferencesHelper.FADE_OUT_TIME, 0)
     }
 
     private fun hideKeyboard() {

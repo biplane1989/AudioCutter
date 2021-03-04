@@ -10,7 +10,6 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseDialog
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
-import com.example.audiocutter.objects.AudioFile
 import com.example.audiocutter.ui.editor.cutting.spinner.MaterialSpinner
 import com.example.audiocutter.util.PreferencesHelper
 import com.example.audiocutter.util.Utils
@@ -22,8 +21,7 @@ import com.google.android.material.slider.Slider
 import java.util.*
 import kotlin.collections.ArrayList
 
-class DialogConvert : BaseDialog(), View.OnClickListener,
-    Slider.OnChangeListener {
+class DialogConvert : BaseDialog(), View.OnClickListener, Slider.OnChangeListener {
     private var listener: OnDialogConvertListener? = null
 
     private lateinit var edtNameFile: EditText
@@ -46,16 +44,10 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
     companion object {
         private const val SUGGESTION_NAME_KEY = "SUGGESTION_NAME_KEY"
 
-
-        fun showDialogConvert(
-            fragmentManager: FragmentManager,
-            listener: OnDialogConvertListener,
-            suggestionName: String
-        ) {
+        fun showDialogConvert(fragmentManager: FragmentManager, listener: OnDialogConvertListener, suggestionName: String) {
             val bundle = Bundle()
             bundle.putString(SUGGESTION_NAME_KEY, suggestionName)
-            val dialogConvert =
-                DialogConvert()
+            val dialogConvert = DialogConvert()
             dialogConvert.arguments = bundle
             dialogConvert.listener = listener
             dialogConvert.show(fragmentManager, "dialog convert")
@@ -80,16 +72,17 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
         tvConvert = view.findViewById(R.id.dialog_convert_ok_tv)
 
         seekBarVolume.value = volume.toFloat()
-        val newName = Utils.genAudioFileName(
-            Folder.TYPE_CUTTER,
-            prefixName = arguments?.getString(SUGGESTION_NAME_KEY) ?: ""
-        )
+        val newName = Utils.genAudioFileName(Folder.TYPE_CUTTER, prefixName = arguments?.getString(SUGGESTION_NAME_KEY)
+            ?: "")
         edtNameFile.setText(newName)
+        edtNameFile.setSelection(newName.length)
+
         tvPercent.text = String.format(Locale.ENGLISH, "%d%%", volume)
 
         spinnerFormat.apply {
             setItems(listFormat)
             selectedIndex = positionFormat
+
             setOnItemSelectedListener { view, position, id, item ->
                 positionFormat = position
             }
@@ -97,19 +90,21 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
         spinnerBitrate.apply {
             setItems(listBitrate)
             selectedIndex = positionBitrate
-            setOnItemSelectedListener { view, position, id, item -> positionBitrate = position }
+            setOnItemSelectedListener { view, position, id, item ->
+                positionBitrate = position
+            }
         }
-        edtNameFile.setSelection(newName.length)
-        edtNameFile.post {
-            Utils.showKeyboard(requireContext(), edtNameFile)
+
+        spinnerFormat.setOnClickListener {
+            edtNameFile.clearFocus()
+            Utils.hideKeyboard(requireContext(), edtNameFile)
         }
     }
 
     private fun getData() {
         AudioFormat.values().forEach { listFormat.add(it.name) }
         BitRate.values().forEach { listBitrate.add(it.name.replaceFirstCharacter()) }
-        positionFormat =
-            if (PreferencesHelper.getBoolean(PreferencesHelper.CONVERT_FORMAT, true)) 0 else 1
+        positionFormat = if (PreferencesHelper.getBoolean(PreferencesHelper.CONVERT_FORMAT, true)) 0 else 1
         positionBitrate = listBitrate.getItemPos(BitRate._128kb.value)
         volume = PreferencesHelper.getInt(PreferencesHelper.CONVERT_VOLUME, 100)
     }
@@ -124,29 +119,13 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.dialog_convert_ok_tv -> {
-                val name = Utils
-                    .genAudioFileName(
-                        Folder.TYPE_CUTTER,
-                        edtNameFile.text.toString().trim()
-                    )
+                val name = Utils.genAudioFileName(Folder.TYPE_CUTTER, edtNameFile.text.toString()
+                    .trim())
                 if (checkValid(edtNameFile.text.toString().trim())) {
                     if (listener != null) {
-                        listener!!.onAcceptConvert(
-                            AudioCutConfig(
-                                0F,
-                                0F,
-                                volume,
-                                name,
-                                Effect.OFF,
-                                Effect.OFF,
-                                BitRate.values()[positionBitrate],
-                                AudioFormat.values()[positionFormat],
-                                ManagerFactory.getAudioFileManager()
-                                    .getRelFolderPath(Folder.TYPE_CUTTER),
-                                ManagerFactory.getAudioFileManager()
-                                    .getFolderPath(Folder.TYPE_CUTTER)
-                            )
-                        )
+                        listener!!.onAcceptConvert(AudioCutConfig(0F, 0F, volume, name, Effect.OFF, Effect.OFF, BitRate.values()[positionBitrate], AudioFormat.values()[positionFormat], ManagerFactory.getAudioFileManager()
+                            .getRelFolderPath(Folder.TYPE_CUTTER), ManagerFactory.getAudioFileManager()
+                            .getFolderPath(Folder.TYPE_CUTTER)))
                         addDataSharePre()
                     }
                     Utils.hideKeyboard(requireContext(), edtNameFile)
@@ -169,12 +148,12 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
 
     private fun checkValid(name: String): Boolean {
         if (name.isEmpty()) {
-            edtNameFile.error = "Name must not be empty"
+            edtNameFile.error = getString(R.string.cutter_screen_error_empty)
             edtNameFile.requestFocus()
             return false
         }
         if (ManagerFactory.getAudioFileManager().checkFileNameDuplicate(name, Folder.TYPE_CUTTER)) {
-            edtNameFile.error = "Name already exist"
+            edtNameFile.error = getString(R.string.cutter_screen_error_already)
             edtNameFile.requestFocus()
             return false
         }
@@ -183,10 +162,7 @@ class DialogConvert : BaseDialog(), View.OnClickListener,
 
     private fun addDataSharePre() {
 
-        PreferencesHelper.putBoolean(
-            PreferencesHelper.CONVERT_FORMAT,
-            positionFormat == 0
-        )
+        PreferencesHelper.putBoolean(PreferencesHelper.CONVERT_FORMAT, positionFormat == 0)
         PreferencesHelper.putInt(PreferencesHelper.CONVERT_VOLUME, volume)
     }
 

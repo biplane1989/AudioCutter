@@ -30,27 +30,29 @@
 
             <com.example.audiocutter.ui.common.VipView
                 android:id="@+id/btn_vip"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_gravity="top"
+                android:scaleType="centerInside"
                 android:background="?android:selectableItemBackground" />
 
             <com.example.audiocutter.ui.common.AdView
                 android:id="@+id/advertisement_button"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_gravity="top"
+                android:scaleType="centerInside"
                 android:background="?android:selectableItemBackground"
                 android:padding="4dp"/>
 
             <ImageView
                 android:id="@+id/setting_button"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_gravity="top"
+                android:scaleType="centerInside"
                 android:layout_marginEnd="10dp"
                 android:background="?android:selectableItemBackground"
-                android:scaleType="centerInside"
                 android:src="@drawable/home_ic_setting" />
 
         </LinearLayout>

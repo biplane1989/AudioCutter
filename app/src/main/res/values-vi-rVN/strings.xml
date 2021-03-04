@@ -260,4 +260,6 @@ Hoặc: cài đặt điện thoại> Quản lý ứng dụng> Cắt nhạc Pro> 
     <string name="home_ad">QC</string>
     <string name="cutting_editor_screen_invalid_end_time">Thời gian kết thúc phải lớn hơn thời gian bắt đầu và nhỏ hơn tổng thời gian</string>
     <string name="cutting_editor_screen_invalid_start_time">Thời gian bắt đầu phải lớn hơn thời gian kết thúc</string>
+    <string name="cutter_screen_error_empty">Tên không được để trống</string>
+    <string name="cutter_screen_error_already">Tên Đã tồn tại</string>
 </resources>

@@ -59,10 +59,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
                     }
                 }
                 FFMpegState.CANCEL -> {
-//                    convertingState = ConvertingState.ERROR
+                    convertingState = ConvertingState.CANCEL
                 }
                 FFMpegState.FAIL -> {
-//                    convertingState = ConvertingState.ERROR
+                    convertingState = ConvertingState.ERROR
                 }
                 FFMpegState.SUCCESS -> {
 //                    convertingState = ConvertingState.SUCCESS
@@ -106,141 +106,124 @@ object AudioEditorManagerlmpl : AudioEditorManager {
     }
 
     private fun convertAudioFileToAudioCore(audioFile: AudioFile): AudioCore {
-        return AudioCore(
-            audioFile.file,
-            audioFile.fileName,
-            audioFile.size,
-            audioFile.bitRate,
-            audioFile.duration,
-            audioFile.mimeType
-        )
+        return AudioCore(audioFile.file, audioFile.fileName, audioFile.size, audioFile.bitRate, audioFile.duration, audioFile.mimeType)
     }
 
-    private suspend fun processItem(item: ConvertingItem) =
-        withContext(Dispatchers.Default) {      // thuc hien mix or mer or cut
-            clearCacheFolder()
+    private suspend fun processItem(item: ConvertingItem) = withContext(Dispatchers.Default) {      // thuc hien mix or mer or cut
+        clearCacheFolder()
 
-            val intent = Intent(mContext, ResultService::class.java)
-            intent.setAction(Constance.SERVICE_ACTION_BUILD_FORGROUND_SERVICE)
-            mContext.startService(intent)
+        val intent = Intent(mContext, ResultService::class.java)
+        intent.setAction(Constance.SERVICE_ACTION_BUILD_FORGROUND_SERVICE)
+        mContext.startService(intent)
 
-            notifyConvertingItemChanged(null)
-            item.state = ConvertingState.PROGRESSING
-            notifyConvertingItemChanged(item)
+        notifyConvertingItemChanged(null)
+        item.state = ConvertingState.PROGRESSING
+        notifyConvertingItemChanged(item)
 
-            var audioResult: AudioCore? = null
-            when (item) {
-                is MergingConvertingItem -> {
-                    val listAudioCore = item.listAudioFiles.map { convertAudioFileToAudioCore(it) }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        // change folder to cache folder after using media store to copy to dest folder
-                        val configCopy = item.mergingConfig.copy()
-                        configCopy.absFolderPath = mContext.cacheDir.absolutePath
-                        audioResult =
-                            ManagerFactory.getAudioCutter().merge(
-                                listAudioCore,
-                                item.mergingConfig.fileName,
-                                item.mergingConfig.audioFormat,
-                                configCopy.absFolderPath
-                            )
-                        audioResult?.let {
-                            if (!moveFileFromCacheFolerToDestFolder(it, configCopy.relFolderPath)) {
-                                audioResult = null
-                            }else{
-                                it.file = File(item.mergingConfig.absFolderPath + File.separator + it.file.name)
-                            }
+        var audioResult: AudioCore? = null
+        when (item) {
+            is MergingConvertingItem -> {
+                val listAudioCore = item.listAudioFiles.map { convertAudioFileToAudioCore(it) }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    // change folder to cache folder after using media store to copy to dest folder
+                    val configCopy = item.mergingConfig.copy()
+                    configCopy.absFolderPath = mContext.cacheDir.absolutePath
+                    audioResult = ManagerFactory.getAudioCutter()
+                        .merge(listAudioCore, item.mergingConfig.fileName, item.mergingConfig.audioFormat, configCopy.absFolderPath)
+                    audioResult?.let {
+                        if (!moveFileFromCacheFolerToDestFolder(it, configCopy.relFolderPath)) {
+                            audioResult = null
+                        } else {
+                            it.file = File(item.mergingConfig.absFolderPath + File.separator + it.file.name)
                         }
-                    } else {
-                        audioResult = ManagerFactory.getAudioCutter().merge(
-                            listAudioCore,
-                            item.mergingConfig.fileName,
-                            item.mergingConfig.audioFormat,
-                            item.mergingConfig.absFolderPath
-                        )
                     }
-                }
-                is MixingConvertingItem -> {
-                    val audioCore1 = convertAudioFileToAudioCore(item.audioFile1)
-                    val audioCore2 = convertAudioFileToAudioCore(item.audioFile2)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        // change folder to cache folder after using media store to copy to dest folder
-                        val configCopy = item.mixingConfig.copy()
-                        configCopy.absFolderPath = mContext.cacheDir.absolutePath
-                        audioResult =
-                            ManagerFactory.getAudioCutter().mix(audioCore1, audioCore2, configCopy)
-                        audioResult?.let {
-                            if (!moveFileFromCacheFolerToDestFolder(it, configCopy.relFolderPath)) {
-                                audioResult = null
-                            }else{
-                                it.file = File(item.mixingConfig.absFolderPath + File.separator + it.file.name)
-                            }
-                        }
-                    } else {
-                        audioResult = ManagerFactory.getAudioCutter()
-                            .mix(audioCore1, audioCore2, item.mixingConfig)
-                    }
-                }
-                is CuttingConvertingItem -> {
-                    val audioCore = convertAudioFileToAudioCore(item.audioFile)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        // change folder to cache folder after using media store to copy to dest folder
-                        val configCopy = item.cuttingConfig.copy()
-                        configCopy.absFolderPath = mContext.cacheDir.absolutePath
-                        audioResult = ManagerFactory.getAudioCutter().cut(audioCore, configCopy)
-                        audioResult?.let {
-                            if (!moveFileFromCacheFolerToDestFolder(it, configCopy.relFolderPath)) {
-                                audioResult = null
-                            }else{
-                                it.file = File(item.cuttingConfig.absFolderPath + File.separator + it.file.name)
-                            }
-                        }
-                    } else {
-                        audioResult =
-                            ManagerFactory.getAudioCutter().cut(audioCore, item.cuttingConfig)
-                    }
-
+                } else {
+                    audioResult = ManagerFactory.getAudioCutter()
+                        .merge(listAudioCore, item.mergingConfig.fileName, item.mergingConfig.audioFormat, item.mergingConfig.absFolderPath)
                 }
             }
-
-            synchronized(listConvertingItem) {
-                listConvertingItem.remove(item)
-            }
-
-            audioResult?.let {      // thanh cong
-                ManagerFactory.getAudioFileManager().buildAudioFile(it.file.absolutePath) {
-                    if (it != null) {
-                        item.outputAudioFile = it
-                        item.state = ConvertingState.SUCCESS
-                        onConvertingItemDetached(item)
-                        notifyConvertingItemChanged(item)
-                        Log.d(TAG, "processItem: ConvertingState.SUCCESS")
-                        listConvertingItemsLiveData.postValue(listConvertingItem)
-                        processNextItem()
-
-                    } else {
-                        item.outputAudioFile = it
-                        item.state = ConvertingState.ERROR
-                        onConvertingItemDetached(item)
-                        notifyConvertingItemChanged(item)
-                        listConvertingItemsLiveData.postValue(listConvertingItem)
-                        processNextItem()
+            is MixingConvertingItem -> {
+                val audioCore1 = convertAudioFileToAudioCore(item.audioFile1)
+                val audioCore2 = convertAudioFileToAudioCore(item.audioFile2)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    // change folder to cache folder after using media store to copy to dest folder
+                    val configCopy = item.mixingConfig.copy()
+                    configCopy.absFolderPath = mContext.cacheDir.absolutePath
+                    audioResult = ManagerFactory.getAudioCutter()
+                        .mix(audioCore1, audioCore2, configCopy)
+                    audioResult?.let {
+                        if (!moveFileFromCacheFolerToDestFolder(it, configCopy.relFolderPath)) {
+                            audioResult = null
+                        } else {
+                            it.file = File(item.mixingConfig.absFolderPath + File.separator + it.file.name)
+                        }
                     }
+                } else {
+                    audioResult = ManagerFactory.getAudioCutter()
+                        .mix(audioCore1, audioCore2, item.mixingConfig)
                 }
-            } ?: run {    // error
-                item.state = ConvertingState.ERROR
-                notifyConvertingItemChanged(item)
-                latestConvertingItem = null
-                listConvertingItemsLiveData.postValue(listConvertingItem)
-                processNextItem()
             }
+            is CuttingConvertingItem -> {
+                val audioCore = convertAudioFileToAudioCore(item.audioFile)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    // change folder to cache folder after using media store to copy to dest folder
+                    val configCopy = item.cuttingConfig.copy()
+                    configCopy.absFolderPath = mContext.cacheDir.absolutePath
+                    audioResult = ManagerFactory.getAudioCutter().cut(audioCore, configCopy)
+                    audioResult?.let {
+                        if (!moveFileFromCacheFolerToDestFolder(it, configCopy.relFolderPath)) {
+                            audioResult = null
+                        } else {
+                            it.file = File(item.cuttingConfig.absFolderPath + File.separator + it.file.name)
+                        }
+                    }
+                } else {
+                    audioResult = ManagerFactory.getAudioCutter().cut(audioCore, item.cuttingConfig)
+                }
 
+            }
         }
 
+        synchronized(listConvertingItem) {
+            listConvertingItem.remove(item)
+        }
+
+        audioResult?.let {      // thanh cong
+            ManagerFactory.getAudioFileManager().buildAudioFile(it.file.absolutePath) {
+                if (it != null) {
+                    item.outputAudioFile = it
+                    item.state = ConvertingState.SUCCESS
+                    onConvertingItemDetached(item)
+                    notifyConvertingItemChanged(item)
+                    Log.d(TAG, "processItem: ConvertingState.SUCCESS")
+                    listConvertingItemsLiveData.postValue(listConvertingItem)
+                    processNextItem()
+
+                } else {
+                    item.outputAudioFile = it
+                    item.state = ConvertingState.ERROR
+                    onConvertingItemDetached(item)
+                    notifyConvertingItemChanged(item)
+                    listConvertingItemsLiveData.postValue(listConvertingItem)
+                    processNextItem()
+                }
+            }
+        } ?: run {    // error or cancel
+            if (convertingState == ConvertingState.ERROR) {
+                item.state = ConvertingState.ERROR
+
+            } else {
+                item.state = ConvertingState.CANCEL
+            }
+            notifyConvertingItemChanged(item)
+            latestConvertingItem = null
+            listConvertingItemsLiveData.postValue(listConvertingItem)
+            processNextItem()
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.Q)
-    private fun moveFileFromCacheFolerToDestFolder(
-        audioCore: AudioCore,
-        relFolder: String
-    ): Boolean {
+    private fun moveFileFromCacheFolerToDestFolder(audioCore: AudioCore, relFolder: String): Boolean {
         val tmpAudioFilePath = mContext.cacheDir.absolutePath + "/" + audioCore.file.name
         val fileName = audioCore.file.name
 
@@ -281,25 +264,12 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         }
     }
 
-    override fun cutAudio(
-        audioFile: AudioFile,
-        cuttingConfig: AudioCutConfig
-    ) {        // add them 1 item loai cut vao list
+    override fun cutAudio(audioFile: AudioFile, cuttingConfig: AudioCutConfig) {        // add them 1 item loai cut vao list
         currConvertingId++
-        val item = CuttingConvertingItem(
-            currConvertingId,
-            ConvertingState.WAITING,
-            0,
-            audioFile,
-            cuttingConfig,
-            audioFile
-        )
+        val item = CuttingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile, cuttingConfig, audioFile)
         synchronized(listConvertingItem) {
             listConvertingItem.add(item)
-            Utils.addGeneratedName(
-                Folder.TYPE_CUTTER,
-                File(cuttingConfig.absFolderPath + File.separator + cuttingConfig.fileName)
-            )
+            Utils.addGeneratedName(Folder.TYPE_CUTTER, File(cuttingConfig.absFolderPath + File.separator + cuttingConfig.fileName))
             latestConvertingItem = item
             lastItemLiveData.postValue(item)
         }
@@ -311,27 +281,12 @@ object AudioEditorManagerlmpl : AudioEditorManager {
         listConvertingItemsLiveData.postValue(listConvertingItem)
     }
 
-    override fun mixAudio(
-        audioFile1: AudioFile,
-        audioFile2: AudioFile,
-        mixingConfig: AudioMixConfig
-    ) {
+    override fun mixAudio(audioFile1: AudioFile, audioFile2: AudioFile, mixingConfig: AudioMixConfig) {
         currConvertingId++
-        val item = MixingConvertingItem(
-            currConvertingId,
-            ConvertingState.WAITING,
-            0,
-            audioFile1,
-            audioFile2,
-            mixingConfig,
-            null
-        )
+        val item = MixingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, audioFile1, audioFile2, mixingConfig, null)
         synchronized(listConvertingItem) {
             listConvertingItem.add(item)
-            Utils.addGeneratedName(
-                Folder.TYPE_MIXER,
-                File(mixingConfig.absFolderPath + File.separator + mixingConfig.fileName)
-            )
+            Utils.addGeneratedName(Folder.TYPE_MIXER, File(mixingConfig.absFolderPath + File.separator + mixingConfig.fileName))
             latestConvertingItem = item
             lastItemLiveData.postValue(item)
         }
@@ -346,20 +301,10 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
     override fun mergeAudio(listAudioFiles: List<AudioFile>, mergingConfig: AudioMergingConfig) {
         currConvertingId++
-        val item = MergingConvertingItem(
-            currConvertingId,
-            ConvertingState.WAITING,
-            0,
-            listAudioFiles,
-            mergingConfig,
-            null
-        )
+        val item = MergingConvertingItem(currConvertingId, ConvertingState.WAITING, 0, listAudioFiles, mergingConfig, null)
         synchronized(listConvertingItem) {
             listConvertingItem.add(item)
-            Utils.addGeneratedName(
-                Folder.TYPE_MERGER,
-                File(mergingConfig.absFolderPath + File.separator + mergingConfig.fileName)
-            )
+            Utils.addGeneratedName(Folder.TYPE_MERGER, File(mergingConfig.absFolderPath + File.separator + mergingConfig.fileName))
             latestConvertingItem = item
             lastItemLiveData.postValue(item)
         }
@@ -373,22 +318,13 @@ object AudioEditorManagerlmpl : AudioEditorManager {
 
     private fun onConvertingItemDetached(convertingItem: ConvertingItem) {
         if (convertingItem is MixingConvertingItem) {
-            Utils.removeGeneratedName(
-                Folder.TYPE_MIXER,
-                File(convertingItem.mixingConfig.absFolderPath + File.separator + convertingItem.mixingConfig.fileName)
-            )
+            Utils.removeGeneratedName(Folder.TYPE_MIXER, File(convertingItem.mixingConfig.absFolderPath + File.separator + convertingItem.mixingConfig.fileName))
         }
         if (convertingItem is CuttingConvertingItem) {
-            Utils.removeGeneratedName(
-                Folder.TYPE_CUTTER,
-                File(convertingItem.cuttingConfig.absFolderPath + File.separator + convertingItem.cuttingConfig.fileName)
-            )
+            Utils.removeGeneratedName(Folder.TYPE_CUTTER, File(convertingItem.cuttingConfig.absFolderPath + File.separator + convertingItem.cuttingConfig.fileName))
         }
         if (convertingItem is MergingConvertingItem) {
-            Utils.removeGeneratedName(
-                Folder.TYPE_MERGER,
-                File(convertingItem.mergingConfig.absFolderPath + File.separator + convertingItem.mergingConfig.fileName)
-            )
+            Utils.removeGeneratedName(Folder.TYPE_MERGER, File(convertingItem.mergingConfig.absFolderPath + File.separator + convertingItem.mergingConfig.fileName))
         }
     }
 

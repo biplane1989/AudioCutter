@@ -13,6 +13,7 @@ import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -210,6 +211,27 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         Log.d(TAG, "status process : ")
     }
 
+    private val cancelObserver = Observer<Boolean>{
+        binding.btnOrigin.visibility = View.GONE
+        binding.tvWait.visibility = View.GONE
+        binding.clOpption.visibility = View.GONE
+        binding.llProgressbar.visibility = View.GONE
+        binding.llPlayMusic.visibility = View.GONE
+        binding.tvLoading.visibility = View.GONE
+
+        binding.btnBack.visibility = View.VISIBLE
+        binding.ivHome.visibility = View.VISIBLE
+        binding.btnCancel.visibility = View.INVISIBLE
+
+        binding.tvTitleResult.visibility = View.GONE
+        binding.tvTitleLoading.visibility = View.VISIBLE
+
+        binding.ivNotificationError.visibility = View.GONE
+        isLoadingDone = false
+
+        progressbarAnimation?.cancel()
+    }
+
     private fun convertAudioSizeToString(audioFile: AudioFile): String {
         var formatSize = "MB"
         var sizeValue = 0f
@@ -277,6 +299,7 @@ class ResultScreen : BaseFragment(), View.OnClickListener, CancelDialogListener,
         mResultViewModel.getProcessDoneLiveData().observe(viewLifecycleOwner, processDoneObserver)
         mResultViewModel.getPlayerInfo().observe(viewLifecycleOwner, playInfoObserver)
         mResultViewModel.getErrorLiveData().observe(viewLifecycleOwner, errorObserver)
+        mResultViewModel.getCancelLiveData().observe(viewLifecycleOwner, cancelObserver)
 
         ManagerFactory.getAudioEditorManager().getLastItem()
             .observe(viewLifecycleOwner, lastItemObserver)

@@ -9,17 +9,9 @@ import com.example.core.core.Effect
 import kotlinx.android.synthetic.main.dialog_advanced.*
 
 class DialogAdvanced : BaseDialog() {
-    //    private lateinit var advancedBinding: DialogAdvancedBinding
-//    private lateinit var listener: OnDialogAdvanceListener
     private var fadeInPos = 0
     private var fadeOutPos = 0
     private val valuesEffect = Effect.values()
-
-//    constructor(context: Context) : this(context, 0)
-//    constructor(context: Context, themeResId: Int) : super(context, themeResId) {
-//        initView(context)
-//        initData()
-//    }
 
     private fun initData() {
         fadeInPos = PreferencesHelper.getInt(PreferencesHelper.FADE_IN_TIME, 0)
@@ -72,44 +64,6 @@ class DialogAdvanced : BaseDialog() {
         return string1.plus(endString)
     }
 
-//    private fun initView() {
-//        if (window != null) window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-//        advancedBinding = DataBindingUtil.inflate(
-//            LayoutInflater.from(context),
-//            R.layout.dialog_advanced,
-//            null,
-//            false
-//        )
-//        setContentView(advancedBinding.root)
-//        cancel_tv.setOnClickListener(this)
-//        ok_tv.setOnClickListener(this)
-//    }
-
-//    override fun onClick(v: View?) {
-//        when (v) {
-//            cancel_tv -> {
-////                dismiss()
-//                dialog?.dismiss()
-//            }
-//            ok_tv -> {
-//                PreferencesHelper.putInt(PreferencesHelper.FADE_IN_TIME, fadeInPos)
-//                PreferencesHelper.putInt(PreferencesHelper.FADE_OUT_TIME, fadeOutPos)
-//                listener.onDialogOk(valuesEffect[fadeInPos], valuesEffect[fadeOutPos])
-////                cancel()
-//                dialog?.dismiss()
-//            }
-//        }
-//    }
-
-//    companion object {
-//        fun showDialogAdvanced(context: Context, onDialogAdvanceListener: OnDialogAdvanceListener) {
-//            val dialog = DialogAdvanced()
-//            dialog.listener = onDialogAdvanceListener
-////            dialog.show()
-//        }
-//    }
-
     companion object {
         val TAG = "DeleteDialog"
         lateinit var dialogListener: OnDialogAdvanceListener
@@ -134,7 +88,6 @@ class DialogAdvanced : BaseDialog() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        initView()
         initData()
 
         cancel_tv.setOnClickListener {
@@ -144,7 +97,6 @@ class DialogAdvanced : BaseDialog() {
             PreferencesHelper.putInt(PreferencesHelper.FADE_IN_TIME, fadeInPos)
             PreferencesHelper.putInt(PreferencesHelper.FADE_OUT_TIME, fadeOutPos)
             dialogListener.onDialogOk(valuesEffect[fadeInPos], valuesEffect[fadeOutPos])
-//                cancel()
             dialog?.dismiss()
         }
     }

@@ -25,6 +25,7 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
     private val processDoneLiveData = MutableLiveData<AudioFile>()
     private val processingLiveData = MutableLiveData<ConvertingItem>()
     private val pendingProcessLiveData = MutableLiveData<String>()
+    private val cancelLiveData = MutableLiveData<Boolean>()
 
     private val errorLiveData = MutableLiveData<Boolean>()
 
@@ -62,6 +63,9 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
                 }
                 ConvertingState.ERROR -> {
                     errorLiveData.postValue(true)
+                }
+                ConvertingState.CANCEL ->{
+                    cancelLiveData.value = true
                 }
             }
         }
@@ -137,6 +141,10 @@ class ResultViewModel(application: Application) : BaseAndroidViewModel(applicati
 
     fun getErrorLiveData(): LiveData<Boolean> {
         return errorLiveData
+    }
+
+    fun getCancelLiveData() : LiveData<Boolean>{
+        return cancelLiveData
     }
 
     // chuyen trang thai play nhac

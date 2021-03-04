@@ -35,21 +35,23 @@
                 android:textSize="18dp" />
 
             <ImageView
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_marginRight="@dimen/common_padding_left"
                 android:id="@+id/tick_iv"
                 android:layout_width="@dimen/common_size_item_imagview"
                 android:layout_height="?actionBarSize"
                 android:layout_alignParentRight="true"
-                android:background="@drawable/ripple_item_view"
+
                 android:scaleType="centerInside"
                 android:src="@drawable/fragment_cutter_tick_ic" />
 
             <ImageView
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:id="@+id/option_iv"
                 android:layout_width="@dimen/common_size_item_imagview"
                 android:layout_height="?actionBarSize"
                 android:layout_toLeftOf="@id/tick_iv"
-                android:background="@drawable/ripple_item_view"
+
                 android:scaleType="centerInside"
                 android:src="@drawable/fragment_cutter_custom_ic" />
         </RelativeLayout>

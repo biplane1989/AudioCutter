@@ -74,7 +74,6 @@ class ListContactAdapter(context: Context?, var contactCallback: ContactCallback
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
         } else {
-
             if (mContext == null) {
                 return
             }

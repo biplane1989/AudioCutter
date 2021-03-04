@@ -4,7 +4,7 @@ import com.example.audiocutter.objects.AudioFile
 import com.example.core.core.*
 
 enum class ConvertingState {
-    WAITING, PROGRESSING, SUCCESS, ERROR
+    WAITING, PROGRESSING, SUCCESS, ERROR, CANCEL
 }
 
 const val CUTTING_AUDIO_TYPE = 0

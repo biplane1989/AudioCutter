@@ -104,6 +104,7 @@
                     android:src="@drawable/ic_audiocutter_file" />
 
                 <ImageView
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:id="@+id/iv_cutter_screen_sort"
                     android:layout_width="@dimen/common_size_item_imagview"
                     android:layout_height="match_parent"

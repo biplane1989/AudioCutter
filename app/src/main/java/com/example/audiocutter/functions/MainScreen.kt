@@ -130,6 +130,9 @@ class MainScreen : BaseFragment(), View.OnClickListener {
             }
             binding.advertisementButton -> {
             }
+            binding.btnVip ->{
+
+            }
         }
     }
 
@@ -261,6 +264,7 @@ class MainScreen : BaseFragment(), View.OnClickListener {
         binding.flashCallItemCl.setOnClickListener(this)
         binding.settingButton.setOnClickListener(this)
         binding.advertisementButton.setOnClickListener(this)
+        binding.btnVip.setOnClickListener(this)
     }
 
     private val storagePermissionRequest = object : StoragePermissionRequest {

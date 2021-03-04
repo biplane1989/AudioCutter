@@ -84,6 +84,7 @@
                     android:src="@drawable/ic_audiocutter_search" />
 
                 <ImageView
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:id="@+id/iv_mer_screen_sort"
                     android:layout_width="@dimen/common_size_item_imagview"
                     android:layout_height="match_parent"

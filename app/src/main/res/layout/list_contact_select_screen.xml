@@ -68,6 +68,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:id="@+id/iv_sort"
                 android:layout_width="@dimen/common_size_item_imagview"
                 android:layout_height="match_parent"
@@ -104,9 +105,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/common_padding_left_title"
-                android:backgroundTint="#F6F6F6"
                 android:hint="@string/search"
                 android:singleLine="true"
+                android:backgroundTint="#FFFFFF"
                 android:theme="@style/editTextTheme"
                 app:layout_constraintBottom_toBottomOf="@id/iv_search_close"
                 app:layout_constraintEnd_toStartOf="@id/iv_clear"

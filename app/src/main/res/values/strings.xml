@@ -260,4 +260,6 @@ Or: phone settings > Application Management > Cut Pro music > Saving battery mod
     <string name="dialog_advanced_off">Off</string>
     <string name="merger_screen_file">File</string>
     <string name="home_ad">AD</string>
+    <string name="cutter_screen_error_empty">Name must not be empty</string>
+    <string name="cutter_screen_error_already">Name already exist</string>
 </resources>
