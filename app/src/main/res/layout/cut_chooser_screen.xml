@@ -36,6 +36,7 @@
                     android:hint="@string/search"
                     android:singleLine="true"
                     android:visibility="invisible">
+
                     <requestFocus />
                 </EditText>
 
@@ -80,6 +81,13 @@
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/d_18"
                         tools:ignore="RtlSymmetry,SpUsage" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/comon_show_folder" />
                 </TableRow>
 
                 <ImageView
@@ -104,11 +112,11 @@
                     android:src="@drawable/ic_audiocutter_file" />
 
                 <ImageView
-                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:id="@+id/iv_cutter_screen_sort"
                     android:layout_width="@dimen/common_size_item_imagview"
                     android:layout_height="match_parent"
                     android:layout_toLeftOf="@+id/iv_audio_cutter_screen_file"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_sort_audio" />
 
@@ -135,6 +143,16 @@
             android:overScrollMode="never"
             android:visibility="visible"
             tools:listitem="@layout/item_audio_cutter" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_folder_cutter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/rlt_actionbar"
+            android:layout_marginTop="0dp"
+            android:overScrollMode="never"
+            android:visibility="invisible" />
+
 
         <ImageView
             android:id="@+id/iv_empty_list_cutter"
