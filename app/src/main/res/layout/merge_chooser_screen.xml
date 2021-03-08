@@ -129,6 +129,15 @@
             android:overScrollMode="never"
             tools:listitem="@layout/item_audio_mixer" />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_folder_merge"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/rlt_actionbar_mer"
+            android:layout_marginTop="0dp"
+            android:overScrollMode="never"
+            android:visibility="invisible" />
+
         <ImageView
             android:id="@+id/iv_empty_list_merge"
             android:layout_width="wrap_content"

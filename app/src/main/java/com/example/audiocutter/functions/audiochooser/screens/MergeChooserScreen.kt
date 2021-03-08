@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,12 +21,17 @@ import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.IViewModel
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MergeChooserScreenBinding
+import com.example.audiocutter.functions.audiochooser.adapters.FolderCutChooserAdapter
 import com.example.audiocutter.functions.audiochooser.adapters.MergeChooserAdapter
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
+import com.example.audiocutter.functions.audiochooser.objects.FolderItem
+import com.example.audiocutter.functions.audiochooser.objects.FolderStatus
 import com.example.audiocutter.functions.common.SortAudioPopupWindow
 import com.google.android.material.snackbar.Snackbar
 
 class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAdapter.AudioMergeListener {
+
+    val TAG = "tag"
     private lateinit var binding: MergeChooserScreenBinding
     private lateinit var audioMerAdapter: MergeChooserAdapter
     private val audioMerModel: MergeChooserModel by navGraphViewModels(R.id.mer_navigation)
@@ -53,13 +59,43 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
             binding.rvMerge.visibility = View.INVISIBLE
         } else {
             if (listMusic.isEmpty()) {
-                showEmptyList()
+//                showEmptyList()
 
             } else {
                 audioMerAdapter.submitList(listMusic)
-                showList()
+//                showList()
                 showProgressBar(false)
             }
+        }
+    }
+    private val emptyState = Observer<Boolean> {
+        if (!it) {
+            showList()
+        } else {
+            showEmptyList()
+        }
+    }
+
+    private val folderAdapter: FolderCutChooserAdapter by lazy {
+        FolderCutChooserAdapter(this::clickFolderItem)
+    }
+
+    private val folderObserver = Observer<List<FolderItem>> {
+        folderAdapter.submitList(it)
+        Log.d("TAG", "folder adapter : list folder: size : " + it.size)
+    }
+
+    private val folderStatusObserver = Observer<FolderStatus>{
+        Log.d(TAG, "status: ssss")
+        if (it.status){
+            binding.rvMerge.visibility = View.INVISIBLE
+            audioMerAdapter.submitList(emptyList())
+            binding.rvFolderMerge.visibility = View.VISIBLE
+            Log.d(TAG, "status true : $it")
+        }else{
+            binding.rvFolderMerge.visibility = View.INVISIBLE
+            binding.rvMerge.visibility = View.VISIBLE
+            Log.d(TAG, "status false: $it")
         }
     }
 
@@ -93,8 +129,12 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     private fun observerData() {
         audioMerModel.stateLoadProgress.observe(viewLifecycleOwner, stateObserver)
         audioMerModel.listAudioCutterViewItems.observe(viewLifecycleOwner, listAudioObserver)
-
+        audioMerModel.isEmptyState.observe(viewLifecycleOwner, emptyState)
         audioMerModel.countItemSelected.observe(viewLifecycleOwner, countItemSelected)
+
+        audioMerModel.folderLiveData.observe(viewLifecycleOwner,folderStatusObserver)
+        audioMerModel.listFolder.observe(viewLifecycleOwner, folderObserver)
+
         audioMerModel.checkNextButtonEnable.observe(viewLifecycleOwner) {
             if (it) {
                 setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
@@ -156,6 +196,10 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         audioMerModel.searchAudio(yourTextSearch)
     }
 
+    private fun clickFolderItem(folderItem: FolderItem) {        //click folder item todo
+        audioMerModel.clickItemFolder(folderItem)
+
+    }
 
     private fun initViews() {
 
@@ -167,6 +211,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         binding.ivMerScreenBack.setOnClickListener(this)
         audioMerAdapter.setAudioListener(this)
         binding.ivMerScreenSort.setOnClickListener(this)
+        binding.tvMerScreen.setOnClickListener(this)
 
     }
 
@@ -200,6 +245,10 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         binding.rvMerge.setHasFixedSize(true)
         binding.rvMerge.layoutManager = LinearLayoutManager(requireContext())
 
+        binding.rvFolderMerge.adapter = folderAdapter
+        binding.rvFolderMerge.setHasFixedSize(true)
+        binding.rvFolderMerge.layoutManager = LinearLayoutManager(requireContext())
+
     }
 
     override fun chooseItemAudio(position: Int) {
@@ -208,14 +257,20 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
 
     private fun showEmptyList() {
         showProgressBar(false)
+        binding.rvFolderMerge.visibility = View.INVISIBLE
         binding.rvMerge.visibility = View.INVISIBLE
         binding.ivEmptyListMerge.visibility = View.VISIBLE
         binding.tvEmptyListMer.visibility = View.VISIBLE
     }
 
     private fun showList() {
+        if (audioMerModel.folderLiveData.value?.status == true){
+            binding.rvFolderMerge.visibility = View.VISIBLE
+        }else{
+            binding.rvMerge.visibility = View.VISIBLE
+        }
         showProgressBar(false)
-        binding.rvMerge.visibility = View.VISIBLE
+
         binding.ivEmptyListMerge.visibility = View.INVISIBLE
         binding.tvEmptyListMer.visibility = View.INVISIBLE
     }
@@ -252,6 +307,9 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
             }
             binding.ivMerScreenSort -> {
                 audioMerModel.clickedOnSortButton()
+            }
+            binding.tvMerScreen ->{
+                audioMerModel.showFolder()
             }
         }
     }

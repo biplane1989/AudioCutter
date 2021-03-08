@@ -2,6 +2,7 @@ package com.example.audiocutter.functions.audiochooser.screens
 
 import android.app.Application
 import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.*
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseAndroidViewModel
@@ -11,6 +12,7 @@ import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.core.manager.PlayerState
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
 import com.example.audiocutter.functions.audiochooser.objects.FolderItem
+import com.example.audiocutter.functions.audiochooser.objects.FolderStatus
 import com.example.audiocutter.functions.common.SortField
 import com.example.audiocutter.functions.common.SortType
 import com.example.audiocutter.functions.common.SortValue
@@ -48,8 +50,8 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
     private val _sortAudioValue =
         MutableLiveData<SortValue>(SortValue(SortType.ASC, SortField.SORT_BY_NAME))
 
-    private val _folderLiveData = MutableLiveData<String>("all")
-    val folderLiveData: LiveData<String> get() = _folderLiveData
+    private val _folderLiveData = MutableLiveData<FolderStatus>(FolderStatus(mContext.getString(R.string.all),false))
+    val folderLiveData: LiveData<FolderStatus> get() = _folderLiveData
 
     fun getStateLoading(): LiveData<Int> {
         return stateLoadProgress
@@ -59,7 +61,6 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
         return audioPlayer
     }
 
-
     private val listAudioFiles = ManagerFactory.getAudioFileManager().getAudioFiles()
     private val _listAudioCutterViewItems = MediatorLiveData<List<AudioCutterViewItem>>()
     val listAudioCutterViewItems: LiveData<List<AudioCutterViewItem>> = _listAudioCutterViewItems
@@ -67,7 +68,7 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
     private val _listFolder = MutableLiveData<List<FolderItem>>()
     val listFolder: LiveData<List<FolderItem>> get() = _listFolder
 
-    private val listAudioFileView = ArrayList<AudioCutterViewItem>()
+    private val listAudioFileView = ArrayList<AudioCutterViewItem>()        //list audio have folser
 
     //private var listAudioFiles = ArrayList<AudioCutterView>()
     private var syncDataJob: Job? = null
@@ -99,6 +100,9 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
                 StateLoad.LOADFAIL -> {
                     _stateLoadProgress.value = -1
                 }
+                else->{
+
+                }
             }
         }
         _listAudioCutterViewItems.addSource(_searchAudioName) {
@@ -113,12 +117,26 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
                 synchronizationData()
             }
         }
+        _listAudioCutterViewItems.addSource(_folderLiveData){
+            syncDataJob?.cancel()
+            syncDataJob = viewModelScope.launch {
+                synchronizationData()
+            }
+        }
     }
 
     private suspend fun synchronizationData() = coroutineScope {
         val searchAudioNameValue = _searchAudioName.value
         val sortTypeValue = _sortAudioValue.value
-        val listAudioFileData = listAudioFiles.value?.listAudioFiles
+//        val listAudioFileData = listAudioFiles.value?.listAudioFiles
+        var listAudioFileData: List<AudioCutterViewItem>? = null
+
+        if (_folderLiveData.value?.folder.equals(mContext.getString(R.string.all))) {
+            listAudioFileData = listAudioFileView
+        } else {
+            listAudioFileData = listAudioFileView.filter { it.folder.equals(_folderLiveData.value?.folder) }
+        }
+
         if (searchAudioNameValue == null || sortTypeValue == null || listAudioFileData == null || listAudioFiles.value?.state != StateLoad.LOADDONE) {
             return@coroutineScope
         }
@@ -127,32 +145,32 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
             var listAudioFileFiltered = listAudioFileData
             if (searchAudioNameValue.isNotEmpty()) {
                 listAudioFileFiltered = listAudioFileFiltered.filter {
-                    it.fileName.toLowerCase(Locale.getDefault())
+                    it.audioFile.fileName.toLowerCase(Locale.getDefault())
                         .contains(searchAudioNameValue.toLowerCase(Locale.getDefault()))
                 }
             }
             when (sortTypeValue.sortField) {
                 SortField.SORT_BY_NAME -> {
                     listAudioFileFiltered =
-                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.fileName } else listAudioFileFiltered.sortedByDescending { it.fileName }
+                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.audioFile.fileName } else listAudioFileFiltered.sortedByDescending { it.audioFile.fileName }
                 }
                 SortField.SORT_BY_DURATION -> {
                     listAudioFileFiltered =
-                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.duration } else listAudioFileFiltered.sortedByDescending { it.duration }
+                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.audioFile.duration } else listAudioFileFiltered.sortedByDescending { it.duration }
                 }
                 SortField.SORT_BY_DATE -> {
                     listAudioFileFiltered =
-                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.modified } else listAudioFileFiltered.sortedByDescending { it.modified }
+                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.audioFile.modified } else listAudioFileFiltered.sortedByDescending { it.audioFile.modified }
                 }
                 SortField.SORT_BY_SIZE -> {
                     listAudioFileFiltered =
-                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.size } else listAudioFileFiltered.sortedByDescending { it.size }
+                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.audioFile.size } else listAudioFileFiltered.sortedByDescending { it.audioFile.size }
                 }
             }
             listAudioFileFiltered.forEach {
-                val oldItem = listAudioCutterViewItems.value?.findItem(it)
+                val oldItem = listAudioCutterViewItems.value?.findItem(it.audioFile)
                 if (oldItem == null) {
-                    listAudioCutterItems.add(AudioCutterViewItem(it))
+                    listAudioCutterItems.add(AudioCutterViewItem(it.audioFile))
                 } else {
                     listAudioCutterItems.add(oldItem)
                 }
@@ -160,7 +178,8 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
             if (isActive) {
                 withContext(Dispatchers.Main) {
                     _stateLoadProgress.value = 0
-                    _isEmptyState.value = listAudioCutterItems.size == 0
+//                    _isEmptyState.value = listAudioCutterItems.size == 0// todo thay doi
+                    _isEmptyState.value = listAudioFileView.size == 0
                     _listAudioCutterViewItems.value = listAudioCutterItems
                 }
 
@@ -195,21 +214,15 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
         }
         newList.set(0, FolderItem(mContext.getString(R.string.all), listData.size))
         _listFolder.value = newList
+
+        _folderLiveData.value?.let {        // thay doi trang thai show folder
+            _folderLiveData.value = FolderStatus(it.folder, !it.status)
+        }
     }
 
     fun clickItemFolder(itemAudio: FolderItem) {
-        if (itemAudio.folder.equals(mContext.getString(R.string.all))) {
-            _listAudioCutterViewItems.value = listAudioFileView
-        } else {
-            val newList = ArrayList<AudioCutterViewItem>(listAudioFileView)
-            val listData = ArrayList<AudioCutterViewItem>()
-
-            for (item in newList) {
-                if (item.folder.equals(itemAudio.folder)) {
-                    listData.add(item)
-                }
-            }
-            _listAudioCutterViewItems.value = listData
+        _folderLiveData.value?.let {        // thay doi trang thai show folder
+            _folderLiveData.value = FolderStatus(itemAudio.folder, !it.status)
         }
     }
 
@@ -217,7 +230,6 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
         _sortAudioValue.value?.let {
             _showSortAudioDialog.value = it
         }
-
     }
 
     fun sortAudioBy(sortValue: SortValue) {
@@ -226,9 +238,9 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
         }
     }
 
-    fun getStateEmpty(): LiveData<Boolean> {
-        return isEmptyState
-    }
+//    fun getStateEmpty(): LiveData<Boolean> {
+//        return isEmptyState
+//    }
 
     fun pause() {
         if (audioPlayer.getPlayerInfoData().playerState == PlayerState.PLAYING) {

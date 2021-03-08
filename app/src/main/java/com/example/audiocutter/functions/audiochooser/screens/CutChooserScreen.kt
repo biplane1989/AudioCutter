@@ -27,6 +27,7 @@ import com.example.audiocutter.functions.audiochooser.dialogs.SetAsDialog
 import com.example.audiocutter.functions.audiochooser.event.OnActionCallback
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
 import com.example.audiocutter.functions.audiochooser.objects.FolderItem
+import com.example.audiocutter.functions.audiochooser.objects.FolderStatus
 import com.example.audiocutter.functions.audiochooser.objects.TypeAudioSetAs
 import com.example.audiocutter.functions.common.*
 import com.example.audiocutter.functions.mystudio.Constance
@@ -98,6 +99,20 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     private val folderObserver = Observer<List<FolderItem>> {
         folderAdapter.submitList(it)
         Log.d(TAG, "folder adapter : list folder: size : " + it.size)
+    }
+
+    private val folderStatusObserver = Observer<FolderStatus>{
+        Log.d(TAG, "status: ssss")
+        if (it.status){
+            binding.rvAudioCutter.visibility = View.INVISIBLE
+            audioCutterAdapter.submitList(emptyList())
+            binding.rvFolderCutter.visibility = View.VISIBLE
+            Log.d(TAG, "status true : $it")
+        }else{
+            binding.rvFolderCutter.visibility = View.INVISIBLE
+            binding.rvAudioCutter.visibility = View.VISIBLE
+            Log.d(TAG, "status false: $it")
+        }
     }
 
     private val writeSettingPermissionRequest = object : WriteSettingPermissionRequest {
@@ -182,7 +197,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     private fun observerData() {
         audioCutterModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
         audioCutterModel.listAudioCutterViewItems.observe(viewLifecycleOwner, listAudioObserver)
-        audioCutterModel.getStateEmpty().observe(viewLifecycleOwner, emptyState)
+        audioCutterModel.isEmptyState.observe(viewLifecycleOwner, emptyState)
 
         audioCutterModel.showSortAudioDialog.observe(viewLifecycleOwner) {
             val sortAudioPopupWindow = SortAudioPopupWindow(
@@ -194,6 +209,8 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         }
 
         audioCutterModel.listFolder.observe(viewLifecycleOwner, folderObserver)
+        audioCutterModel.folderLiveData.observe(viewLifecycleOwner,folderStatusObserver)
+
     }
 
     private fun showProgressBar(b: Boolean) {
@@ -207,8 +224,8 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     private fun clickFolderItem(folderItem: FolderItem) {        //click folder item todo
         audioCutterModel.clickItemFolder(folderItem)
 
-        binding.rvFolderCutter.visibility = View.INVISIBLE
-        binding.rvAudioCutter.visibility = View.VISIBLE
+//        binding.rvFolderCutter.visibility = View.INVISIBLE
+//        binding.rvAudioCutter.visibility = View.VISIBLE
     }
 
     private fun checkEdtSearchAudio() {
@@ -280,12 +297,18 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     private fun showEmptyList() {
         showProgressBar(false)
         binding.rvAudioCutter.visibility = View.INVISIBLE
+        binding.rvFolderCutter.visibility = View.INVISIBLE
         binding.ivEmptyListCutter.visibility = View.VISIBLE
         binding.tvEmptyListCutter.visibility = View.VISIBLE
     }
 
     private fun showList() {
-        binding.rvAudioCutter.visibility = View.VISIBLE
+        if (audioCutterModel.folderLiveData.value?.status == true){
+            binding.rvFolderCutter.visibility = View.VISIBLE
+        }else{
+            binding.rvAudioCutter.visibility = View.VISIBLE
+        }
+
         binding.ivEmptyListCutter.visibility = View.INVISIBLE
         binding.tvEmptyListCutter.visibility = View.INVISIBLE
     }
@@ -474,9 +497,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
             }
             binding.tbNameCutter -> {
                 audioCutterModel.showFolder()
-                binding.rvAudioCutter.visibility = View.INVISIBLE
-                audioCutterAdapter.submitList(emptyList())
-                binding.rvFolderCutter.visibility = View.VISIBLE
+//                binding.rvAudioCutter.visibility = View.INVISIBLE
+//                audioCutterAdapter.submitList(emptyList())
+//                binding.rvFolderCutter.visibility = View.VISIBLE
             }
         }
     }

@@ -10,7 +10,7 @@ data class AudioCutterViewItem(
     var duration: Long = 0L, var currentPos: Long = 0L,
     var isCheckDistance: Boolean? = null,
     var isplaying: Boolean = false, var no: Int = -1,
-    var folder : String = "",
+    var folder : String = ""
 ) {
     fun swapNo(audioCutterView: AudioCutterViewItem?) {
         audioCutterView?.let {

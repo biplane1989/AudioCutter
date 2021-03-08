@@ -21,8 +21,11 @@ import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.databinding.MixChooserScreenBinding
+import com.example.audiocutter.functions.audiochooser.adapters.FolderCutChooserAdapter
 import com.example.audiocutter.functions.audiochooser.adapters.MixChooserAdapter
 import com.example.audiocutter.functions.audiochooser.objects.AudioCutterViewItem
+import com.example.audiocutter.functions.audiochooser.objects.FolderItem
+import com.example.audiocutter.functions.audiochooser.objects.FolderStatus
 import com.example.audiocutter.functions.common.SortAudioPopupWindow
 import com.google.android.material.snackbar.Snackbar
 
@@ -34,6 +37,15 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     private lateinit var audioMixModel: MixChooserModel
     private lateinit var binding: MixChooserScreenBinding
     private var isSearchStatus = false
+
+    private val folderAdapter: FolderCutChooserAdapter by lazy {
+        FolderCutChooserAdapter(this::clickFolderItem)
+    }
+
+    private val folderObserver = Observer<List<FolderItem>> {
+        folderAdapter.submitList(it)
+        Log.d(TAG, "folder adapter : list folder: size : " + it.size)
+    }
 
     //    private var toast: Toast? = null
     private var stateObserver = Observer<Int> {
@@ -57,7 +69,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
             binding.rvMixer.visibility = View.INVISIBLE
         } else {
             if (listMusic.isEmpty()) {
-                showEmptyList()
+//                showEmptyList()
             } else {
                 audioMixAdapter.submitList(ArrayList(listMusic)) {
                     Log.d(TAG, "submitList done : ")
@@ -65,22 +77,39 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 //                        binding.rvMixer.scrollToPosition(0)
 //                    }
                 }
-                showList()
+//                showList()
                 showProgressBar(false)
             }
         }
     }
     private val emptyState = Observer<Boolean> {
-        if (it) {
+        if (!it) {
             showList()
         } else {
             showEmptyList()
         }
     }
 
+    private val folderStatusObserver = Observer<FolderStatus>{
+        Log.d(TAG, "status: ssss")
+        if (it.status){
+            binding.rvMixer.visibility = View.INVISIBLE
+            audioMixAdapter.submitList(emptyList())
+            binding.rvFolderMixer.visibility = View.VISIBLE
+            Log.d(TAG, "status true : $it")
+        }else{
+            binding.rvFolderMixer.visibility = View.INVISIBLE
+            binding.rvMixer.visibility = View.VISIBLE
+            Log.d(TAG, "status false: $it")
+        }
+    }
 
     private fun showList() {
-        binding.rvMixer.visibility = View.VISIBLE
+        if (audioMixModel.folderLiveData.value?.status == true){
+            binding.rvFolderMixer.visibility = View.VISIBLE
+        }else{
+            binding.rvMixer.visibility = View.VISIBLE
+        }
         binding.ivEmptyListMixer.visibility = View.INVISIBLE
         binding.tvEmptyListMixer.visibility = View.INVISIBLE
     }
@@ -125,7 +154,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     private fun observerData() {
         audioMixModel.listAudioCutterViewItems.observe(viewLifecycleOwner, listAudioObserver)
         audioMixModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
-        audioMixModel.getStateEmpty().observe(viewLifecycleOwner, emptyState)
+        audioMixModel.isEmptyState.observe(viewLifecycleOwner, emptyState)
+        audioMixModel.folderLiveData.observe(viewLifecycleOwner,folderStatusObserver)
+
         audioMixModel.checkNextButtonEnable.observe(viewLifecycleOwner) {
             if (it) {
                 setColorButtonNext(R.color.colorWhite, R.drawable.bg_next_audio_enabled, true)
@@ -155,15 +186,24 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
             sortAudioPopupWindow.show()
         }
 
+        audioMixModel.listFolder.observe(viewLifecycleOwner, folderObserver)
+
     }
 
     private fun showEmptyList() {
         binding.rvMixer.visibility = View.INVISIBLE
+        binding.rvFolderMixer.visibility = View.INVISIBLE
         binding.ivEmptyListMixer.visibility = View.VISIBLE
         binding.tvEmptyListMixer.visibility = View.VISIBLE
         showProgressBar(false)
     }
 
+    private fun clickFolderItem(folderItem: FolderItem) {        //click folder item todo
+        audioMixModel.clickItemFolder(folderItem)
+
+//        binding.rvFolderCutter.visibility = View.INVISIBLE
+//        binding.rvAudioCutter.visibility = View.VISIBLE
+    }
 
     private fun checkEdtSearchAudio() {
         binding.edtMixerSearch.addTextChangedListener(object : TextWatcher {
@@ -207,6 +247,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         binding.ivMixerScreenBack.setOnClickListener(this)
         audioMixAdapter.setAudioCutterListtener(this)
         binding.ivMixScreenSort.setOnClickListener(this)
+        binding.tbNameMixer.setOnClickListener(this)
 
     }
 
@@ -248,12 +289,13 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
 
 
     private fun initLists() {
-
-
         binding.rvMixer.adapter = audioMixAdapter
         binding.rvMixer.setHasFixedSize(true)
         binding.rvMixer.layoutManager = LinearLayoutManager(requireContext())
 
+        binding.rvFolderMixer.adapter = folderAdapter
+        binding.rvFolderMixer.setHasFixedSize(true)
+        binding.rvFolderMixer.layoutManager = LinearLayoutManager(requireContext())
     }
 
     @SuppressLint("SetTextI18n")
@@ -292,6 +334,10 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
             binding.ivMixScreenSort -> {
                 audioMixModel.clickedOnSortButton()
             }
+
+            binding.tbNameMixer ->{
+                audioMixModel.showFolder()
+            }
         }
     }
 
@@ -324,8 +370,6 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         super.onDestroyView()
         ManagerFactory.getDefaultAudioPlayer().stop()
     }
-
-
 }
 
 
