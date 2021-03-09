@@ -31,14 +31,7 @@ const val ITEM_PLAY_BUTTON_CHANGED = "ITEM_PLAY_BUTTON_CHANGED"
 const val ITEM_PROGRESSING_CHANGED = "ITEM_PROGRESSING_CHANGED"
 const val ITEM_CHECKBOX_CHANGED = "ITEM_CHECKBOX_CHANGED"
 
-class MergePreviewAdapter(
-    val mContext: Context,
-    val audioPlayer: AudioPlayer,
-    val lifecycleCoroutineScope: LifecycleCoroutineScope,
-    val activity: Activity,
-    val mergerDiff: MergerChooserAudioDiff = MergerChooserAudioDiff()
-) : ListAdapter<AudioCutterViewItem, MergePreviewAdapter.MergeChooseHolder>(mergerDiff),
-    OnItemTouchHelper {
+class MergePreviewAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope, val activity: Activity, val mergerDiff: MergerChooserAudioDiff = MergerChooserAudioDiff()) : ListAdapter<AudioCutterViewItem, MergePreviewAdapter.MergeChooseHolder>(mergerDiff), OnItemTouchHelper {
 
     //var listAudios = mutableListOf<AudioCutterView>()
     lateinit var mCallback: AudioMergeChooseListener
@@ -76,11 +69,7 @@ class MergePreviewAdapter(
 
     }
 
-    override fun onBindViewHolder(
-        holder: MergeChooseHolder,
-        position: Int,
-        payloads: MutableList<Any>
-    ) {
+    override fun onBindViewHolder(holder: MergeChooseHolder, position: Int, payloads: MutableList<Any>) {
         super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
@@ -144,9 +133,7 @@ class MergePreviewAdapter(
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    inner class MergeChooseHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
-        View.OnClickListener, View.OnTouchListener, GestureDetector.OnGestureListener,
-        LifecycleOwner {
+    inner class MergeChooseHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnTouchListener, GestureDetector.OnGestureListener, LifecycleOwner {
 
         var ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)
         var tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_merge_choose_audio)
@@ -351,12 +338,7 @@ class MergePreviewAdapter(
             return false
         }
 
-        override fun onScroll(
-            motionEvent: MotionEvent?,
-            p1: MotionEvent?,
-            p2: Float,
-            p3: Float
-        ): Boolean {
+        override fun onScroll(motionEvent: MotionEvent?, p1: MotionEvent?, p2: Float, p3: Float): Boolean {
             Log.d("nqm", "onScroll: ")
             return false
         }
@@ -386,10 +368,7 @@ class MergePreviewAdapter(
 
 class MergerChooserAudioDiff() : DiffUtil.ItemCallback<AudioCutterViewItem>() {
     var myItemTouchHelper: MyItemTouchHelper? = null
-    override fun areItemsTheSame(
-        oldItem: AudioCutterViewItem,
-        newItem: AudioCutterViewItem
-    ): Boolean {
+    override fun areItemsTheSame(oldItem: AudioCutterViewItem, newItem: AudioCutterViewItem): Boolean {
         myItemTouchHelper?.let {
             if (it.isDragging()) {
                 return true
@@ -398,17 +377,11 @@ class MergerChooserAudioDiff() : DiffUtil.ItemCallback<AudioCutterViewItem>() {
         return oldItem.audioFile.getFilePath() == newItem.audioFile.getFilePath()
     }
 
-    override fun areContentsTheSame(
-        oldItem: AudioCutterViewItem,
-        newItem: AudioCutterViewItem
-    ): Boolean {
+    override fun areContentsTheSame(oldItem: AudioCutterViewItem, newItem: AudioCutterViewItem): Boolean {
         return oldItem == newItem
     }
 
-    override fun getChangePayload(
-        oldItem: AudioCutterViewItem,
-        newItem: AudioCutterViewItem
-    ): Any? {
+    override fun getChangePayload(oldItem: AudioCutterViewItem, newItem: AudioCutterViewItem): Any? {
         val diff = Bundle()
         if (oldItem.isplaying != newItem.isplaying) {
             diff.putBoolean(ITEM_PLAY_BUTTON_CHANGED, true)

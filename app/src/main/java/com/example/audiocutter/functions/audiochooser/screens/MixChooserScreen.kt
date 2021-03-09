@@ -91,17 +91,15 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     }
 
     private val folderStatusObserver = Observer<FolderStatus>{
-        Log.d(TAG, "status: ssss")
         if (it.status){
             binding.rvMixer.visibility = View.INVISIBLE
             audioMixAdapter.submitList(emptyList())
             binding.rvFolderMixer.visibility = View.VISIBLE
-            Log.d(TAG, "status true : $it")
         }else{
             binding.rvFolderMixer.visibility = View.INVISIBLE
             binding.rvMixer.visibility = View.VISIBLE
-            Log.d(TAG, "status false: $it")
         }
+        binding.tvMixerScreen.text = it.folder
     }
 
     private fun showList() {
@@ -247,7 +245,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         binding.ivMixerScreenBack.setOnClickListener(this)
         audioMixAdapter.setAudioCutterListtener(this)
         binding.ivMixScreenSort.setOnClickListener(this)
-        binding.tbNameMixer.setOnClickListener(this)
+        binding.linear.setOnClickListener(this)
 
     }
 
@@ -274,16 +272,20 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     }
 
     private fun hideOrShowView(status: Int) {
+
+        binding.tvMixerScreen.visibility = status
         binding.ivMixerScreenSearch.visibility = status
-        binding.tbNameMixer.visibility = status
         binding.ivMixScreenSort.visibility = status
+        binding.ivAudioMixerScreenFile.visibility = status
     }
 
     private fun showProgressBar(b: Boolean) {
         if (b) {
             binding.pgrAudioMix.visibility = View.VISIBLE
+            binding.linear.visibility = View.INVISIBLE
         } else {
             binding.pgrAudioMix.visibility = View.INVISIBLE
+            binding.linear.visibility = View.VISIBLE
         }
     }
 
@@ -335,7 +337,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
                 audioMixModel.clickedOnSortButton()
             }
 
-            binding.tbNameMixer ->{
+            binding.linear ->{
                 audioMixModel.showFolder()
             }
         }

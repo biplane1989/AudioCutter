@@ -27,7 +27,8 @@ object ViewStateManagerImpl : ViewStateManager, ViewStateMutable {
 
     override fun popViewState() {
         if (viewStateList.size > 0) {
-            viewStateList.remove(getLastState())
+            val index = viewStateList.lastIndexOf(getLastState())
+            viewStateList.removeAt(index)
         }
         logState()
     }

@@ -289,7 +289,9 @@ class MergeChooserAdapter(
 
 
         override fun onClick(p0: View) {
-            val item = getItem(adapterPosition)
+            if (adapterPosition == -1){
+                return
+            }
             when (p0.id) {
                 R.id.iv_controller_audio_merger -> controllerAudio()
                 R.id.ln_menu_merger -> {

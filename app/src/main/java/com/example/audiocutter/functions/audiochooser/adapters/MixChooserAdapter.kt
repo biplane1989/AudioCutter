@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -242,31 +243,26 @@ class MixChooserAdapter(
                 true -> ivChecked.setImageResource(R.drawable.ic_checkdone)
                 false -> ivChecked.setImageResource(R.drawable.ic_noncheck)
             }
-
         }
 
-
         override fun onClick(p0: View) {
-            val item = getItem(adapterPosition)
+            if (adapterPosition == -1){
+                return
+            }
             when (p0.id) {
                 R.id.iv_controller_audio_recent -> controllerAudio()
                 R.id.ln_menu_recent -> {
                     checkItem()
-//                    mCallBack.chooseItemAudio(getItem(adapterPosition), item.isCheckChooseItem)
-
                 }
                 R.id.ln_item_audio_mixer_screen -> {
                     checkItem()
-//                    mCallBack.chooseItemAudio(getItem(adapterPosition), item.isCheckChooseItem)
                 }
             }
         }
 
         private fun checkItem() {
             mCallBack.selectItem(adapterPosition)
-
         }
-
 
         private fun controllerAudio() {
             val itemAudio = listAudios.get(adapterPosition)
@@ -280,15 +276,12 @@ class MixChooserAdapter(
                         pgAudio.resetView()
                         audioPlayer.play(itemAudio.audioFile)
                     }
-//                    mCallBack.play(adapterPosition)
                 }
                 PlayerState.PAUSE -> {
                     audioPlayer.resume()
-//                    mCallBack.resume(adapterPosition)
                 }
                 PlayerState.PLAYING -> {
                     audioPlayer.pause()
-//                    mCallBack.pause(adapterPosition)
                 }
                 else -> {
 

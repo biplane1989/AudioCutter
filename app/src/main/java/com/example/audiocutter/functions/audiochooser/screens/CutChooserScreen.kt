@@ -38,8 +38,7 @@ import com.example.audiocutter.permissions.WriteSettingPermissionRequest
 import com.example.audiocutter.util.FileUtils
 import com.google.android.material.snackbar.Snackbar
 
-class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
-    SetAsDialog.setAsListener, View.OnClickListener, OnActionCallback {
+class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, SetAsDialog.setAsListener, View.OnClickListener, OnActionCallback {
     private var filePathAudio: String? = ""
     val TAG = CutChooserScreen::class.java.name
     private lateinit var binding: CutChooserScreenBinding
@@ -101,18 +100,17 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         Log.d(TAG, "folder adapter : list folder: size : " + it.size)
     }
 
-    private val folderStatusObserver = Observer<FolderStatus>{
-        Log.d(TAG, "status: ssss")
-        if (it.status){
+    private val folderStatusObserver = Observer<FolderStatus> {
+        if (it.status) {
             binding.rvAudioCutter.visibility = View.INVISIBLE
             audioCutterAdapter.submitList(emptyList())
             binding.rvFolderCutter.visibility = View.VISIBLE
-            Log.d(TAG, "status true : $it")
-        }else{
+        } else {
             binding.rvFolderCutter.visibility = View.INVISIBLE
             binding.rvAudioCutter.visibility = View.VISIBLE
-            Log.d(TAG, "status false: $it")
         }
+
+        binding.tvCutterScreen.text = it.folder
     }
 
     private val writeSettingPermissionRequest = object : WriteSettingPermissionRequest {
@@ -146,20 +144,14 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         audioCutterModel = ViewModelProvider(this).get(CutChooserViewModel::class.java)
-        audioCutterAdapter = CutChooserAdapter(
-            requireContext(),
-            audioCutterModel.getAudioPlayer(),
-            lifecycleScope,
-            requireActivity()
-        )
+        audioCutterAdapter = CutChooserAdapter(requireContext(), audioCutterModel.getAudioPlayer(), lifecycleScope, requireActivity())
 //        ManagerFactory.getDefaultAudioPlayer().getPlayerInfo().observe(this, playerInfoObserver)
     }
 
 
     override fun onCreateView(
 
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.cut_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
@@ -200,32 +192,29 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         audioCutterModel.isEmptyState.observe(viewLifecycleOwner, emptyState)
 
         audioCutterModel.showSortAudioDialog.observe(viewLifecycleOwner) {
-            val sortAudioPopupWindow = SortAudioPopupWindow(
-                binding.ivCutterScreenSort, it
-            ) {
+            val sortAudioPopupWindow = SortAudioPopupWindow(binding.ivCutterScreenSort, it) {
                 audioCutterModel.sortAudioBy(it)
             }
             sortAudioPopupWindow.show()
         }
 
         audioCutterModel.listFolder.observe(viewLifecycleOwner, folderObserver)
-        audioCutterModel.folderLiveData.observe(viewLifecycleOwner,folderStatusObserver)
+        audioCutterModel.folderLiveData.observe(viewLifecycleOwner, folderStatusObserver)
 
     }
 
     private fun showProgressBar(b: Boolean) {
         if (b) {
             binding.pgrAudioCutter.visibility = View.VISIBLE
+            binding.linear.visibility = View.INVISIBLE
         } else {
             binding.pgrAudioCutter.visibility = View.INVISIBLE
+            binding.linear.visibility = View.VISIBLE
         }
     }
 
     private fun clickFolderItem(folderItem: FolderItem) {        //click folder item todo
         audioCutterModel.clickItemFolder(folderItem)
-
-//        binding.rvFolderCutter.visibility = View.INVISIBLE
-//        binding.rvAudioCutter.visibility = View.VISIBLE
     }
 
     private fun checkEdtSearchAudio() {
@@ -273,7 +262,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         binding.ivCutterScreenBackEdt.setOnClickListener(this)
         binding.ivCutterScreenClose.setOnClickListener(this)
         binding.ivCutterScreenSort.setOnClickListener(this)
-        binding.tbNameCutter.setOnClickListener(this)
+        binding.linear.setOnClickListener(this)
 
         dialog = SetAsDialog(requireContext())
 //        dialogDone = SetAsDoneDialog(requireContext())
@@ -285,6 +274,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         binding.ivCutterScreenBackEdt.visibility = status
 //        binding.ivCutterScreenClose.visibility = status
         binding.edtCutterSearch.visibility = status
+
     }
 
     private fun hideOrShowView(status: Int) {
@@ -303,9 +293,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     }
 
     private fun showList() {
-        if (audioCutterModel.folderLiveData.value?.status == true){
+        if (audioCutterModel.folderLiveData.value?.status == true) {
             binding.rvFolderCutter.visibility = View.VISIBLE
-        }else{
+        } else {
             binding.rvAudioCutter.visibility = View.VISIBLE
         }
 
@@ -364,10 +354,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
                 pendingRequestingPermission = CUT_CHOOSE_REQUESTING_PERMISSION
                 checkPermissionRequest()
             }
-                .show(
-                    requireActivity().supportFragmentManager,
-                    ContactPermissionDialog::class.java.name
-                )
+                .show(requireActivity().supportFragmentManager, ContactPermissionDialog::class.java.name)
         }
 
     }
@@ -399,11 +386,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
     override fun onCutItemClicked(itemAudio: AudioCutterViewItem) {
         audioCutterModel.stop()
         if (itemAudio.audioFile.duration < Constance.MIN_DURATION) {
-            val dialogSnack = Snackbar.make(
-                requireView(),
-                getString(R.string.notification_file_was_short_mystudio_screen),
-                Snackbar.LENGTH_SHORT
-            )
+            val dialogSnack = Snackbar.make(requireView(), getString(R.string.notification_file_was_short_mystudio_screen), Snackbar.LENGTH_SHORT)
             dialogSnack.show()
         } else {
             previousStatus()
@@ -443,8 +426,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
             }
             TypeAudioSetAs.NOTIFICATION -> {
                 if (ManagerFactory.getRingtonManager()
-                        .setNotificationSound(audioCutterItem.audioFile)
-                ) {
+                        .setNotificationSound(audioCutterItem.audioFile)) {
                     showNotification(getString(R.string.result_screen_set_notification_successful))
                 } else {
                     showNotification(getString(R.string.result_screen_set_notification_fail))
@@ -495,11 +477,8 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
             binding.ivCutterScreenSort -> {
                 audioCutterModel.clickedOnSortButton()
             }
-            binding.tbNameCutter -> {
+            binding.linear -> {
                 audioCutterModel.showFolder()
-//                binding.rvAudioCutter.visibility = View.INVISIBLE
-//                audioCutterAdapter.submitList(emptyList())
-//                binding.rvFolderCutter.visibility = View.VISIBLE
             }
         }
     }
@@ -545,10 +524,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
         intent.type = "audio/*"
 //                intent.type = "audio/mp3"
         intent.addCategory(Intent.CATEGORY_OPENABLE)
-        startActivityForResult(
-            Intent.createChooser(intent, "Select a File "),
-            REQ_CODE_PICK_SOUNDFILE
-        )
+        startActivityForResult(Intent.createChooser(intent, "Select a File "), REQ_CODE_PICK_SOUNDFILE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
@@ -561,11 +537,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener,
                     if (audio.duration > Constance.MIN_DURATION) {
                         viewStateManager.onCuttingItemClicked(this, AudioCutterViewItem(audio))
                     } else {
-                        Snackbar.make(
-                            requireView(),
-                            getString(R.string.notification_file_was_short_mystudio_screen),
-                            Snackbar.LENGTH_SHORT
-                        )
+                        Snackbar.make(requireView(), getString(R.string.notification_file_was_short_mystudio_screen), Snackbar.LENGTH_SHORT)
                             .show()
                     }
                 }

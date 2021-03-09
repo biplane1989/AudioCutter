@@ -167,7 +167,6 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
         }
     }
 
-
     override fun onDestroyView() {
         super.onDestroyView()
         audioMerModel.stop()

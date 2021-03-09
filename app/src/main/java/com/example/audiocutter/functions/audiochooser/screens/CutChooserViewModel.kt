@@ -83,19 +83,20 @@ class CutChooserViewModel(application: Application) : BaseAndroidViewModel(appli
                 StateLoad.LOADDONE -> {
                     syncDataJob?.cancel()
                     syncDataJob = viewModelScope.launch {
-                        synchronizationData()
-                    }
-                    listAudioFileView.clear()                               // todo show list folder
-                    val newList = listAudioFiles.value?.listAudioFiles
-                    newList?.let {
-                        for (item in it) {
-                            val audio = AudioCutterViewItem(item)
-                            item.file.parentFile?.name?.let {
-                                audio.folder = it
-                                listAudioFileView.add(audio)
+                        listAudioFileView.clear()                               // todo show list folder
+                        val newList = listAudioFiles.value?.listAudioFiles
+                        newList?.let {
+                            for (item in it) {
+                                val audio = AudioCutterViewItem(item)
+                                item.file.parentFile?.name?.let {
+                                    audio.folder = it
+                                    listAudioFileView.add(audio)
+                                }
                             }
                         }
+                        synchronizationData()
                     }
+
                 }
                 StateLoad.LOADFAIL -> {
                     _stateLoadProgress.value = -1

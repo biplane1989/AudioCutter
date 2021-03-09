@@ -41,12 +41,7 @@ fun List<AudioCutterViewItem>.unselectedItem(filePath: String): List<AudioCutter
         val index = this.indexOf(item)
         if (index != -1) {
             val listCopy = ArrayList(this)
-            listCopy[index] = it.copy(
-                isCheckChooseItem = false,
-                no = -1,
-                isplaying = false,
-                state = PlayerState.IDLE
-            )
+            listCopy[index] = it.copy(isCheckChooseItem = false, no = -1, isplaying = false, state = PlayerState.IDLE)
             return listCopy
         }
     }
@@ -54,10 +49,7 @@ fun List<AudioCutterViewItem>.unselectedItem(filePath: String): List<AudioCutter
 }
 
 data class MergingDialogData(val totalItemSelected: Int, val suggestionName: String)
-data class MergingAudioData(
-    val mergingConfig: AudioMergingConfig,
-    val listItemsSlected: List<AudioCutterViewItem>
-)
+data class MergingAudioData(val mergingConfig: AudioMergingConfig, val listItemsSlected: List<AudioCutterViewItem>)
 
 
 class MergeChooserModel(application: Application) : BaseAndroidViewModel(application) {
@@ -70,12 +62,10 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     val stateLoadProgress: LiveData<Int>
         get() = _stateLoadProgress
 
-
     private var currNo = 0
 
     private val _searchAudioName = MutableLiveData<String>("")
-    private val _sortAudioValue =
-        MutableLiveData<SortValue>(SortValue(SortType.ASC, SortField.SORT_BY_NAME))
+    private val _sortAudioValue = MutableLiveData<SortValue>(SortValue(SortType.ASC, SortField.SORT_BY_NAME))
     private val listAudioFiles = ManagerFactory.getAudioFileManager().getAudioFiles()
 
     private val _listAudioCutterViewItems = MediatorLiveData<List<AudioCutterViewItem>>()
@@ -92,7 +82,6 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     private val _countItemSelected = MutableLiveData<Int>()
     val countItemSelected: LiveData<Int> = _countItemSelected
 
-
     private val _showMergingDialog = SingleLiveEvent<MergingDialogData>()
     val showMergingDialog: LiveData<MergingDialogData> = _showMergingDialog
 
@@ -106,8 +95,7 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     val onMergingNextButtonClicked: LiveData<Boolean> = _onMergingNextButtonClicked
 
     private val _listAudioCutterViewItemsSelected = MutableLiveData<List<AudioCutterViewItem>>()
-    val listAudioCutterViewItemsSelected: LiveData<List<AudioCutterViewItem>> =
-        _listAudioCutterViewItemsSelected
+    val listAudioCutterViewItemsSelected: LiveData<List<AudioCutterViewItem>> = _listAudioCutterViewItemsSelected
 
     val checkNextButtonEnable: LiveData<Boolean> = listAudioCutterViewItemsSelected.map {
         _countItemSelected.value = it.size
@@ -118,18 +106,18 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     val isEmptyState: LiveData<Boolean>
         get() = _isEmptyState
 
-    private val _folderLiveData =
-        MutableLiveData<FolderStatus>(FolderStatus(mContext.getString(R.string.all), false))
+    private val _folderLiveData = MutableLiveData<FolderStatus>(FolderStatus(mContext.getString(R.string.all), false))
     val folderLiveData: LiveData<FolderStatus> get() = _folderLiveData
 
     private val _listFolder = MutableLiveData<List<FolderItem>>()
     val listFolder: LiveData<List<FolderItem>> get() = _listFolder
 
-    private var listAudioFileView = ArrayList<AudioCutterViewItem>()        //list audio have folser
+    private var listAudioFileView = ArrayList<AudioCutterViewItem>()
+
 
     init {
         audioPlayer.init(application.applicationContext)
-        _listAudioCutterViewItems.addSource(listAudioFiles) {
+        _listAudioCutterViewItems.addSource(ManagerFactory.getAudioFileManager().getAudioFiles()) {
 //            var listAudioFiles: List<AudioCutterView>? = null
             when (it.state) {
                 StateLoad.LOADING -> {
@@ -138,18 +126,18 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
                 StateLoad.LOADDONE -> {
                     syncDataJob?.cancel()
                     syncDataJob = viewModelScope.launch {
-                        synchronizationData()
-                    }
-                    listAudioFileView.clear()                               // todo show list folder
-                    val newList = listAudioFiles.value?.listAudioFiles
-                    newList?.let {
-                        for (item in it) {
-                            val audio = AudioCutterViewItem(item)
-                            item.file.parentFile?.name?.let {
-                                audio.folder = it
-                                listAudioFileView.add(audio)
+                        listAudioFileView.clear()                               // todo show list folder
+                        val newList = listAudioFiles.value?.listAudioFiles
+                        newList?.let {
+                            for (item in it) {
+                                val audio = AudioCutterViewItem(item)
+                                item.file.parentFile?.name?.let {
+                                    audio.folder = it
+                                    listAudioFileView.add(audio)
+                                }
                             }
                         }
+                        synchronizationData()
                     }
                 }
                 StateLoad.LOADFAIL -> {
@@ -181,17 +169,15 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
 
     }
 
-    private suspend fun removeAllFilePathNotExistedInAudioFileSelectedMap(listAudioFileData: List<AudioFile>) =
-        viewModelScope.launch {
-            val listAudioFilePathMap = HashSet(listAudioFileData.map { it.getFilePath() })
-            listAudioCutterViewItemsSelected.value?.let {
-                withContext(Dispatchers.Main) {
-                    _listAudioCutterViewItemsSelected.value =
-                        it.filter { listAudioFilePathMap.contains(it.audioFile.getFilePath()) }
-                            .sortedBy { it.no }
-                }
+    private suspend fun removeAllFilePathNotExistedInAudioFileSelectedMap(listAudioFileData: List<AudioFile>) = coroutineScope {
+        val listAudioFilePathMap = HashSet(listAudioFileData.map { it.getFilePath() })
+        _listAudioCutterViewItemsSelected.value?.let {
+            withContext(Dispatchers.Main) {
+                _listAudioCutterViewItemsSelected.value = it.filter { listAudioFilePathMap.contains(it.audioFile.getFilePath()) }
+                    .sortedBy { it.no }
             }
         }
+    }
 
     private suspend fun synchronizationData() = coroutineScope {
         val searchAudioNameValue = _searchAudioName.value
@@ -203,17 +189,14 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
         if (_folderLiveData.value?.folder.equals(mContext.getString(R.string.all))) {
             listAudioFileData = listAudioFileView
         } else {
-            listAudioFileData =
-                listAudioFileView.filter { it.folder.equals(_folderLiveData.value?.folder) }
+            listAudioFileData = listAudioFileView.filter { it.folder.equals(_folderLiveData.value?.folder) }
         }
 
         if (searchAudioNameValue == null || sortTypeValue == null || listAudioFileData == null || listAudioFiles.value?.state != StateLoad.LOADDONE) {
             return@coroutineScope
         }
         withContext(Dispatchers.Default) {
-//            removeAllFilePathNotExistedInAudioFileSelectedMap(listAudioFileData)
             removeAllFilePathNotExistedInAudioFileSelectedMap(listAudioFileView.map { it.audioFile })
-
             val listAudioCutterItems = ArrayList<AudioCutterViewItem>()
             var listAudioFileFiltered = listAudioFileData
             if (searchAudioNameValue.isNotEmpty()) {
@@ -224,20 +207,16 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
             }
             when (sortTypeValue.sortField) {
                 SortField.SORT_BY_NAME -> {
-                    listAudioFileFiltered =
-                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.audioFile.fileName } else listAudioFileFiltered.sortedByDescending { it.audioFile.fileName }
+                    listAudioFileFiltered = if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.audioFile.fileName } else listAudioFileFiltered.sortedByDescending { it.audioFile.fileName }
                 }
                 SortField.SORT_BY_DURATION -> {
-                    listAudioFileFiltered =
-                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.audioFile.duration } else listAudioFileFiltered.sortedByDescending { it.audioFile.duration }
+                    listAudioFileFiltered = if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.audioFile.duration } else listAudioFileFiltered.sortedByDescending { it.audioFile.duration }
                 }
                 SortField.SORT_BY_DATE -> {
-                    listAudioFileFiltered =
-                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.audioFile.modified } else listAudioFileFiltered.sortedByDescending { it.audioFile.modified }
+                    listAudioFileFiltered = if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.audioFile.modified } else listAudioFileFiltered.sortedByDescending { it.audioFile.modified }
                 }
                 SortField.SORT_BY_SIZE -> {
-                    listAudioFileFiltered =
-                        if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.audioFile.size } else listAudioFileFiltered.sortedByDescending { it.audioFile.size }
+                    listAudioFileFiltered = if (sortTypeValue.sortType == SortType.ASC) listAudioFileFiltered.sortedBy { it.audioFile.size } else listAudioFileFiltered.sortedByDescending { it.audioFile.size }
                 }
             }
             val audioFileSelected = ArrayList<String>()
@@ -247,12 +226,7 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
             listAudioFileFiltered.forEach {
                 val oldItem = listAudioCutterViewItems.value?.findItem(it.audioFile)
                 if (oldItem == null) {
-                    listAudioCutterItems.add(
-                        AudioCutterViewItem(
-                            it.audioFile,
-                            isCheckChooseItem = audioFileSelected.contains(it.audioFile.getFilePath())
-                        )
-                    )
+                    listAudioCutterItems.add(AudioCutterViewItem(it.audioFile, isCheckChooseItem = audioFileSelected.contains(it.audioFile.getFilePath())))
                 } else {
                     listAudioCutterItems.add(oldItem)
                 }
@@ -261,8 +235,8 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
                 withContext(Dispatchers.Main) {
                     _stateLoadProgress.value = 0
                     _listAudioCutterViewItems.value = listAudioCutterItems
-                    _isEmptyState.value = listAudioFileView.size == 0
                 }
+
             }
         }
     }
@@ -306,8 +280,13 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
         }
     }
 
+
+    fun searchAudio(yourTextSearch: String) {
+        _searchAudioName.value = yourTextSearch
+
+    }
+
     fun chooseItemAudioFile(position: Int) {
-        Log.d(TAG, "chooseItemAudioFile: position: "+ position)
         listAudioCutterViewItems.value?.let {
             if (position < 0 || position >= it.size) {
                 return
@@ -328,16 +307,21 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
             val listCopy = ArrayList(it)
             listCopy[position] = itemCopy
             _listAudioCutterViewItems.value = listCopy
-            _listAudioCutterViewItemsSelected.value =
-                listCopy.filter { it.isCheckChooseItem }.sortedBy { it.no }
+
+            var index = 0
+            var newItem: AudioCutterViewItem
+            for (item in listAudioFileView) {
+                if (item.audioFile.getFilePath().equals(itemCopy.audioFile.getFilePath())) {
+                    newItem = item.copy()
+                    newItem.isCheckChooseItem = itemCopy.isCheckChooseItem
+                    listAudioFileView.set(index, newItem)
+                }
+                index++
+            }
+            _listAudioCutterViewItemsSelected.value = listAudioFileView.filter { it.isCheckChooseItem }
+                .sortedBy { it.no }
         }
     }
-
-    fun searchAudio(yourTextSearch: String) {
-        _searchAudioName.value = yourTextSearch
-
-    }
-
 
     fun pause() {
         audioPlayer.pause()
@@ -354,12 +338,9 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     fun onMergingDialogResult(fileName: String) {
         val itemMaxDuration = findItemMaxDurationSelected()
         itemMaxDuration?.let {
-            val mergingConfig = AudioMergingConfig(
-                getFormatFile(it.audioFile.getFilePath()),
-                fileName,
-                ManagerFactory.getAudioFileManager().getRelFolderPath(Folder.TYPE_MERGER),
-                ManagerFactory.getAudioFileManager().getFolderPath(Folder.TYPE_MERGER)
-            )
+            val mergingConfig = AudioMergingConfig(getFormatFile(it.audioFile.getFilePath()), fileName, ManagerFactory.getAudioFileManager()
+                .getRelFolderPath(Folder.TYPE_MERGER), ManagerFactory.getAudioFileManager()
+                .getFolderPath(Folder.TYPE_MERGER))
             listAudioCutterViewItemsSelected.value?.let {
                 _onMergingButtonClicked.value = MergingAudioData(mergingConfig, it)
             }
@@ -372,10 +353,7 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
         if (totalItemSelected >= 2) {
             val itemMaxDuration = findItemMaxDurationSelected()
             itemMaxDuration?.let {
-                val mergeDialogData = MergingDialogData(
-                    totalItemSelected,
-                    Utils.getBaseName(itemMaxDuration.audioFile.file)
-                )
+                val mergeDialogData = MergingDialogData(totalItemSelected, Utils.getBaseName(itemMaxDuration.audioFile.file))
                 _showMergingDialog.value = mergeDialogData
             }
         } else {
@@ -435,13 +413,24 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     fun removeItemAudio(item: AudioCutterViewItem) {
-        listAudioCutterViewItems.value?.let {
-            val newList = it.unselectedItem(item.audioFile.getFilePath())
-            _listAudioCutterViewItems.value = newList
-//            listAudioFileView = ArrayList(newList)
-            _listAudioCutterViewItemsSelected.value =
-                newList.filter { it.isCheckChooseItem }.sortedBy { it.no }
+//        listAudioCutterViewItems.value?.let {
+//            val newList = it.unselectedItem(item.audioFile.getFilePath())
+//            _listAudioCutterViewItems.value = newList
+//            _listAudioCutterViewItemsSelected.value =
+//                newList.filter { it.isCheckChooseItem }.sortedBy { it.no }
+//
+//        }
 
+        viewModelScope.launch {
+            listAudioFileView.let {
+                val newList = it.unselectedItem(item.audioFile.getFilePath())
+                listAudioFileView = newList as ArrayList<AudioCutterViewItem>
+                _listAudioCutterViewItems.value = emptyList()
+                _listAudioCutterViewItemsSelected.value = listAudioFileView.filter { it.isCheckChooseItem }
+                    .sortedBy { it.no }
+
+            }
+            synchronizationData()
         }
     }
 

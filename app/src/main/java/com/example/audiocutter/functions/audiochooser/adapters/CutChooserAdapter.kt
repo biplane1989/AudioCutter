@@ -30,12 +30,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlin.math.floor
 
-class CutChooserAdapter(
-    val mContext: Context,
-    val audioPlayer: AudioPlayer,
-    val lifecycleCoroutineScope: LifecycleCoroutineScope,
-    val activity: Activity
-) : ListAdapter<AudioCutterViewItem, CutChooserAdapter.AudiocutterHolder>(CutChooserAudioDiff()) {
+class CutChooserAdapter(val mContext: Context, val audioPlayer: AudioPlayer, val lifecycleCoroutineScope: LifecycleCoroutineScope, val activity: Activity) : ListAdapter<AudioCutterViewItem, CutChooserAdapter.AudiocutterHolder>(CutChooserAudioDiff()) {
     lateinit var mCallBack: CutChooserListener
     val SIZE_MB = 1024 * 1024
     var listAudios = mutableListOf<AudioCutterViewItem>()
@@ -43,16 +38,6 @@ class CutChooserAdapter(
     fun setAudioCutterListtener(event: CutChooserListener) {
         mCallBack = event
     }
-
-//    override fun submitList(list: List<AudioCutterView>?) {
-//        if (list!!.size != 0 || list != null) {
-//            listAudios = ArrayList(list)
-//            super.submitList(listAudios)
-//        } else if (list!!.size == 0 || list == null) {
-//            listAudios = ArrayList()
-//            super.submitList(listAudios)
-//        }
-//    }
 
     override fun submitList(list: MutableList<AudioCutterViewItem>?, commitCallback: Runnable?) {
         if (list!!.size != 0 || list != null) {
@@ -85,14 +70,10 @@ class CutChooserAdapter(
         holder.onViewDetachedFromWindow()
     }
 
-    override fun onBindViewHolder(
-        holder: AudiocutterHolder,
-        position: Int,
-        payloads: MutableList<Any>
-    ) {
+    override fun onBindViewHolder(holder: AudiocutterHolder, position: Int, payloads: MutableList<Any>) {
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
-        }else{
+        } else {
             val itemAudioFile = getItem(position)
             val diff = payloads.get(0) as Bundle
 
@@ -147,8 +128,7 @@ class CutChooserAdapter(
     }
 
 
-    inner class AudiocutterHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
-        View.OnClickListener, LifecycleOwner {
+    inner class AudiocutterHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, LifecycleOwner {
 
         val ivController = itemView.findViewById<ImageView>(R.id.iv_controller_audio)!!
         private val tvNameAudio = itemView.findViewById<TextView>(R.id.tv_name_audio)
@@ -175,10 +155,7 @@ class CutChooserAdapter(
         }
 
         private fun updatePlayInfo(playerInfo: PlayerInfo) {
-            Log.d(
-                "TAG",
-                "updatePlayInfo: ${playerInfo.currentAudio?.fileName} - ${playerInfo.playerState}"
-            )
+            Log.d("TAG", "updatePlayInfo: ${playerInfo.currentAudio?.fileName} - ${playerInfo.playerState}")
             playerState = playerInfo.playerState
             val itemAudioFile = getItem(adapterPosition)
             val bitmap = itemAudioFile.audioFile.bitmap
@@ -256,15 +233,17 @@ class CutChooserAdapter(
         }
 
         override fun onClick(p0: View) {
-            val itemAudio = getItem(adapterPosition)
-            when (p0.id) {
-                R.id.iv_controller_audio -> controllerAudio()
-                R.id.ln_item_audio_cutter_screen -> {
+            if (adapterPosition >=0){
+                val itemAudio = getItem(adapterPosition)
+                when (p0.id) {
+                    R.id.iv_controller_audio -> controllerAudio()
+                    R.id.ln_item_audio_cutter_screen -> {
 //                    controllerAudio()
 
-                    mCallBack.onCutItemClicked(itemAudio)
+                        mCallBack.onCutItemClicked(itemAudio)
+                    }
+                    R.id.ln_menu -> showPopupMenu(itemAudio)
                 }
-                R.id.ln_menu -> showPopupMenu(itemAudio)
             }
         }
 
@@ -277,7 +256,6 @@ class CutChooserAdapter(
 
             when (playerState) {
                 PlayerState.IDLE -> {
-
                     lifecycleCoroutineScope.launch {
                         pgAudio.resetView()
                         audioPlayer.play(itemAudio.audioFile)
@@ -330,17 +308,11 @@ class CutChooserAdapter(
 }
 
 class CutChooserAudioDiff : DiffUtil.ItemCallback<AudioCutterViewItem>() {
-    override fun areItemsTheSame(
-        oldItem: AudioCutterViewItem,
-        newItem: AudioCutterViewItem
-    ): Boolean {
+    override fun areItemsTheSame(oldItem: AudioCutterViewItem, newItem: AudioCutterViewItem): Boolean {
         return oldItem.audioFile.getFilePath() == newItem.audioFile.getFilePath()
     }
 
-    override fun areContentsTheSame(
-        oldItem: AudioCutterViewItem,
-        newItem: AudioCutterViewItem
-    ): Boolean {
+    override fun areContentsTheSame(oldItem: AudioCutterViewItem, newItem: AudioCutterViewItem): Boolean {
         return oldItem == newItem
     }
 

@@ -155,7 +155,7 @@ public class RangeDrawer {
     private void drawTimeDistanceValue(final Canvas canvas) {
         float centerX = mWaveformView.getWaveformWidth() / 2f;
         float y = mWaveformView.getDrawingEndY() + (mWaveformView.getHeight() - (mWaveformView.getDrawingEndY() - mWaveformView.getDrawingStartY())) / 4f;
-        String durationStr = toTimeStr(mWaveformView.getEndTimeMs() - mWaveformView.getStartTimeMs(), mTimeFormat);
+        String durationStr = toTimeStr(mWaveformView.getPlaybackInMs(), mTimeFormat);
         canvas.drawText(durationStr, centerX - mDurationPaint.measureText(durationStr) / 2f, y, mDurationPaint);
     }
 

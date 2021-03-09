@@ -97,6 +97,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
             binding.rvMerge.visibility = View.VISIBLE
             Log.d(TAG, "status false: $it")
         }
+        binding.tvMerScreen.text = it.folder
     }
 
 
@@ -130,6 +131,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         audioMerModel.stateLoadProgress.observe(viewLifecycleOwner, stateObserver)
         audioMerModel.listAudioCutterViewItems.observe(viewLifecycleOwner, listAudioObserver)
         audioMerModel.isEmptyState.observe(viewLifecycleOwner, emptyState)
+
         audioMerModel.countItemSelected.observe(viewLifecycleOwner, countItemSelected)
 
         audioMerModel.folderLiveData.observe(viewLifecycleOwner,folderStatusObserver)
@@ -211,7 +213,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         binding.ivMerScreenBack.setOnClickListener(this)
         audioMerAdapter.setAudioListener(this)
         binding.ivMerScreenSort.setOnClickListener(this)
-        binding.tvMerScreen.setOnClickListener(this)
+        binding.linear.setOnClickListener(this)
 
     }
 
@@ -230,12 +232,14 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     private fun hideOrShowEditText(status: Int) {
         binding.ivMerScreenBackEdt.visibility = status
         binding.edtMerSearch.visibility = status
+
     }
 
     private fun hideOrShowView(status: Int) {
         binding.ivMerScreenSearch.visibility = status
         binding.tvMerScreen.visibility = status
         binding.ivMerScreenSort.visibility = status
+        binding.ivAudioMerScreenFile.visibility = status
     }
 
 
@@ -308,7 +312,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
             binding.ivMerScreenSort -> {
                 audioMerModel.clickedOnSortButton()
             }
-            binding.tvMerScreen ->{
+            binding.linear ->{
                 audioMerModel.showFolder()
             }
         }
@@ -341,8 +345,10 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     private fun showProgressBar(b: Boolean) {
         if (b) {
             binding.pgrAudioMerge.visibility = View.VISIBLE
+            binding.linear.visibility = View.INVISIBLE
         } else {
             binding.pgrAudioMerge.visibility = View.INVISIBLE
+            binding.linear.visibility = View.VISIBLE
         }
     }
 

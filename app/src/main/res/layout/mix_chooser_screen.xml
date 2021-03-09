@@ -15,111 +15,127 @@
             android:layout_width="match_parent"
             android:layout_height="?android:actionBarSize">
 
-            <RelativeLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="?actionBarSize"
                 android:background="?attr/selectableItemBackground">
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_alignParentBottom="true"
-                    android:background="@color/colorgrayAlpha" />
+                    android:background="@color/colorgrayAlpha"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
                 <EditText
+                    android:layout_marginStart="15dp"
                     android:id="@+id/edt_mixer_search"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
                     android:background="@color/colorWhite"
                     android:focusableInTouchMode="true"
-                    android:hint="@string/search_hint_text"
-                    android:paddingStart="76dp"
+                    android:hint="@string/search"
                     android:singleLine="true"
-                    android:theme="@style/editTextTheme"
-                    android:visibility="invisible">
+                    android:visibility="invisible"
+                    app:layout_constraintEnd_toStartOf="@+id/iv_mixer_screen_search"
+                    app:layout_constraintStart_toEndOf="@+id/iv_mixer_screen_back_edt">
 
                     <requestFocus />
                 </EditText>
 
                 <ImageView
                     android:id="@+id/iv_mixer_screen_back"
-                    android:layout_width="@dimen/common_size_item_imagview"
-                    android:layout_height="?actionBarSize"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="match_parent"
                     android:layout_centerVertical="true"
-                    android:layout_marginStart="@dimen/common_padding_left"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_audiocutter_back" />
-
-
-                <ImageView
-                    android:id="@+id/iv_mixer_screen_back_edt"
-                    android:layout_width="@dimen/common_size_item_imagview"
-                    android:layout_height="?actionBarSize"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="@dimen/common_padding_left"
+                    android:layout_marginStart="5dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_audiocutter_back"
-                    android:visibility="gone" />
+                    app:layout_constraintStart_toStartOf="parent" />
 
-                <TableRow
-                    android:id="@+id/tb_name_mixer"
-                    android:layout_width="wrap_content"
+                <ImageView
+                    android:layout_marginStart="5dp"
+                    android:id="@+id/iv_mixer_screen_back_edt"
+                    android:layout_width="?actionBarSize"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
-                    android:layout_toRightOf="@+id/iv_mixer_screen_back"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_audiocutter_back"
+                    android:visibility="invisible"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linear"
+                    android:layout_width="0dp"
                     android:background="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="@dimen/common_padding_left">
+                    android:layout_marginLeft="15dp"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toStartOf="@+id/iv_audio_mixer_screen_file"
+                    app:layout_constraintStart_toEndOf="@+id/iv_mixer_screen_back">
 
                     <TextView
+
                         android:id="@+id/tv_mixer_screen"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
+                        android:drawableEnd="@drawable/comon_show_folder"
+                        android:drawablePadding="4dp"
                         android:fontFamily="@font/opensans_bold"
-                        android:paddingLeft="@dimen/common_size_item_padding_left"
-                        android:text="@string/audio_mixer_name_actionbar"
+                        android:gravity="center_vertical"
+                        android:maxLines="1"
+                        android:text="sds"
                         android:textColor="@color/colorBlack"
+                        android:textSize="@dimen/d_18"
+                        tools:ignore="RtlSymmetry,SpUsage" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-                        android:textSize="@dimen/d_18" />
-                </TableRow>
 
+                <ImageView
+                    android:id="@+id/iv_audio_mixer_screen_file"
+                    android:layout_width="@dimen/common_size_item_imagview"
+                    android:layout_height="match_parent"
+                    android:layout_toStartOf="@id/iv_mixer_screen_search"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_audiocutter_file"
+                    app:layout_constraintEnd_toStartOf="@id/iv_mix_screen_sort" />
+
+                <ImageView
+                    android:id="@+id/iv_mix_screen_sort"
+                    android:layout_width="@dimen/common_size_item_imagview"
+                    android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_sort_audio"
+                    app:layout_constraintEnd_toStartOf="@+id/iv_mixer_screen_search" />
 
                 <ImageView
                     android:id="@+id/iv_mixer_screen_search"
                     android:layout_width="@dimen/common_size_item_imagview"
-                    android:layout_height="?actionBarSize"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="@dimen/common_padding_right"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_audiocutter_search" />
-                <ImageView
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:id="@+id/iv_mix_screen_sort"
-                    android:layout_width="@dimen/common_size_item_imagview"
                     android:layout_height="match_parent"
-                    android:layout_toLeftOf="@+id/iv_mixer_screen_search"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/common_padding_left"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_sort_audio" />
+                    android:src="@drawable/ic_audiocutter_search"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <ImageView
                     android:id="@+id/iv_mixer_screen_close"
                     android:layout_width="@dimen/common_size_item_imagview"
                     android:layout_height="match_parent"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="10dp"
-                    android:padding="@dimen/d_5"
+                    android:layout_marginRight="@dimen/common_padding_left"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
-                    android:src="@drawable/list_contact_icon_search_clear"
-                    android:visibility="gone" />
+                    android:src="@drawable/my_studio_screen_icon_close"
+                    android:visibility="invisible"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
-
-            </RelativeLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 
         <ProgressBar
