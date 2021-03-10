@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.base.IViewModel
@@ -91,13 +92,31 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
             binding.rvMerge.visibility = View.INVISIBLE
             audioMerAdapter.submitList(emptyList())
             binding.rvFolderMerge.visibility = View.VISIBLE
+            binding.ivMerScreenSearch.visibility = View.INVISIBLE
             Log.d(TAG, "status true : $it")
         }else{
             binding.rvFolderMerge.visibility = View.INVISIBLE
             binding.rvMerge.visibility = View.VISIBLE
+            binding.ivMerScreenSearch.visibility = View.VISIBLE
             Log.d(TAG, "status false: $it")
         }
         binding.tvMerScreen.text = it.folder
+    }
+
+    private val adapterObserver = object: RecyclerView.AdapterDataObserver(){
+        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+            super.onItemRangeMoved(fromPosition, toPosition, itemCount)
+            binding.rvMerge.scrollToPosition(0)
+        }
+        override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+            super.onItemRangeRemoved(positionStart, itemCount)
+            binding.rvMerge.scrollToPosition(0)
+        }
+
+        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+            super.onItemRangeInserted(positionStart, itemCount)
+            binding.rvMerge.scrollToPosition(0)
+        }
     }
 
 
@@ -171,11 +190,11 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
             }
 
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (isSearchStatus) {
-                    binding.rvMerge.post {
-                        binding.rvMerge.smoothScrollToPosition(0)
-                    }
-                }
+//                if (isSearchStatus) {
+//                    binding.rvMerge.post {
+//                        binding.rvMerge.smoothScrollToPosition(0)
+//                    }
+//                }
                 audioMerModel.stop()
                 searchAudioByName(textChange.toString())
                 if (textChange.toString() != "") {
@@ -239,7 +258,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         binding.ivMerScreenSearch.visibility = status
         binding.tvMerScreen.visibility = status
         binding.ivMerScreenSort.visibility = status
-        binding.ivAudioMerScreenFile.visibility = status
+//        binding.ivAudioMerScreenFile.visibility = status
     }
 
 
@@ -253,6 +272,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         binding.rvFolderMerge.setHasFixedSize(true)
         binding.rvFolderMerge.layoutManager = LinearLayoutManager(requireContext())
 
+        audioMerAdapter.registerAdapterDataObserver(adapterObserver)
     }
 
     override fun chooseItemAudio(position: Int) {
@@ -340,6 +360,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     override fun onDestroyView() {
         super.onDestroyView()
         ManagerFactory.getDefaultAudioPlayer().stop()
+        audioMerAdapter.unregisterAdapterDataObserver(adapterObserver)
     }
 
     private fun showProgressBar(b: Boolean) {

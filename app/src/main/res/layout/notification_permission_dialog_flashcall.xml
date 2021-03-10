@@ -32,7 +32,7 @@
                 android:id="@+id/iv_close_button_notification"
                 android:layout_width="@dimen/d_40"
                 android:layout_height="@dimen/d_40"
-                android:background="?android:selectableItemBackground"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

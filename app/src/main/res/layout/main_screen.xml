@@ -34,7 +34,7 @@
                 android:layout_height="45dp"
                 android:layout_gravity="top"
                 android:scaleType="centerInside"
-                android:background="?android:selectableItemBackground" />
+                android:background="?attr/selectableItemBackgroundBorderless" />
 
             <com.example.audiocutter.ui.common.AdView
                 android:id="@+id/advertisement_button"
@@ -42,7 +42,7 @@
                 android:layout_height="45dp"
                 android:layout_gravity="top"
                 android:scaleType="centerInside"
-                android:background="?android:selectableItemBackground"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="4dp"/>
 
             <ImageView
@@ -52,7 +52,7 @@
                 android:layout_gravity="top"
                 android:scaleType="centerInside"
                 android:layout_marginEnd="10dp"
-                android:background="?android:selectableItemBackground"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/home_ic_setting" />
 
         </LinearLayout>

@@ -74,7 +74,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
-                    app:layout_constraintEnd_toStartOf="@+id/iv_audio_mixer_screen_file"
+                    app:layout_constraintEnd_toStartOf="@+id/iv_mix_screen_sort"
                     app:layout_constraintStart_toEndOf="@+id/iv_mixer_screen_back">
 
                     <TextView
@@ -94,15 +94,15 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-                <ImageView
-                    android:id="@+id/iv_audio_mixer_screen_file"
-                    android:layout_width="@dimen/common_size_item_imagview"
-                    android:layout_height="match_parent"
-                    android:layout_toStartOf="@id/iv_mixer_screen_search"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_audiocutter_file"
-                    app:layout_constraintEnd_toStartOf="@id/iv_mix_screen_sort" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/iv_audio_mixer_screen_file"-->
+<!--                    android:layout_width="@dimen/common_size_item_imagview"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:layout_toStartOf="@id/iv_mixer_screen_search"-->
+<!--                    android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--                    android:scaleType="centerInside"-->
+<!--                    android:src="@drawable/ic_audiocutter_file"-->
+<!--                    app:layout_constraintEnd_toStartOf="@id/iv_mix_screen_sort" />-->
 
                 <ImageView
                     android:id="@+id/iv_mix_screen_sort"

@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.base.BaseFragment
@@ -84,9 +85,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
                 showEmptyList()
             } else {
                 audioCutterAdapter.submitList(ArrayList(listMusic)) {
-                    if (isSearchStatus) {
-                        binding.rvAudioCutter.scrollToPosition(0)
-                    }
+//                    if (isSearchStatus) {
+//                        binding.rvAudioCutter.scrollToPosition(0)
+//                    }
                 }
                 showList()
                 showProgressBar(false)
@@ -97,7 +98,6 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
     private val folderObserver = Observer<List<FolderItem>> {
         folderAdapter.submitList(it)
-        Log.d(TAG, "folder adapter : list folder: size : " + it.size)
     }
 
     private val folderStatusObserver = Observer<FolderStatus> {
@@ -105,9 +105,11 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             binding.rvAudioCutter.visibility = View.INVISIBLE
             audioCutterAdapter.submitList(emptyList())
             binding.rvFolderCutter.visibility = View.VISIBLE
+            binding.ivCutterScreenSearch.visibility = View.INVISIBLE
         } else {
             binding.rvFolderCutter.visibility = View.INVISIBLE
             binding.rvAudioCutter.visibility = View.VISIBLE
+            binding.ivCutterScreenSearch.visibility = View.VISIBLE
         }
 
         binding.tvCutterScreen.text = it.folder
@@ -138,6 +140,23 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             showList()
         } else {
             showEmptyList()
+        }
+    }
+
+    private val adapterObserver = object: RecyclerView.AdapterDataObserver(){
+        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+            super.onItemRangeMoved(fromPosition, toPosition, itemCount)
+            binding.rvAudioCutter.scrollToPosition(0)
+        }
+
+        override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+            super.onItemRangeRemoved(positionStart, itemCount)
+            binding.rvAudioCutter.scrollToPosition(0)
+        }
+
+        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+            super.onItemRangeInserted(positionStart, itemCount)
+            binding.rvAudioCutter.scrollToPosition(0)
         }
     }
 
@@ -174,18 +193,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         super.onViewCreated(view, savedInstanceState)
         initLists()
         observerData()
-        initRecycleViewFolder()
-
     }
-
-    private fun initRecycleViewFolder() {
-
-        binding.rvFolderCutter.adapter = folderAdapter
-        binding.rvFolderCutter.setHasFixedSize(true)
-        binding.rvFolderCutter.layoutManager = LinearLayoutManager(requireContext())
-
-    }
-
     private fun observerData() {
         audioCutterModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
         audioCutterModel.listAudioCutterViewItems.observe(viewLifecycleOwner, listAudioObserver)
@@ -224,9 +232,9 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
-                binding.rvAudioCutter.post {
-                    binding.rvAudioCutter.smoothScrollToPosition(0)
-                }
+//                binding.rvAudioCutter.post {
+//                    binding.rvAudioCutter.smoothScrollToPosition(0)
+//                }
                 audioCutterModel.stop()
                 searchAudioByName(textChange.toString())
                 if (textChange.toString() != "") {
@@ -319,6 +327,12 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         binding.rvAudioCutter.adapter = audioCutterAdapter
         binding.rvAudioCutter.setHasFixedSize(true)
         binding.rvAudioCutter.layoutManager = LinearLayoutManager(requireContext())
+
+        binding.rvFolderCutter.adapter = folderAdapter
+        binding.rvFolderCutter.setHasFixedSize(true)
+        binding.rvFolderCutter.layoutManager = LinearLayoutManager(requireContext())
+
+        audioCutterAdapter.registerAdapterDataObserver(adapterObserver)
     }
 
     /*  override fun showDialogSetAs(itemAudio: AudioCutterView) {
@@ -549,6 +563,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     override fun onDestroyView() {
         super.onDestroyView()
         ManagerFactory.getDefaultAudioPlayer().stop()
+        audioCutterAdapter.unregisterAdapterDataObserver(adapterObserver)
     }
 
     /*init {

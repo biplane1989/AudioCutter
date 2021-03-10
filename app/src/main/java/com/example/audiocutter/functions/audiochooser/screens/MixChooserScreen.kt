@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.manager.ManagerFactory
@@ -95,11 +96,29 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
             binding.rvMixer.visibility = View.INVISIBLE
             audioMixAdapter.submitList(emptyList())
             binding.rvFolderMixer.visibility = View.VISIBLE
+            binding.ivMixerScreenSearch.visibility = View.INVISIBLE
         }else{
             binding.rvFolderMixer.visibility = View.INVISIBLE
             binding.rvMixer.visibility = View.VISIBLE
+            binding.ivMixerScreenSearch.visibility = View.VISIBLE
         }
         binding.tvMixerScreen.text = it.folder
+    }
+
+    private val adapterObserver = object: RecyclerView.AdapterDataObserver(){
+        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+            super.onItemRangeMoved(fromPosition, toPosition, itemCount)
+            binding.rvMixer.scrollToPosition(0)
+        }
+        override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+            super.onItemRangeRemoved(positionStart, itemCount)
+            binding.rvMixer.scrollToPosition(0)
+        }
+
+        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+            super.onItemRangeInserted(positionStart, itemCount)
+            binding.rvMixer.scrollToPosition(0)
+        }
     }
 
     private fun showList() {
@@ -209,11 +228,11 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
             }
 
             override fun onTextChanged(textChange: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (isSearchStatus) {
-                    binding.rvMixer.post {
-                        binding.rvMixer.scrollToPosition(0)
-                    }
-                }
+//                if (isSearchStatus) {
+//                    binding.rvMixer.post {
+//                        binding.rvMixer.scrollToPosition(0)
+//                    }
+//                }
                 audioMixModel.stop()
                 searchAudioByName(textChange.toString())
                 if (textChange.toString() != "") {
@@ -276,7 +295,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         binding.tvMixerScreen.visibility = status
         binding.ivMixerScreenSearch.visibility = status
         binding.ivMixScreenSort.visibility = status
-        binding.ivAudioMixerScreenFile.visibility = status
+//        binding.ivAudioMixerScreenFile.visibility = status
     }
 
     private fun showProgressBar(b: Boolean) {
@@ -298,6 +317,8 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         binding.rvFolderMixer.adapter = folderAdapter
         binding.rvFolderMixer.setHasFixedSize(true)
         binding.rvFolderMixer.layoutManager = LinearLayoutManager(requireContext())
+
+        audioMixAdapter.registerAdapterDataObserver(adapterObserver)
     }
 
     @SuppressLint("SetTextI18n")
@@ -371,6 +392,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     override fun onDestroyView() {
         super.onDestroyView()
         ManagerFactory.getDefaultAudioPlayer().stop()
+        audioMixAdapter.unregisterAdapterDataObserver(adapterObserver)
     }
 }
 

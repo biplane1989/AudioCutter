@@ -82,6 +82,9 @@ class MergePreviewScreen : BaseFragment(), MergePreviewAdapter.AudioMergeChooseL
                 binding.rltEmpty.visibility = View.INVISIBLE
             }
             audioMerAdapter.submitList(it)
+//            for (item in it){
+//                Log.d("giangtd001", "observerData: name: "+ item.audioFile.fileName)
+//            }
         }
         audioMerModel.checkLessThanTwoItemsIsSelected.observe(viewLifecycleOwner){
             if(it){

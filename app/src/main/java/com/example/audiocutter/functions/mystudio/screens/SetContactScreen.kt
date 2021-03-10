@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.databinding.MyStudioContactScreenBinding
@@ -94,10 +95,29 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
         }
     }
 
+    private val adapterObserver = object: RecyclerView.AdapterDataObserver(){
+        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+            super.onItemRangeMoved(fromPosition, toPosition, itemCount)
+            binding.rvListContact.scrollToPosition(0)
+        }
+
+        override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+            super.onItemRangeRemoved(positionStart, itemCount)
+            binding.rvListContact.scrollToPosition(0)
+        }
+
+        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+            super.onItemRangeInserted(positionStart, itemCount)
+            binding.rvListContact.scrollToPosition(0)
+        }
+    }
+
     private fun init() {
         binding.rvListContact.layoutManager = LinearLayoutManager(context)
         binding.rvListContact.setHasFixedSize(true)
         binding.rvListContact.adapter = listContactAdapter
+
+        listContactAdapter.registerAdapterDataObserver(adapterObserver)
     }
 
     override fun onCreateView(
@@ -166,11 +186,11 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
                 before: Int,
                 count: Int
             ) {
-                if (isSearchStatus) {
-                    binding.rvListContact.post {
-                        binding.rvListContact.smoothScrollToPosition(0)
-                    }
-                }
+//                if (isSearchStatus) {
+//                    binding.rvListContact.post {
+//                        binding.rvListContact.smoothScrollToPosition(0)
+//                    }
+//                }
                 mListContactViewModel.searchContact(textChange.toString())
                 if (textChange.toString() != "") {
                     binding.ivClear.visibility = View.VISIBLE
@@ -204,9 +224,9 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
                 binding.edtSearch.text.clear()
                 hideKeyboard()
                 isSearchStatus = false
-                binding.rvListContact.post {
-                    binding.rvListContact.smoothScrollToPosition(0)
-                }
+//                binding.rvListContact.post {
+//                    binding.rvListContact.smoothScrollToPosition(0)
+//                }
 
             }
             binding.ivClear -> {
@@ -249,5 +269,10 @@ class SetContactScreen : BaseFragment(), SetContactCallback, View.OnClickListene
         binding.edtSearch.requestFocus()
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        listContactAdapter.unregisterAdapterDataObserver(adapterObserver)
     }
 }

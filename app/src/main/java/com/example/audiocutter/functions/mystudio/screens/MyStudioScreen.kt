@@ -14,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseActivity
 import com.example.audiocutter.base.BaseFragment
@@ -149,6 +150,13 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
         onReceivedAction(it.action, it.data)
     }
 
+    private val adapterObserver = object: RecyclerView.AdapterDataObserver(){
+        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+            super.onItemRangeMoved(fromPosition, toPosition, itemCount)
+            binding.rvListAudioCutter.scrollToPosition(0)
+        }
+    }
+
     private fun onReceivedAction(action: String, type: Int) {
         if (action in arrayListOf(
                 Constance.ACTION_CHECK_DELETE,
@@ -261,6 +269,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
         val linearLayoutManager = LinearLayoutManager(context)
         binding.rvListAudioCutter.layoutManager = linearLayoutManager
         binding.rvListAudioCutter.adapter = audioCutterAdapter
+        audioCutterAdapter.registerAdapterDataObserver(adapterObserver)
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -557,6 +566,7 @@ class MyStudioScreen : BaseFragment(), AudioCutterScreenCallback, RenameDialogLi
     override fun onDestroyView() {
         super.onDestroyView()
         myStudioViewModel.stopMediaPlayerWhenTabSelect()
+        audioCutterAdapter.unregisterAdapterDataObserver(adapterObserver)
     }
 
     override fun onCancelDeleteClick(id: Int) {        // cancel dialog

@@ -316,6 +316,7 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
                 if (item.audioFile.getFilePath().equals(itemCopy.audioFile.getFilePath())) {
                     newItem = item.copy()
                     newItem.isCheckChooseItem = itemCopy.isCheckChooseItem
+                    newItem.no = itemCopy.no
                     listAudioFileView.set(index, newItem)
                 }
                 index++
@@ -369,7 +370,8 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
         }
         val totalItemSelected = _countItemSelected.value ?: 0
         if (totalItemSelected >= 2) {
-            listAudioCutterViewItems.value?.let {
+//            listAudioCutterViewItems.value?.let {
+            listAudioFileView.let {
                 it.forEach {
                     if (!it.isCheckChooseItem) {
                         it.no = -1
@@ -397,26 +399,63 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
     }
 
     fun swapItemAudio(index1: Int, index2: Int) {
-        listAudioCutterViewItemsSelected.value?.let {
-            val listItemSelectedCopy = ArrayList(it)
-            val item1 = it[index1].copy()
-            val item2 = it[index2].copy()
-            listItemSelectedCopy[index1] = item1
-            listItemSelectedCopy[index2] = item2
+        viewModelScope.launch {
+            listAudioCutterViewItemsSelected.value?.let {
+                val listItemSelectedCopy = ArrayList(it)
+                val item1 = it[index1].copy()
+                val item2 = it[index2].copy()
 
-            listAudioFileView.let {
-                val audioCutterView1 = it.findAudioCutterView(item1.audioFile.getFilePath())
-                val audioCutterView2 = it.findAudioCutterView(item2.audioFile.getFilePath())
-                audioCutterView1?.swapNo(audioCutterView2)
+                val no1 = item1.no
+                val no2 = item2.no
+                item1.no = no2
+                item2.no = no1
+
+                listItemSelectedCopy[index1] = item2
+                listItemSelectedCopy[index2] = item1
+
+//            listAudioFileView.let {
+                val audioCutterView1 = listAudioFileView.findAudioCutterView(item1.audioFile.getFilePath())
+                val audioCutterView2 = listAudioFileView.findAudioCutterView(item2.audioFile.getFilePath())
+                val num1 = audioCutterView1?.no
+                val num2 = audioCutterView2?.no
+
+//                audioCutterView1?.swapNo(audioCutterView2)
+//            }
+                var index = 0
+                for (item in listAudioFileView){
+                    if (item.audioFile.getFilePath().equals(audioCutterView1?.audioFile?.getFilePath())){
+                        if (num2 != null) {
+                            listAudioFileView[index].no = num2
+                        }
+                    }
+                    if (item.audioFile.getFilePath().equals(audioCutterView2?.audioFile?.getFilePath())){
+                        if (num1 != null) {
+                            listAudioFileView[index].no = num1
+                        }
+                    }
+                    index++
+                }
+
+//                listAudioCutterViewItems.value?.let {
+//                    val audioCutterView1 = it.findAudioCutterView(item1.audioFile.getFilePath())
+//                    val audioCutterView2 = it.findAudioCutterView(item2.audioFile.getFilePath())
+//                    audioCutterView1?.swapNo(audioCutterView2)
+//                }
+
+//                item1.swapNo(item2)
+//                for (item in listItemSelectedCopy.sortedBy { it.no }){
+//                    Log.d("giangtd001", "swapItemAudio: name new: **"+ item.audioFile.fileName)
+//                }
+                for (item in listAudioFileView){
+                    Log.d("giangtd001", "swapItemAudio: name new: **"+ item.audioFile.fileName + " no: "+ item.no)
+                }
+
+                _listAudioCutterViewItemsSelected.value = listItemSelectedCopy.sortedBy { it.no }
             }
-       /*     listAudioCutterViewItems.value?.let {
-                val audioCutterView1 = it.findAudioCutterView(item1.audioFile.getFilePath())
-                val audioCutterView2 = it.findAudioCutterView(item2.audioFile.getFilePath())
-                audioCutterView1?.swapNo(audioCutterView2)
-            }*/
-            item1.swapNo(item2)
-            _listAudioCutterViewItemsSelected.value = listItemSelectedCopy.sortedBy { it.no }
+
+//            synchronizationData()
         }
+
     }
 
     fun removeItemAudio(item: AudioCutterViewItem) {
@@ -438,37 +477,28 @@ class MergeChooserModel(application: Application) : BaseAndroidViewModel(applica
 //                    .sortedBy { it.no }
 //
 //            }
-            listAudioFileView?.let {
+//            listAudioFileView?.let {
 
 //                val newList = it.unselectedItem(item.audioFile.getFilePath())
 //                _listAudioCutterViewItems.value = newList
 //                _listAudioCutterViewItemsSelected.value =
 //                    newList.filter { it.isCheckChooseItem }.sortedBy { it.no }
                 var index = 0
-                for (data in it){
+                for (data in listAudioFileView){
                     if (item.audioFile.getFilePath().equals(data.audioFile.getFilePath())){
                         val newItem = data.copy()
                         newItem.isCheckChooseItem = false
-                        it.set(index, newItem)
+                        newItem.isplaying = false
+                        newItem.state = PlayerState.IDLE
+                        listAudioFileView.set(index, newItem)
+                        break
                     }
                     index++
                 }
-                _listAudioCutterViewItems.value = it
-                _listAudioCutterViewItemsSelected.value =
-                    it.filter { it.isCheckChooseItem }.sortedBy { it.no }
-            }
+                _listAudioCutterViewItems.value = listAudioFileView
 
-//            _listAudioCutterViewItemsSelected.value?.let {
-//                val newList = ArrayList(it)
-//                newList.remove(item)
-//                _listAudioCutterViewItemsSelected.value = newList
-//            }
-//
-//            _listAudioCutterViewItems.value?.let {
-//                val newItem = item.copy(isCheckChooseItem = false)
-//                val newList = ArrayList(it)
-//                newList[newList.indexOf(item)] = newItem
-//                _listAudioCutterViewItems.value = newList
+                _listAudioCutterViewItemsSelected.value =
+                    listAudioFileView.filter { it.isCheckChooseItem }.sortedBy { it.no }
 //            }
 
             synchronizationData()

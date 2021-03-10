@@ -28,10 +28,10 @@
                     app:layout_constraintBottom_toBottomOf="parent" />
 
                 <EditText
-                    android:layout_marginStart="15dp"
                     android:id="@+id/edt_mer_search"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_marginStart="15dp"
                     android:layout_marginBottom="1dp"
                     android:background="@color/colorWhite"
                     android:focusableInTouchMode="true"
@@ -56,11 +56,11 @@
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <ImageView
-                    android:layout_marginStart="5dp"
                     android:id="@+id/iv_mer_screen_back_edt"
                     android:layout_width="?actionBarSize"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
+                    android:layout_marginStart="5dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_audiocutter_back"
@@ -70,15 +70,14 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/linear"
                     android:layout_width="0dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:layout_marginLeft="15dp"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:background="?attr/selectableItemBackground"
                     android:orientation="horizontal"
-                    app:layout_constraintEnd_toStartOf="@+id/iv_audio_mer_screen_file"
+                    app:layout_constraintEnd_toStartOf="@+id/iv_mer_screen_sort"
                     app:layout_constraintStart_toEndOf="@+id/iv_mer_screen_back">
 
                     <TextView
-
                         android:id="@+id/tv_mer_screen"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -93,16 +92,6 @@
                         tools:ignore="RtlSymmetry,SpUsage" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-
-                <ImageView
-                    android:id="@+id/iv_audio_mer_screen_file"
-                    android:layout_width="@dimen/common_size_item_imagview"
-                    android:layout_height="match_parent"
-                    android:layout_toStartOf="@id/iv_mer_screen_search"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_audiocutter_file"
-                    app:layout_constraintEnd_toStartOf="@id/iv_mer_screen_sort" />
 
                 <ImageView
                     android:id="@+id/iv_mer_screen_sort"
@@ -159,8 +148,8 @@
             android:id="@+id/rv_folder_merge"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/rlt_actionbar_mer"
             android:layout_above="@id/rlt_next_mer_parent"
+            android:layout_below="@id/rlt_actionbar_mer"
             android:layout_marginTop="0dp"
             android:overScrollMode="never"
             android:visibility="invisible" />

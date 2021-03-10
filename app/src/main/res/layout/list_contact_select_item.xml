@@ -87,6 +87,7 @@
 
 
         <ImageView
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:id="@+id/iv_select"
             android:layout_width="@dimen/d_40"
             android:layout_height="match_parent"

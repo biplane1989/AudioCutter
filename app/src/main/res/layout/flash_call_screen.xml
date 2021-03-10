@@ -71,7 +71,7 @@
                 android:layout_height="?actionBarSize"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@id/sw_flash_call_mode"
-                android:background="?attr/selectableItemBackground"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:gravity="center"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_question_flcall" />

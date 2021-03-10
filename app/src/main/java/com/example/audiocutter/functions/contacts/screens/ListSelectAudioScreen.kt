@@ -20,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.audiocutter.R
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.databinding.ListContactSelectScreenBinding
@@ -51,6 +52,22 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
 //                    binding.rvListSelectAudio.smoothScrollToPosition(0)
 //                }
 //            }
+        }
+    }
+
+    private val adapterObserver = object: RecyclerView.AdapterDataObserver(){
+        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+            super.onItemRangeMoved(fromPosition, toPosition, itemCount)
+            binding.rvListSelectAudio.scrollToPosition(0)
+        }
+        override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+            super.onItemRangeRemoved(positionStart, itemCount)
+            binding.rvListSelectAudio.scrollToPosition(0)
+        }
+
+        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+            super.onItemRangeInserted(positionStart, itemCount)
+            binding.rvListSelectAudio.scrollToPosition(0)
         }
     }
 
@@ -97,6 +114,7 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
         binding.rvListSelectAudio.layoutManager = LinearLayoutManager(context)
         //binding.rvListSelectAudio.setHasFixedSize(true)
         binding.rvListSelectAudio.adapter = mListSelectAdapter
+        mListSelectAdapter.registerAdapterDataObserver(adapterObserver)
     }
 
     private fun registerObservers() {
@@ -181,11 +199,11 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
             }
 
             override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
-                if (isSearchStatus) {
-                    binding.rvListSelectAudio.post {
-                        binding.rvListSelectAudio.smoothScrollToPosition(0)
-                    }
-                }
+//                if (isSearchStatus) {
+//                    binding.rvListSelectAudio.post {
+//                        binding.rvListSelectAudio.smoothScrollToPosition(0)
+//                    }
+//                }
                 mListSelectAudioViewModel.searchAudioFile(textChange.toString())
                 if (textChange.toString() != "") {
                     binding.ivClear.visibility = View.VISIBLE
@@ -304,5 +322,10 @@ class ListSelectAudioScreen : BaseFragment(), SelectAudioScreenCallback, View.On
         if (positionSelect > -1) {
             mListSelectAudioViewModel.stopAudio(positionSelect)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mListSelectAdapter.unregisterAdapterDataObserver(adapterObserver)
     }
 }

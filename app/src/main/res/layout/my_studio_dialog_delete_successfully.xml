@@ -40,7 +40,7 @@
                 android:id="@+id/iv_close"
                 android:layout_width="?actionBarSize"
                 android:layout_height="?actionBarSize"
-                android:background="?attr/selectableItemBackground"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/my_studio_dialog_icon_close"
                 app:layout_constraintEnd_toEndOf="parent"

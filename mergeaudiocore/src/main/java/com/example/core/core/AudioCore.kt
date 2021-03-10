@@ -1,5 +1,6 @@
 package com.example.core.core
 
+import android.graphics.Bitmap
 import java.io.File
 
 class AudioCore(
