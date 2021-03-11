@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -115,17 +114,43 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
     }
 
 
+    override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {       // khi ket thuc animation chuyen man hinh thi moi cho dang ky observe
+        if (nextAnim != 0x0) {
+            val animator = AnimationUtils.loadAnimation(activity, nextAnim)
+
+            animator.setAnimationListener(object : Animation.AnimationListener {
+                override fun onAnimationStart(animation: Animation?) {
+                }
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    if (enter) {
+                        loadData()
+                    }
+                }
+
+                override fun onAnimationRepeat(animation: Animation?) {
+                }
+            })
+
+            return animator
+        } else {
+            loadData()
+        }
+        return null
+    }
+
+    private fun loadData(){
+        lifecycleScope.launch {
+            mListContactViewModel.scan()
+        }
+    }
+
+
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
         mListContactViewModel = ViewModelProviders.of(this).get(ListContactViewModel::class.java)
         listContactAdapter = ListContactAdapter(context, this)
-
-        lifecycleScope.launch {
-//            delay(1250)
-            mListContactViewModel.scan()
-        }
-
         mListContactViewModel.getData()
             .observe(this, listContactObserver)          // loi observe hoi lai tai
     }
@@ -148,9 +173,6 @@ class ListContactScreen() : BaseFragment(), ContactCallback, View.OnClickListene
 
             override fun onTextChanged(textChange: CharSequence, start: Int, before: Int, count: Int) {
                 mListContactViewModel.searchContact(textChange.toString())
-//                binding.rvListContact.post {
-//                    binding.rvListContact.smoothScrollToPosition(0)
-//                }
                 if (textChange.toString() != "") {
                     binding.ivClear.visibility = View.VISIBLE
                 } else {

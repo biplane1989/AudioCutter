@@ -50,7 +50,7 @@
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:layout_gravity="top"
-                android:scaleType="centerInside"
+                android:scaleType="center"
                 android:layout_marginEnd="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/home_ic_setting" />

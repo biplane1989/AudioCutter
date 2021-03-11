@@ -147,7 +147,7 @@ class AdView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         canvas.save()
         //canvas.translate(paddingLeft.toFloat(), paddingTop.toFloat())
         canvas.drawCircle(drawingRect.centerX().toFloat(), drawingRect.centerY()
-            .toFloat(), min(drawingRect.width(), drawingRect.height()) / 2f - mBorderCirclePaint.strokeWidth, mBorderCirclePaint)
+            .toFloat(), min(drawingRect.width(), drawingRect.height()) / 2.6f - mBorderCirclePaint.strokeWidth, mBorderCirclePaint)
 
         canvas.restore()
     }
@@ -243,13 +243,12 @@ class AdView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             // scale by height
             diamondHeight = drawingRect.height().toFloat()
             diamondWidth = diamondAspect * diamondHeight
-
         }
 
-        diamondBorderDrawingRectF.left = drawingRect.centerX() - diamondWidth / 2f
-        diamondBorderDrawingRectF.right = drawingRect.centerX() + diamondWidth / 2f
-        diamondBorderDrawingRectF.top = drawingRect.centerY() - diamondHeight / 2f
-        diamondBorderDrawingRectF.bottom = drawingRect.centerY() + diamondHeight / 2f
+        diamondBorderDrawingRectF.left = drawingRect.centerX() - diamondWidth / 2.8f
+        diamondBorderDrawingRectF.right = drawingRect.centerX() + diamondWidth / 2.8f
+        diamondBorderDrawingRectF.top = drawingRect.centerY() - diamondHeight / 2.8f
+        diamondBorderDrawingRectF.bottom = drawingRect.centerY() + diamondHeight / 2.8f
 
         val newHeight = diamondBorderDrawingRectF.height() - diamondBorderSize * 2
         val newWidth = diamondBorderDrawingRectF.width() / diamondBorderDrawingRectF.height() * newHeight

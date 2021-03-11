@@ -230,7 +230,7 @@ class Utils {
             try {
                 val temp = Normalizer.normalize(value, Normalizer.Form.NFD)
                 val pattern: Pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+")
-                return pattern.matcher(temp).replaceAll("")
+                return pattern.matcher(temp).replaceAll("").replace("Đ", "D").replace("đ", "d")
             } catch (ex: java.lang.Exception) {
                 ex.printStackTrace()
             }

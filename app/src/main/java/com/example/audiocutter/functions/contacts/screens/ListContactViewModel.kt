@@ -39,12 +39,15 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
 
     init {
         contactManager.setup()
+//        scan()
     }
 
     fun scan() {
         runOnBackground {
-            loadingStatus.postValue(true)
-            contactManager.scanContact()
+            if (mListContact.isNullOrEmpty()) {
+                loadingStatus.postValue(true)
+                contactManager.scanContact()
+            }
         }
     }
 
@@ -87,15 +90,15 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
 
         if (contactList.size > 0) {
             for (item in contactList) {     // add them 1 truong headerContact -> conver contactItem.name co dau thanh khong dau
-                newListContact.add(ContactItemView(Utils.covertToString(item.contactItem.name)
-                    .toString(), item.contactItem.name          // fix search
-                    .toString(), item.contactItem, false))
+                newListContact.add(ContactItemView(Utils.covertToString(item.contactItem.name[0].toString())
+                    .toString(), item.contactItem.name.toString(),           // fix search
+                    item.contactItem, false))
             }
 
             Collections.sort(newListContact, Comparator<ContactItemView> { user1, user2 ->  // sap xep list theo headerContact
-                java.lang.String.valueOf(user1.contactHeader.get(0)).toUpperCase(Locale.ROOT)
-                    .compareTo(java.lang.String.valueOf(user2.contactHeader.get(0))
-                        .toUpperCase(Locale.UK))
+                java.lang.String.valueOf(user1.contactHeader).toUpperCase(Locale.ROOT)
+                    .compareTo(java.lang.String.valueOf(user2.contactHeader)
+                        .toUpperCase(Locale.ROOT))
             })
 
             val firstContact = newListContact.get(0).contactHeader  // neu co cac ky tu dac biet thi them 1 header = "#"
