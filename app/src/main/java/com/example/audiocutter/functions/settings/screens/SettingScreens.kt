@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.example.audiocutter.R
+import com.example.audiocutter.activities.MainActivity
 import com.example.audiocutter.base.BaseFragment
 import com.example.audiocutter.core.result.AudioEditorManagerlmpl
 import com.example.audiocutter.databinding.SettingScreenBinding
@@ -55,44 +56,43 @@ class SettingScreens : BaseFragment(), SetLanguageDialog.DialogSettingsListener 
         when (item) {
             1 -> {
                 PreferencesHelper.putString(PreferencesHelper.APP_LANGUAGE, "en")
-                val myLocale = Locale("en")
+                val myLocale = Locale("en","US")
 
                 Utils.updateLocale(requireContext(), myLocale)
-
-//                Locale.setDefault(myLocale)
-//                val conf = resources.configuration
-//                conf.setLocale(myLocale)
-//                resources.updateConfiguration(conf, resources.displayMetrics)
 
                 binding.tvLanguageSettings.text = resources.getString(R.string.english_text)
                 requireActivity().recreate()
 
+//                startActivity(Intent(requireContext(), MainActivity::class.java))
+//                requireActivity().recreate()
+
+//                requireActivity().finish()
+
                 if (AudioEditorManagerlmpl.isMyServiceRunning(ResultService::class.java)) {
                     val intent = Intent(requireContext(), ResultService::class.java)
                     intent.setAction(Constance.SERVICE_ACTION_CHANGE_LANGUAGE)
-                    requireActivity()?.startService(intent)
+                    requireActivity().startService(intent)
                     Log.d("TAG", "setLanguage: onDestroy: service 1")
                 }
             }
             0 -> {
                 PreferencesHelper.putString(PreferencesHelper.APP_LANGUAGE, "vi")
-                val myLocale = Locale("vi")
+                val myLocale = Locale("vi","VN")
 
                 Utils.updateLocale(requireContext(), myLocale)
-
-//                Locale.setDefault(myLocale)
-//                val conf: Configuration = resources.configuration
-//                conf.setLocale(myLocale)
-//                resources.updateConfiguration(conf, resources.displayMetrics)
 
                 binding.tvLanguageSettings.text = resources.getString(R.string.vietnam_text)
                 requireActivity().recreate()
 
+//                startActivity(Intent(requireContext(), MainActivity::class.java))
+//                requireActivity().recreate()
+
+//                requireActivity().finish()
 
                 if (AudioEditorManagerlmpl.isMyServiceRunning(ResultService::class.java)) {
                     val intent = Intent(requireContext(), ResultService::class.java)
                     intent.setAction(Constance.SERVICE_ACTION_CHANGE_LANGUAGE)
-                    requireActivity()?.startService(intent)
+                    requireActivity().startService(intent)
                     Log.d("TAG", "setLanguage: onDestroy: service 2")
                 }
             }

@@ -77,7 +77,7 @@
                     app:layout_constraintStart_toEndOf="@+id/iv_cutter_screen_back">
 
                     <TextView
-
+                        android:ellipsize="marquee"
                         android:id="@+id/tv_cutter_screen"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"

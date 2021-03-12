@@ -33,6 +33,7 @@ import com.google.android.material.snackbar.Snackbar
 class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAdapter.AudioMergeListener {
 
     val TAG = "tag"
+    private var positionRv = 0
     private lateinit var binding: MergeChooserScreenBinding
     private lateinit var audioMerAdapter: MergeChooserAdapter
     private val audioMerModel: MergeChooserModel by navGraphViewModels(R.id.mer_navigation)
@@ -137,6 +138,8 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         binding = DataBindingUtil.inflate(inflater, R.layout.merge_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
+
+        binding.rvMerge.scrollToPosition(positionRv)
         return binding.root
     }
 
@@ -261,7 +264,6 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
 //        binding.ivAudioMerScreenFile.visibility = status
     }
 
-
     private fun initLists() {
 
         binding.rvMerge.adapter = audioMerAdapter
@@ -273,6 +275,14 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
         binding.rvFolderMerge.layoutManager = LinearLayoutManager(requireContext())
 
         audioMerAdapter.registerAdapterDataObserver(adapterObserver)
+
+        binding.rvMerge.addOnScrollListener(object : RecyclerView.OnScrollListener() {      // su kien luu lai gia tri scroll
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+
+                positionRv = binding.rvMerge.computeVerticalScrollOffset()
+                Log.d(TAG, "onScrolled: positionRv: "+ positionRv)
+            }
+        })
     }
 
     override fun chooseItemAudio(position: Int) {
@@ -342,7 +352,7 @@ class MergeChooserScreen : BaseFragment(), View.OnClickListener, MergeChooserAda
     private fun previousStatus() {
         binding.edtMerSearch.setText("")
         binding.rvMerge.visibility = View.VISIBLE
-        binding.rvMerge.scrollToPosition(0)
+        //binding.rvMerge.scrollToPosition(0)
         binding.rltNextMerParent.visibility = View.VISIBLE
         binding.tvEmptyListMer.visibility = View.INVISIBLE
         binding.ivEmptyListMerge.visibility = View.INVISIBLE

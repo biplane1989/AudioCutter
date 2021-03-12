@@ -186,14 +186,7 @@ abstract class BaseActivity : AppCompatActivity() {
         val myLocale = Locale(language)
 
         Utils.updateLocale(this, myLocale)
-
-//        Locale.setDefault(myLocale)
-//        val conf = resources.configuration
-//        conf.setLocale(myLocale)
-//        resources.updateConfiguration(conf, resources.displayMetrics)
     }
-
-
 }
 
 

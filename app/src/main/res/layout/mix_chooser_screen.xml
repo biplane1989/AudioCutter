@@ -78,7 +78,7 @@
                     app:layout_constraintStart_toEndOf="@+id/iv_mixer_screen_back">
 
                     <TextView
-
+                        android:ellipsize="marquee"
                         android:id="@+id/tv_mixer_screen"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -86,7 +86,7 @@
                         android:drawablePadding="4dp"
                         android:fontFamily="@font/opensans_bold"
                         android:gravity="center_vertical"
-                        android:maxLines="1"
+                        android:singleLine="true"
                         android:text="sds"
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/d_18"

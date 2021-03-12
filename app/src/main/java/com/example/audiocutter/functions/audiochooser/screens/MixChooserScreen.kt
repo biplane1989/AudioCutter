@@ -30,9 +30,9 @@ import com.example.audiocutter.functions.audiochooser.objects.FolderStatus
 import com.example.audiocutter.functions.common.SortAudioPopupWindow
 import com.google.android.material.snackbar.Snackbar
 
-class MixChooserScreen : BaseFragment(), View.OnClickListener,
-    MixChooserAdapter.AudioMixerListener {
+class MixChooserScreen : BaseFragment(), View.OnClickListener, MixChooserAdapter.AudioMixerListener {
 
+    private var positionRv = 0
     val TAG = CutChooserScreen::class.java.name
     private lateinit var audioMixAdapter: MixChooserAdapter
     private lateinit var audioMixModel: MixChooserModel
@@ -91,13 +91,13 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         }
     }
 
-    private val folderStatusObserver = Observer<FolderStatus>{
-        if (it.status){
+    private val folderStatusObserver = Observer<FolderStatus> {
+        if (it.status) {
             binding.rvMixer.visibility = View.INVISIBLE
             audioMixAdapter.submitList(emptyList())
             binding.rvFolderMixer.visibility = View.VISIBLE
             binding.ivMixerScreenSearch.visibility = View.INVISIBLE
-        }else{
+        } else {
             binding.rvFolderMixer.visibility = View.INVISIBLE
             binding.rvMixer.visibility = View.VISIBLE
             binding.ivMixerScreenSearch.visibility = View.VISIBLE
@@ -105,11 +105,12 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         binding.tvMixerScreen.text = it.folder
     }
 
-    private val adapterObserver = object: RecyclerView.AdapterDataObserver(){
+    private val adapterObserver = object : RecyclerView.AdapterDataObserver() {
         override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
             super.onItemRangeMoved(fromPosition, toPosition, itemCount)
             binding.rvMixer.scrollToPosition(0)
         }
+
         override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
             super.onItemRangeRemoved(positionStart, itemCount)
             binding.rvMixer.scrollToPosition(0)
@@ -122,9 +123,9 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     }
 
     private fun showList() {
-        if (audioMixModel.folderLiveData.value?.status == true){
+        if (audioMixModel.folderLiveData.value?.status == true) {
             binding.rvFolderMixer.visibility = View.VISIBLE
-        }else{
+        } else {
             binding.rvMixer.visibility = View.VISIBLE
         }
         binding.ivEmptyListMixer.visibility = View.INVISIBLE
@@ -142,23 +143,15 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         audioMixModel = ViewModelProvider(this).get(MixChooserModel::class.java)
-        audioMixAdapter = MixChooserAdapter(
-            requireContext(),
-            audioMixModel.getAudioPlayer(),
-            lifecycleScope,
-            requireActivity()
-        )
+        audioMixAdapter = MixChooserAdapter(requireContext(), audioMixModel.getAudioPlayer(), lifecycleScope, requireActivity())
 
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.mix_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
+        binding.rvMixer.scrollToPosition(positionRv)
         return binding.root
     }
 
@@ -172,7 +165,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         audioMixModel.listAudioCutterViewItems.observe(viewLifecycleOwner, listAudioObserver)
         audioMixModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
         audioMixModel.isEmptyState.observe(viewLifecycleOwner, emptyState)
-        audioMixModel.folderLiveData.observe(viewLifecycleOwner,folderStatusObserver)
+        audioMixModel.folderLiveData.observe(viewLifecycleOwner, folderStatusObserver)
 
         audioMixModel.checkNextButtonEnable.observe(viewLifecycleOwner) {
             if (it) {
@@ -195,9 +188,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
             viewStateManager.mixingOnSelected(this, it[0], it[1])
         }
         audioMixModel.showSortAudioDialog.observe(viewLifecycleOwner) {
-            val sortAudioPopupWindow = SortAudioPopupWindow(
-                binding.ivMixScreenSort, it
-            ) {
+            val sortAudioPopupWindow = SortAudioPopupWindow(binding.ivMixScreenSort, it) {
                 audioMixModel.sortAudioBy(it)
             }
             sortAudioPopupWindow.show()
@@ -319,6 +310,13 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
         binding.rvFolderMixer.layoutManager = LinearLayoutManager(requireContext())
 
         audioMixAdapter.registerAdapterDataObserver(adapterObserver)
+
+        binding.rvMixer.addOnScrollListener(object : RecyclerView.OnScrollListener() {      // su kien luu lai gia tri scroll
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+
+                positionRv = binding.rvMixer.computeVerticalScrollOffset()
+            }
+        })
     }
 
     @SuppressLint("SetTextI18n")
@@ -358,7 +356,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
                 audioMixModel.clickedOnSortButton()
             }
 
-            binding.linear ->{
+            binding.linear -> {
                 audioMixModel.showFolder()
             }
         }
@@ -373,7 +371,7 @@ class MixChooserScreen : BaseFragment(), View.OnClickListener,
     private fun previousStatus() {
         binding.edtMixerSearch.setText("")
         binding.rvMixer.visibility = View.VISIBLE
-        binding.rvMixer.scrollToPosition(0)
+//        binding.rvMixer.scrollToPosition(0)
         binding.rltNextMixerParent.visibility = View.VISIBLE
         binding.tvEmptyListMixer.visibility = View.INVISIBLE
         binding.ivEmptyListMixer.visibility = View.INVISIBLE

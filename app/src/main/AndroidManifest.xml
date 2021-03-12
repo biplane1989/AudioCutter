@@ -24,6 +24,8 @@
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
     <uses-permission android:name="android.permission.NEW_OUTGOING_CALL" />
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -47,6 +49,7 @@
         </provider>
 
         <activity
+            android:configChanges="locale"
             android:name=".activities.MainActivity"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden|adjustPan">>

@@ -43,9 +43,12 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
     }
 
     fun scan() {
-        runOnBackground {
-            if (mListContact.isNullOrEmpty()) {
-                loadingStatus.postValue(true)
+
+        if (mListContact.isNullOrEmpty()) {
+            if (loadingStatus.value == null) {
+                loadingStatus.value = true
+            }
+            runOnBackground {
                 contactManager.scanContact()
             }
         }
@@ -53,9 +56,11 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
 
     fun getData(): LiveData<List<ContactItemView>> {
         mContactMediatorLivedata.addSource(contactManager.getListContact()) { contacts ->
-            loadingStatus.postValue(true)
+            if (loadingStatus.value == null) {
+                loadingStatus.value = true
+            }
             if (contacts.completed) {
-                loadingStatus.postValue(false)
+                loadingStatus.value = false
                 if (contacts.listContactItem.size > 0) {
                     isEmptyStatus.postValue(false)
                     val newListContacItemView = ArrayList<ContactItemView>()
@@ -69,7 +74,9 @@ class ListContactViewModel(application: Application) : BaseAndroidViewModel(appl
                 }
 
             } else {
-                loadingStatus.postValue(true)
+                if (loadingStatus.value == null) {
+                    loadingStatus.value = true
+                }
             }
         }
         return mContactMediatorLivedata

@@ -98,7 +98,7 @@ class AdView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
         mAdTextPaint.isAntiAlias = true
         mAdTextPaint.setTypeface(ResourcesCompat.getFont(context, R.font.opensans_bold))
-        mAdTextPaint.textSize = Utils.dpToPx(context, 8f).toFloat()
+        mAdTextPaint.textSize = Utils.dpToPx(context, 6f).toFloat()
         mAdTextPaint.color = Color.WHITE
 
         mBorderCirclePaint.isAntiAlias = true
@@ -147,7 +147,7 @@ class AdView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         canvas.save()
         //canvas.translate(paddingLeft.toFloat(), paddingTop.toFloat())
         canvas.drawCircle(drawingRect.centerX().toFloat(), drawingRect.centerY()
-            .toFloat(), min(drawingRect.width(), drawingRect.height()) / 2.6f - mBorderCirclePaint.strokeWidth, mBorderCirclePaint)
+            .toFloat(), min(drawingRect.width(), drawingRect.height()) / 2.5f - mBorderCirclePaint.strokeWidth, mBorderCirclePaint)
 
         canvas.restore()
     }
@@ -245,18 +245,18 @@ class AdView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             diamondWidth = diamondAspect * diamondHeight
         }
 
-        diamondBorderDrawingRectF.left = drawingRect.centerX() - diamondWidth / 2.8f
-        diamondBorderDrawingRectF.right = drawingRect.centerX() + diamondWidth / 2.8f
-        diamondBorderDrawingRectF.top = drawingRect.centerY() - diamondHeight / 2.8f
-        diamondBorderDrawingRectF.bottom = drawingRect.centerY() + diamondHeight / 2.8f
+        diamondBorderDrawingRectF.left = drawingRect.centerX() - diamondWidth / 2.7f
+        diamondBorderDrawingRectF.right = drawingRect.centerX() + diamondWidth / 2.7f
+        diamondBorderDrawingRectF.top = drawingRect.centerY() - diamondHeight / 2.7f
+        diamondBorderDrawingRectF.bottom = drawingRect.centerY() + diamondHeight / 2.7f
 
         val newHeight = diamondBorderDrawingRectF.height() - diamondBorderSize * 2
         val newWidth = diamondBorderDrawingRectF.width() / diamondBorderDrawingRectF.height() * newHeight
 
-        diamondDrawingRectF.left = diamondBorderDrawingRectF.centerX() - newWidth / 2f
-        diamondDrawingRectF.right = diamondBorderDrawingRectF.centerX() + newWidth / 2f
-        diamondDrawingRectF.top = diamondBorderDrawingRectF.centerY() - newHeight / 2f
-        diamondDrawingRectF.bottom = diamondBorderDrawingRectF.centerY() + newHeight / 2f
+        diamondDrawingRectF.left = diamondBorderDrawingRectF.centerX() - newWidth / 2.2f
+        diamondDrawingRectF.right = diamondBorderDrawingRectF.centerX() + newWidth / 2.2f
+        diamondDrawingRectF.top = diamondBorderDrawingRectF.centerY() - newHeight / 2.2f
+        diamondDrawingRectF.bottom = diamondBorderDrawingRectF.centerY() + newHeight / 2.2f
     }
 
     suspend fun startAnim() = coroutineScope {

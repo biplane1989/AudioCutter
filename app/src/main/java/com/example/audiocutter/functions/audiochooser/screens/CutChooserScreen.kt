@@ -40,6 +40,8 @@ import com.example.audiocutter.util.FileUtils
 import com.google.android.material.snackbar.Snackbar
 
 class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, SetAsDialog.setAsListener, View.OnClickListener, OnActionCallback {
+
+    private var positionRv = 0
     private var filePathAudio: String? = ""
     val TAG = CutChooserScreen::class.java.name
     private lateinit var binding: CutChooserScreenBinding
@@ -186,6 +188,8 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
 
 
             })
+
+        binding.rvAudioCutter.scrollToPosition(positionRv)
         return binding.root
     }
 
@@ -333,6 +337,14 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         binding.rvFolderCutter.layoutManager = LinearLayoutManager(requireContext())
 
         audioCutterAdapter.registerAdapterDataObserver(adapterObserver)
+
+        binding.rvAudioCutter.addOnScrollListener(object : RecyclerView.OnScrollListener() {      // su kien luu lai gia tri scroll
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+
+                positionRv = binding.rvAudioCutter.computeVerticalScrollOffset()
+            }
+        })
+
     }
 
     /*  override fun showDialogSetAs(itemAudio: AudioCutterView) {
@@ -507,7 +519,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     private fun previousStatus() {
         hideKeyboard()
         binding.rvAudioCutter.visibility = View.VISIBLE
-        binding.rvAudioCutter.scrollToPosition(indexChoose)
+//        binding.rvAudioCutter.scrollToPosition(indexChoose)
         binding.tvEmptyListCutter.visibility = View.INVISIBLE
         binding.ivEmptyListCutter.visibility = View.INVISIBLE
         binding.edtCutterSearch.setText("")

@@ -2,7 +2,6 @@ package com.example.audiocutter.util
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
@@ -19,23 +18,18 @@ import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.util.TypedValue
-import android.view.View
-import android.view.WindowInsets
-import android.view.WindowInsetsAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.annotation.RequiresApi
 import androidx.core.content.res.ResourcesCompat
 import com.example.audiocutter.R
+import com.example.audiocutter.activities.MainActivity
 import com.example.audiocutter.core.audiomanager.AudioFileManagerImpl
 import com.example.audiocutter.core.audiomanager.Folder
 import com.example.audiocutter.core.manager.ManagerFactory
 import com.example.audiocutter.functions.audiochooser.objects.ItemAppShare
 import com.example.audiocutter.functions.editor.screen.CuttingEditorScreen
-import com.example.audiocutter.functions.resultscreen.objects.CUTTING_AUDIO_TYPE
 import com.example.audiocutter.objects.AudioFile
 import com.example.core.core.AudioInfor
-import com.google.android.material.internal.ContextUtils
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.InputStream
@@ -625,26 +619,42 @@ class Utils {
             }
         }
 
-        fun updateLocale(c: Context, localeToSwitchTo: Locale) {        // update ngôn ngữ hệ thống
-            var context = c
-            val resources: Resources = context.resources
-            val configuration = resources.configuration
+        fun updateLocale(context: Context, locale: Locale) {        // update ngôn ngữ hệ thống
+            val configuration = context.resources.configuration
 
-
-            configuration.setLocale(localeToSwitchTo)
-            resources.updateConfiguration(configuration, resources.displayMetrics)
-            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                val localeList = LocaleList(localeToSwitchTo)
-                LocaleList.setDefault(localeList)
-                configuration.setLocales(localeList)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                configuration.setLocale(locale)
+                configuration.setLayoutDirection(locale)
             } else {
-                configuration.locale = localeToSwitchTo
+                @Suppress("DEPRECATION") configuration.locale = locale
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 context.createConfigurationContext(configuration)
             } else {
-                resources.updateConfiguration(configuration, resources.displayMetrics)
-            }*/
+                @Suppress("DEPRECATION") context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
+            }
+
+//            context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
+
+
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                configuration.setLocale(locale)
+//                val localeList = LocaleList(locale)
+//                LocaleList.setDefault(localeList)
+//                configuration.setLocales(localeList)
+//
+//                context.createConfigurationContext(configuration)
+//            } else {
+//                if (Build.VERSION.SDK_INT >= 17) {
+//                    configuration.setLocale(locale)
+//                    context.createConfigurationContext(configuration)
+//                } else {
+//                    configuration.locale = locale
+//                    context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
+//                }
+//            }
+
         }
 
     }
