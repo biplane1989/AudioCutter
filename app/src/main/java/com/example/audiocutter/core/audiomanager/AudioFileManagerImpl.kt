@@ -151,13 +151,17 @@ object AudioFileManagerImpl : AudioFileManager {
         val listMergingAudio = ArrayList<AudioFile>()
         val listCuttingAudio = ArrayList<AudioFile>()
         val listMixingAudio = ArrayList<AudioFile>()
+        Log.d("giangtd001", "scan: start scanf")
         withLock {
             listAllAudioData.clear()
             uriPathSet.clear()
+            Log.d("giangtd001", "scan: start scanf")
             queryMediaStore { mediaId, filePath, dateStr ->
                 val file = File(filePath)
+                Log.d("giangtd001", "scan: file: "+ file)
                 if (file.exists()) {
                     val audioFile = readOrGetCacheAudioFile(filePath, mediaId, dateStr)
+                    Log.d("giangtd001", "scan: audio: "+ audioFile)
                     audioFile?.let {
                         listAllAudioData.add(it)
                         uriPathSet.add(it.uri.toString())
@@ -182,6 +186,7 @@ object AudioFileManagerImpl : AudioFileManager {
                 if (!listAllAudioData.isSame(oldListAudios)) {
                     isFirstTimeToScanning = false
                     changeStateLoadDone(listAllAudioData, listCuttingAudio, listMergingAudio, listMixingAudio)
+                    Log.d("giangtd001", "scan: listAllAudioData: size "+ listAllAudioData.size)
                 }
             }
         }

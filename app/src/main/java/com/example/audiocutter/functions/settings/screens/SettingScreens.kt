@@ -1,8 +1,7 @@
 package com.example.audiocutter.functions.settings.screens
 
-import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -39,6 +38,7 @@ class SettingScreens : BaseFragment(), SetLanguageDialog.DialogSettingsListener 
         } else {
             binding.tvLanguageSettings.text = resources.getString(R.string.english_text)
         }
+
     }
 
     private fun initViews() {
@@ -56,17 +56,20 @@ class SettingScreens : BaseFragment(), SetLanguageDialog.DialogSettingsListener 
         when (item) {
             1 -> {
                 PreferencesHelper.putString(PreferencesHelper.APP_LANGUAGE, "en")
-                val myLocale = Locale("en","US")
+                val myLocale = Locale("en", "US")
 
                 Utils.updateLocale(requireContext(), myLocale)
 
                 binding.tvLanguageSettings.text = resources.getString(R.string.english_text)
-                requireActivity().recreate()
 
-//                startActivity(Intent(requireContext(), MainActivity::class.java))
-//                requireActivity().recreate()
-
-//                requireActivity().finish()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    requireActivity().recreate()
+                } else {
+                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
+                    requireActivity().onBackPressed()
+                }
 
                 if (AudioEditorManagerlmpl.isMyServiceRunning(ResultService::class.java)) {
                     val intent = Intent(requireContext(), ResultService::class.java)
@@ -77,17 +80,20 @@ class SettingScreens : BaseFragment(), SetLanguageDialog.DialogSettingsListener 
             }
             0 -> {
                 PreferencesHelper.putString(PreferencesHelper.APP_LANGUAGE, "vi")
-                val myLocale = Locale("vi","VN")
+                val myLocale = Locale("vi", "VN")
 
                 Utils.updateLocale(requireContext(), myLocale)
 
                 binding.tvLanguageSettings.text = resources.getString(R.string.vietnam_text)
-                requireActivity().recreate()
 
-//                startActivity(Intent(requireContext(), MainActivity::class.java))
-//                requireActivity().recreate()
-
-//                requireActivity().finish()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    requireActivity().recreate()
+                } else {
+                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
+                    requireActivity().onBackPressed()
+                }
 
                 if (AudioEditorManagerlmpl.isMyServiceRunning(ResultService::class.java)) {
                     val intent = Intent(requireContext(), ResultService::class.java)

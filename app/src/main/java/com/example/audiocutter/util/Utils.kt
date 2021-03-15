@@ -44,6 +44,11 @@ import kotlin.collections.HashSet
 
 class Utils {
     companion object {
+        val permissionsContactScreen = listOf(android.Manifest.permission.READ_CONTACTS, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+        val permissionsCutterScreen = listOf(android.Manifest.permission.READ_CONTACTS, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+        val permissionsMixScreen = listOf(android.Manifest.permission.READ_CONTACTS, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+        val permissionsMergerScreen = listOf(android.Manifest.permission.READ_CONTACTS, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+
         val KEY_SEND_PATH = "key_send_path"
         val FIVE_SECOND = 5000
         val TIME_CHANGE = 1000
@@ -620,20 +625,26 @@ class Utils {
         }
 
         fun updateLocale(context: Context, locale: Locale) {        // update ngôn ngữ hệ thống
-            val configuration = context.resources.configuration
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                configuration.setLocale(locale)
-                configuration.setLayoutDirection(locale)
-            } else {
-                @Suppress("DEPRECATION") configuration.locale = locale
-            }
+            val res = context.resources
+            val conf = res.configuration
+            conf.locale = locale
+            res.updateConfiguration(conf, res.displayMetrics)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                context.createConfigurationContext(configuration)
-            } else {
-                @Suppress("DEPRECATION") context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
-            }
+//            val configuration = context.resources.configuration
+//
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+//                configuration.setLocale(locale)
+//                configuration.setLayoutDirection(locale)
+//            } else {
+//                @Suppress("DEPRECATION") configuration.locale = locale
+//            }
+//
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                context.createConfigurationContext(configuration)
+//            } else {
+//                @Suppress("DEPRECATION") context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
+//            }
 
 //            context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
 

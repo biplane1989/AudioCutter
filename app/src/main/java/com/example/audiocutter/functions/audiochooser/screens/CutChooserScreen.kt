@@ -53,7 +53,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
     //    private lateinit var dialogDone: SetAsDoneDialog
     private lateinit var audioCutterItem: AudioCutterViewItem
     private var pendingRequestingPermission = 0
-    private val CUT_CHOOSE_REQUESTING_PERMISSION = 1 shl 5
+    private val WRITESETTING_ITEM_REQUESTING_PERMISSION = 1 shl 5
     private var indexChoose = 0
     private var isSearchStatus = false
 
@@ -86,11 +86,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             if (listMusic.isEmpty()) {
                 showEmptyList()
             } else {
-                audioCutterAdapter.submitList(ArrayList(listMusic)) {
-//                    if (isSearchStatus) {
-//                        binding.rvAudioCutter.scrollToPosition(0)
-//                    }
-                }
+                audioCutterAdapter.submitList(ArrayList(listMusic)) {}
                 showList()
                 showProgressBar(false)
 
@@ -145,7 +141,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         }
     }
 
-    private val adapterObserver = object: RecyclerView.AdapterDataObserver(){
+    private val adapterObserver = object : RecyclerView.AdapterDataObserver() {
         override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
             super.onItemRangeMoved(fromPosition, toPosition, itemCount)
             binding.rvAudioCutter.scrollToPosition(0)
@@ -176,18 +172,19 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         binding = DataBindingUtil.inflate(inflater, R.layout.cut_chooser_screen, container, false)
         initViews()
         checkEdtSearchAudio()
-        PermissionManager.getAppPermission()
-            .observe(this.viewLifecycleOwner, Observer<AppPermission> {
-                if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CUT_CHOOSE_REQUESTING_PERMISSION) != 0) {
-                    resetRequestingPermission()
-                    requestPermissinWriteSetting()
-                    if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and CUT_CHOOSE_REQUESTING_PERMISSION) != 0) {
-                        showDialogSetAsTypeAudio()
-                    }
-                }
+
+          PermissionManager.getAppPermission()
+              .observe(this.viewLifecycleOwner, Observer<AppPermission> {
+                  if (contactPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
+                      resetRequestingPermission()
+                      requestPermissinWriteSetting()
+                      if (writeSettingPermissionRequest.isPermissionGranted() && (pendingRequestingPermission and WRITESETTING_ITEM_REQUESTING_PERMISSION) != 0) {
+                          showDialogSetAsTypeAudio()
+                      }
+                  }
 
 
-            })
+              })
 
         binding.rvAudioCutter.scrollToPosition(positionRv)
         return binding.root
@@ -198,6 +195,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         initLists()
         observerData()
     }
+
     private fun observerData() {
         audioCutterModel.getStateLoading().observe(viewLifecycleOwner, stateObserver)
         audioCutterModel.listAudioCutterViewItems.observe(viewLifecycleOwner, listAudioObserver)
@@ -377,7 +375,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
         } else {
             ContactPermissionDialog.newInstance {
                 resetRequestingPermission()
-                pendingRequestingPermission = CUT_CHOOSE_REQUESTING_PERMISSION
+                pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
                 checkPermissionRequest()
             }
                 .show(requireActivity().supportFragmentManager, ContactPermissionDialog::class.java.name)
@@ -398,7 +396,7 @@ class CutChooserScreen : BaseFragment(), CutChooserAdapter.CutChooserListener, S
             showDialogSetAsTypeAudio()
         } else {
             resetRequestingPermission()
-            pendingRequestingPermission = CUT_CHOOSE_REQUESTING_PERMISSION
+            pendingRequestingPermission = WRITESETTING_ITEM_REQUESTING_PERMISSION
             writeSettingPermissionRequest.requestPermission()
         }
     }

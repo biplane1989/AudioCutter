@@ -27,6 +27,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
+        android:configChanges="locale"
         android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -49,7 +50,7 @@
         </provider>
 
         <activity
-            android:configChanges="locale"
+            android:screenOrientation="portrait"
             android:name=".activities.MainActivity"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden|adjustPan">>

@@ -227,8 +227,10 @@ class WaveformDrawer {
         /*int h = (int) (getScaledHeight(mZoomFactorByZoomLevel[mZoomLevel], start + i) * measuredHeight / 2);*/
         int h = (int) (getScaledHeight(mZoomValue, start + i) * measuredHeight / 2);
         drawWaveformLine(canvas, i, ctr - h, ctr + 1 + h, paint);
+
         if (i + start == mWaveformView.getPlayPos()) {
-            canvas.drawLine(i, mWaveformView.getDrawingStartY()-cursorSize, i, mWaveformView.getDrawingEndY() + cursorSize, mLinePlayingPaint);
+            int x = Math.min(i, mWaveformView.getSelectionEnd() - start);
+            canvas.drawLine(x, mWaveformView.getDrawingStartY() - cursorSize, x, mWaveformView.getDrawingEndY() + cursorSize, mLinePlayingPaint);
         }
     }
 
@@ -324,6 +326,7 @@ class WaveformDrawer {
         mWaveformView.invalidate();
         return factor;
     }
+
     float getFactorForZoom(float scaleFactor) {
         float currZoomValue = mZoomValue;
         float newZoomValue = Math.min(MAX_ZOOM_VALUE, mZoomValue * scaleFactor);
@@ -331,6 +334,7 @@ class WaveformDrawer {
         return newZoomValue / currZoomValue;
 
     }
+
     float zoomIn(int offset) {
         if (canZoomIn()) {
             float currZoomValue = mZoomValue;
@@ -364,9 +368,6 @@ class WaveformDrawer {
         }
         return -1;
     }*/
-
-
-
 
 
     float zoomOut(int offset) {

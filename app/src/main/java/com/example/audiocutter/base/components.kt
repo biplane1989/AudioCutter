@@ -2,7 +2,9 @@ package com.example.audiocutter.base
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,11 +18,13 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.*
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateManager
 import com.example.a0025antivirusapplockclean.base.viewstate.ViewStateManagerImpl
+import com.example.audiocutter.activities.MainActivity
 import com.example.audiocutter.functions.mystudio.screens.FragmentMeta
 import com.example.audiocutter.permissions.PermissionManager
 import com.example.audiocutter.util.PreferencesHelper
 import com.example.audiocutter.util.Utils
 import kotlinx.coroutines.*
+import pub.devrel.easypermissions.onRequestPermissionsResulted
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -70,8 +74,7 @@ abstract class BaseViewModel : ViewModel(), IViewModel {
     }
 }
 
-abstract class BaseAndroidViewModel(application: Application) : AndroidViewModel(application),
-    IViewModel {
+abstract class BaseAndroidViewModel(application: Application) : AndroidViewModel(application), IViewModel {
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
     init {
@@ -141,12 +144,12 @@ abstract class BaseActivity : AppCompatActivity() {
 
     final override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       /* lifecycle.addObserver(PermissionManager)*/
+        /* lifecycle.addObserver(PermissionManager)*/
         if (!onPreCreate()) return
         createView(savedInstanceState)
         onPostCreate()
-        fragmentDataTransporter =
-            ViewModelProviders.of(this).get(FragmentDataTransporter::class.java)
+        fragmentDataTransporter = ViewModelProviders.of(this)
+            .get(FragmentDataTransporter::class.java)
         setLanguage()
     }
 
@@ -182,10 +185,18 @@ abstract class BaseActivity : AppCompatActivity() {
     private fun setLanguage() {
         val language: String = PreferencesHelper.getString(PreferencesHelper.APP_LANGUAGE, Utils.getDefaultLanguage())
         Log.d("abba", "setLanguage: $language")
-
-        val myLocale = Locale(language)
+        var myLocale = Locale("")
+        if (TextUtils.equals(language, "en")) {
+            myLocale = Locale(language, "US")
+        } else {
+            myLocale = Locale(language, "VN")
+        }
 
         Utils.updateLocale(this, myLocale)
+
+        val intent = Intent(this, MainActivity::class.java)
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
     }
 }
 
@@ -253,6 +264,11 @@ abstract class BaseFragment : Fragment() {
         return null
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        onRequestPermissionsResulted(requestCode, permissions, grantResults)
+    }
+
 }
 
 abstract class BaseDialog : DialogFragment() {
@@ -265,8 +281,9 @@ abstract class BaseDialog : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-     /*   lifecycle.addObserver(PermissionManager)*/
+        /*   lifecycle.addObserver(PermissionManager)*/
     }
+
     protected fun runOnUI(executable: Executable): Job {
         return mainScope.launch {
             executable()
@@ -289,16 +306,13 @@ abstract class BaseDialog : DialogFragment() {
             }
         } ?: throw IllegalArgumentException("tag is not null")
     }
+
     override fun onDestroy() {
         super.onDestroy()
         mainScope.cancel()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
         val view = inflater.inflate(getLayoutResId(), container, false)
         initViews(view, savedInstanceState)

@@ -44,7 +44,6 @@ class MainActivity : BaseActivity() {
             viewStateManager.initState(ViewStateScreen.SPLASH)
             handleNotificationIntent(intent)
         }
-//        setLanguage()
     }
 
 
@@ -130,4 +129,8 @@ class MainActivity : BaseActivity() {
 //        conf.setLocale(myLocale)
 //        resources.updateConfiguration(conf, resources.displayMetrics)
 //    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+    }
 }
